@@ -1,0 +1,54 @@
+{
+  "$id": "https://playbook.local/delivery-pilot/finalization-bundle/v1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "bundle_id": {
+      "type": "string"
+    },
+    "control_ref_deleted": {
+      "type": "boolean"
+    },
+    "event_chain_root_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "final_projection_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "locator_closed": {
+      "type": "boolean"
+    },
+    "mission_id": {
+      "type": "string"
+    },
+    "preserved_at": {
+      "type": "string"
+    },
+    "receipt_manifest_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": 1
+    },
+    "workspace_archive_receipts": {
+      "type": "array"
+    }
+  },
+  "required": [
+    "schema_version",
+    "bundle_id",
+    "mission_id",
+    "final_projection_digest",
+    "event_chain_root_digest",
+    "receipt_manifest_digest",
+    "workspace_archive_receipts",
+    "control_ref_deleted",
+    "locator_closed",
+    "preserved_at"
+  ],
+  "title": "finalization-bundle/v1",
+  "type": "object"
+}

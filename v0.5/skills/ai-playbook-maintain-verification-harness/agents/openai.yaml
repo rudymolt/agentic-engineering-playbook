@@ -1,0 +1,4 @@
+interface:
+  display_name: "Maintain Verification Harness"
+  short_description: "Audit an adopted harness; only accepted complete results may refresh its clock"
+  default_prompt: "Use $ai-playbook-maintain-verification-harness to audit an adopted verification harness; let the owning stage record only an accepted complete clean or changed result."

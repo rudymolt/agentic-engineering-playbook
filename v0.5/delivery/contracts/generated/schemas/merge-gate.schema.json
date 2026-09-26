@@ -1,0 +1,139 @@
+{
+  "$id": "https://playbook.local/delivery-pilot/merge-gate/v1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "authority_class": {
+      "enum": [
+        "process-attested-fresh-merge"
+      ]
+    },
+    "base_ref": {
+      "type": "string"
+    },
+    "candidate": {
+      "additionalProperties": false,
+      "properties": {
+        "base_sha": {
+          "pattern": "^[0-9a-f]{40}$",
+          "type": "string"
+        },
+        "head_sha": {
+          "pattern": "^[0-9a-f]{40}$",
+          "type": "string"
+        },
+        "merge_group_sha": {
+          "pattern": "^[0-9a-f]{40}$",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "policy_sha": {
+          "pattern": "^[0-9a-f]{40}$",
+          "type": "string"
+        },
+        "ruleset_fingerprint": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "tree_sha": {
+          "pattern": "^[0-9a-f]{40}$",
+          "type": "string"
+        },
+        "verification_environment_digest": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "head_sha",
+        "tree_sha",
+        "base_sha",
+        "policy_sha",
+        "ruleset_fingerprint",
+        "verification_environment_digest",
+        "merge_group_sha"
+      ],
+      "type": "object"
+    },
+    "candidate_head": {
+      "pattern": "^[0-9a-f]{40}$",
+      "type": "string"
+    },
+    "candidate_tree": {
+      "pattern": "^[0-9a-f]{40}$",
+      "type": "string"
+    },
+    "g1_g8": {
+      "enum": [
+        "pass",
+        "fail"
+      ]
+    },
+    "gate_id": {
+      "type": "string"
+    },
+    "issued_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "maximum_action": {
+      "enum": [
+        "merge"
+      ]
+    },
+    "mission_id": {
+      "type": "string"
+    },
+    "open_findings": {
+      "type": "integer"
+    },
+    "open_review_threads": {
+      "type": "integer"
+    },
+    "policy_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "required_actions": {
+      "type": "integer"
+    },
+    "rollout_milestone": {
+      "enum": [
+        "K4.1"
+      ]
+    },
+    "safety_interrupt_open": {
+      "type": "boolean"
+    },
+    "schema_version": {
+      "const": 1
+    },
+    "taste_interrupt_open": {
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "schema_version",
+    "gate_id",
+    "mission_id",
+    "rollout_milestone",
+    "authority_class",
+    "maximum_action",
+    "candidate_head",
+    "candidate_tree",
+    "candidate",
+    "base_ref",
+    "policy_digest",
+    "g1_g8",
+    "open_findings",
+    "open_review_threads",
+    "required_actions",
+    "taste_interrupt_open",
+    "safety_interrupt_open",
+    "issued_at"
+  ],
+  "title": "merge-gate/v1",
+  "type": "object"
+}

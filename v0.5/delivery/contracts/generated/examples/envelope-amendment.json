@@ -1,0 +1,12 @@
+{
+  "allowed_paths": [
+    "/scope/spec_ref"
+  ],
+  "amendment_id": "amend-1",
+  "base_envelope_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "patch": [],
+  "patch_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "result_envelope_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "schema_version": 1,
+  "source_event_id": "event-2"
+}

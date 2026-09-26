@@ -1,0 +1,48 @@
+{
+  "$id": "https://playbook.local/delivery-pilot/answer/v1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "actor_id": {
+      "type": "string"
+    },
+    "answer_id": {
+      "type": "string"
+    },
+    "answered_at": {
+      "type": "string"
+    },
+    "option_id": {
+      "type": "string"
+    },
+    "options_revision": {
+      "type": "integer"
+    },
+    "question_id": {
+      "type": "string"
+    },
+    "result_envelope_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": 1
+    },
+    "source_event_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "answer_id",
+    "question_id",
+    "options_revision",
+    "option_id",
+    "actor_id",
+    "source_event_id",
+    "answered_at",
+    "result_envelope_digest"
+  ],
+  "title": "answer/v1",
+  "type": "object"
+}

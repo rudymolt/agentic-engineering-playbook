@@ -1,0 +1,43 @@
+{
+  "$id": "https://playbook.local/delivery-pilot/question/v1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "base_envelope_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "kind": {
+      "enum": [
+        "taste",
+        "safety"
+      ]
+    },
+    "options": {
+      "type": "array"
+    },
+    "options_revision": {
+      "type": "integer"
+    },
+    "published_at": {
+      "type": "string"
+    },
+    "question_id": {
+      "type": "string"
+    },
+    "schema_version": {
+      "const": 1
+    }
+  },
+  "required": [
+    "schema_version",
+    "question_id",
+    "kind",
+    "base_envelope_digest",
+    "options_revision",
+    "options",
+    "published_at"
+  ],
+  "title": "question/v1",
+  "type": "object"
+}

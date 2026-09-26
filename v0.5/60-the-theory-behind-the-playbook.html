@@ -1,0 +1,1244 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Theory Behind The Playbook · AI Engineering Playbook V0.2</title>
+<!--
+  ==========================================================================
+  MAINTAINER NOTE
+  Companion to §50 "How To Write Code With AI". Where §50 tells the human
+  project owner WHAT to type, this guide (§60) explains WHY the process is
+  shaped the way it is — the concepts and the rationale behind the key
+  skills, in plain English.
+
+  This is a conceptual primer, not a reference manual. Each section ends
+  with "Go deeper" links into the fuller process files for readers who
+  want the long-form version.
+
+  Status: Source of truth
+  Last verified: 2026-06-12 (playbook V0.2.3)
+  Audience: Human project owner (no engineering background assumed)
+  ==========================================================================
+-->
+<style>
+  :root {
+    --bg:           #fbfaf6;
+    --panel:        #ffffff;
+    --ink:          #161614;
+    --ink-soft:     #4a4a44;
+    --ink-mute:     #7a786f;
+    --rule:         #e2dfd3;
+    --rule-soft:    #ece9dd;
+    --code-bg:      #f2efe5;
+    --code-ink:     #1a1a1a;
+    --human:        #1e4e8c;
+    --human-tint:   #e6edf6;
+    --agent:        #2a6e4f;
+    --agent-tint:   #e3efe7;
+    --warn:         #8a4b16;
+    --warn-tint:    #f6ece0;
+
+    --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    --font-serif:   'Source Serif Pro', Charter, 'Iowan Old Style', Georgia, serif;
+    --font-mono:    'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+    --measure:      68ch;
+    --pad-x:        clamp(20px, 4vw, 56px);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: 17px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  .page {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 56px var(--pad-x) 96px;
+  }
+
+  /* ---- Header ---- */
+  header.doc-head {
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 28px;
+    margin-bottom: 40px;
+  }
+  .eyebrow {
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    font-weight: 600;
+  }
+  h1 {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-size: clamp(34px, 5vw, 52px);
+    line-height: 1.1;
+    margin: 14px 0 12px;
+    letter-spacing: -0.01em;
+  }
+  .lede {
+    font-size: 19px;
+    line-height: 1.55;
+    color: var(--ink-soft);
+    max-width: var(--measure);
+    margin: 18px 0 0;
+  }
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px 28px;
+    margin-top: 22px;
+    font-size: 13px;
+    color: var(--ink-mute);
+  }
+  .meta span strong { color: var(--ink-soft); font-weight: 600; }
+
+  /* ---- Sections & typography ---- */
+  section { margin-top: 56px; }
+  h2 {
+    font-family: var(--font-serif);
+    font-size: 30px;
+    line-height: 1.2;
+    margin: 0 0 6px;
+    letter-spacing: -0.005em;
+    font-weight: 600;
+  }
+  h2 .num {
+    color: var(--ink-mute);
+    font-weight: 500;
+    margin-right: 14px;
+    font-variant-numeric: tabular-nums;
+  }
+  h2 + p.section-lede {
+    color: var(--ink-soft);
+    margin: 4px 0 28px;
+    max-width: var(--measure);
+  }
+  h3 { font-size: 18px; margin: 32px 0 8px; letter-spacing: 0; font-weight: 600; }
+  p { max-width: var(--measure); }
+  p, ul, ol { margin: 0 0 16px; }
+  ul, ol { padding-left: 22px; max-width: var(--measure); }
+  li { margin-bottom: 6px; }
+  strong.lead-in { color: var(--ink); }
+
+  /* ---- Code ---- */
+  pre {
+    background: var(--code-bg);
+    color: var(--code-ink);
+    font-family: var(--font-mono);
+    font-size: 14px;
+    line-height: 1.5;
+    padding: 14px 18px;
+    border-radius: 6px;
+    border: 1px solid var(--rule);
+    overflow-x: auto;
+    margin: 12px 0 18px;
+    max-width: var(--measure);
+  }
+  code {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    background: var(--code-bg);
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+  pre code { background: none; padding: 0; font-size: 14px; }
+
+  /* ---- Callouts ---- */
+  .callout {
+    border-left: 3px solid var(--warn);
+    background: var(--warn-tint);
+    padding: 14px 18px;
+    border-radius: 0 8px 8px 0;
+    margin: 20px 0;
+    font-size: 15px;
+    max-width: var(--measure);
+  }
+  .callout strong { color: var(--warn); }
+  .callout.human-note { border-left-color: var(--human); background: var(--human-tint); }
+  .callout.human-note strong { color: var(--human); }
+
+  .acknowledgement {
+    background: var(--panel);
+    border: 1px solid var(--rule);
+    border-left: 3px solid var(--human);
+    border-radius: 0 8px 8px 0;
+    padding: 16px 18px;
+    margin: 0 0 40px;
+    max-width: var(--measure);
+    font-size: 15px;
+    color: var(--ink-soft);
+  }
+  .acknowledgement h2 {
+    font-family: var(--font-sans);
+    font-size: 12px;
+    line-height: 1.2;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin: 0 0 8px;
+    color: var(--human);
+  }
+  .acknowledgement p { margin: 0; }
+  .acknowledgement a {
+    color: var(--human);
+    text-decoration: none;
+    border-bottom: 1px solid var(--human-tint);
+  }
+  .acknowledgement a:hover { border-bottom-color: var(--human); }
+
+  /* ---- Skill chips ---- */
+  .skill {
+    font-family: var(--font-mono);
+    font-size: 0.88em;
+    background: var(--agent-tint);
+    color: #1f5840;
+    padding: 1px 6px;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+
+  /* ---- Concept cards ---- */
+  .concept {
+    background: var(--panel);
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    padding: 20px 22px;
+    margin: 22px 0;
+  }
+  .concept h3 { margin: 0 0 8px; }
+  .concept .what {
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    font-weight: 700;
+    margin: 0 0 4px;
+  }
+
+  /* ---- Skill rationale list ---- */
+  .skill-list { list-style: none; padding: 0; margin: 18px 0; max-width: var(--measure); }
+  .skill-list li {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--rule-soft);
+  }
+  .skill-list li:last-child { border-bottom: none; }
+  .skill-list .head { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; margin-bottom: 3px; }
+  .skill-list .role { font-size: 12px; color: var(--ink-mute); font-style: italic; }
+
+  /* ---- Two-toolkit split ---- */
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin: 24px 0 8px; }
+  .split .card {
+    background: var(--panel);
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    padding: 20px 22px;
+  }
+  .split .card.matt  { border-top: 3px solid var(--human); }
+  .split .card.gstack{ border-top: 3px solid var(--agent); }
+  .split .card h4 {
+    font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase;
+    margin: 0 0 4px; color: var(--ink-mute); font-weight: 700;
+  }
+  .split .card .name { font-family: var(--font-serif); font-size: 22px; margin: 0 0 8px; }
+  .split .card ul { padding-left: 18px; margin: 0; }
+  .split .card li { font-size: 14px; margin-bottom: 4px; }
+  @media (max-width: 720px) { .split { grid-template-columns: 1fr; } }
+
+  /* ---- Go deeper ---- */
+  .go-deeper {
+    margin: 18px 0 0;
+    padding-top: 12px;
+    border-top: 1px dashed var(--rule);
+    font-size: 14px;
+    color: var(--ink-mute);
+    max-width: var(--measure);
+  }
+  .go-deeper a { color: var(--human); text-decoration: none; border-bottom: 1px solid var(--human-tint); }
+  .go-deeper a:hover { border-bottom-color: var(--human); }
+  .go-deeper .gd-label {
+    font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+    font-weight: 700; color: var(--ink-mute); margin-right: 8px;
+  }
+
+  /* ---- SVG ---- */
+  svg.diagram { width: 100%; height: auto; display: block; margin: 8px 0 12px; overflow: visible; }
+  svg .label-sm   { font: 600 11px var(--font-sans); letter-spacing: 0.1em; text-transform: uppercase; }
+  svg .label-md   { font: 600 14px var(--font-sans); }
+  svg .label-lg   { font: 600 16px var(--font-serif); }
+  svg .label-mono { font: 500 12px var(--font-mono); }
+  svg .label-body { font: 400 13px var(--font-sans); }
+  svg .muted      { fill: var(--ink-mute); }
+  svg .ink        { fill: var(--ink); }
+  svg .ink-soft   { fill: var(--ink-soft); }
+
+  .diagram-wrap {
+    background: var(--panel);
+    border: 1px solid var(--rule);
+    border-radius: 12px;
+    padding: 24px;
+    margin: 16px 0 28px;
+  }
+  .diagram-wrap .cap { font-size: 13px; color: var(--ink-mute); margin: 8px 0 0; text-align: center; }
+
+  /* ---- Footer ---- */
+  footer.doc-foot {
+    margin-top: 88px; padding-top: 22px; border-top: 1px solid var(--rule);
+    color: var(--ink-mute); font-size: 13px;
+    display: flex; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+  }
+
+  /* ---- Jargon term & popover ---- */
+  button.term {
+    font: inherit; color: inherit; background: transparent; border: 0;
+    border-bottom: 1px dotted var(--human); padding: 0 1px; cursor: pointer;
+    border-radius: 2px; transition: background 80ms ease;
+  }
+  button.term:hover, button.term:focus-visible { background: var(--human-tint); outline: none; }
+  button.term::after {
+    content: "?"; display: inline-block; vertical-align: super; font-size: 0.65em;
+    margin-left: 1px; opacity: 0.55; color: var(--human); font-weight: 600;
+  }
+  button.term:hover::after, button.term:focus-visible::after { opacity: 1; }
+  button.term > code { background: transparent; padding: 0; font-size: inherit; }
+
+  .term-popover {
+    position: absolute; max-width: 320px; background: #ffffff;
+    border: 1px solid var(--rule); border-radius: 8px;
+    box-shadow: 0 6px 24px rgba(20, 18, 10, 0.14);
+    padding: 14px 40px 14px 16px; z-index: 100; display: none;
+    font-size: 14px; line-height: 1.5;
+  }
+  .term-popover.open { display: block; }
+  .term-popover .pop-title { font-weight: 700; font-size: 13px; margin: 0 0 4px; color: var(--human); }
+  .term-popover .pop-def { margin: 0; color: var(--ink-soft); }
+  .term-popover .pop-close {
+    position: absolute; top: 6px; right: 8px; background: none; border: 0;
+    font-size: 20px; line-height: 1; cursor: pointer; color: var(--ink-mute);
+    padding: 2px 7px; border-radius: 4px;
+  }
+  .term-popover .pop-close:hover { color: var(--ink); background: var(--rule-soft); }
+  @media (max-width: 480px) { .term-popover { max-width: calc(100vw - 32px); } }
+
+  .term-hint {
+    background: var(--human-tint); border-left: 3px solid var(--human);
+    padding: 10px 14px; border-radius: 0 6px 6px 0; font-size: 14px;
+    color: var(--ink-soft); margin: 14px 0 26px; max-width: var(--measure);
+  }
+  .term-hint strong { color: var(--human); }
+  .term-hint kbd {
+    font-family: var(--font-mono); font-size: 11px; background: #ffffff;
+    border: 1px solid var(--rule); border-bottom-width: 2px; border-radius: 4px;
+    padding: 1px 6px; color: var(--ink);
+  }
+
+  @media print {
+    body { background: white; font-size: 12pt; }
+    .page { padding: 0; max-width: 100%; }
+    section, .concept, .diagram-wrap, .split .card { break-inside: avoid; }
+    button.term { border-bottom: none; padding: 0; }
+    button.term::after { display: none; }
+    .term-popover, .term-hint { display: none !important; }
+  }
+</style>
+<link rel="stylesheet" href="assets/playbook-docs.css">
+</head>
+<body class="playbook-doc">
+<nav class="site-nav" aria-label="Playbook guides">
+  <a class="brand" href="index.html">AI Engineering Playbook</a>
+  <div class="links">
+    <a href="50-how-to-write-code-with-ai.html">How to drive the agent</a>
+    <a href="60-the-theory-behind-the-playbook.html" aria-current="page">Theory</a>
+    <a href="00-foundations.html">Foundations</a>
+    <a href="10-process/index.html">Process map</a>
+    <a href="30-document-lifecycle.html">Docs lifecycle</a>
+  </div>
+</nav>
+<main class="page">
+
+  <header class="doc-head">
+    <div class="eyebrow">AI Engineering Playbook · V0.2 · §60</div>
+    <h1>The Theory Behind The Playbook</h1>
+    <p class="lede">
+      Why the process is shaped the way it is. The companion guide, §50,
+      tells you <em>what to type</em>; this one explains <em>why each stage
+      exists</em> and the thinking behind the skills the agent reaches for —
+      grilling, slicing, test-first building, architecture tune-ups, and the
+      rest — in plain English, no engineering background assumed.
+    </p>
+    <div class="meta">
+      <span><strong>Status</strong> · Source of truth</span>
+      <span><strong>Last verified</strong> · 2026-06-12 · playbook V0.2.3</span>
+      <span><strong>Audience</strong> · Human project owner</span>
+      <span><strong>Format</strong> · Interactive HTML · conceptual primer</span>
+    </div>
+  </header>
+
+  <aside class="acknowledgement" aria-labelledby="acknowledgement-title">
+    <h2 id="acknowledgement-title">Acknowledgement</h2>
+    <p>
+      This playbook grew out of an exploration of how to turn modern AI-agent
+      skills into a practical engineering process for building real
+      applications. It is especially influenced by
+      <a href="https://www.mattpocock.com/">Matt Pocock</a>'s work on
+      composable engineering skills, including
+      <a href="https://github.com/mattpocock/skills">mattpocock/skills</a> and
+      <a href="https://www.skills.sh/mattpocock/skills">skills.sh</a>, and by
+      <a href="https://www.ycombinator.com/people/garry-tan">Garry Tan</a>'s
+      <a href="https://gstack.lol/">GStack</a> project and
+      <a href="https://github.com/garrytan/gstack">garrytan/gstack</a>. This
+      guide adapts those ideas into a human-led, agent-assisted playbook built
+      around explicit alignment, shared language, TDD, review, QA, shipping,
+      and learning loops.
+    </p>
+  </aside>
+
+  <nav class="doc-toc" aria-labelledby="toc-title">
+    <h2 id="toc-title">On This Page</h2>
+    <div class="toc-grid">
+      <a href="#why">Why process<span>The failure modes it prevents</span></a>
+      <a href="#align">Align<span>Which grill to run</span></a>
+      <a href="#language">Shared language<span>CONTEXT.md and ADRs</span></a>
+      <a href="#slices">Slicing<span>Vertical, not horizontal</span></a>
+      <a href="#tdd">TDD<span>Red, green — then review</span></a>
+      <a href="#architecture">Architecture<span>Deep modules and source of truth</span></a>
+      <a href="#verify">Verification<span>Risk-scaled checking</span></a>
+      <a href="#agent-surface">Designing for the agent<span>The surface agents read</span></a>
+      <a href="#evidence">Evidence<span>Where the ideas come from</span></a>
+    </div>
+  </nav>
+
+  <div class="term-hint" role="note">
+    <strong>Tip.</strong> Words with a dotted underline — like
+    <button class="term" type="button" data-def="module">module</button> or
+    <button class="term" type="button" data-def="refactor">refactor</button> —
+    are bits of jargon. Click or tap any of them for a one-sentence,
+    plain-English explanation. Press <kbd>Esc</kbd> or click outside to close it.
+  </div>
+
+  <!-- ====================================================== -->
+  <!-- 1. WHY A PROCESS AT ALL                                -->
+  <!-- ====================================================== -->
+  <section id="why">
+    <h2><span class="num">01</span>Why have a process at all?</h2>
+    <p class="section-lede">
+      An AI agent can write code astonishingly fast. The bottleneck was never
+      typing speed — it's making sure the fast output is the <em>right</em>
+      output. Almost every rule in this playbook exists to prevent one of four
+      predictable things that go wrong when you build software with an AI.
+    </p>
+
+    <div class="diagram-wrap">
+    <svg viewBox="0 0 900 360" class="diagram" role="img" aria-label="Four common failure modes and the practice that prevents each: building the wrong thing is prevented by grilling the plan first; using different words for the same thing is prevented by a shared glossary; code that does not work is prevented by test-first building and disciplined debugging; a tangled codebase is prevented by regular architecture tune-ups.">
+      <defs>
+        <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="#7a786f"/>
+        </marker>
+      </defs>
+      <text x="20"  y="34" class="label-sm" fill="#8a4b16">WHAT GOES WRONG</text>
+      <text x="560" y="34" class="label-sm" fill="#2a6e4f">WHAT PREVENTS IT</text>
+
+      <!-- Problem boxes -->
+      <g>
+        <rect x="20" y="52"  width="360" height="56" rx="8" fill="#f6ece0" stroke="#8a4b16" stroke-width="1.2"/>
+        <text x="38" y="76"  class="label-md ink">Built the wrong thing</text>
+        <text x="38" y="96"  class="label-body ink-soft">the request was vague; "done" was never pinned down</text>
+
+        <rect x="20" y="124" width="360" height="56" rx="8" fill="#f6ece0" stroke="#8a4b16" stroke-width="1.2"/>
+        <text x="38" y="148" class="label-md ink">Different words, same thing</text>
+        <text x="38" y="168" class="label-body ink-soft">"athlete" vs "competitor" vs "entry" — confusion compounds</text>
+
+        <rect x="20" y="196" width="360" height="56" rx="8" fill="#f6ece0" stroke="#8a4b16" stroke-width="1.2"/>
+        <text x="38" y="220" class="label-md ink">The code doesn't work</text>
+        <text x="38" y="240" class="label-body ink-soft">looks plausible, breaks in real use</text>
+
+        <rect x="20" y="268" width="360" height="56" rx="8" fill="#f6ece0" stroke="#8a4b16" stroke-width="1.2"/>
+        <text x="38" y="292" class="label-md ink">Turns into a ball of mud</text>
+        <text x="38" y="312" class="label-body ink-soft">everything tangled; every change feels risky</text>
+      </g>
+
+      <!-- Fix boxes -->
+      <g>
+        <rect x="540" y="52"  width="340" height="56" rx="8" fill="#e3efe7" stroke="#2a6e4f" stroke-width="1.2"/>
+        <text x="558" y="76"  class="label-md ink">Grill the plan first</text>
+        <text x="558" y="96"  class="label-mono" fill="#2a6e4f">/office-hours · /grill-with-docs</text>
+
+        <rect x="540" y="124" width="340" height="56" rx="8" fill="#e3efe7" stroke="#2a6e4f" stroke-width="1.2"/>
+        <text x="558" y="148" class="label-md ink">Keep a shared glossary</text>
+        <text x="558" y="168" class="label-mono" fill="#2a6e4f">CONTEXT.md</text>
+
+        <rect x="540" y="196" width="340" height="56" rx="8" fill="#e3efe7" stroke="#2a6e4f" stroke-width="1.2"/>
+        <text x="558" y="220" class="label-md ink">Build test-first, debug with method</text>
+        <text x="558" y="240" class="label-mono" fill="#2a6e4f">/tdd · /diagnosing-bugs</text>
+
+        <rect x="540" y="268" width="340" height="56" rx="8" fill="#e3efe7" stroke="#2a6e4f" stroke-width="1.2"/>
+        <text x="558" y="292" class="label-md ink">Tune the structure regularly</text>
+        <text x="558" y="312" class="label-mono" fill="#2a6e4f">/improve-codebase-architecture</text>
+      </g>
+
+      <!-- Arrows -->
+      <line x1="380" y1="80"  x2="540" y2="80"  stroke="#7a786f" stroke-width="1.4" marker-end="url(#arr)"/>
+      <line x1="380" y1="152" x2="540" y2="152" stroke="#7a786f" stroke-width="1.4" marker-end="url(#arr)"/>
+      <line x1="380" y1="224" x2="540" y2="224" stroke="#7a786f" stroke-width="1.4" marker-end="url(#arr)"/>
+      <line x1="380" y1="296" x2="540" y2="296" stroke="#7a786f" stroke-width="1.4" marker-end="url(#arr)"/>
+      <rect class="diagram-hotspot-hit" tabindex="0" role="button" aria-label="Explain building the wrong thing" data-explainer="failure-wrong" x="20" y="52" width="860" height="56" rx="8"/>
+      <rect class="diagram-hotspot-hit" tabindex="0" role="button" aria-label="Explain vocabulary drift" data-explainer="failure-language" x="20" y="124" width="860" height="56" rx="8"/>
+      <rect class="diagram-hotspot-hit" tabindex="0" role="button" aria-label="Explain plausible but broken code" data-explainer="failure-working" x="20" y="196" width="860" height="56" rx="8"/>
+      <rect class="diagram-hotspot-hit" tabindex="0" role="button" aria-label="Explain tangled architecture" data-explainer="failure-structure" x="20" y="268" width="860" height="56" rx="8"/>
+    </svg>
+    <p class="cap">The four failure modes, and the practice that heads each one off.</p>
+    </div>
+    <div class="diagram-actions" aria-label="Explain failure modes">
+      <button type="button" data-explainer="failure-wrong">Wrong thing</button>
+      <button type="button" data-explainer="failure-language">Vocabulary drift</button>
+      <button type="button" data-explainer="failure-working">Broken in use</button>
+      <button type="button" data-explainer="failure-structure">Ball of mud</button>
+    </div>
+    <div class="explainer-output" data-explainer-output="why" aria-live="polite"></div>
+
+    <p>
+      These aren't independent. Skip the grilling and you build the wrong thing
+      <em>well</em>. Skip the shared glossary and the grilling itself gets muddier.
+      Let the structure rot and the test-first building slows to a crawl. The
+      stages are ordered so that each one protects the next — which is the whole
+      reason to follow them in order rather than cherry-pick.
+    </p>
+    <p class="go-deeper">
+      <span class="gd-label">Go deeper</span>
+      <a href="00-foundations.html">interactive foundations</a> ·
+      <a href="10-process/index.html">the 13-stage process map</a>
+    </p>
+  </section>
+
+  <!-- ====================================================== -->
+  <!-- 2. ALIGN BEFORE YOU CODE                               -->
+  <!-- ====================================================== -->
+  <section id="align">
+    <h2><span class="num">02</span>Align before you code</h2>
+    <p class="section-lede">
+      "No-one knows exactly what they want" is the oldest truth in software.
+      The cheapest moment to fix a misunderstanding is <em>before</em> any code
+      exists. So the process front-loads a conversation whose only job is to make
+      the fuzzy parts of a request explicit.
+    </p>
+
+    <p>The agent has a few different grilling tools, each asking a different kind of question:</p>
+
+    <ul class="skill-list">
+      <li>
+        <div class="head"><span class="skill">/office-hours</span> <span class="role">the start-up advisor</span></div>
+        A handful of forcing questions that step right back: are we even solving
+        the right problem, and is there a bigger, better version of it hiding
+        inside the request? Strategic framing before anything else.
+      </li>
+      <li>
+        <div class="head"><span class="skill">/plan-ceo-review</span> <span class="role">the founder</span></div>
+        Looks at the request the way a founder would — "is there a 10-star
+        product in here?" — then decides whether to expand the scope, hold it,
+        or deliberately cut it back.
+      </li>
+      <li>
+        <div class="head"><span class="skill">/grill-with-docs</span> <span class="role">the workhorse</span></div>
+        Interrogates the plan <strong class="lead-in">one question at a time</strong>, always
+        offering its own recommended answer, and reads the existing code instead
+        of asking you things it can find out for itself. It stops only when every
+        open question has either an answer or an explicit "out of scope".
+      </li>
+      <li>
+        <div class="head"><span class="skill">/grill-me</span> <span class="role">for non-code work</span></div>
+        The same discipline for a decision or a strategy doc — anything where
+        there's no codebase to challenge the plan against.
+      </li>
+    </ul>
+
+    <div class="callout human-note">
+      <strong>Why "one question at a time, with a recommendation"?</strong>
+      It lets you move fast by simply approving the suggested answer when it's
+      right — while guaranteeing that nothing important is ever silently assumed.
+      You stay in control without having to write a specification.
+    </div>
+    <p class="go-deeper">
+      <span class="gd-label">Go deeper</span>
+      <a href="10-process/01-align.html">interactive alignment guide</a> ·
+      <a href="10-process/01-align.md">the maintained alignment contract</a>
+    </p>
+  </section>
+
+  <!-- ====================================================== -->
+  <!-- 3. A SHARED LANGUAGE                                   -->
+  <!-- ====================================================== -->
+  <section id="language">
+    <h2><span class="num">03</span>A shared language</h2>
+    <p class="section-lede">
+      The single cheapest piece of leverage in the whole process: agree on what
+      to call things, write it down, and then use those exact words everywhere.
+    </p>
+
+    <div class="concept">
+      <p class="what">Concept</p>
+      <h3><button class="term" type="button" data-def="contextmd"><code>CONTEXT.md</code></button> — the project's glossary</h3>
+      <p>
+        A living list of the project's real-world nouns, in the words you
+        actually use. Once it exists, the agent uses those same words in the
+        code, the file names, the test descriptions, even the commit messages.
+        That consistency quietly removes a whole category of confusion. It holds
+        <em>domain</em> words only — the language of your world, not technical
+        jargon.
+      </p>
+    </div>
+
+    <div class="concept">
+      <p class="what">Concept</p>
+      <h3><button class="term" type="button" data-def="adr">ADRs</button> — recording the "why" behind big decisions</h3>
+      <p>
+        An Architecture Decision Record is a one-page note explaining why a
+        hard-to-undo choice was made. The agent only writes one when the
+        decision passes all three parts of a test: it's
+        <strong class="lead-in">hard to reverse</strong>,
+        <strong class="lead-in">surprising without the back-story</strong>, and
+        <strong class="lead-in">a genuine trade-off</strong>. Otherwise it's
+        just noise. The payoff comes months later, when nobody has to ask "why
+        on earth did we build it this way?"
+      </p>
+    </div>
+
+    <p>
+      Both of these are a <em>by-product</em> of the grilling in §02, not extra
+      paperwork — the agent writes to them as decisions settle.
+    </p>
+    <p class="go-deeper">
+      <span class="gd-label">Go deeper</span>
+      <a href="10-process/02-context-and-adrs.md">10-process/02-context-and-adrs.md</a>
+    </p>
+  </section>
+
+  <!-- ====================================================== -->
+  <!-- 4. SLICE THE WORK                                      -->
+  <!-- ====================================================== -->
+  <section id="slices">
+    <h2><span class="num">04</span>Slice the work the right way</h2>
+    <p class="section-lede">
+      How you cut a big feature into pieces decides whether you see working
+      software early or only at the very end. The playbook is dogmatic about
+      this: cut <em>vertically</em>, never horizontally.
+    </p>
+
+    <div class="diagram-wrap">
+    <svg viewBox="0 0 900 320" class="diagram" role="img" aria-label="Two ways to break up a feature. On the left, horizontal layers: build all of the screen layer, then all the logic, then all the data — nothing works until the very end. On the right, a vertical slice cuts through the screen, logic and data layers for one small capability, so it works end-to-end straight away.">
+      <text x="20"  y="30" class="label-sm" fill="#8a4b16">HORIZONTAL LAYERS · the trap</text>
+      <text x="500" y="30" class="label-sm" fill="#2a6e4f">VERTICAL SLICE · the goal</text>
+
+      <!-- Left: horizontal layers -->
+      <g>
+        <rect x="20" y="48"  width="380" height="48" rx="6" fill="#f6ece0" stroke="#8a4b16" stroke-width="1.1"/>
+        <text x="36" y="77" class="label-md ink">Screen / UI</text>
+        <rect x="20" y="104" width="380" height="48" rx="6" fill="#f6ece0" stroke="#8a4b16" stroke-width="1.1"/>
+        <text x="36" y="133" class="label-md ink">Logic</text>
+        <rect x="20" y="160" width="380" height="48" rx="6" fill="#f6ece0" stroke="#8a4b16" stroke-width="1.1"/>
+        <text x="36" y="189" class="label-md ink">Data store</text>
+        <text x="20" y="244" class="label-body ink-soft">Build each layer fully, top to bottom.</text>
+        <text x="20" y="266" class="label-body" fill="#8a4b16">Nothing works until the last layer lands.</text>
+        <text x="20" y="288" class="label-body" fill="#8a4b16">Tests check guessed behaviour, not real use.</text>
+      </g>
+
+      <!-- Right: vertical slice -->
+      <g>
+        <rect x="500" y="48"  width="380" height="48" rx="6" fill="#ffffff" stroke="#cfc8b6" stroke-width="1.1"/>
+        <text x="516" y="77" class="label-md ink-soft">Screen / UI</text>
+        <rect x="500" y="104" width="380" height="48" rx="6" fill="#ffffff" stroke="#cfc8b6" stroke-width="1.1"/>
+        <text x="516" y="133" class="label-md ink-soft">Logic</text>
+        <rect x="500" y="160" width="380" height="48" rx="6" fill="#ffffff" stroke="#cfc8b6" stroke-width="1.1"/>
+        <text x="516" y="189" class="label-md ink-soft">Data store</text>
+        <!-- the slice -->
+        <rect x="690" y="42" width="92" height="172" rx="8" fill="#e3efe7" stroke="#2a6e4f" stroke-width="2"/>
+        <text x="736" y="232" text-anchor="middle" class="label-mono" fill="#2a6e4f">one slice</text>
+        <text x="500" y="266" class="label-body ink-soft">One thin capability — "a user can add an athlete" —</text>
+        <text x="500" y="288" class="label-body" fill="#2a6e4f">cut through every layer. It works and demos today.</text>
+      </g>
+      <rect class="diagram-hotspot-hit" tabindex="0" role="button" aria-label="Explain horizontal slicing trap" data-explainer="slice-horizontal" x="20" y="48" width="380" height="240" rx="8"/>
+      <rect class="diagram-hotspot-hit" tabindex="0" role="button" aria-label="Explain vertical slice" data-explainer="slice-vertical" x="500" y="48" width="380" height="240" rx="8"/>
+    </svg>
+    <p class="cap">A <button class="term" type="button" data-def="tracerbullet">tracer bullet</button>: one shot fired all the way to the target, so you can see where it lands and adjust.</p>
+    </div>
+    <div class="diagram-actions" aria-label="Explain slicing choices">
+      <button type="button" data-explainer="slice-horizontal">Horizontal trap</button>
+      <button type="button" data-explainer="slice-vertical">Vertical slice</button>
+    </div>
+    <div class="explainer-output" data-explainer-output="slices" aria-live="polite"></div>
+
+    <p>
+      Once the plan is settled, <span class="skill">/to-spec</span> (formerly <span class="skill">/to-prd</span>) writes a short
+      spec and <span class="skill">/to-tickets</span> (formerly <span class="skill">/to-issues</span>) breaks it into these slices,
+      in the order they depend on each other. Each slice is tagged
+      <button class="term" type="button" data-def="afkhitl">AFK or HITL</button> — whether the agent can finish it
+      alone or needs you in the loop.
+    </p>
+    <div class="callout human-note">
+      <strong>Why you should care.</strong> Vertical slices mean you get
+      something real to look at early and often, and the agent
+      <a href="50-how-to-write-code-with-ai.html" style="color:inherit">pauses
+      after each one</a> for your go-ahead. If priorities change, you've
+      committed almost nothing — the opposite of discovering at the end that the
+      whole thing was built around a wrong guess.
+    </div>
+    <p class="go-deeper">
+      <span class="gd-label">Go deeper</span>
+      <a href="10-process/04-breakdown.html">interactive slice checker</a> ·
+      <a href="00-foundations.html">foundations, §3</a>
+    </p>
+  </section>
+
+  <!-- ====================================================== -->
+  <!-- 5. BUILD IT TEST-FIRST                                 -->
+  <!-- ====================================================== -->
+  <section id="tdd">
+    <h2><span class="num">05</span>Build it test-first</h2>
+    <p class="section-lede">
+      The agent builds each slice using <button class="term" type="button" data-def="tdd">test-driven development</button>,
+      which feels backwards at first: you write a small check describing what the
+      code should do <em>before</em> writing the code itself.
+    </p>
+
+    <p>The TDD rhythm is two short steps, repeated one tiny piece at a time at a public boundary agreed with the human:</p>
+    <ul>
+      <li><strong class="lead-in"><button class="term" type="button" data-def="redgreen">Red</button>.</strong> Write a test for the next bit of behaviour. It fails — there's no code yet.</li>
+      <li><strong class="lead-in">Green.</strong> Write just enough code to make that test pass. Nothing more.</li>
+    </ul>
+
+    <p><button class="term" type="button" data-def="refactor">Refactoring</button> follows as a separate review concern while the tests are green. Keeping it out of the implementation loop lets the review stage judge structural changes against both the specification and the repository's standards.</p>
+
+    <p>
+      Why bother with the odd order? Because if you write the code first and the
+      tests afterwards, you tend to test <em>what you happened to build</em>,
+      not what you actually wanted. Writing the test first pins down the intended
+      behaviour while it's still clear in everyone's head.
+    </p>
+
+    <p>The <span class="skill">/tdd</span> skill also enforces a few quiet rules that pay off later:</p>
+    <ul>
+      <li>Tests check behaviour through the "front door" (the <button class="term" type="button" data-def="publicinterface">public interface</button>), not the internal wiring — so they keep working even when the insides are rewritten.</li>
+      <li>Tests are written only at pre-agreed seams, so effort lands on the critical public boundaries rather than every internal detail.</li>
+      <li>Expected values come from an independent source such as a known literal, worked example, or the specification — never by repeating the implementation's calculation inside the test.</li>
+      <li>No sneaking in features nobody asked for.</li>
+      <li>The names in the tests use the <code>CONTEXT.md</code> vocabulary, so the shared language reaches all the way down.</li>
+    </ul>
+    <div class="callout">
+      <strong>The horizontal anti-pattern, again.</strong> Writing every test up
+      front and then all the code is the same mistake as horizontal layers from
+      §04 — it tests imagined behaviour. The skill refuses it. One test, one
+      piece of code, repeat.
+    </div>
+    <p class="go-deeper">
+      <span class="gd-label">Go deeper</span>
+      <a href="10-process/07-implementation-tdd.md">10-process/07-implementation-tdd.md</a>
+    </p>
+  </section>
+
+  <!-- ====================================================== -->
+  <!-- 6. KEEP THE STRUCTURE HEALTHY                          -->
+  <!-- ====================================================== -->
+  <section id="architecture">
+    <h2><span class="num">06</span>Keep the structure healthy</h2>
+    <p class="section-lede">
+      Code that is never tidied rots into a tangle where every change is risky —
+      a <button class="term" type="button" data-def="ballofmud">ball of mud</button>. Because agents produce code so fast, the
+      rot is faster too. So structural upkeep is a scheduled stage, not an
+      afterthought.
+    </p>
+
+    <div class="diagram-wrap">
+    <svg viewBox="0 0 900 280" class="diagram" role="img" aria-label="A deep module has a small, simple way to use it on top and a lot of capability hidden inside, like a car pedal. A shallow module exposes all of its internals, forcing you to understand everything to use anything.">
+      <!-- Deep -->
+      <text x="60" y="34" class="label-sm" fill="#2a6e4f">DEEP MODULE · preferred</text>
+      <rect x="60" y="70" width="300" height="160" rx="10" fill="#e3efe7" stroke="#2a6e4f" stroke-width="1.5"/>
+      <rect x="170" y="50" width="80" height="26" rx="6" fill="#ffffff" stroke="#2a6e4f" stroke-width="1.5"/>
+      <text x="210" y="68" text-anchor="middle" class="label-mono" fill="#2a6e4f">simple to use</text>
+      <text x="210" y="150" text-anchor="middle" class="label-md ink">a lot of</text>
+      <text x="210" y="172" text-anchor="middle" class="label-md ink">capability inside</text>
+      <text x="210" y="258" text-anchor="middle" class="label-body ink-soft">easy to use, hard to misuse</text>
+
+      <!-- Shallow -->
+      <text x="540" y="34" class="label-sm" fill="#8a4b16">SHALLOW MODULE · avoid</text>
+      <rect x="540" y="70" width="300" height="60" rx="10" fill="#f6ece0" stroke="#8a4b16" stroke-width="1.5"/>
+      <rect x="540" y="40" width="300" height="26" rx="6" fill="#ffffff" stroke="#8a4b16" stroke-width="1.5"/>
+      <text x="690" y="58" text-anchor="middle" class="label-mono" fill="#8a4b16">everything exposed</text>
+      <text x="690" y="106" text-anchor="middle" class="label-md ink">thin — little hidden</text>
+      <text x="690" y="200" text-anchor="middle" class="label-body ink-soft">you must understand it all</text>
+      <text x="690" y="222" text-anchor="middle" class="label-body ink-soft">to use any of it</text>
+      <rect class="diagram-hotspot-hit" tabindex="0" role="button" aria-label="Explain deep modules" data-explainer="architecture-deep" x="60" y="40" width="300" height="220" rx="10"/>
+      <rect class="diagram-hotspot-hit" tabindex="0" role="button" aria-label="Explain shallow modules" data-explainer="architecture-shallow" x="540" y="40" width="300" height="220" rx="10"/>
+    </svg>
+    <p class="cap">Think of a car's accelerator: one pedal (a narrow <button class="term" type="button" data-def="interface">interface</button>) hiding a sophisticated engine. That's a deep module.</p>
+    </div>
+    <div class="diagram-actions" aria-label="Explain module depth">
+      <button type="button" data-explainer="architecture-deep">Deep module</button>
+      <button type="button" data-explainer="architecture-shallow">Shallow module</button>
+    </div>
+    <div class="explainer-output" data-explainer-output="architecture" aria-live="polite"></div>
+
+    <p>A handful of structural ideas compound over the life of a project:</p>
+    <ul>
+      <li><strong class="lead-in">Deep over shallow modules.</strong> A <button class="term" type="button" data-def="module">module</button> with a small, simple way to use it — hiding the complexity inside — is easier for both you and the agent to use without breaking.</li>
+      <li><strong class="lead-in">One <button class="term" type="button" data-def="sourceoftruth">source of truth</button>.</strong> Each piece of data lives in exactly one canonical place; everything else reads or derives from it. This kills "these two screens disagree" bugs.</li>
+      <li><strong class="lead-in"><button class="term" type="button" data-def="adapter">Adapters</button> at the edges.</strong> Screens and outside connections just translate to and from that canonical form. The real rules stay in one place, easy to find and change.</li>
+    </ul>
+
+    <p>
+      <span class="skill">/improve-codebase-architecture</span> is the scheduled
+      tune-up — run every few slices, or any time the code "feels heavy". It
+      looks for shallow modules to deepen and tangles to pull apart, and flags
+      anything that contradicts an existing ADR so you can decide deliberately.
+      For a high-stakes structural call, <span class="skill">/codex</span> can
+      fetch a second opinion from a different AI model.
+    </p>
+    <p class="go-deeper">
+      <span class="gd-label">Go deeper</span>
+      <a href="10-process/06-architecture.md">10-process/06-architecture.md</a> ·
+      <a href="00-foundations.html">foundations, §2</a>
+    </p>
+  </section>
+
+  <!-- ====================================================== -->
+  <!-- 7. VERIFY IN PROPORTION                                -->
+  <!-- ====================================================== -->
+  <section id="verify">
+    <h2><span class="num">07</span>Verify in proportion to the risk</h2>
+    <p class="section-lede">
+      Not every change deserves the same scrutiny. A typo needs a glance; a
+      change to how money or personal data is handled needs tests, a security
+      review, and a careful rollout. The
+      <button class="term" type="button" data-def="ladder">verification ladder</button> spells out the minimum for each.
+    </p>
+
+    <div class="diagram-wrap">
+    <svg viewBox="0 0 900 300" class="diagram" role="img" aria-label="A rising staircase. As the risk of a change increases, the verification required climbs: from eyeballing a typo, to unit tests for a refactor, to test-first development for new behaviour, to a browser QA run across modules, to a full security review and a monitored rollout for changes touching money or user data.">
+      <defs>
+        <marker id="arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="#2a6e4f"/>
+        </marker>
+      </defs>
+      <!-- steps -->
+      <rect x="30"  y="232" width="150" height="40" rx="5" fill="#e6edf6" stroke="#1e4e8c" stroke-width="1.1"/>
+      <text x="105" y="257" text-anchor="middle" class="label-body ink">eyeball it</text>
+      <rect x="200" y="190" width="150" height="82" rx="5" fill="#e6edf6" stroke="#1e4e8c" stroke-width="1.1"/>
+      <text x="275" y="215" text-anchor="middle" class="label-body ink">unit tests</text>
+      <rect x="370" y="148" width="150" height="124" rx="5" fill="#e3efe7" stroke="#2a6e4f" stroke-width="1.1"/>
+      <text x="445" y="173" text-anchor="middle" class="label-body ink">test-first (TDD)</text>
+      <rect x="540" y="106" width="150" height="166" rx="5" fill="#e3efe7" stroke="#2a6e4f" stroke-width="1.1"/>
+      <text x="615" y="131" text-anchor="middle" class="label-body ink">+ browser QA</text>
+      <rect x="710" y="52"  width="160" height="220" rx="5" fill="#f6ece0" stroke="#8a4b16" stroke-width="1.3"/>
+      <text x="790" y="77" text-anchor="middle" class="label-body ink">+ security review</text>
+      <text x="790" y="97" text-anchor="middle" class="label-body ink">+ watched rollout</text>
+
+      <text x="30"  y="294" class="label-sm muted">LOW RISK</text>
+      <text x="800" y="294" text-anchor="end" class="label-sm" fill="#8a4b16">HIGH RISK</text>
+      <line x1="30" y1="38" x2="120" y2="38" stroke="#2a6e4f" stroke-width="1.5" marker-end="url(#arr2)"/>
+      <text x="135" y="42" class="label-mono" fill="#2a6e4f">more verification →</text>
+      <rect class="diagram-hotspot-hit" tabindex="0" role="button" aria-label="Explain eyeball verification" data-explainer="verify-eyeball" x="30" y="232" width="150" height="40" rx="5"/>
+      <rect class="diagram-hotspot-hit" tabindex="0" role="button" aria-label="Explain unit test verification" data-explainer="verify-unit" x="200" y="190" width="150" height="82" rx="5"/>
+      <rect class="diagram-hotspot-hit" tabindex="0" role="button" aria-label="Explain TDD verification" data-explainer="verify-tdd" x="370" y="148" width="150" height="124" rx="5"/>
+      <rect class="diagram-hotspot-hit" tabindex="0" role="button" aria-label="Explain browser QA verification" data-explainer="verify-qa" x="540" y="106" width="150" height="166" rx="5"/>
+      <rect class="diagram-hotspot-hit" tabindex="0" role="button" aria-label="Explain security and rollout verification" data-explainer="verify-security" x="710" y="52" width="160" height="220" rx="5"/>
+    </svg>
+    <p class="cap">"When in doubt, climb the ladder. Over-verifying a small change costs minutes; under-verifying a big one costs weeks."</p>
+    </div>
+    <div class="diagram-actions" aria-label="Explain verification ladder">
+      <button type="button" data-explainer="verify-eyeball">Eyeball</button>
+      <button type="button" data-explainer="verify-unit">Unit tests</button>
+      <button type="button" data-explainer="verify-tdd">TDD</button>
+      <button type="button" data-explainer="verify-qa">Browser QA</button>
+      <button type="button" data-explainer="verify-security">Security + rollout</button>
+    </div>
+    <div class="explainer-output" data-explainer-output="verify" aria-live="polite"></div>
+
+    <p>The skills that do the checking:</p>
+    <ul class="skill-list">
+      <li>
+        <div class="head"><span class="skill">/qa</span> <span class="role">the QA lead</span></div>
+        Opens a real browser and uses the app like a person would, catching
+        things the automated tests miss — then writes a
+        <button class="term" type="button" data-def="regression">regression test</button> so that
+        particular bug can never quietly come back.
+      </li>
+      <li>
+        <div class="head"><span class="skill">/review</span> <span class="role">the staff engineer</span></div>
+        A careful read for bugs that pass the automated checks but would blow up
+        in real production use.
+      </li>
+      <li>
+        <div class="head"><span class="skill">/cso</span> <span class="role">the security officer</span></div>
+        A security review. The rule is absolute: run it on anything touching
+        login, payments, personal data, or public-facing endpoints — no
+        exceptions.
+      </li>
+      <li>
+        <div class="head"><span class="skill">/design-review · /devex-review</span> <span class="role">the specialists</span></div>
+        For user-facing screens and for developer-facing tools (APIs, command-line
+        tools) respectively.
+      </li>
+      <li>
+        <div class="head"><span class="skill">/diagnosing-bugs</span> <span class="role">the methodical debugger</span></div>
+        When something breaks: reproduce it first, write three-to-five ranked
+        guesses <em>before</em> poking at anything, change one thing at a time,
+        and fix it with a regression test. Its iron law is "no fixes without
+        investigation" — no guessing-and-hoping.
+      </li>
+    </ul>
+    <p class="go-deeper">
+      <span class="gd-label">Go deeper</span>
+      <a href="10-process/08-review.md">08-review.md</a> ·
+      <a href="10-process/09-qa.md">09-qa.md</a> ·
+      <a href="10-process/11-debug.md">11-debug.md</a> ·
+      <a href="00-foundations.html">the verification ladder in foundations, §4</a>
+    </p>
+  </section>
+
+  <!-- ====================================================== -->
+  <!-- 8. SHIP, THEN LEARN                                    -->
+  <!-- ====================================================== -->
+  <section id="ship-learn">
+    <h2><span class="num">08</span>Ship, then learn from it</h2>
+    <p class="section-lede">
+      The last two stages get the work out the door — and then make the next
+      cycle a little better than this one.
+    </p>
+
+    <ul class="skill-list">
+      <li>
+        <div class="head"><span class="skill">/ship</span> <span class="role">the release engineer</span></div>
+        Runs the final checks and opens the <button class="term" type="button" data-def="pr">pull request</button> for your review.
+        It never merges its own work — you stay accountable for what goes live.
+        (The full hand-off is the subject of §50.)
+      </li>
+      <li>
+        <div class="head"><span class="skill">/land-and-deploy · /canary · /benchmark</span> <span class="role">getting it live, safely</span></div>
+        Merge, watch the deployment, keep an eye on it in production
+        (<button class="term" type="button" data-def="canary">canary</button>), and measure speed so a slowdown would be
+        noticed rather than discovered by users.
+      </li>
+      <li>
+        <div class="head"><span class="skill">/retro · /learn · /document-release</span> <span class="role">closing the loop</span></div>
+        A short look back at what worked and what didn't, captured into the
+        agent's memory (<button class="term" type="button" data-def="gbrain">GBrain</button>) so it improves over time. This is also how
+        a lesson can graduate into the playbook itself.
+      </li>
+    </ul>
+
+    <div class="callout human-note">
+      <strong>Tidy on the way out.</strong> Shipping also triggers the
+      "doc-close": lasting decisions and vocabulary get promoted into the
+      permanent docs, and finished planning notes are archived. That's what keeps
+      the <em>next</em> session starting from a clean, current picture rather than
+      a pile of stale plans.
+    </div>
+    <p class="go-deeper">
+      <span class="gd-label">Go deeper</span>
+      <a href="10-process/10-ship-and-deploy.md">10-ship-and-deploy.md</a> ·
+      <a href="10-process/12-retro-and-learn.md">12-retro-and-learn.md</a> ·
+      <a href="30-document-lifecycle.html">the document lifecycle</a>
+    </p>
+  </section>
+
+  <!-- ====================================================== -->
+  <!-- 9. DESIGNING FOR THE AGENT                             -->
+  <!-- ====================================================== -->
+  <section id="agent-surface">
+    <h2><span class="num">09</span>Designing for the agent</h2>
+    <p class="section-lede">
+      The frontend track disciplines what your <em>users</em> see. A newer
+      principle disciplines what the <em>agent</em> sees — because the agent is
+      a reader too, and a slow or cluttered surface costs it time and attention
+      the same way a cluttered screen costs a person.
+    </p>
+
+    <p>
+      An agent takes in everything through a narrow window, and it pays — in
+      time, and in how much it can hold in mind at once — for every extra word
+      it has to wade through and every extra round-trip it has to make just to
+      learn what to do next. So V0.2 added one rule to the foundations:
+      <strong class="lead-in">treat the agent's attention as a first-class
+      design constraint</strong>, the way the frontend track treats your visual
+      vocabulary. If a tool, a file, or a document forces the agent to read a
+      wall of text, guess at the next step, or make a second request just to
+      find out "how many?" or "did it pass?", that is a defect — even when it
+      works perfectly for a human.
+    </p>
+
+    <div class="callout">
+      <strong>Where this touches your own product.</strong> The moment your
+      product exposes something an agent will use — a command-line tool, an
+      API, an integration — the same discipline applies to it: short, structured
+      output; the few fields that matter shown by default; totals already added
+      up; a clear "nothing here" instead of silence; and a hint about what to do
+      next. The full ten-point checklist lives in the foundations, applied once
+      when the interface is designed and again when it is reviewed.
+    </div>
+
+    <p>
+      The playbook now holds itself to that same standard — which is most of
+      what changed between V0.1 and V0.2, under the hood, without altering the
+      thirteen stages themselves:
+    </p>
+
+    <ul>
+      <li><strong class="lead-in">A one-page digest.</strong> The agent starts
+      from a compact <code>AGENT-DIGEST.md</code> — the whole map of the
+      playbook in one short read — instead of thousands of lines of prose before
+      it can act. The long guides became reference it opens only when the digest
+      points it there.</li>
+      <li><strong class="lead-in">Signposts at every step.</strong> Each stage
+      now ends with a <em>Next:</em> block naming where to go based on the
+      outcome, so the agent walks the process forward instead of returning to a
+      central map after every step.</li>
+      <li><strong class="lead-in">A status line that is already worked out.</strong>
+      The project's state file carries a pre-computed summary — what's overdue,
+      which features sit at which stage — so each session reads one answer
+      rather than re-deriving it from two files every time.</li>
+    </ul>
+
+    <div class="callout human-note">
+      <strong>What this means for you: nothing changes.</strong> You still type
+      the same plain-English requests from §50. These are improvements to how the
+      agent reads its <em>own</em> instructions — quietly making each session
+      faster and cheaper, and less likely to lose the thread.
+    </div>
+
+    <p class="go-deeper">
+      <span class="gd-label">Go deeper</span>
+      <a href="00-foundations.md">§00 · Foundations — "Design the agent-facing surface"</a> ·
+      <a href="https://axi.md/">the AXI principles</a>
+    </p>
+  </section>
+
+  <!-- ====================================================== -->
+  <!-- 10. TWO TOOLKITS                                       -->
+  <!-- ====================================================== -->
+  <section id="toolkits">
+    <h2><span class="num">10</span>Two toolkits, working together</h2>
+    <p class="section-lede">
+      The skills the agent uses come from two open-source collections. You never
+      have to choose between them — the playbook calls the right one at the right
+      moment — but it helps to know why there are two.
+    </p>
+
+    <div class="split">
+      <div class="card matt">
+        <h4>Matt Pocock's skills</h4>
+        <p class="name">The fundamentals</p>
+        <ul>
+          <li>Small, sharp, single-purpose tools.</li>
+          <li>Cover <em>how to build correctly</em>: grilling, slicing, test-first, deep modules, disciplined debugging.</li>
+          <li>You keep control of the process.</li>
+        </ul>
+      </div>
+      <div class="card gstack">
+        <h4>gstack (Garry Tan)</h4>
+        <p class="name">The virtual team</p>
+        <ul>
+          <li>Each skill plays a role: founder, designer, QA lead, security officer, release engineer.</li>
+          <li>Cover the <em>whole loop</em> around the build: post-code review, security, deploy, retro.</li>
+          <li>Runs as a sprint: Think → Plan → Build → Review → Test → Ship → Reflect.</li>
+        </ul>
+      </div>
+    </div>
+
+    <p>
+      They're complementary, not rivals. Matt's tools are the
+      <strong class="lead-in">build</strong>; gstack is the
+      <strong class="lead-in">loop around the build</strong>, filling in the
+      parts Matt deliberately leaves out. This playbook is the stitching that
+      decides which to reach for at each stage.
+    </p>
+    <p class="go-deeper">
+      <span class="gd-label">Go deeper</span>
+      <a href="10-process/README.md">the maintained combined stage map</a> ·
+      <a href="https://github.com/mattpocock/skills">github.com/mattpocock/skills</a> ·
+      <a href="https://github.com/garrytan/gstack">github.com/garrytan/gstack</a>
+    </p>
+  </section>
+
+  <!-- ====================================================== -->
+  <!-- 11. EVIDENCE AND PROVENANCE                            -->
+  <!-- ====================================================== -->
+  <section id="evidence">
+    <h2><span class="num">11</span>Evidence and provenance</h2>
+    <p class="section-lede">
+      The playbook is an adaptation layer. It keeps the original ideas visible
+      while turning them into a practical process a human project owner can run
+      with an agent.
+    </p>
+
+    <div class="evidence-grid">
+      <article class="evidence-card">
+        <span class="label">Source</span>
+        <h3>Matt Pocock's skills</h3>
+        <p>
+          Matt's skills frame agent work as small, composable behaviours:
+          grill the plan, slice vertically, build test-first, debug by
+          investigation, and improve architecture deliberately.
+        </p>
+        <p class="source-link">
+          <a href="https://www.mattpocock.com/">mattpocock.com</a> ·
+          <a href="https://github.com/mattpocock/skills">github.com/mattpocock/skills</a> ·
+          <a href="https://www.skills.sh/mattpocock/skills">skills.sh</a>
+        </p>
+      </article>
+
+      <article class="evidence-card">
+        <span class="label">Source</span>
+        <h3>Garry Tan's GStack</h3>
+        <p>
+          GStack adds the wider product and delivery loop: founder review,
+          design review, QA, security, deploy, canary monitoring, benchmark,
+          retro, and learning.
+        </p>
+        <p class="source-link">
+          <a href="https://www.ycombinator.com/people/garry-tan">Garry Tan</a> ·
+          <a href="https://gstack.lol/">gstack.lol</a> ·
+          <a href="https://github.com/garrytan/gstack">github.com/garrytan/gstack</a>
+        </p>
+      </article>
+
+      <article class="evidence-card">
+        <span class="label">Documentation shape</span>
+        <h3>Diataxis separation</h3>
+        <p>
+          This page explains why the process works; §50 tells you what to type;
+          the Markdown files remain reference material for agents and maintainers.
+          That separation keeps each document useful for the job it serves.
+        </p>
+        <p class="source-link">
+          <a href="https://diataxis.fr/">diataxis.fr</a>
+        </p>
+      </article>
+    </div>
+  </section>
+
+  <!-- ====================================================== -->
+  <!-- 12. WHERE TO GO DEEPER                                 -->
+  <!-- ====================================================== -->
+  <section id="further">
+    <h2><span class="num">12</span>Where to go deeper</h2>
+    <p class="section-lede">
+      This page is the short version. When you want the full reasoning behind a
+      stage, follow the trail:
+    </p>
+    <ul>
+      <li><strong class="lead-in">The driving guide.</strong> <a href="50-how-to-write-code-with-ai.html">§50 · How To Write Code With AI</a> — what to actually type, stage by stage.</li>
+      <li><strong class="lead-in">The principles.</strong> <a href="00-foundations.html">§00 · Foundations</a> — the rules every stage assumes.</li>
+      <li><strong class="lead-in">The full loop.</strong> <a href="10-process/index.html">§10 · The 13-stage process map</a>, with one file per stage.</li>
+      <li><strong class="lead-in">UI work.</strong> <a href="20-frontend-track.md">§20 · Frontend track</a> — the extra discipline for anything with a screen.</li>
+      <li><strong class="lead-in">Document hygiene.</strong> <a href="30-document-lifecycle.html">§30 · Document lifecycle</a>.</li>
+      <li><strong class="lead-in">The two toolkits in detail.</strong> <a href="10-process/README.md">The maintained combined stage map</a> names the current Matt and gstack route at every stage; <a href="10-process/07-implementation-tdd.md">the TDD stage</a> records the v1.1 red → green contract.</li>
+    </ul>
+  </section>
+
+  <footer class="doc-foot">
+    <div>AI Engineering Playbook V0.2 · §60 · The Theory Behind The Playbook</div>
+    <div>Maintainer: Playbook Maintainer · Last verified 2026-06-12 · playbook V0.2.3</div>
+  </footer>
+
+</main>
+
+<script type="application/json" id="playbook-explainers">
+{
+  "failure-wrong": {
+    "group": "why",
+    "title": "Built the wrong thing",
+    "body": "Fast code is wasteful when the request is still vague. Alignment forces the goal, audience, vocabulary, and done-state into the open before implementation starts.",
+    "action": "Start with office-hours, CEO review, or grill-with-docs before a non-trivial feature."
+  },
+  "failure-language": {
+    "group": "why",
+    "title": "Different words, same thing",
+    "body": "Jargon drift compounds because code, tests, docs, and UI labels start describing the same domain in competing ways. CONTEXT.md keeps one shared vocabulary.",
+    "action": "Promote stable domain terms into CONTEXT.md as alignment settles."
+  },
+  "failure-working": {
+    "group": "why",
+    "title": "Looks plausible, breaks in real use",
+    "body": "AI-authored code can read well while missing an edge case or real browser behaviour. TDD, QA, and regression tests make correctness observable.",
+    "action": "Use TDD for non-trivial behaviour, then run the browser smoke floor for UI work."
+  },
+  "failure-structure": {
+    "group": "why",
+    "title": "Turns into a ball of mud",
+    "body": "Agents can add code faster than a human can feel architecture drift. Scheduled architecture review keeps modules deep, data canonical, and changes local.",
+    "action": "Run architecture review every few slices or when the codebase feels heavy."
+  },
+  "slice-horizontal": {
+    "group": "slices",
+    "title": "Horizontal layering is the trap",
+    "body": "Building every screen, then every API, then every data layer gives you no working feature until the end. Tests describe imagined behaviour because nothing works end-to-end yet.",
+    "action": "Reject slices named after layers, such as build schema or create screens."
+  },
+  "slice-vertical": {
+    "group": "slices",
+    "title": "Vertical slices expose reality early",
+    "body": "A vertical slice cuts through UI, logic, data, and tests for one narrow capability. You get a real demo quickly and can redirect without losing much work.",
+    "action": "Ask for one demoable outcome: user can do X."
+  },
+  "architecture-deep": {
+    "group": "architecture",
+    "title": "Deep modules are easy to use",
+    "body": "A deep module gives the rest of the app a small, clear interface while hiding the messy capability inside. That makes it harder for humans and agents to misuse.",
+    "action": "Look for repeated low-level decisions and move them behind one stable interface."
+  },
+  "architecture-shallow": {
+    "group": "architecture",
+    "title": "Shallow modules leak work",
+    "body": "A shallow module exposes its internals, so every caller must understand too much. The cost shows up later as fragile changes and duplicated rules.",
+    "action": "Use architecture review when callers need to know implementation details."
+  },
+  "verify-eyeball": {
+    "group": "verify",
+    "title": "Eyeball tiny changes",
+    "body": "A typo or comment edit does not need the full test suite. The process should stay proportionate so verification remains useful instead of ceremonial.",
+    "action": "Use for text-only or formatting-only changes with no behavioural surface."
+  },
+  "verify-unit": {
+    "group": "verify",
+    "title": "Local refactors need focused tests",
+    "body": "A single-file refactor should preserve behaviour. Type-checking and relevant unit tests are enough when the blast radius is genuinely local.",
+    "action": "Use when the public behaviour is unchanged and the affected area is narrow."
+  },
+  "verify-tdd": {
+    "group": "verify",
+    "title": "New behaviour deserves TDD",
+    "body": "Writing the test first pins down what should happen before the implementation can bias the test. That matters most for new behaviour.",
+    "action": "Use for non-trivial features and bug fixes."
+  },
+  "verify-qa": {
+    "group": "verify",
+    "title": "Cross-module and UI work needs browser QA",
+    "body": "Unit tests do not prove the real workflow works in a browser. QA checks the page at desktop, tablet, and mobile widths and turns bugs into regression tests.",
+    "action": "Use after UI-touching slices and before ship."
+  },
+  "verify-security": {
+    "group": "verify",
+    "title": "High-risk work climbs the ladder",
+    "body": "Auth, payments, personal data, public endpoints, data migrations, and production deploys need security review, backup or rollback thinking, and watched rollout.",
+    "action": "Use when the cost of being wrong is user harm, data loss, or production outage."
+  }
+}
+</script>
+
+<!-- Shared popover, positioned by JS next to whichever term was clicked -->
+<div class="term-popover" id="term-popover" role="dialog" aria-modal="false" aria-labelledby="pop-title" aria-live="polite">
+  <button class="pop-close" type="button" aria-label="Close definition">&times;</button>
+  <div class="pop-title" id="pop-title"></div>
+  <p class="pop-def" id="pop-def"></p>
+</div>
+<script src="assets/playbook-glossary.js"></script>
+<script src="assets/playbook-docs.js"></script>
+</body>
+</html>

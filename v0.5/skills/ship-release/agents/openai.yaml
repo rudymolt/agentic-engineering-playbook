@@ -1,0 +1,4 @@
+interface:
+  display_name: "Ship Release"
+  short_description: "Publish a GitHub Release and verify branch, tag, and release state."
+  default_prompt: "Use $ship-release to create a GitHub Release and verify the branch, tag, pushed tag, and release all match."

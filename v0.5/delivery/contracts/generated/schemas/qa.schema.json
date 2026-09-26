@@ -1,0 +1,47 @@
+{
+  "$id": "https://playbook.local/delivery-pilot/qa/v1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "candidate": {
+      "type": "object"
+    },
+    "environment": {
+      "type": "string"
+    },
+    "finding_ids": {
+      "type": "array"
+    },
+    "flows": {
+      "type": "array"
+    },
+    "issued_at": {
+      "type": "string"
+    },
+    "mission_id": {
+      "type": "string"
+    },
+    "qa_id": {
+      "type": "string"
+    },
+    "results": {
+      "type": "array"
+    },
+    "schema_version": {
+      "const": 1
+    }
+  },
+  "required": [
+    "schema_version",
+    "qa_id",
+    "mission_id",
+    "candidate",
+    "environment",
+    "flows",
+    "results",
+    "finding_ids",
+    "issued_at"
+  ],
+  "title": "qa/v1",
+  "type": "object"
+}

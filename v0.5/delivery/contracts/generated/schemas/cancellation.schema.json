@@ -1,0 +1,39 @@
+{
+  "$id": "https://playbook.local/delivery-pilot/cancellation/v1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "actor_id": {
+      "type": "string"
+    },
+    "authorized_at": {
+      "type": "string"
+    },
+    "cancellation_id": {
+      "type": "string"
+    },
+    "mission_id": {
+      "type": "string"
+    },
+    "schema_version": {
+      "const": 1
+    },
+    "shipped_code_disposition": {
+      "type": "string"
+    },
+    "source_event_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "cancellation_id",
+    "mission_id",
+    "actor_id",
+    "source_event_id",
+    "shipped_code_disposition",
+    "authorized_at"
+  ],
+  "title": "cancellation/v1",
+  "type": "object"
+}

@@ -1,0 +1,4 @@
+interface:
+  display_name: "AI Playbook Design Review"
+  short_description: "Run report-only UI verification safely"
+  default_prompt: "Use $ai-playbook-design-review to verify this UI change without editing or committing product code."

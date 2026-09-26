@@ -1,0 +1,4 @@
+interface:
+  display_name: "Upgrade AI Playbook Project"
+  short_description: "Bring a project up to the current playbook version"
+  default_prompt: "Use $ai-playbook-upgrade-project to upgrade this project to the current AI engineering playbook version through the three safety tiers."

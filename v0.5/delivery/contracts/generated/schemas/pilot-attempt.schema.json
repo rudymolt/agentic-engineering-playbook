@@ -1,0 +1,120 @@
+{
+  "$id": "https://playbook.local/delivery-pilot/pilot-attempt/v3",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "rollout_milestone": {
+            "const": "K4.1"
+          }
+        },
+        "required": [
+          "rollout_milestone"
+        ]
+      },
+      "then": {
+        "properties": {
+          "tier": {
+            "const": "A"
+          }
+        }
+      }
+    }
+  ],
+  "dependentRequired": {
+    "authority_class": [
+      "rollout_milestone",
+      "maximum_action"
+    ],
+    "maximum_action": [
+      "rollout_milestone",
+      "authority_class"
+    ],
+    "rollout_milestone": [
+      "authority_class",
+      "maximum_action"
+    ]
+  },
+  "properties": {
+    "attempt_id": {
+      "type": "string"
+    },
+    "authority_class": {
+      "enum": [
+        "process-attested-fresh-merge"
+      ]
+    },
+    "envelope_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "feature": {
+      "type": "string"
+    },
+    "maximum_action": {
+      "enum": [
+        "merge"
+      ]
+    },
+    "mission_id": {
+      "type": "string"
+    },
+    "observation_contract_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "observation_contract_ref": {
+      "type": "string"
+    },
+    "project": {
+      "type": "string"
+    },
+    "registered_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "rollout_milestone": {
+      "enum": [
+        "K4.1"
+      ]
+    },
+    "schema_version": {
+      "const": 3
+    },
+    "test_manifest_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "tier": {
+      "enum": [
+        "A",
+        "B",
+        "C"
+      ]
+    },
+    "venue": {
+      "enum": [
+        "local",
+        "cloud"
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "attempt_id",
+    "mission_id",
+    "feature",
+    "project",
+    "tier",
+    "venue",
+    "envelope_digest",
+    "observation_contract_ref",
+    "observation_contract_digest",
+    "test_manifest_digest",
+    "registered_at"
+  ],
+  "title": "pilot-attempt/v3",
+  "type": "object"
+}

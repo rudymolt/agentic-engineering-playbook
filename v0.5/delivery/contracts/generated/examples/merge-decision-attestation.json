@@ -1,0 +1,9 @@
+{
+  "attestation_id": "merge-decision-attestation-1",
+  "attested_at": "2026-08-08T00:01:00Z",
+  "decision_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "readback_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "schema_version": 1,
+  "session_id": "session-1",
+  "source_event_id": "github:issue-comment:owner/repo:1:1"
+}

@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vertical Slice Checker · AI Engineering Playbook V0.2</title>
+<link rel="stylesheet" href="../assets/playbook-docs.css">
+</head>
+<body class="playbook-doc">
+<nav class="site-nav" aria-label="Playbook guides">
+  <a class="brand" href="../index.html">AI Engineering Playbook</a>
+  <div class="links">
+    <a href="../50-how-to-write-code-with-ai.html">How to drive the agent</a>
+    <a href="../60-the-theory-behind-the-playbook.html">Theory</a>
+    <a href="../00-foundations.html">Foundations</a>
+    <a href="index.html">Process map</a>
+    <a href="../30-document-lifecycle.html">Docs lifecycle</a>
+  </div>
+</nav>
+
+<main class="page">
+  <header class="doc-head">
+    <div class="eyebrow">AI Engineering Playbook · §10.04</div>
+    <h1>Vertical Slice Checker</h1>
+    <p class="lede">
+      A good slice creates one demoable outcome and cuts through every relevant
+      layer. It is small enough to build, verify, commit, and review before the
+      agent moves on.
+    </p>
+    <div class="meta">
+      <span><strong>Source reference</strong> · <a href="04-breakdown.md">04-breakdown.md</a></span>
+    </div>
+  </header>
+
+  <section class="interactive-panel" data-checklist>
+    <h2>Does This Slice Pass?</h2>
+    <div class="checklist">
+      <label><input type="checkbox"> It has one demoable outcome phrased as "user can do X".</label>
+      <label><input type="checkbox"> It cuts through every needed layer: UI, logic, data, and tests.</label>
+      <label><input type="checkbox"> It is independently grabbable by another agent.</label>
+      <label><input type="checkbox"> It is tagged AFK or HITL.</label>
+      <label><input type="checkbox"> It has a dependency line: depends on nothing or depends on #NNN.</label>
+      <label><input type="checkbox"> It is small enough to finish in one focused session.</label>
+    </div>
+    <div class="checklist-status" data-checklist-output></div>
+  </section>
+
+  <section class="interactive-panel" data-choice-panel>
+    <h2>Common Wrong Cuts</h2>
+    <div class="choice-grid">
+      <button type="button" data-choice data-choice-title="Schema-only slice" data-choice-body="This is horizontal. Recut it so the schema supports one visible capability with tests.">Build schema</button>
+      <button type="button" data-choice data-choice-title="All screens first" data-choice-body="This is horizontal. Pick one workflow and make it work end-to-end instead.">Build all screens</button>
+      <button type="button" data-choice data-choice-title="Huge feature slice" data-choice-body="If the test list keeps growing after a few cycles, return to breakdown and split the slice.">Do everything</button>
+      <button type="button" data-choice data-choice-title="Good vertical slice" data-choice-body="Example: user can add an athlete and see that athlete in the roster, with persistence and tests.">User can do X</button>
+    </div>
+    <div class="choice-output" data-choice-output>Choose an example.</div>
+  </section>
+</main>
+
+<script src="../assets/playbook-glossary.js"></script>
+<script src="../assets/playbook-docs.js"></script>
+</body>
+</html>

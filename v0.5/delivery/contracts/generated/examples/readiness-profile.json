@@ -1,0 +1,79 @@
+{
+  "browser_review": {
+    "evidence": [
+      "assertions",
+      "screenshots",
+      "console",
+      "failed-network",
+      "trace"
+    ],
+    "journeys_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+    "journeys_ref": "planning/cloud-smoke-journeys.yml"
+  },
+  "cleanup": "scripts/conductor/cleanup-runtime.sh",
+  "cleanup_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "cloud": {
+    "build_epoch_name": "PLAYBOOK_CLOUD_BUILD_EPOCH",
+    "expected_build_epoch": "build-1",
+    "expected_setup_epoch": "setup-1",
+    "os_family": "amazon-linux-2023",
+    "repository_setup_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+    "repository_setup_ref": "scripts/conductor/setup.sh",
+    "required_environment": [
+      {
+        "kind": "secret",
+        "name": "DATABASE_URL",
+        "probe": "presence-only"
+      }
+    ],
+    "setup_epoch_name": "PLAYBOOK_CLOUD_SETUP_EPOCH",
+    "tool_probes": [
+      {
+        "command": "node --version",
+        "name": "node",
+        "version": ">=22 <23"
+      }
+    ]
+  },
+  "data": {
+    "fixture_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+    "migrate": "npm run migrate",
+    "reset": "npm run reset",
+    "seed": "npm run seed",
+    "test_accounts_ref": "secret-ref:cloud-qa-accounts"
+  },
+  "local_only_dependencies": [],
+  "preview": {
+    "health_url": "http://127.0.0.1:3000/health",
+    "human_forward_sandbox_port": 3000,
+    "review_route": "same-workspace-headless"
+  },
+  "profile_id": "project-cloud-v1",
+  "project": "project",
+  "recovery": {
+    "process_loss_probe": "scripts/conductor/drill-process-loss.sh",
+    "process_loss_probe_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+    "resume": "scripts/conductor/resume-runtime.sh",
+    "resume_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "schema_version": 1,
+  "services": [
+    {
+      "healthcheck": "http://127.0.0.1:3000/health",
+      "id": "web",
+      "log_paths": [
+        ".context/runtime/web.log"
+      ],
+      "port": 3000,
+      "restart": "npm start",
+      "start": "npm start",
+      "stop": "npm stop"
+    }
+  ],
+  "verification": {
+    "commands": [
+      "npm test",
+      "npm run build"
+    ]
+  }
+}

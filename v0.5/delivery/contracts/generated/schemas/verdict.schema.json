@@ -1,0 +1,66 @@
+{
+  "$id": "https://playbook.local/delivery-pilot/verdict/v1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "candidate": {
+      "type": "object"
+    },
+    "envelope_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "evidence_plan_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "evidence_refs": {
+      "type": "array"
+    },
+    "finding_refs": {
+      "type": "array"
+    },
+    "host_proof": {},
+    "issued_at": {
+      "type": "string"
+    },
+    "launch_id": {
+      "type": "string"
+    },
+    "mission_id": {
+      "type": "string"
+    },
+    "outcome": {
+      "enum": [
+        "pass",
+        "fail",
+        "risk"
+      ]
+    },
+    "schema_version": {
+      "const": 1
+    },
+    "scope": {
+      "type": "string"
+    },
+    "verdict_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "verdict_id",
+    "launch_id",
+    "mission_id",
+    "scope",
+    "outcome",
+    "candidate",
+    "envelope_digest",
+    "evidence_plan_digest",
+    "finding_refs",
+    "evidence_refs",
+    "issued_at"
+  ],
+  "title": "verdict/v1",
+  "type": "object"
+}

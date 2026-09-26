@@ -1,0 +1,4 @@
+interface:
+  display_name: "Verification Harness"
+  short_description: "Generate and prove a project-owned verification route"
+  default_prompt: "Use $ai-playbook-verification-harness to propose and prove a project-owned verification harness."

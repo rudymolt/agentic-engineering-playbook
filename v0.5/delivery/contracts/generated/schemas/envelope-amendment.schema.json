@@ -1,0 +1,46 @@
+{
+  "$id": "https://playbook.local/delivery-pilot/envelope-amendment/v1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "allowed_paths": {
+      "type": "array"
+    },
+    "amendment_id": {
+      "type": "string"
+    },
+    "base_envelope_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "patch": {
+      "type": "array"
+    },
+    "patch_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "result_envelope_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": 1
+    },
+    "source_event_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "amendment_id",
+    "base_envelope_digest",
+    "allowed_paths",
+    "patch",
+    "patch_digest",
+    "result_envelope_digest",
+    "source_event_id"
+  ],
+  "title": "envelope-amendment/v1",
+  "type": "object"
+}

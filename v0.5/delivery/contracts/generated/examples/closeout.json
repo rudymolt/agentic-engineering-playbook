@@ -1,0 +1,12 @@
+{
+  "allowed_paths": [
+    "docs/"
+  ],
+  "closeout_id": "closeout-1",
+  "expected_terminal_receipt_id": "terminal-1",
+  "feature_merge_sha": "sha",
+  "mission_id": "delivery-example",
+  "report_ref": "docs/closeout.md",
+  "retro_ref": "docs/retro.md",
+  "schema_version": 1
+}

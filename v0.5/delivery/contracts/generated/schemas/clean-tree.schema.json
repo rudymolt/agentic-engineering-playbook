@@ -1,0 +1,47 @@
+{
+  "$id": "https://playbook.local/delivery-pilot/clean-tree/v1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "clean": {
+      "type": "boolean"
+    },
+    "head_sha": {
+      "type": "string"
+    },
+    "issued_at": {
+      "type": "string"
+    },
+    "mission_id": {
+      "type": "string"
+    },
+    "receipt_id": {
+      "type": "string"
+    },
+    "schema_version": {
+      "const": 1
+    },
+    "tree_sha": {
+      "type": "string"
+    },
+    "untracked_fingerprint": {
+      "type": "string"
+    },
+    "workspace_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "receipt_id",
+    "mission_id",
+    "workspace_id",
+    "head_sha",
+    "tree_sha",
+    "untracked_fingerprint",
+    "clean",
+    "issued_at"
+  ],
+  "title": "clean-tree/v1",
+  "type": "object"
+}

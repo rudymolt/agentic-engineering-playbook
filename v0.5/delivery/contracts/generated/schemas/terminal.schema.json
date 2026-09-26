@@ -1,0 +1,99 @@
+{
+  "$id": "https://playbook.local/delivery-pilot/terminal/v1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "closeout_merge_sha": {},
+    "envelope_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "event_chain_root_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "evidence_manifest_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "feature_merge_sha": {},
+    "finalization_intent_id": {
+      "type": "string"
+    },
+    "host_proof": {
+      "type": "object"
+    },
+    "issued_at": {
+      "type": "string"
+    },
+    "last_control_snapshot_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "locator_observation": {
+      "type": "object"
+    },
+    "mission_id": {
+      "type": "string"
+    },
+    "operation_root_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "outstanding_action_count": {
+      "type": "integer"
+    },
+    "policy_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "receipt_id": {
+      "type": "string"
+    },
+    "ref_deletion_observation": {
+      "type": "object"
+    },
+    "release_refs": {
+      "type": "array"
+    },
+    "schema_version": {
+      "const": 1
+    },
+    "terminal_outcome": {
+      "enum": [
+        "delivered",
+        "rolled_back",
+        "merged_no_deploy",
+        "pr_ready",
+        "cancelled"
+      ]
+    },
+    "workspace_archive_receipts": {
+      "type": "array"
+    }
+  },
+  "required": [
+    "schema_version",
+    "receipt_id",
+    "mission_id",
+    "terminal_outcome",
+    "envelope_digest",
+    "policy_digest",
+    "feature_merge_sha",
+    "closeout_merge_sha",
+    "release_refs",
+    "event_chain_root_digest",
+    "operation_root_digest",
+    "finalization_intent_id",
+    "last_control_snapshot_digest",
+    "evidence_manifest_digest",
+    "locator_observation",
+    "ref_deletion_observation",
+    "workspace_archive_receipts",
+    "outstanding_action_count",
+    "issued_at",
+    "host_proof"
+  ],
+  "title": "terminal/v1",
+  "type": "object"
+}

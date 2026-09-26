@@ -1,0 +1,6 @@
+interface:
+  display_name: "AI Playbook Deliver"
+  short_description: "Run governed delivery and disabled-by-default K4.1 merge"
+  default_prompt: "Use $ai-playbook-deliver to resume the approved process-attested mission; use K4.1 only with its exact standing-authority receipt."
+policy:
+  allow_implicit_invocation: false

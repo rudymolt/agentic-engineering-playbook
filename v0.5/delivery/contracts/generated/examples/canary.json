@@ -1,0 +1,10 @@
+{
+  "artifact_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "canary_id": "canary-1",
+  "conclusion": "healthy",
+  "observations": [],
+  "policy_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "release_id": "release-1",
+  "schema_version": 1,
+  "window": {}
+}

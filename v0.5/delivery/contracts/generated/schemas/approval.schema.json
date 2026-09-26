@@ -1,0 +1,74 @@
+{
+  "$id": "https://playbook.local/delivery-pilot/approval/v2",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "dependentRequired": {
+    "authority_class": [
+      "rollout_milestone",
+      "maximum_action"
+    ],
+    "maximum_action": [
+      "rollout_milestone",
+      "authority_class"
+    ],
+    "rollout_milestone": [
+      "authority_class",
+      "maximum_action"
+    ]
+  },
+  "properties": {
+    "actor_id": {
+      "type": "string"
+    },
+    "approval_id": {
+      "type": "string"
+    },
+    "approved_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "authority_class": {
+      "enum": [
+        "process-attested-fresh-merge"
+      ]
+    },
+    "channel": {
+      "type": "string"
+    },
+    "envelope_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "envelope_ref": {
+      "type": "string"
+    },
+    "maximum_action": {
+      "enum": [
+        "merge"
+      ]
+    },
+    "rollout_milestone": {
+      "enum": [
+        "K4.1"
+      ]
+    },
+    "schema_version": {
+      "const": 2
+    },
+    "source_event_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "approval_id",
+    "envelope_ref",
+    "envelope_digest",
+    "actor_id",
+    "channel",
+    "source_event_id",
+    "approved_at"
+  ],
+  "title": "approval/v2",
+  "type": "object"
+}

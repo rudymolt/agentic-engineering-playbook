@@ -1,0 +1,79 @@
+{
+  "$id": "https://playbook.local/delivery-pilot/operation/v1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "attempt_count": {
+      "type": "integer"
+    },
+    "controller_generation": {
+      "type": "integer"
+    },
+    "correlation_key": {
+      "type": "string"
+    },
+    "expected_prior_state": {},
+    "external_ref": {},
+    "intent_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "issuer": {
+      "type": "string"
+    },
+    "kind": {
+      "type": "string"
+    },
+    "mission_id": {
+      "type": "string"
+    },
+    "observations": {
+      "type": "array"
+    },
+    "operation_id": {
+      "type": "string"
+    },
+    "schema_version": {
+      "const": 1
+    },
+    "status": {
+      "enum": [
+        "intent_committed",
+        "dispatched",
+        "observed_succeeded",
+        "observed_failed",
+        "ambiguous",
+        "cancelled"
+      ]
+    },
+    "target": {
+      "type": "string"
+    },
+    "terminal_evidence_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "operation_id",
+    "mission_id",
+    "controller_generation",
+    "kind",
+    "target",
+    "intent_digest",
+    "correlation_key",
+    "expected_prior_state",
+    "status",
+    "external_ref",
+    "observations",
+    "attempt_count",
+    "terminal_evidence_digest",
+    "issuer"
+  ],
+  "title": "operation/v1",
+  "type": "object"
+}

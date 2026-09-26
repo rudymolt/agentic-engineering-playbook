@@ -1,0 +1,59 @@
+{
+  "$id": "https://playbook.local/delivery-pilot/pilot-promotion/v1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "actor_id": {
+      "type": "string"
+    },
+    "decision": {
+      "enum": [
+        "promote",
+        "hold"
+      ]
+    },
+    "exceptions": {
+      "type": "array"
+    },
+    "issued_at": {
+      "type": "string"
+    },
+    "observation_refs": {
+      "type": "array"
+    },
+    "ordered_attempt_ids": {
+      "type": "array"
+    },
+    "promotion_id": {
+      "type": "string"
+    },
+    "schema_version": {
+      "const": 1
+    },
+    "source_event_id": {
+      "type": "string"
+    },
+    "test_manifest_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "threshold_results": {
+      "type": "object"
+    }
+  },
+  "required": [
+    "schema_version",
+    "promotion_id",
+    "ordered_attempt_ids",
+    "observation_refs",
+    "test_manifest_digest",
+    "threshold_results",
+    "exceptions",
+    "decision",
+    "actor_id",
+    "source_event_id",
+    "issued_at"
+  ],
+  "title": "pilot-promotion/v1",
+  "type": "object"
+}

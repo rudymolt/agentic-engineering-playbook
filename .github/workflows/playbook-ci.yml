@@ -1,0 +1,31 @@
+name: Playbook CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  edition:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify public edition and content boundary
+        run: python3 v0.5/scripts/verify-playbook.py --skip-drift --skip-delivery
+
+  delivery:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Verify delivery contracts and fault tests
+        run: sudo "$(command -v python3)" v0.5/delivery/scripts/verify.py --set K4.1

@@ -1,0 +1,11 @@
+{
+  "actor_id": "human-1",
+  "answer_id": "a1",
+  "answered_at": "2026-08-08T00:00:00Z",
+  "option_id": "a",
+  "options_revision": 1,
+  "question_id": "q1",
+  "result_envelope_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "schema_version": 1,
+  "source_event_id": "event-1"
+}

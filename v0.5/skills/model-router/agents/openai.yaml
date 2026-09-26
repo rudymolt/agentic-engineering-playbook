@@ -1,0 +1,4 @@
+interface:
+  display_name: "Model Router"
+  short_description: "Choose and launch a model for each feature lane"
+  default_prompt: "Use $model-router to discover verified model routes and launch the selected Plan, Build, or Verify lane."

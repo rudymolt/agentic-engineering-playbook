@@ -1,0 +1,119 @@
+{
+  "$id": "https://playbook.local/delivery-pilot/launcher/v2",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "candidate": {
+      "type": "object"
+    },
+    "checkout": {
+      "type": "object"
+    },
+    "ended_at": {
+      "type": "string"
+    },
+    "envelope_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "execution_policy": {
+      "additionalProperties": false,
+      "properties": {
+        "python_bytecode_control": {
+          "enum": [
+            "env-and-flag"
+          ]
+        },
+        "repository_temp_policy": {
+          "enum": [
+            "outside-checkout"
+          ]
+        },
+        "repository_write_policy": {
+          "enum": [
+            "forbidden"
+          ]
+        },
+        "transient_write_monitor": {
+          "enum": [
+            "enabled"
+          ]
+        }
+      },
+      "required": [
+        "python_bytecode_control",
+        "repository_temp_policy",
+        "repository_write_policy",
+        "transient_write_monitor"
+      ],
+      "type": "object"
+    },
+    "fallback_reason": {},
+    "gate_strength": {},
+    "host_proof": {},
+    "launch_id": {
+      "type": "string"
+    },
+    "parent_context": {
+      "type": "boolean"
+    },
+    "prompt_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "raw_evidence_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "raw_evidence_locator": {
+      "type": "string"
+    },
+    "requested": {
+      "type": "object"
+    },
+    "runtime": {
+      "type": "object"
+    },
+    "schema_version": {
+      "const": 2
+    },
+    "session_id": {
+      "type": "string"
+    },
+    "spec_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "started_at": {
+      "type": "string"
+    },
+    "termination_state": {
+      "type": "string"
+    },
+    "workspace_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "launch_id",
+    "session_id",
+    "workspace_id",
+    "parent_context",
+    "requested",
+    "runtime",
+    "prompt_digest",
+    "envelope_digest",
+    "spec_digest",
+    "candidate",
+    "checkout",
+    "execution_policy",
+    "started_at",
+    "ended_at",
+    "termination_state",
+    "raw_evidence_digest",
+    "raw_evidence_locator"
+  ],
+  "title": "launcher/v2",
+  "type": "object"
+}

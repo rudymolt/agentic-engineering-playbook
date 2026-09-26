@@ -1,0 +1,1115 @@
+{
+  "schema_version": 1,
+  "_comment": "Single source of truth for every upstream or local skill the playbook names. Read through scripts/upstream_registry.py; see ADR 0001. Slice 1 first cut (2026-09-04): data only, no generated surfaces yet.",
+  "packages": {
+    "mattpocock-skills": {
+      "kind": "upstream",
+      "source": "https://github.com/mattpocock/skills",
+      "adoption_level": "accelerator",
+      "pin": {
+        "kind": "tag",
+        "value": "v1.2.3",
+        "commit": "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e",
+        "verified": "2026-09-08"
+      },
+      "install": {
+        "method": "skills-cli",
+        "command": "npx skills@latest add mattpocock/skills",
+        "lock_file": "~/.agents/.skill-lock.json",
+        "roots": [
+          ".claude/skills",
+          ".codex/skills",
+          ".agents/skills"
+        ],
+        "layout": "bucketed under skills/<bucket>/<name> upstream; flattened <name>/ by the skills CLI"
+      },
+      "harness_name_pattern": {
+        "claude": "/{name}",
+        "codex": "${name}"
+      }
+    },
+    "gstack": {
+      "kind": "upstream",
+      "source": "https://github.com/garrytan/gstack",
+      "adoption_level": "accelerator",
+      "pin": {
+        "kind": "commit+version",
+        "value": "1.62.0.0",
+        "commit": "d078622b73539fc1a7a27e709861e9b6b058ae98",
+        "verified": "2026-09-08"
+      },
+      "install": {
+        "method": "git-checkout",
+        "checkout": "~/gstack",
+        "version_file": "VERSION",
+        "roots": [
+          ".claude/skills/gstack",
+          ".codex/skills"
+        ],
+        "layout": "one <name>/SKILL.md directory per skill at the checkout root; Codex copies are prefixed gstack-"
+      },
+      "harness_name_pattern": {
+        "claude": "/{name}",
+        "codex": "$gstack-{name}"
+      }
+    },
+    "pstack": {
+      "kind": "upstream",
+      "source": "https://github.com/cursor/plugins/tree/main/pstack",
+      "adoption_level": "source",
+      "pin": {
+        "kind": "commit",
+        "commit": "93b00b89ef425a9c1bac0d0b317dfc49c930ac99",
+        "verified": "2026-09-08"
+      },
+      "install": {
+        "method": "none"
+      },
+      "watch": [
+        "pstack/skills/**",
+        "pstack/playbooks/**",
+        "pstack/principles/**"
+      ],
+      "harness_name_pattern": {
+        "claude": "/{name}"
+      }
+    },
+    "playbook": {
+      "kind": "local",
+      "source": "v0.5/skills",
+      "harness_name_pattern": {
+        "claude": "/{name}",
+        "codex": "${name}"
+      }
+    }
+  },
+  "skills": {
+    "grill-with-docs": {
+      "package": "mattpocock-skills",
+      "status": "current",
+      "invocation": "user",
+      "tier": "accelerated",
+      "lanes": [
+        "human_decisions"
+      ],
+      "stages": [
+        "01",
+        "02",
+        "10-process/README"
+      ],
+      "upstream_path": "engineering/grill-with-docs",
+      "previous_names": []
+    },
+    "setup-matt-pocock-skills": {
+      "package": "mattpocock-skills",
+      "status": "current",
+      "invocation": "user",
+      "tier": "accelerated",
+      "lanes": [],
+      "stages": [
+        "00",
+        "03",
+        "05",
+        "10-process/README"
+      ],
+      "upstream_path": "engineering/setup-matt-pocock-skills",
+      "previous_names": []
+    },
+    "to-spec": {
+      "package": "mattpocock-skills",
+      "status": "current",
+      "invocation": "user",
+      "tier": "accelerated",
+      "lanes": [
+        "spec_and_slices"
+      ],
+      "stages": [
+        "03",
+        "07",
+        "10-process/README",
+        "templates/planning-template/README"
+      ],
+      "upstream_path": "engineering/to-spec",
+      "previous_names": [
+        {
+          "name": "to-prd",
+          "upstream_version": "v1.1.0"
+        }
+      ]
+    },
+    "to-tickets": {
+      "package": "mattpocock-skills",
+      "status": "current",
+      "invocation": "user",
+      "tier": "accelerated",
+      "lanes": [
+        "spec_and_slices"
+      ],
+      "stages": [
+        "04",
+        "00-foundations",
+        "10-process/README",
+        "templates/planning-template/README"
+      ],
+      "upstream_path": "engineering/to-tickets",
+      "previous_names": [
+        {
+          "name": "to-issues",
+          "upstream_version": "v1.1.0"
+        },
+        {
+          "name": "to-plan",
+          "upstream_version": "v1.1.0"
+        }
+      ]
+    },
+    "implement": {
+      "package": "mattpocock-skills",
+      "status": "current",
+      "invocation": "user",
+      "tier": "accelerated",
+      "lanes": [
+        "implementation_and_diagnosis"
+      ],
+      "stages": [
+        "07",
+        "10-process/README"
+      ],
+      "upstream_path": "engineering/implement",
+      "previous_names": [],
+      "manifest_key": "implement"
+    },
+    "triage": {
+      "package": "mattpocock-skills",
+      "status": "current",
+      "invocation": "user",
+      "tier": "accelerated",
+      "lanes": [],
+      "stages": [
+        "05",
+        "10-process/README"
+      ],
+      "upstream_path": "engineering/triage",
+      "previous_names": []
+    },
+    "tdd": {
+      "package": "mattpocock-skills",
+      "status": "current",
+      "invocation": "model",
+      "tier": "accelerated",
+      "lanes": [
+        "implementation_and_diagnosis"
+      ],
+      "stages": [
+        "04",
+        "07",
+        "08",
+        "10-process/README",
+        "prereqs-capability-profiles"
+      ],
+      "upstream_path": "engineering/tdd",
+      "previous_names": []
+    },
+    "diagnosing-bugs": {
+      "package": "mattpocock-skills",
+      "status": "current",
+      "invocation": "model",
+      "tier": "accelerated",
+      "lanes": [
+        "implementation_and_diagnosis"
+      ],
+      "stages": [
+        "11",
+        "10-process/README",
+        "prereqs-capability-profiles"
+      ],
+      "upstream_path": "engineering/diagnosing-bugs",
+      "previous_names": [
+        {
+          "name": "diagnose",
+          "upstream_version": "v1.0.0"
+        }
+      ]
+    },
+    "improve-codebase-architecture": {
+      "package": "mattpocock-skills",
+      "status": "current",
+      "invocation": "user",
+      "tier": "accelerated",
+      "lanes": [],
+      "stages": [
+        "04",
+        "06",
+        "10-process/README",
+        "templates/playbook-cadences"
+      ],
+      "upstream_path": "engineering/improve-codebase-architecture",
+      "previous_names": []
+    },
+    "prototype": {
+      "package": "mattpocock-skills",
+      "status": "current",
+      "invocation": "model",
+      "tier": "accelerated",
+      "lanes": [
+        "human_decisions"
+      ],
+      "stages": [
+        "20-frontend-track",
+        "92-wayfinder-track",
+        "AGENT-DIGEST"
+      ],
+      "upstream_path": "engineering/prototype",
+      "previous_names": []
+    },
+    "domain-modeling": {
+      "package": "mattpocock-skills",
+      "status": "current",
+      "invocation": "model",
+      "tier": "accelerated",
+      "lanes": [],
+      "stages": [
+        "02",
+        "10-process/README"
+      ],
+      "upstream_path": "engineering/domain-modeling",
+      "previous_names": []
+    },
+    "codebase-design": {
+      "package": "mattpocock-skills",
+      "status": "current",
+      "invocation": "model",
+      "tier": "accelerated",
+      "lanes": [],
+      "stages": [
+        "06",
+        "00-foundations"
+      ],
+      "upstream_path": "engineering/codebase-design",
+      "previous_names": []
+    },
+    "code-review": {
+      "package": "mattpocock-skills",
+      "status": "current",
+      "invocation": "model",
+      "tier": "accelerated",
+      "lanes": [
+        "independent_verification"
+      ],
+      "stages": [
+        "07",
+        "08"
+      ],
+      "upstream_path": "engineering/code-review",
+      "previous_names": [],
+      "manifest_key": "code-review"
+    },
+    "research": {
+      "package": "mattpocock-skills",
+      "status": "current",
+      "invocation": "model",
+      "tier": "accelerated",
+      "lanes": [],
+      "stages": [
+        "03",
+        "92-wayfinder-track",
+        "10-process/README"
+      ],
+      "upstream_path": "engineering/research",
+      "previous_names": []
+    },
+    "resolving-merge-conflicts": {
+      "package": "mattpocock-skills",
+      "status": "current",
+      "invocation": "model",
+      "tier": "accelerated",
+      "lanes": [],
+      "stages": [
+        "91-delegation-track"
+      ],
+      "upstream_path": "engineering/resolving-merge-conflicts",
+      "previous_names": []
+    },
+    "wayfinder": {
+      "package": "mattpocock-skills",
+      "status": "current",
+      "invocation": "user",
+      "tier": "extended",
+      "lanes": [],
+      "stages": [
+        "01",
+        "12",
+        "92-wayfinder-track",
+        "10-process/README",
+        "AGENT-DIGEST"
+      ],
+      "upstream_path": "engineering/wayfinder",
+      "previous_names": [
+        {
+          "name": "decision-mapping",
+          "upstream_version": "v1.1.0"
+        }
+      ]
+    },
+    "grill-me": {
+      "package": "mattpocock-skills",
+      "status": "current",
+      "invocation": "user",
+      "tier": "accelerated",
+      "lanes": [
+        "human_decisions"
+      ],
+      "stages": [
+        "prereqs-capability-profiles"
+      ],
+      "upstream_path": "productivity/grill-me",
+      "previous_names": []
+    },
+    "handoff": {
+      "package": "mattpocock-skills",
+      "status": "current",
+      "invocation": "user",
+      "tier": "accelerated",
+      "lanes": [],
+      "stages": [
+        "12",
+        "91-delegation-track"
+      ],
+      "upstream_path": "productivity/handoff",
+      "previous_names": []
+    },
+    "grilling": {
+      "package": "mattpocock-skills",
+      "status": "current",
+      "invocation": "model",
+      "tier": "accelerated",
+      "lanes": [
+        "human_decisions"
+      ],
+      "stages": [
+        "01"
+      ],
+      "upstream_path": "productivity/grilling",
+      "previous_names": []
+    },
+    "writing-for-agents": {
+      "package": "mattpocock-skills",
+      "status": "current",
+      "invocation": "model",
+      "tier": "accelerated",
+      "lanes": [],
+      "stages": [
+        "00",
+        "00-foundations",
+        "skills/README"
+      ],
+      "upstream_path": "productivity/writing-for-agents",
+      "previous_names": [
+        {
+          "name": "write-a-skill",
+          "upstream_version": "v1.0.0"
+        },
+        {
+          "name": "writing-great-skills",
+          "upstream_version": "v1.2.0"
+        }
+      ]
+    },
+    "caveman": {
+      "package": "mattpocock-skills",
+      "status": "removed",
+      "invocation": "user",
+      "tier": "extended",
+      "lanes": [],
+      "stages": [],
+      "removed_in": "V0.3.26",
+      "previous_names": [],
+      "note": "removed upstream in v1.0.0; dropped from Check A in V0.3.26"
+    },
+    "zoom-out": {
+      "package": "mattpocock-skills",
+      "status": "removed",
+      "invocation": "user",
+      "tier": "extended",
+      "lanes": [],
+      "stages": [],
+      "removed_in": "V0.3.26",
+      "previous_names": [],
+      "note": "removed upstream in v1.0.0; dropped from Check A in V0.3.26"
+    },
+    "office-hours": {
+      "package": "gstack",
+      "status": "current",
+      "invocation": "model",
+      "tier": "accelerated",
+      "lanes": [
+        "human_decisions"
+      ],
+      "stages": [
+        "01",
+        "10-process/README"
+      ],
+      "previous_names": []
+    },
+    "plan-ceo-review": {
+      "package": "gstack",
+      "status": "current",
+      "invocation": "model",
+      "tier": "accelerated",
+      "lanes": [
+        "human_decisions"
+      ],
+      "stages": [
+        "01",
+        "10-process/README"
+      ],
+      "previous_names": []
+    },
+    "plan-eng-review": {
+      "package": "gstack",
+      "status": "current",
+      "invocation": "model",
+      "tier": "accelerated",
+      "lanes": [
+        "human_decisions"
+      ],
+      "stages": [
+        "01",
+        "03",
+        "08",
+        "10-process/README"
+      ],
+      "previous_names": []
+    },
+    "plan-design-review": {
+      "package": "gstack",
+      "status": "current",
+      "invocation": "model",
+      "tier": "accelerated",
+      "lanes": [
+        "human_decisions"
+      ],
+      "stages": [
+        "01",
+        "08",
+        "10-process/README"
+      ],
+      "previous_names": []
+    },
+    "plan-devex-review": {
+      "package": "gstack",
+      "status": "current",
+      "invocation": "model",
+      "tier": "accelerated",
+      "lanes": [
+        "human_decisions"
+      ],
+      "stages": [
+        "01",
+        "08"
+      ],
+      "previous_names": []
+    },
+    "autoplan": {
+      "package": "gstack",
+      "status": "current",
+      "invocation": "model",
+      "tier": "accelerated",
+      "lanes": [
+        "human_decisions"
+      ],
+      "stages": [
+        "01",
+        "08"
+      ],
+      "previous_names": []
+    },
+    "design-consultation": {
+      "package": "gstack",
+      "status": "current",
+      "invocation": "model",
+      "tier": "extended",
+      "lanes": [],
+      "stages": [
+        "20-frontend-track"
+      ],
+      "previous_names": []
+    },
+    "design-shotgun": {
+      "package": "gstack",
+      "status": "current",
+      "invocation": "model",
+      "tier": "extended",
+      "lanes": [],
+      "stages": [
+        "20-frontend-track"
+      ],
+      "previous_names": []
+    },
+    "design-html": {
+      "package": "gstack",
+      "status": "current",
+      "invocation": "model",
+      "tier": "extended",
+      "lanes": [],
+      "stages": [
+        "20-frontend-track"
+      ],
+      "previous_names": []
+    },
+    "design-review": {
+      "package": "gstack",
+      "status": "current",
+      "invocation": "model",
+      "tier": "accelerated",
+      "lanes": [
+        "independent_verification"
+      ],
+      "stages": [
+        "01",
+        "20-frontend-track"
+      ],
+      "previous_names": [],
+      "manifest_key": "design-review"
+    },
+    "review": {
+      "package": "gstack",
+      "status": "current",
+      "invocation": "model",
+      "tier": "accelerated",
+      "lanes": [
+        "independent_verification"
+      ],
+      "stages": [
+        "08"
+      ],
+      "previous_names": [],
+      "manifest_key": "review"
+    },
+    "devex-review": {
+      "package": "gstack",
+      "status": "current",
+      "invocation": "model",
+      "tier": "accelerated",
+      "lanes": [
+        "independent_verification"
+      ],
+      "stages": [
+        "08"
+      ],
+      "previous_names": [],
+      "manifest_key": "devex-review"
+    },
+    "cso": {
+      "package": "gstack",
+      "status": "current",
+      "invocation": "model",
+      "tier": "accelerated",
+      "lanes": [
+        "security"
+      ],
+      "stages": [
+        "08"
+      ],
+      "previous_names": [],
+      "manifest_key": "cso"
+    },
+    "qa": {
+      "package": "gstack",
+      "status": "current",
+      "invocation": "model",
+      "tier": "accelerated",
+      "lanes": [
+        "real_environment_qa"
+      ],
+      "stages": [
+        "09"
+      ],
+      "previous_names": [],
+      "manifest_key": "qa"
+    },
+    "qa-only": {
+      "package": "gstack",
+      "status": "current",
+      "invocation": "model",
+      "tier": "accelerated",
+      "lanes": [
+        "real_environment_qa"
+      ],
+      "stages": [
+        "09",
+        "10-process/README"
+      ],
+      "previous_names": [],
+      "manifest_key": "qa-only"
+    },
+    "ship": {
+      "package": "gstack",
+      "status": "current",
+      "invocation": "model",
+      "tier": "accelerated",
+      "lanes": [],
+      "stages": [
+        "10",
+        "10-process/README"
+      ],
+      "previous_names": []
+    },
+    "land-and-deploy": {
+      "package": "gstack",
+      "status": "current",
+      "invocation": "model",
+      "tier": "accelerated",
+      "lanes": [],
+      "stages": [
+        "10",
+        "10-process/README"
+      ],
+      "previous_names": []
+    },
+    "canary": {
+      "package": "gstack",
+      "status": "current",
+      "invocation": "model",
+      "tier": "extended",
+      "lanes": [],
+      "stages": [
+        "10",
+        "00-foundations",
+        "10-process/README"
+      ],
+      "previous_names": []
+    },
+    "benchmark": {
+      "package": "gstack",
+      "status": "current",
+      "invocation": "model",
+      "tier": "extended",
+      "lanes": [],
+      "stages": [
+        "10",
+        "10-process/README"
+      ],
+      "previous_names": []
+    },
+    "browse": {
+      "package": "gstack",
+      "status": "current",
+      "invocation": "model",
+      "tier": "extended",
+      "lanes": [
+        "real_environment_qa"
+      ],
+      "stages": [
+        "11",
+        "10-process/README"
+      ],
+      "previous_names": []
+    },
+    "connect-chrome": {
+      "package": "gstack",
+      "status": "current",
+      "invocation": "model",
+      "tier": "extended",
+      "lanes": [],
+      "stages": [
+        "00"
+      ],
+      "previous_names": []
+    },
+    "setup-browser-cookies": {
+      "package": "gstack",
+      "status": "current",
+      "invocation": "model",
+      "tier": "extended",
+      "lanes": [],
+      "stages": [
+        "00",
+        "09",
+        "11"
+      ],
+      "previous_names": []
+    },
+    "setup-deploy": {
+      "package": "gstack",
+      "status": "current",
+      "invocation": "model",
+      "tier": "accelerated",
+      "lanes": [],
+      "stages": [
+        "00"
+      ],
+      "previous_names": []
+    },
+    "setup-gbrain": {
+      "package": "gstack",
+      "status": "current",
+      "invocation": "model",
+      "tier": "extended",
+      "lanes": [],
+      "stages": [
+        "00"
+      ],
+      "previous_names": []
+    },
+    "retro": {
+      "package": "gstack",
+      "status": "current",
+      "invocation": "model",
+      "tier": "accelerated",
+      "lanes": [
+        "state_lifecycle"
+      ],
+      "stages": [
+        "12",
+        "10-process/README",
+        "templates/playbook-cadences"
+      ],
+      "previous_names": []
+    },
+    "investigate": {
+      "package": "gstack",
+      "status": "current",
+      "invocation": "model",
+      "tier": "accelerated",
+      "lanes": [
+        "implementation_and_diagnosis"
+      ],
+      "stages": [
+        "11",
+        "10-process/README",
+        "prereqs-capability-profiles"
+      ],
+      "previous_names": []
+    },
+    "document-release": {
+      "package": "gstack",
+      "status": "current",
+      "invocation": "model",
+      "tier": "accelerated",
+      "lanes": [
+        "state_lifecycle"
+      ],
+      "stages": [
+        "10-process/README",
+        "prereqs-capability-profiles"
+      ],
+      "previous_names": []
+    },
+    "document-generate": {
+      "package": "gstack",
+      "status": "current",
+      "invocation": "model",
+      "tier": "accelerated",
+      "lanes": [],
+      "stages": [],
+      "previous_names": []
+    },
+    "codex": {
+      "package": "gstack",
+      "status": "current",
+      "invocation": "model",
+      "tier": "accelerated",
+      "lanes": [
+        "independent_verification"
+      ],
+      "stages": [
+        "06",
+        "08",
+        "11",
+        "10-process/README"
+      ],
+      "previous_names": []
+    },
+    "careful": {
+      "package": "gstack",
+      "status": "current",
+      "invocation": "model",
+      "tier": "accelerated",
+      "lanes": [
+        "security"
+      ],
+      "stages": [
+        "00"
+      ],
+      "previous_names": []
+    },
+    "freeze": {
+      "package": "gstack",
+      "status": "current",
+      "invocation": "model",
+      "tier": "accelerated",
+      "lanes": [
+        "security"
+      ],
+      "stages": [
+        "00"
+      ],
+      "previous_names": []
+    },
+    "guard": {
+      "package": "gstack",
+      "status": "current",
+      "invocation": "model",
+      "tier": "accelerated",
+      "lanes": [
+        "security"
+      ],
+      "stages": [
+        "00"
+      ],
+      "previous_names": []
+    },
+    "unfreeze": {
+      "package": "gstack",
+      "status": "current",
+      "invocation": "model",
+      "tier": "accelerated",
+      "lanes": [
+        "security"
+      ],
+      "stages": [
+        "00"
+      ],
+      "previous_names": []
+    },
+    "gstack-upgrade": {
+      "package": "gstack",
+      "status": "current",
+      "invocation": "model",
+      "tier": "accelerated",
+      "lanes": [],
+      "stages": [
+        "00"
+      ],
+      "previous_names": []
+    },
+    "learn": {
+      "package": "gstack",
+      "status": "current",
+      "invocation": "model",
+      "tier": "accelerated",
+      "lanes": [
+        "state_lifecycle"
+      ],
+      "stages": [
+        "12",
+        "10-process/README",
+        "templates/retro-template"
+      ],
+      "previous_names": []
+    },
+    "whats-next": {
+      "package": "playbook",
+      "status": "current",
+      "invocation": "model",
+      "tier": "core",
+      "lanes": [
+        "state_lifecycle"
+      ],
+      "stages": [
+        "00",
+        "01",
+        "02",
+        "03",
+        "04",
+        "05",
+        "06",
+        "07",
+        "08",
+        "09",
+        "10",
+        "11",
+        "12",
+        "AGENT-DIGEST",
+        "10-process/README"
+      ],
+      "install_by_default": true,
+      "previous_names": [],
+      "provenance": null
+    },
+    "model-router": {
+      "package": "playbook",
+      "status": "current",
+      "invocation": "model",
+      "tier": "core",
+      "lanes": [
+        "model_routing"
+      ],
+      "stages": [
+        "00",
+        "93-model-routing-track",
+        "templates/AGENTS"
+      ],
+      "install_by_default": true,
+      "previous_names": [],
+      "provenance": null
+    },
+    "ai-playbook-upgrade-project": {
+      "package": "playbook",
+      "status": "current",
+      "invocation": "model",
+      "tier": "core",
+      "lanes": [
+        "state_lifecycle"
+      ],
+      "stages": [
+        "00",
+        "AGENT-DIGEST"
+      ],
+      "install_by_default": true,
+      "previous_names": [],
+      "provenance": null
+    },
+    "ai-playbook-bootstrap-project": {
+      "package": "playbook",
+      "status": "current",
+      "invocation": "model",
+      "tier": "core",
+      "lanes": [
+        "state_lifecycle"
+      ],
+      "stages": [
+        "00",
+        "README"
+      ],
+      "install_by_default": true,
+      "previous_names": [],
+      "provenance": null
+    },
+    "ai-playbook-design-review": {
+      "package": "playbook",
+      "status": "current",
+      "invocation": "model",
+      "tier": "core",
+      "lanes": [
+        "independent_verification"
+      ],
+      "stages": [
+        "08",
+        "20-frontend-track",
+        "templates/playbook-cadences"
+      ],
+      "install_by_default": true,
+      "previous_names": [],
+      "provenance": null
+    },
+    "ai-playbook-verification-harness": {
+      "package": "playbook",
+      "status": "current",
+      "invocation": "model",
+      "tier": "core",
+      "lanes": [
+        "real_environment_qa"
+      ],
+      "stages": [
+        "00",
+        "09",
+        "11"
+      ],
+      "install_by_default": true,
+      "previous_names": [],
+      "provenance": {
+        "package": "pstack",
+        "commit": "93b00b89ef425a9c1bac0d0b317dfc49c930ac99",
+        "source": "pstack/skills/create-verification-skill"
+      }
+    },
+    "ai-playbook-maintain-verification-harness": {
+      "package": "playbook",
+      "status": "current",
+      "invocation": "model",
+      "tier": "core",
+      "lanes": [
+        "independent_verification",
+        "real_environment_qa"
+      ],
+      "stages": [
+        "08",
+        "09",
+        "30-document-lifecycle"
+      ],
+      "install_by_default": true,
+      "previous_names": [],
+      "provenance": {
+        "package": "pstack",
+        "commit": "93b00b89ef425a9c1bac0d0b317dfc49c930ac99",
+        "source": "pstack/skills/maintain-verification-skill"
+      }
+    },
+    "ai-playbook-why": {
+      "package": "playbook",
+      "status": "current",
+      "invocation": "model",
+      "tier": "core",
+      "lanes": [],
+      "stages": [
+        "02",
+        "06",
+        "08",
+        "11"
+      ],
+      "install_by_default": true,
+      "previous_names": [],
+      "provenance": {
+        "package": "pstack",
+        "commit": "93b00b89ef425a9c1bac0d0b317dfc49c930ac99",
+        "source": "pstack/skills/why/SKILL.md"
+      }
+    },
+    "ai-playbook-how": {
+      "package": "playbook",
+      "status": "current",
+      "invocation": "model",
+      "tier": "core",
+      "lanes": [],
+      "stages": [
+        "06",
+        "08",
+        "11"
+      ],
+      "install_by_default": true,
+      "previous_names": [],
+      "provenance": {
+        "package": "pstack",
+        "commit": "93b00b89ef425a9c1bac0d0b317dfc49c930ac99",
+        "source": "pstack/skills/how/SKILL.md"
+      }
+    },
+    "ai-playbook-blast-radius": {
+      "package": "playbook",
+      "status": "current",
+      "invocation": "model",
+      "tier": "core",
+      "lanes": [
+        "independent_verification"
+      ],
+      "stages": [
+        "08"
+      ],
+      "install_by_default": true,
+      "previous_names": [],
+      "provenance": {
+        "package": "pstack",
+        "commit": "93b00b89ef425a9c1bac0d0b317dfc49c930ac99",
+        "source": "pstack/skills/blast-radius/SKILL.md"
+      }
+    },
+    "ship-release": {
+      "package": "playbook",
+      "status": "current",
+      "invocation": "model",
+      "tier": "core",
+      "lanes": [],
+      "stages": [
+        "10",
+        "AGENT-DIGEST",
+        "README"
+      ],
+      "install_by_default": true,
+      "previous_names": [],
+      "provenance": null
+    }
+  },
+  "borrowed_ideas": []
+}

@@ -1,0 +1,41 @@
+{
+  "$id": "https://playbook.local/delivery-pilot/finalization-intent/v1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "control_tail_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "created_at": {
+      "type": "string"
+    },
+    "evidence_manifest_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "expected_terminal_receipt_id": {
+      "type": "string"
+    },
+    "intent_id": {
+      "type": "string"
+    },
+    "mission_id": {
+      "type": "string"
+    },
+    "schema_version": {
+      "const": 1
+    }
+  },
+  "required": [
+    "schema_version",
+    "intent_id",
+    "mission_id",
+    "expected_terminal_receipt_id",
+    "control_tail_digest",
+    "evidence_manifest_digest",
+    "created_at"
+  ],
+  "title": "finalization-intent/v1",
+  "type": "object"
+}

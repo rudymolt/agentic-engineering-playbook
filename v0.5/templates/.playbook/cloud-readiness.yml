@@ -1,0 +1,17 @@
+# Project-owned V0.4 Cloud readiness profile template.
+#
+# Do not treat this placeholder as admission. Bind commands, file digests,
+# non-secret epochs, environment-name probes, service checks, browser journeys,
+# evidence paths, and recovery actions to the actual project, then validate it
+# through /ai-playbook-deliver. Missing values fail closed.
+
+schema_version: 1
+profile_id: null
+project_slug: null
+build_epoch: null
+setup_epoch: null
+commands: {}
+bound_files: []
+environment_names: []
+browser_journeys: []
+evidence_root: .context/cloud-readiness-evidence

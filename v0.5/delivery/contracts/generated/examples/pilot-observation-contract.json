@@ -1,0 +1,17 @@
+{
+  "attempt_id": "attempt-1",
+  "contract_id": "observation-contract-1",
+  "declared_at": "2026-08-08T00:00:00Z",
+  "defect_classification_route": "tracker:TASK-1",
+  "mission_id": "delivery-example",
+  "raw_evidence_locators": [
+    "github:owner/repo/actions"
+  ],
+  "receipt_issuer": "protected-store:pilot-ledger",
+  "required_signals": [
+    "real-use-smoke"
+  ],
+  "schema_version": 1,
+  "window_duration_hours": 24,
+  "window_starts_on": "merged_at"
+}

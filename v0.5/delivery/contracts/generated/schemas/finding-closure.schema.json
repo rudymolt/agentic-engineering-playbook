@@ -1,0 +1,35 @@
+{
+  "$id": "https://playbook.local/delivery-pilot/finding-closure/v1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "attestation_ref": {
+      "type": "string"
+    },
+    "closed_at": {
+      "type": "string"
+    },
+    "closure_id": {
+      "type": "string"
+    },
+    "finding_id": {
+      "type": "string"
+    },
+    "fixing_sha": {
+      "type": "string"
+    },
+    "schema_version": {
+      "const": 1
+    }
+  },
+  "required": [
+    "schema_version",
+    "closure_id",
+    "finding_id",
+    "fixing_sha",
+    "attestation_ref",
+    "closed_at"
+  ],
+  "title": "finding-closure/v1",
+  "type": "object"
+}

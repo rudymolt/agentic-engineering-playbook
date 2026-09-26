@@ -1,0 +1,88 @@
+{
+  "agent": {
+    "builder_separation": "live-controller-session-different",
+    "effort": "high",
+    "family": "openai",
+    "fresh_context": true,
+    "model": "gpt",
+    "role": "fresh-merge-agent",
+    "session_id": "session-1"
+  },
+  "approval_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "approved_scope": {
+    "implementation_paths": [
+      "tests/example.test.ts"
+    ],
+    "planning_prefix": "planning/example/",
+    "risk_class": "test-tooling"
+  },
+  "attempt_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "authority_class": "process-attested-fresh-merge",
+  "base_ref": "main",
+  "changed_paths": [
+    "tests/example.test.ts"
+  ],
+  "control_commit": "2222222222222222222222222222222222222222",
+  "control_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "control_ref": "refs/heads/delivery-control/delivery-example",
+  "controller_generation": 1,
+  "decision": "deny",
+  "decision_id": "merge-decision-1",
+  "deploy_authority": false,
+  "envelope_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "evidence_locators": [
+    "linear:issue:TASK-1"
+  ],
+  "expected_candidate": {
+    "base_sha": "2222222222222222222222222222222222222222",
+    "head_sha": "0000000000000000000000000000000000000000",
+    "merge_group_sha": null,
+    "policy_sha": "3333333333333333333333333333333333333333",
+    "ruleset_fingerprint": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "tree_sha": "1111111111111111111111111111111111111111",
+    "verification_environment_digest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+  },
+  "expected_head_sha": "0000000000000000000000000000000000000000",
+  "expected_tree_sha": "1111111111111111111111111111111111111111",
+  "gate_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "handback_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "issued_at": "2026-08-08T00:00:00Z",
+  "launcher_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "merge_method": "squash",
+  "mission_id": "delivery-example",
+  "non_bypass_protection": false,
+  "policy_digest": "sha256:2b45c84554970bfbdf7fcc1099e0e22732d932399e09d0ad79b89420474973ee",
+  "pr_number": 1,
+  "process_attested_only": true,
+  "protected_path_matches": [],
+  "reason_codes": [
+    "example-denial"
+  ],
+  "release_authority": false,
+  "repository": "owner/repo",
+  "risk_class": "test-tooling",
+  "risk_policy": {
+    "allowed_risk_classes": [
+      "test-tooling"
+    ],
+    "authority_class": "process-attested-fresh-merge",
+    "human_merge_path_name_prefixes": [
+      "AGENTS"
+    ],
+    "human_merge_path_names": [
+      "CODEOWNERS"
+    ],
+    "human_merge_path_prefixes": [
+      ".github/"
+    ],
+    "policy_version": 1,
+    "source_branch": "default-branch-only"
+  },
+  "rollout_milestone": "K4.1",
+  "schema_version": 1,
+  "standing_authority_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "tier_b_authority": false,
+  "verification_digests": [
+    "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+  ]
+}

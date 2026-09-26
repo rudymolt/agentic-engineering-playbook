@@ -1,0 +1,4 @@
+interface:
+  display_name: "Bootstrap AI Playbook Project"
+  short_description: "Safely initialize a project with the playbook"
+  default_prompt: "Use $ai-playbook-bootstrap-project to set up this project with the current AI engineering playbook."

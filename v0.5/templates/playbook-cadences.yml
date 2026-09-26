@@ -1,0 +1,154 @@
+# playbook-cadences.yml
+#
+# Cadence rules for this project. /whats-next reads this file plus .playbook-state.yml
+# and recommends overdue stages.
+#
+# Cadence types:
+#   count  — fires when a numeric counter crosses a threshold
+#   time   — fires when days-since-last-run crosses a threshold
+#   event  — fires when an observable condition is true (git diff, file pattern, etc.)
+#
+# Severities:
+#   nudge  — appended as a one-line PS at the end of agent responses
+#   insist — agent refuses to start the next stage until resolved (use sparingly)
+#
+# For count and time cadences the severity is derived from the thresholds
+# (nudge_threshold <= value < insist_threshold → nudge; value >= insist_threshold
+# → insist); a `severity:` key on those entries is ignored. Event cadences have
+# no thresholds, so their `severity:` key sets the firing severity directly.
+
+schema_version: 1
+
+cadences:
+
+  # --- Cadence cadences ---
+
+  - id: architecture-review
+    type: count
+    counter: slices_since_last_architecture_review
+    nudge_threshold: 3
+    insist_threshold: 6
+    action: {skill:improve-codebase-architecture}
+    stage: 06-architecture
+    rationale: Deep-module drift accumulates fastest in this window. A periodic review keeps the codebase navigable for both humans and agents.
+
+  - id: retro-weekly
+    type: time
+    counter: days_since_last_retro
+    nudge_threshold: 7
+    insist_threshold: 14
+    action: {skill:retro}
+    stage: 12-retro-and-learn
+    rationale: Lessons go cold after a week. The retro is where dismissals are reviewed and cadences are tuned.
+
+  - id: learnings-refresh
+    type: time
+    counter: days_since_last_learnings_refresh
+    nudge_threshold: 45
+    insist_threshold: 90
+    action: refresh learnings (see 40-self-improvement.md)
+    stage: 12-retro-and-learn
+    rationale: Stale compounded knowledge is worse than none. Periodically keep, update, replace, or archive promoted learnings.
+
+  - id: doc-close-after-ship
+    type: time
+    counter: days_since_last_doc_close
+    nudge_threshold: 0
+    insist_threshold: 1
+    action: doc-close ritual (see 10-ship-and-deploy.md)
+    stage: 10-ship-and-deploy
+    rationale: Planning folders must not stay live after ship. Promote decisions to ADRs and archive the rest.
+    # Fires as nudge on ship day (threshold 0) and insist from the next day (threshold 1).
+    # Guard (clarified V0.2.1): fires only when a FEATURE has shipped after the
+    # last doc-close (last_run.feature_ship is distinct from last_run.ship and
+    # doc_close < feature_ship). Slice ships do NOT trigger doc-close — the planning folder stays
+    # live while the feature has open slices. Guard enforced in /whats-next logic.
+
+  - id: verification-map-drift
+    type: time
+    counter: days_since_last_verification_map_maintenance
+    nudge_threshold: 7
+    insist_threshold: 21
+    action: /ai-playbook-maintain-verification-harness
+    stage: 09-qa
+    rationale: An explicitly adopted verification map needs a complete accepted audit before its evidence becomes stale.
+    # compute-status.py activates this only for a valid explicit opt-in; it uses
+    # the later of last_run.verification_map_enabled and accepted maintenance.
+
+  # --- Event cadences ---
+
+  - id: security-review-on-sensitive-pr
+    type: event
+    trigger: pr_touches_paths
+    trigger_args:
+      paths:
+        - "**/auth/**"
+        - "**/payments/**"
+        - "**/sessions/**"
+        - "**/api/public/**"
+    action: security pass from stage 08 (compatibility-gated tool or manual route)
+    stage: 08-review
+    rationale: Auth, payments, sessions, and public endpoints are the highest-blast-radius surfaces. Always run STRIDE + OWASP Top 10 review before merge without transferring transaction ownership.
+    severity: insist
+
+  - id: design-review-on-ui-pr
+    type: event
+    trigger: pr_touches_paths
+    trigger_args:
+      paths:
+        - "src/components/**"
+        - "src/app/**/page.tsx"
+        - "src/app/**/layout.tsx"
+        - "**/*.css"
+    action: /ai-playbook-design-review
+    stage: 08-review
+    rationale: UI changes that pass type-check can still drift from the kitchen sink. The playbook adapter captures report-only evidence without taking commit ownership.
+    severity: nudge
+
+  - id: kitchen-sink-drift-audit
+    type: time
+    counter: days_since_last_kitchen_sink_drift_audit   # derived from last_run.kitchen_sink_drift_audit
+    nudge_threshold: 14
+    insist_threshold: 30
+    action: drift detection (see 20-frontend-track.md "Drift detection")
+    stage: 06-architecture
+    rationale: Classes, colours, or spacings in the codebase that aren't in the kitchen sink are tech debt that compounds silently.
+    only_if: project_has_ui   # compute-status.py skips this cadence when the project has neither DESIGN-GLOSSARY.md nor design-glossary/
+
+  - id: branch-hygiene-before-implementation
+    type: event
+    trigger: dirty_or_diverged_main
+    action: create a feature branch or reconcile main before new implementation
+    stage: 07-implementation-tdd
+    rationale: Work that starts on dirty, ahead, behind, or diverged main turns the recovery path into the default and makes PR scope harder to review.
+    severity: nudge
+
+  - id: fresh-branch-after-merge
+    type: event
+    trigger: current_branch_pr_merged
+    action: update main and create a fresh feature branch before follow-up implementation
+    stage: 07-implementation-tdd
+    rationale: A merged branch is closed delivery scope. Reusing it hides follow-up work from clean PR review and can target a stale base.
+    severity: insist
+
+  - id: hotspot-architecture-review
+    type: event
+    trigger: git_hotspot_paths
+    trigger_args:
+      since_days: 7
+      min_touches: 15
+      paths:
+        - "src/**"
+        - "**/*.css"
+        - "docs/**"
+        - ".playbook-state.yml"
+    action: {skill:improve-codebase-architecture}
+    stage: 06-architecture
+    rationale: Repeated touches to the same source, style, or living-doc files signal that a deeper module or shared primitive may be missing.
+    severity: nudge
+
+# --- Tuning notes ---
+#
+# Defaults above are best-guesses carried over from V0.1. Tune them per project at the retro.
+# When a tuned value has held across 3+ projects, promote it to the template at
+# {playbook-path}/v0.5/templates/playbook-cadences.yml and log in CHANGELOG.md.

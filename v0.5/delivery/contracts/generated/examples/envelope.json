@@ -1,0 +1,16 @@
+{
+  "authority": {},
+  "constraints": {},
+  "envelope_id": "envelope-example",
+  "evidence": {},
+  "feature": {},
+  "observation": {
+    "contract_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+    "contract_ref": "planning/example/pilot-observation-contract.json"
+  },
+  "records": {},
+  "revision": 1,
+  "safety": {},
+  "schema_version": 2,
+  "scope": {}
+}

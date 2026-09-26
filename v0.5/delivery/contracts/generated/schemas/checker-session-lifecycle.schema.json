@@ -1,0 +1,84 @@
+{
+  "$id": "https://playbook.local/delivery-pilot/checker-session-lifecycle/v1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "all_exit_codes_observed": {
+      "enum": [
+        true
+      ]
+    },
+    "all_required_commands_completed": {
+      "enum": [
+        true
+      ]
+    },
+    "candidate_tree": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "child_processes_reaped": {
+      "enum": [
+        true
+      ]
+    },
+    "command_count": {
+      "exclusiveMinimum": 0,
+      "type": "integer"
+    },
+    "command_manifest_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "command_manifest_locator": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "completion_marker": {
+      "enum": [
+        "checker-session-complete/v1"
+      ]
+    },
+    "last_command_completed_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "launch_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "lifecycle_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "monitor_stopped_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": 1
+    },
+    "session_id": {
+      "minLength": 1,
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "lifecycle_id",
+    "launch_id",
+    "session_id",
+    "candidate_tree",
+    "command_manifest_digest",
+    "command_manifest_locator",
+    "command_count",
+    "all_required_commands_completed",
+    "all_exit_codes_observed",
+    "child_processes_reaped",
+    "last_command_completed_at",
+    "monitor_stopped_at",
+    "completion_marker"
+  ],
+  "title": "checker-session-lifecycle/v1",
+  "type": "object"
+}

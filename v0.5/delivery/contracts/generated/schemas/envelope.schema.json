@@ -1,0 +1,237 @@
+{
+  "$id": "https://playbook.local/delivery-pilot/envelope/v2",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "rollout_milestone": {
+            "const": "K4.1"
+          }
+        },
+        "required": [
+          "rollout_milestone"
+        ]
+      },
+      "then": {
+        "properties": {
+          "authority": {
+            "not": {
+              "anyOf": [
+                {
+                  "required": [
+                    "pr_number"
+                  ]
+                },
+                {
+                  "required": [
+                    "candidate_head"
+                  ]
+                },
+                {
+                  "required": [
+                    "candidate_tree"
+                  ]
+                },
+                {
+                  "required": [
+                    "candidate"
+                  ]
+                }
+              ]
+            },
+            "properties": {
+              "base_ref": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "builder_maximum": {
+                "const": "open-pr"
+              },
+              "candidate_binding": {
+                "const": "post-freeze"
+              },
+              "coordinator_maximum": {
+                "const": "open-pr"
+              },
+              "deploy_authority": {
+                "const": false
+              },
+              "fresh_merge_agent_maximum": {
+                "const": "merge"
+              },
+              "implementation_paths": {
+                "items": {
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "minItems": 1,
+                "type": "array",
+                "uniqueItems": true
+              },
+              "maximum": {
+                "const": "merge"
+              },
+              "merge_method": {
+                "enum": [
+                  "squash",
+                  "merge",
+                  "rebase"
+                ]
+              },
+              "mission_id": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "non_bypass_protection": {
+                "const": false
+              },
+              "planning_prefix": {
+                "pattern": "^planning/[^/]+/$",
+                "type": "string"
+              },
+              "pr_binding": {
+                "const": "post-pr"
+              },
+              "project": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "release_authority": {
+                "const": false
+              },
+              "repository": {
+                "pattern": "^[^/]+/[^/]+$",
+                "type": "string"
+              },
+              "risk_class": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "tier_b_authority": {
+                "const": false
+              }
+            },
+            "required": [
+              "maximum",
+              "builder_maximum",
+              "coordinator_maximum",
+              "fresh_merge_agent_maximum",
+              "tier_b_authority",
+              "non_bypass_protection",
+              "deploy_authority",
+              "release_authority",
+              "repository",
+              "project",
+              "mission_id",
+              "base_ref",
+              "merge_method",
+              "risk_class",
+              "planning_prefix",
+              "implementation_paths",
+              "candidate_binding",
+              "pr_binding"
+            ],
+            "type": "object"
+          }
+        }
+      }
+    }
+  ],
+  "dependentRequired": {
+    "authority_class": [
+      "rollout_milestone",
+      "maximum_action"
+    ],
+    "maximum_action": [
+      "rollout_milestone",
+      "authority_class"
+    ],
+    "rollout_milestone": [
+      "authority_class",
+      "maximum_action"
+    ]
+  },
+  "properties": {
+    "authority": {
+      "type": "object"
+    },
+    "authority_class": {
+      "enum": [
+        "process-attested-fresh-merge"
+      ]
+    },
+    "constraints": {
+      "type": "object"
+    },
+    "envelope_id": {
+      "type": "string"
+    },
+    "evidence": {
+      "type": "object"
+    },
+    "feature": {
+      "type": "object"
+    },
+    "maximum_action": {
+      "enum": [
+        "merge"
+      ]
+    },
+    "observation": {
+      "additionalProperties": false,
+      "properties": {
+        "contract_digest": {
+          "minLength": 1,
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "contract_ref": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "contract_ref",
+        "contract_digest"
+      ],
+      "type": "object"
+    },
+    "records": {
+      "type": "object"
+    },
+    "revision": {
+      "type": "integer"
+    },
+    "rollout_milestone": {
+      "enum": [
+        "K4.1"
+      ]
+    },
+    "safety": {
+      "type": "object"
+    },
+    "schema_version": {
+      "const": 2
+    },
+    "scope": {
+      "type": "object"
+    }
+  },
+  "required": [
+    "schema_version",
+    "envelope_id",
+    "revision",
+    "feature",
+    "records",
+    "scope",
+    "evidence",
+    "authority",
+    "observation",
+    "constraints",
+    "safety"
+  ],
+  "title": "envelope/v2",
+  "type": "object"
+}

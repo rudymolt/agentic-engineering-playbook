@@ -1,0 +1,43 @@
+{
+  "$id": "https://playbook.local/delivery-pilot/recovery/v1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "operation_id": {
+      "type": "string"
+    },
+    "outcome": {
+      "enum": [
+        "rolled-back",
+        "failed",
+        "not-required"
+      ]
+    },
+    "owned_release_id": {
+      "type": "string"
+    },
+    "predecessor_release_id": {
+      "type": "string"
+    },
+    "recovery_id": {
+      "type": "string"
+    },
+    "schema_version": {
+      "const": 1
+    },
+    "verification": {
+      "type": "object"
+    }
+  },
+  "required": [
+    "schema_version",
+    "recovery_id",
+    "owned_release_id",
+    "predecessor_release_id",
+    "operation_id",
+    "verification",
+    "outcome"
+  ],
+  "title": "recovery/v1",
+  "type": "object"
+}

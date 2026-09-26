@@ -1,0 +1,41 @@
+{
+  "$id": "https://playbook.local/delivery-pilot/host-evidence-bundle/v1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "bundle_id": {
+      "type": "string"
+    },
+    "issued_at": {
+      "type": "string"
+    },
+    "locators": {
+      "type": "array"
+    },
+    "manifest_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "mission_id": {
+      "type": "string"
+    },
+    "receipt_root_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": 1
+    }
+  },
+  "required": [
+    "schema_version",
+    "bundle_id",
+    "mission_id",
+    "manifest_digest",
+    "receipt_root_digest",
+    "locators",
+    "issued_at"
+  ],
+  "title": "host-evidence-bundle/v1",
+  "type": "object"
+}

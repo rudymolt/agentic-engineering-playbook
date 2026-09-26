@@ -1,0 +1,9 @@
+{
+  "host_proof": {},
+  "issued_at": "2026-08-08T00:00:00Z",
+  "manifest_id": "evidence-1",
+  "mission_id": "delivery-example",
+  "raw_retention_until": "2026-11-08T00:00:00Z",
+  "receipts": [],
+  "schema_version": 1
+}

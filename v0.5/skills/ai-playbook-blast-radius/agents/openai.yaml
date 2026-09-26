@@ -1,0 +1,4 @@
+interface:
+  display_name: "Evidence-Based Blast Radius"
+  short_description: "Prove material safety assumptions with affected-code evidence"
+  default_prompt: "Use $ai-playbook-blast-radius to assess a concrete revision's material safety assumptions."

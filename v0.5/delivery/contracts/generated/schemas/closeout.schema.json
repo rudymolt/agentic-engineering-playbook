@@ -1,0 +1,43 @@
+{
+  "$id": "https://playbook.local/delivery-pilot/closeout/v1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "allowed_paths": {
+      "type": "array"
+    },
+    "closeout_id": {
+      "type": "string"
+    },
+    "expected_terminal_receipt_id": {
+      "type": "string"
+    },
+    "feature_merge_sha": {
+      "type": "string"
+    },
+    "mission_id": {
+      "type": "string"
+    },
+    "report_ref": {
+      "type": "string"
+    },
+    "retro_ref": {
+      "type": "string"
+    },
+    "schema_version": {
+      "const": 1
+    }
+  },
+  "required": [
+    "schema_version",
+    "closeout_id",
+    "mission_id",
+    "feature_merge_sha",
+    "report_ref",
+    "retro_ref",
+    "allowed_paths",
+    "expected_terminal_receipt_id"
+  ],
+  "title": "closeout/v1",
+  "type": "object"
+}

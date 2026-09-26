@@ -1,0 +1,9 @@
+{
+  "control_tail_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "created_at": "2026-08-08T00:00:00Z",
+  "evidence_manifest_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "expected_terminal_receipt_id": "terminal-1",
+  "intent_id": "finalize-1",
+  "mission_id": "delivery-example",
+  "schema_version": 1
+}

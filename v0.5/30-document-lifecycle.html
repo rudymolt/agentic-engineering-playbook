@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Document Lifecycle · AI Engineering Playbook V0.2</title>
+<link rel="stylesheet" href="assets/playbook-docs.css">
+</head>
+<body class="playbook-doc">
+<nav class="site-nav" aria-label="Playbook guides">
+  <a class="brand" href="index.html">AI Engineering Playbook</a>
+  <div class="links">
+    <a href="50-how-to-write-code-with-ai.html">How to drive the agent</a>
+    <a href="60-the-theory-behind-the-playbook.html">Theory</a>
+    <a href="00-foundations.html">Foundations</a>
+    <a href="10-process/index.html">Process map</a>
+    <a href="30-document-lifecycle.html" aria-current="page">Docs lifecycle</a>
+  </div>
+</nav>
+
+<main class="page">
+  <header class="doc-head">
+    <div class="eyebrow">AI Engineering Playbook · §30</div>
+    <h1>Document Lifecycle</h1>
+    <p class="lede">
+      Build-time documents are useful during the build and dangerous afterwards.
+      Doc-close decides what gets archived, promoted, or kept living.
+    </p>
+    <div class="meta">
+      <span><strong>Source reference</strong> · <a href="30-document-lifecycle.md">30-document-lifecycle.md</a></span>
+    </div>
+  </header>
+
+  <section class="interactive-panel">
+    <h2>Classify A Document</h2>
+    <p>Choose the document type to see its tier and fate.</p>
+    <select class="tier-select" data-tier-select="#tier-output">
+      <option value="">Choose a document type</option>
+      <option value="planning">Planning notes or prompt scratchpad</option>
+      <option value="adr">Hard-to-reverse decision</option>
+      <option value="living">CONTEXT.md, AGENTS.md, design glossary</option>
+      <option value="generated">Generated output</option>
+    </select>
+    <p id="tier-output" class="choice-output">Choose a document type.</p>
+  </section>
+
+  <section class="interactive-panel" data-checklist>
+    <h2>Doc-Close Checklist</h2>
+    <div class="checklist">
+      <label><input type="checkbox"> Run <code>git status --short</code> before doc-close starts.</label>
+      <label><input type="checkbox"> Promote surviving decisions to ADRs (rebuild the ADR index).</label>
+      <label><input type="checkbox"> Promote surviving vocabulary to <code>CONTEXT.md</code> or design glossary.</label>
+      <label><input type="checkbox"> Update <code>CLAUDE.md</code> if the build surfaced a project-wide rule.</label>
+      <label><input type="checkbox"> Update durable source docs.</label>
+      <label><input type="checkbox"> Write the release note; update every current-release pointer (changelog, version file, README current-release link).</label>
+      <label><input type="checkbox"> Ask whether to cut a GitHub Release (<code>/ship-release</code>).</label>
+      <label><input type="checkbox"> Ask whether anything deserves promotion to the playbook.</label>
+      <label><input type="checkbox"> Move the planning folder to <code>archive/</code> and update both <code>STATUS.md</code> files.</label>
+      <label><input type="checkbox"> Update <code>.playbook-state.yml</code>: <code>last_run.doc_close</code>, <code>last_updated</code>, status block.</label>
+      <label><input type="checkbox"> Commit the doc-close intentionally.</label>
+    </div>
+    <div class="checklist-status" data-checklist-output></div>
+  </section>
+
+  <section>
+    <h2>Why Archive Instead Of Delete?</h2>
+    <p>
+      Archive gives the same agent-context outcome as deletion because agents
+      are instructed not to read <code>archive/</code>. Humans still have old
+      build narratives available for incident archaeology.
+    </p>
+  </section>
+</main>
+
+<script src="assets/playbook-glossary.js"></script>
+<script src="assets/playbook-docs.js"></script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+{
+  "$id": "https://playbook.local/delivery-pilot/slice/v1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "candidate_sha": {},
+    "dependencies": {
+      "type": "array"
+    },
+    "question_id": {},
+    "schema_version": {
+      "const": 1
+    },
+    "slice_id": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "pending",
+        "building",
+        "checking",
+        "fixing",
+        "waiting_taste",
+        "waiting_safety",
+        "done",
+        "cancelled"
+      ]
+    },
+    "verification_target": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "slice_id",
+    "status",
+    "dependencies",
+    "verification_target"
+  ],
+  "title": "slice/v1",
+  "type": "object"
+}

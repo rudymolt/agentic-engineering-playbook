@@ -1,0 +1,85 @@
+{
+  "$id": "https://playbook.local/delivery-pilot/pilot-observation-contract/v1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "attempt_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "contract_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "declared_at": {
+      "format": "date-time",
+      "minLength": 1,
+      "type": "string"
+    },
+    "defect_classification_route": {
+      "minLength": 1,
+      "pattern": "^tracker:",
+      "type": "string"
+    },
+    "mission_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "raw_evidence_locators": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "receipt_issuer": {
+      "anyOf": [
+        {
+          "pattern": "^process-attested:linear:.+$"
+        },
+        {
+          "pattern": "^protected-store:.+$"
+        }
+      ],
+      "minLength": 1,
+      "type": "string"
+    },
+    "required_signals": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "schema_version": {
+      "const": 1
+    },
+    "window_duration_hours": {
+      "exclusiveMinimum": 0,
+      "type": "integer"
+    },
+    "window_starts_on": {
+      "enum": [
+        "merged_at",
+        "released_at"
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "contract_id",
+    "attempt_id",
+    "mission_id",
+    "window_starts_on",
+    "window_duration_hours",
+    "required_signals",
+    "raw_evidence_locators",
+    "defect_classification_route",
+    "receipt_issuer",
+    "declared_at"
+  ],
+  "title": "pilot-observation-contract/v1",
+  "type": "object"
+}

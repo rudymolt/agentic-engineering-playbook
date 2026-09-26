@@ -1,0 +1,47 @@
+{
+  "$id": "https://playbook.local/delivery-pilot/ceiling-extension/v1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "actor_id": {
+      "type": "string"
+    },
+    "approved_at": {
+      "type": "string"
+    },
+    "extension_id": {
+      "type": "string"
+    },
+    "limit_name": {
+      "type": "string"
+    },
+    "mission_id": {
+      "type": "string"
+    },
+    "new_value": {
+      "type": "integer"
+    },
+    "old_value": {
+      "type": "integer"
+    },
+    "schema_version": {
+      "const": 1
+    },
+    "source_event_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "extension_id",
+    "mission_id",
+    "actor_id",
+    "source_event_id",
+    "limit_name",
+    "old_value",
+    "new_value",
+    "approved_at"
+  ],
+  "title": "ceiling-extension/v1",
+  "type": "object"
+}

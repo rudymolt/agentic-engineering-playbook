@@ -1,0 +1,792 @@
+{
+  "files": [
+    {
+      "digest": "sha256:0028d6a55b93729c563fffcd4c7c1a67de149638cf282a8a28c6ce00999419c6",
+      "install_path": null,
+      "source": "README.md"
+    },
+    {
+      "digest": "sha256:da99ecd5eb28c933d169076bf739e255e3ab2fdc209d9beec03188225b6e6e69",
+      "install_path": "contracts/generated/examples/active-time.json",
+      "source": "contracts/generated/examples/active-time.json"
+    },
+    {
+      "digest": "sha256:565ce1c30c794c0f958635cd1db6dc64bb0e84cfc95c22c5106de42c6b70ddfb",
+      "install_path": "contracts/generated/examples/answer.json",
+      "source": "contracts/generated/examples/answer.json"
+    },
+    {
+      "digest": "sha256:c18d51d72bfe142da38081a983a95a5ecf3e1114bac4da5db3af0bb7fc4fd69c",
+      "install_path": "contracts/generated/examples/approval.json",
+      "source": "contracts/generated/examples/approval.json"
+    },
+    {
+      "digest": "sha256:e8e6c22508a2cc95e3d3ca9b5d107994a0221502529ded17915dadb86b87cc03",
+      "install_path": "contracts/generated/examples/canary.json",
+      "source": "contracts/generated/examples/canary.json"
+    },
+    {
+      "digest": "sha256:4977c393dae355f1c14c1dfcbe3e2720300b01e0e3ad481064a4e5a4937e96b9",
+      "install_path": "contracts/generated/examples/cancellation.json",
+      "source": "contracts/generated/examples/cancellation.json"
+    },
+    {
+      "digest": "sha256:494ab471940f48c208201a82b69eca0069ee7c6fb92a05862420b0972e37dfbe",
+      "install_path": "contracts/generated/examples/ceiling-extension.json",
+      "source": "contracts/generated/examples/ceiling-extension.json"
+    },
+    {
+      "digest": "sha256:8b7542c783132678b031ba62b7002494be091437ffd022b557fa83a1b5239dd8",
+      "install_path": "contracts/generated/examples/checker-session-lifecycle.json",
+      "source": "contracts/generated/examples/checker-session-lifecycle.json"
+    },
+    {
+      "digest": "sha256:e29dd596b51c53dd277e6b6a46bdea817423cfad11c55a34e45095febabbd035",
+      "install_path": "contracts/generated/examples/clean-tree.json",
+      "source": "contracts/generated/examples/clean-tree.json"
+    },
+    {
+      "digest": "sha256:ff508fcec9919f4a7b29b55ea9a37ee21a58bc0a0e529297d060127f32ac86ed",
+      "install_path": "contracts/generated/examples/closeout.json",
+      "source": "contracts/generated/examples/closeout.json"
+    },
+    {
+      "digest": "sha256:433e4109bb633a2ed44225b4b38450efa29d010c5692bfc299cd1a3fdfab32b0",
+      "install_path": "contracts/generated/examples/composite-policy-identity.json",
+      "source": "contracts/generated/examples/composite-policy-identity.json"
+    },
+    {
+      "digest": "sha256:9dd9d4c12e15c06db03f18d32fcb4e22588aaf6e4c24a05edc5d65bff79cf162",
+      "install_path": "contracts/generated/examples/envelope-amendment.json",
+      "source": "contracts/generated/examples/envelope-amendment.json"
+    },
+    {
+      "digest": "sha256:f53a18b026d36d66926267c95d37f74960cd630135f93175831ac08b503c9799",
+      "install_path": "contracts/generated/examples/envelope.json",
+      "source": "contracts/generated/examples/envelope.json"
+    },
+    {
+      "digest": "sha256:29bb606ab2d173e24130f32a6fc2de771939d55eff8be4bef338ac31209d1329",
+      "install_path": "contracts/generated/examples/finalization-bundle.json",
+      "source": "contracts/generated/examples/finalization-bundle.json"
+    },
+    {
+      "digest": "sha256:3aeebb2f26c685f4fd07355a18c621cb741ef9e76f7d83505caefbd2b2696d51",
+      "install_path": "contracts/generated/examples/finalization-intent.json",
+      "source": "contracts/generated/examples/finalization-intent.json"
+    },
+    {
+      "digest": "sha256:f61a355ef70c1488df354e30ffc0138c523665b9e59bfe04a46a2289da0e975e",
+      "install_path": "contracts/generated/examples/finding-closure.json",
+      "source": "contracts/generated/examples/finding-closure.json"
+    },
+    {
+      "digest": "sha256:5e693cd56ca7b416e243d16c570ec6368b4072d91c6d01d223cfcdf6b365790a",
+      "install_path": "contracts/generated/examples/finding.json",
+      "source": "contracts/generated/examples/finding.json"
+    },
+    {
+      "digest": "sha256:7f79da8c8c44078d398068b0a0a21e0fd40f82729124fcaebfe9b6025bae3134",
+      "install_path": "contracts/generated/examples/handback.json",
+      "source": "contracts/generated/examples/handback.json"
+    },
+    {
+      "digest": "sha256:3222a3fade2049f5f164f1078af4fc69499c90602b9621576826d90360c68b48",
+      "install_path": "contracts/generated/examples/host-evidence-bundle.json",
+      "source": "contracts/generated/examples/host-evidence-bundle.json"
+    },
+    {
+      "digest": "sha256:93131790e1f97766c66771b5a47ff20ae03db21c297a6e82aa5e65535024d96b",
+      "install_path": "contracts/generated/examples/host-evidence-manifest.json",
+      "source": "contracts/generated/examples/host-evidence-manifest.json"
+    },
+    {
+      "digest": "sha256:d5db98ecc56959da0c6c8c93723c858c11903239dec89d655ea5b687149c6c27",
+      "install_path": "contracts/generated/examples/k41-standing-authority.json",
+      "source": "contracts/generated/examples/k41-standing-authority.json"
+    },
+    {
+      "digest": "sha256:6f9d01c8860979b00c939e118cd585b4b69ff8797fd2f1794a4c8bc1cef8b90d",
+      "install_path": "contracts/generated/examples/launcher-v3.json",
+      "source": "contracts/generated/examples/launcher-v3.json"
+    },
+    {
+      "digest": "sha256:606a103c78f89a3d8e76d5dbdd91398492b886683be8d3e96e8553383a0d6857",
+      "install_path": "contracts/generated/examples/launcher-v4.json",
+      "source": "contracts/generated/examples/launcher-v4.json"
+    },
+    {
+      "digest": "sha256:77bf785f291fbb24f01a1b5e7498a9918eb24786c81e97537c354ea61bfa2e4c",
+      "install_path": "contracts/generated/examples/launcher.json",
+      "source": "contracts/generated/examples/launcher.json"
+    },
+    {
+      "digest": "sha256:d1c316eb93a7b998e530f182e040e57ef7fdd35df897577cf3dc5991e627f22b",
+      "install_path": "contracts/generated/examples/merge-decision-attestation.json",
+      "source": "contracts/generated/examples/merge-decision-attestation.json"
+    },
+    {
+      "digest": "sha256:ea0a3ff4d1ba0eccc7db511b7eb9d3a00fa9bc56cd1e60ebac5364f24e254943",
+      "install_path": "contracts/generated/examples/merge-decision.json",
+      "source": "contracts/generated/examples/merge-decision.json"
+    },
+    {
+      "digest": "sha256:6aa955d3e8be05ca190b070626854270da7255f1ce113eafa7240019327590b6",
+      "install_path": "contracts/generated/examples/merge-gate.json",
+      "source": "contracts/generated/examples/merge-gate.json"
+    },
+    {
+      "digest": "sha256:e9d82e1f28ab3c8c3ea8f95da81218438b991a3f252cf4668443520f6667012f",
+      "install_path": "contracts/generated/examples/merge-operation-intent.json",
+      "source": "contracts/generated/examples/merge-operation-intent.json"
+    },
+    {
+      "digest": "sha256:a734b7b877053baa767a94ac0e2517a0c0c195994e66d0039d3f1a5f78f33c40",
+      "install_path": "contracts/generated/examples/mission.json",
+      "source": "contracts/generated/examples/mission.json"
+    },
+    {
+      "digest": "sha256:da401af9992210208a8052291476f6862a9a729caf5b4cd836f8e2f68ec76497",
+      "install_path": "contracts/generated/examples/operation.json",
+      "source": "contracts/generated/examples/operation.json"
+    },
+    {
+      "digest": "sha256:450ba7f07d2cb9c17ea76e23ed28ccb6dc807acae2102c57d5c88e3585997f12",
+      "install_path": "contracts/generated/examples/pilot-attempt.json",
+      "source": "contracts/generated/examples/pilot-attempt.json"
+    },
+    {
+      "digest": "sha256:5db32466998027d889247d05e5a48f99640f928a642fe9e56f524f61c5115273",
+      "install_path": "contracts/generated/examples/pilot-observation-contract.json",
+      "source": "contracts/generated/examples/pilot-observation-contract.json"
+    },
+    {
+      "digest": "sha256:a6946a0734fc2b2eb68f1b9fe89a0902e1f8bbfb1720f6f43dffedba6cd5b564",
+      "install_path": "contracts/generated/examples/pilot-observation.json",
+      "source": "contracts/generated/examples/pilot-observation.json"
+    },
+    {
+      "digest": "sha256:a3baa83eeca562ae863b181660680a01bd387d82ecf281ed57dd5faabf7f625f",
+      "install_path": "contracts/generated/examples/pilot-promotion.json",
+      "source": "contracts/generated/examples/pilot-promotion.json"
+    },
+    {
+      "digest": "sha256:abab11d9ea228950e101acad9571e698fda6c1504c7bba7e8aebcdde79275bc0",
+      "install_path": "contracts/generated/examples/process-attested-merge.json",
+      "source": "contracts/generated/examples/process-attested-merge.json"
+    },
+    {
+      "digest": "sha256:09b0f47a5a703fcf60658f117b780e31f38b7b909ae19dbec3c3b2439cd507f6",
+      "install_path": "contracts/generated/examples/qa.json",
+      "source": "contracts/generated/examples/qa.json"
+    },
+    {
+      "digest": "sha256:8695c4fcfe83de7c3a45c058db073a5338ef13c02641805b562c0795c9bdeccb",
+      "install_path": "contracts/generated/examples/question.json",
+      "source": "contracts/generated/examples/question.json"
+    },
+    {
+      "digest": "sha256:d32238ab8cb2fb4326e6c7f210cb3c2fc8c57e7d5c11feed8e24471593b9e7eb",
+      "install_path": "contracts/generated/examples/readiness-profile.json",
+      "source": "contracts/generated/examples/readiness-profile.json"
+    },
+    {
+      "digest": "sha256:1fd76eff1dfd0ad427d001f89f96ba0e68118152659bcb3de77ed8ebaeb88154",
+      "install_path": "contracts/generated/examples/readiness-receipt.json",
+      "source": "contracts/generated/examples/readiness-receipt.json"
+    },
+    {
+      "digest": "sha256:5d1eeb7546b83b85555cd91e9aeba92bc41ea220ec1eec6dba2a643816f1a940",
+      "install_path": "contracts/generated/examples/recovery.json",
+      "source": "contracts/generated/examples/recovery.json"
+    },
+    {
+      "digest": "sha256:d1e84c9eff717ce9c8118bc7c0400622a9bc3058f9221d3983f14dc5e6caa48c",
+      "install_path": "contracts/generated/examples/safety.json",
+      "source": "contracts/generated/examples/safety.json"
+    },
+    {
+      "digest": "sha256:d4b8e7dfb9bb7a3405500097ad877c2fb2e4dbe7366aeeb96673f217b0d85b93",
+      "install_path": "contracts/generated/examples/slice.json",
+      "source": "contracts/generated/examples/slice.json"
+    },
+    {
+      "digest": "sha256:e454e05d195573bf40b0cf1ae0b0058fb07b51e7578cec4828673b00f1c70869",
+      "install_path": "contracts/generated/examples/terminal.json",
+      "source": "contracts/generated/examples/terminal.json"
+    },
+    {
+      "digest": "sha256:9dd5910514722412ca47c3748cda59ff8228060188ac00a0f1b5b2d50d00443e",
+      "install_path": "contracts/generated/examples/verdict.json",
+      "source": "contracts/generated/examples/verdict.json"
+    },
+    {
+      "digest": "sha256:c7992fa1bd21a5d64bca5057975ee95eb294923026d03d57d14d4c0a2c87cf3f",
+      "install_path": "contracts/generated/schemas/active-time.schema.json",
+      "source": "contracts/generated/schemas/active-time.schema.json"
+    },
+    {
+      "digest": "sha256:7a3a0b27ceef82a8be28306e99fd68a29a59a1dee893e19ebadef27cd46e9d93",
+      "install_path": "contracts/generated/schemas/answer.schema.json",
+      "source": "contracts/generated/schemas/answer.schema.json"
+    },
+    {
+      "digest": "sha256:00367fe61bc873e32d0e84c946b2fa38ecef1ea07e58a3a86c598e2d33f4464f",
+      "install_path": "contracts/generated/schemas/approval.schema.json",
+      "source": "contracts/generated/schemas/approval.schema.json"
+    },
+    {
+      "digest": "sha256:22673b6ce341f0e31c55ada948e4d118e9d6e24da224447927395326e8633d73",
+      "install_path": "contracts/generated/schemas/canary.schema.json",
+      "source": "contracts/generated/schemas/canary.schema.json"
+    },
+    {
+      "digest": "sha256:5a524f916b3ccdbfe9423f7e55472403dfdedec023e2246a56a9c6d5b2f71740",
+      "install_path": "contracts/generated/schemas/cancellation.schema.json",
+      "source": "contracts/generated/schemas/cancellation.schema.json"
+    },
+    {
+      "digest": "sha256:be121ef60f8a2633f212f5be5f8e70494805ce6f987217b264fcf39c0c901f5c",
+      "install_path": "contracts/generated/schemas/ceiling-extension.schema.json",
+      "source": "contracts/generated/schemas/ceiling-extension.schema.json"
+    },
+    {
+      "digest": "sha256:21bc144091c9a19ddddb920011dff30a84439f7174f8c88aaef5434605f52394",
+      "install_path": "contracts/generated/schemas/checker-session-lifecycle.schema.json",
+      "source": "contracts/generated/schemas/checker-session-lifecycle.schema.json"
+    },
+    {
+      "digest": "sha256:54ba817518787ccd9250ce1e41a3b64fe18306ec6bc347c1d08fdbb3239cef96",
+      "install_path": "contracts/generated/schemas/clean-tree.schema.json",
+      "source": "contracts/generated/schemas/clean-tree.schema.json"
+    },
+    {
+      "digest": "sha256:21ec333e1483bba4ce3c81d01e9a2d6792386f48d9b139832b49ace7a9f3003e",
+      "install_path": "contracts/generated/schemas/closeout.schema.json",
+      "source": "contracts/generated/schemas/closeout.schema.json"
+    },
+    {
+      "digest": "sha256:25cab8b5c395af78935bdb66d964896cfabe8779c9c7df7c87b48ae11df6f215",
+      "install_path": "contracts/generated/schemas/composite-policy-identity.schema.json",
+      "source": "contracts/generated/schemas/composite-policy-identity.schema.json"
+    },
+    {
+      "digest": "sha256:98bcdcc3946d41519cf5f5d4258cfc4c2c320828236e0fde01af83fa821be02f",
+      "install_path": "contracts/generated/schemas/envelope-amendment.schema.json",
+      "source": "contracts/generated/schemas/envelope-amendment.schema.json"
+    },
+    {
+      "digest": "sha256:8082f6e6cb32ef67242d291cd9bce00722c0847afa918de6f6f0bd20554f89d3",
+      "install_path": "contracts/generated/schemas/envelope.schema.json",
+      "source": "contracts/generated/schemas/envelope.schema.json"
+    },
+    {
+      "digest": "sha256:791754756e355a2e031d50893f6730a78e5a83bd9834ad7e775aad0908c81d17",
+      "install_path": "contracts/generated/schemas/finalization-bundle.schema.json",
+      "source": "contracts/generated/schemas/finalization-bundle.schema.json"
+    },
+    {
+      "digest": "sha256:8d4d32d4c2a9a0495c781ddf6d1e6963179b74f98da0044f9d325ee06c2b1dba",
+      "install_path": "contracts/generated/schemas/finalization-intent.schema.json",
+      "source": "contracts/generated/schemas/finalization-intent.schema.json"
+    },
+    {
+      "digest": "sha256:ba03583f7280a4abfb01485e3e9bd107247adafe7a7a4c08e80e653199632082",
+      "install_path": "contracts/generated/schemas/finding-closure.schema.json",
+      "source": "contracts/generated/schemas/finding-closure.schema.json"
+    },
+    {
+      "digest": "sha256:e7ce4c7452c116aacf59881d0802cd7cdd37cd1f151760c3aa16fcbb37c1c8bf",
+      "install_path": "contracts/generated/schemas/finding.schema.json",
+      "source": "contracts/generated/schemas/finding.schema.json"
+    },
+    {
+      "digest": "sha256:150ad037135e302fa2b71fb491a12718798d6e22f167f461d6649e7e91ad0da3",
+      "install_path": "contracts/generated/schemas/handback.schema.json",
+      "source": "contracts/generated/schemas/handback.schema.json"
+    },
+    {
+      "digest": "sha256:cd3064fada9aa502897760e9b3cc615e7e5148eb8b9e88557068b271089a16e9",
+      "install_path": "contracts/generated/schemas/host-evidence-bundle.schema.json",
+      "source": "contracts/generated/schemas/host-evidence-bundle.schema.json"
+    },
+    {
+      "digest": "sha256:2c43abe7161abcddf29bb8e1ae931ec085b85ae03cb954ba99af51f81d8175f5",
+      "install_path": "contracts/generated/schemas/host-evidence-manifest.schema.json",
+      "source": "contracts/generated/schemas/host-evidence-manifest.schema.json"
+    },
+    {
+      "digest": "sha256:6e3156f887f7cfc3bdb4404fc962cfde4c2fcd219dcbd89cd459077015a1dc72",
+      "install_path": "contracts/generated/schemas/k41-standing-authority.schema.json",
+      "source": "contracts/generated/schemas/k41-standing-authority.schema.json"
+    },
+    {
+      "digest": "sha256:8b818214ea188298469063bd6990a35445f32fdf59f4fce3c3bf42416d20793f",
+      "install_path": "contracts/generated/schemas/launcher-v3.schema.json",
+      "source": "contracts/generated/schemas/launcher-v3.schema.json"
+    },
+    {
+      "digest": "sha256:7fa1b292c393161475085d283fd2e42f746eb0ac388d26a549643476a50ded15",
+      "install_path": "contracts/generated/schemas/launcher-v4.schema.json",
+      "source": "contracts/generated/schemas/launcher-v4.schema.json"
+    },
+    {
+      "digest": "sha256:be862538c791b0998989071cbaf6c4000b47358556d52d0f7febd192162c6cd1",
+      "install_path": "contracts/generated/schemas/launcher.schema.json",
+      "source": "contracts/generated/schemas/launcher.schema.json"
+    },
+    {
+      "digest": "sha256:c9aa1ac185829763d73d46f3aea2a4cd83aad3420a992fc5736eb07eb67eebd6",
+      "install_path": "contracts/generated/schemas/merge-decision-attestation.schema.json",
+      "source": "contracts/generated/schemas/merge-decision-attestation.schema.json"
+    },
+    {
+      "digest": "sha256:ca1191d07cc6d9144eb2c1a78c60c2ecd17ce61053b8c692d37f39a27bfc3f79",
+      "install_path": "contracts/generated/schemas/merge-decision.schema.json",
+      "source": "contracts/generated/schemas/merge-decision.schema.json"
+    },
+    {
+      "digest": "sha256:b87ccded162f73e1771714d644670fe19488027de237df5f2ae106cf2ad18f5a",
+      "install_path": "contracts/generated/schemas/merge-gate.schema.json",
+      "source": "contracts/generated/schemas/merge-gate.schema.json"
+    },
+    {
+      "digest": "sha256:6b24714b83836007774f1cf76874af876d4fda4cd5eb69cb2278af38e729cfa7",
+      "install_path": "contracts/generated/schemas/merge-operation-intent.schema.json",
+      "source": "contracts/generated/schemas/merge-operation-intent.schema.json"
+    },
+    {
+      "digest": "sha256:9dc61099b96b9427a3168cf5bc28c179f5a7a641898bcb97ef65fe6dee77f55a",
+      "install_path": "contracts/generated/schemas/mission.schema.json",
+      "source": "contracts/generated/schemas/mission.schema.json"
+    },
+    {
+      "digest": "sha256:60361b9ef64af8c89a6df94f5a001612d17e3b4c916b31ba82f2e949eda0adbb",
+      "install_path": "contracts/generated/schemas/operation.schema.json",
+      "source": "contracts/generated/schemas/operation.schema.json"
+    },
+    {
+      "digest": "sha256:28ec7b0cc8dacd20c9caca439be1d246a6ecb69f3c217e78bbd03b1f47cbedd9",
+      "install_path": "contracts/generated/schemas/pilot-attempt.schema.json",
+      "source": "contracts/generated/schemas/pilot-attempt.schema.json"
+    },
+    {
+      "digest": "sha256:0a6d8284386e5d01bec8043e57cb87ffc51bb3f8ecc6021369806818334000a3",
+      "install_path": "contracts/generated/schemas/pilot-observation-contract.schema.json",
+      "source": "contracts/generated/schemas/pilot-observation-contract.schema.json"
+    },
+    {
+      "digest": "sha256:7cab6f019acad59a5c24c34feb31dc6cdaa27d78f0907b837a4d56a30e3107ad",
+      "install_path": "contracts/generated/schemas/pilot-observation.schema.json",
+      "source": "contracts/generated/schemas/pilot-observation.schema.json"
+    },
+    {
+      "digest": "sha256:e2f9aeeb935d558615230a31b3e3d7ffd6fd5414cf543eee92b6d8f3bece560b",
+      "install_path": "contracts/generated/schemas/pilot-promotion.schema.json",
+      "source": "contracts/generated/schemas/pilot-promotion.schema.json"
+    },
+    {
+      "digest": "sha256:11a09677d4bd7784268e6f8199ca10b6b1f85b2253a32a2bcb37b97e089acb19",
+      "install_path": "contracts/generated/schemas/process-attested-merge.schema.json",
+      "source": "contracts/generated/schemas/process-attested-merge.schema.json"
+    },
+    {
+      "digest": "sha256:60df7634a3cce91a423f28251dc13f69af5a809e7bd11a493e8f68224216354e",
+      "install_path": "contracts/generated/schemas/qa.schema.json",
+      "source": "contracts/generated/schemas/qa.schema.json"
+    },
+    {
+      "digest": "sha256:c77a3333dff8091dd10725b87e62c5a24ef32a5fbc6201520a8cf6df91a3e8d4",
+      "install_path": "contracts/generated/schemas/question.schema.json",
+      "source": "contracts/generated/schemas/question.schema.json"
+    },
+    {
+      "digest": "sha256:90c0feb9d800283faad5d9f27edaac0b59a82fb15da36f637e41132f3f9f9d1f",
+      "install_path": "contracts/generated/schemas/readiness-profile.schema.json",
+      "source": "contracts/generated/schemas/readiness-profile.schema.json"
+    },
+    {
+      "digest": "sha256:16503251adcf1a1d80afed0c6605220046d098a293715df6f29f8947998414df",
+      "install_path": "contracts/generated/schemas/readiness-receipt.schema.json",
+      "source": "contracts/generated/schemas/readiness-receipt.schema.json"
+    },
+    {
+      "digest": "sha256:b26c945fcda4438c19017208bf8fdf1a8cf394051b69d39cd6977d739ec57649",
+      "install_path": "contracts/generated/schemas/recovery.schema.json",
+      "source": "contracts/generated/schemas/recovery.schema.json"
+    },
+    {
+      "digest": "sha256:a3362249507d4870a7e419e842a36cab574b450bb613dbaa1db4d614251a461e",
+      "install_path": "contracts/generated/schemas/safety.schema.json",
+      "source": "contracts/generated/schemas/safety.schema.json"
+    },
+    {
+      "digest": "sha256:af5ef9726a36e82abb40297b509a9decd02b4ff24e5834179fa6c842dd8bc4c9",
+      "install_path": "contracts/generated/schemas/slice.schema.json",
+      "source": "contracts/generated/schemas/slice.schema.json"
+    },
+    {
+      "digest": "sha256:08fb9a9cd0a9c09fe25e613699520bf547808cb44e79ee7cc7fe0798f64ff3df",
+      "install_path": "contracts/generated/schemas/terminal.schema.json",
+      "source": "contracts/generated/schemas/terminal.schema.json"
+    },
+    {
+      "digest": "sha256:63e82ebfd793ec81a1608ee48113806c800ff157f6fa988ae48f0531c3b38743",
+      "install_path": "contracts/generated/schemas/verdict.schema.json",
+      "source": "contracts/generated/schemas/verdict.schema.json"
+    },
+    {
+      "digest": "sha256:f8d82962b45f4fac374f96588a249d519897328b5afcddaf2595bfc2ee3a12d9",
+      "install_path": "contracts/generated/spec-rule-index.yml",
+      "source": "contracts/generated/spec-rule-index.yml"
+    },
+    {
+      "digest": "sha256:32641b95140a6388a68b7948be0fb9b0658cece348c7a2a9bc9e59831a3ae330",
+      "install_path": "contracts/generated/test-manifest.json",
+      "source": "contracts/generated/test-manifest.json"
+    },
+    {
+      "digest": "sha256:efde154467d673dbcfda80061802a9f2ab4e3d2868601e5f1884fcb62eef9c19",
+      "install_path": "contracts/registry.yml",
+      "source": "contracts/registry.yml"
+    },
+    {
+      "digest": "sha256:ee88ed42fe947e14b3e2661f9e81dd4eae2bb3f234b6fbcea7cafac665846d5c",
+      "install_path": null,
+      "source": "scripts/descriptor_delete.py"
+    },
+    {
+      "digest": "sha256:9b596bf64ca8a33ca702d84c8f6f6e0b2947f8dfb495ea776709f2259ffd4a6d",
+      "install_path": null,
+      "source": "scripts/generate.py"
+    },
+    {
+      "digest": "sha256:6d16ff0e1598b1e58751a82d336d5a647c67b60ea92b60e27dfdb3373ff7a531",
+      "install_path": null,
+      "source": "scripts/lifecycle.py"
+    },
+    {
+      "digest": "sha256:c4705ea7c7f6a5be8ab8ee1ab487f8fd996dd9df8046d98bd3d04de0914adea1",
+      "install_path": null,
+      "source": "scripts/verify.py"
+    },
+    {
+      "digest": "sha256:367bfcaef275a55d6871681dd60f59c2da2b87bdcc71324e1b072e0769ba43b8",
+      "install_path": "SKILL.md",
+      "source": "skill/SKILL.md"
+    },
+    {
+      "digest": "sha256:c48a9f361501b74e6b7010898a4a546fbf43881bc19166de5d089266f1d190b0",
+      "install_path": "agents/openai.yaml",
+      "source": "skill/agents/openai.yaml"
+    },
+    {
+      "digest": "sha256:70ea44d92e9c1aad4d6b94512c75bd72db341989c8d950ccabefd5e490722fc4",
+      "install_path": "references/k41-merge-agent.md",
+      "source": "skill/references/k41-merge-agent.md"
+    },
+    {
+      "digest": "sha256:157c02d26a94c4b40b9a255e2f8a804d20297527d35d876df9ea23ee5ef4a2f7",
+      "install_path": "references/k41-policy.json",
+      "source": "skill/references/k41-policy.json"
+    },
+    {
+      "digest": "sha256:9c5472b9447ab532e86a570b89f1ccab381015abd049931ffa34b3292b224916",
+      "install_path": "scripts/checker-launcher-v3.py",
+      "source": "skill/scripts/checker-launcher-v3.py"
+    },
+    {
+      "digest": "sha256:9e99ccb94b1280323deb778a217868f5076b6a68efd3b7c7551b271d9a91323a",
+      "install_path": "scripts/checker-monitor.py",
+      "source": "skill/scripts/checker-monitor.py"
+    },
+    {
+      "digest": "sha256:218502f178d2f788ea23a13d371fb54b309ace2807db69a801e692b230037f05",
+      "install_path": "scripts/checker-python.py",
+      "source": "skill/scripts/checker-python.py"
+    },
+    {
+      "digest": "sha256:6f768ed0951926eb3961d02cc5a0bc7ea5d99cfc195e3c7373dea8e077c8661a",
+      "install_path": "scripts/deliver.py",
+      "source": "skill/scripts/deliver.py"
+    },
+    {
+      "digest": "sha256:41161a53cea880055233c56d56c7c9048410ea288ed76c5e3e8d669035c6ebef",
+      "install_path": "runtime/delivery_pilot/__init__.py",
+      "source": "src/delivery_pilot/__init__.py"
+    },
+    {
+      "digest": "sha256:5a034221acee937754108ffa4b0f4485b1ef2cb752de2c64625ef17ff36f80e8",
+      "install_path": "runtime/delivery_pilot/authority.py",
+      "source": "src/delivery_pilot/authority.py"
+    },
+    {
+      "digest": "sha256:035900423bdefb32f264c217537b0e07394a6d9848db89ce4ec4bdea80ab0127",
+      "install_path": "runtime/delivery_pilot/budget.py",
+      "source": "src/delivery_pilot/budget.py"
+    },
+    {
+      "digest": "sha256:49fedd981db54c81c8e5eed9f6e77c331eb43659a2dbc05656d34ea7f6af08fe",
+      "install_path": "runtime/delivery_pilot/canonical.py",
+      "source": "src/delivery_pilot/canonical.py"
+    },
+    {
+      "digest": "sha256:2b5b5fdb4381e7a0411efdd3c782084ca5a55cf04f475cca767b8e518a64075a",
+      "install_path": "runtime/delivery_pilot/checker.py",
+      "source": "src/delivery_pilot/checker.py"
+    },
+    {
+      "digest": "sha256:8f3eaa76817e01f8146b54db1582fece3557183707141d59e84e0378b17ed519",
+      "install_path": "runtime/delivery_pilot/cloud.py",
+      "source": "src/delivery_pilot/cloud.py"
+    },
+    {
+      "digest": "sha256:f66fd8cb022a3e384d1bd23eb743aeb59ac5d76d77a70fbad1092db8e8967f56",
+      "install_path": "runtime/delivery_pilot/cloud_runner.py",
+      "source": "src/delivery_pilot/cloud_runner.py"
+    },
+    {
+      "digest": "sha256:caa27adb3e65dfe1e2254a867e751bffe73ad657223036b33a4c2c95543e0eb5",
+      "install_path": "runtime/delivery_pilot/completion.py",
+      "source": "src/delivery_pilot/completion.py"
+    },
+    {
+      "digest": "sha256:e2d3a4ebe014b5b5c7312866ef63039a3de228d6841feec77f551173d2276d43",
+      "install_path": "runtime/delivery_pilot/conductor_api.py",
+      "source": "src/delivery_pilot/conductor_api.py"
+    },
+    {
+      "digest": "sha256:c1498b024a6a5ae6373800ec2cd6727d49b0924bf83079062db0e829e55b3ca5",
+      "install_path": "runtime/delivery_pilot/continuation.py",
+      "source": "src/delivery_pilot/continuation.py"
+    },
+    {
+      "digest": "sha256:b36ca004b4a21f770de52399ad7fa520e79a61b005311b1329f215d8f7f1c367",
+      "install_path": "runtime/delivery_pilot/contracts.py",
+      "source": "src/delivery_pilot/contracts.py"
+    },
+    {
+      "digest": "sha256:0fff3f7d0210a3aabaf0e8edfd43cedb665cd914df77af73b4767e7fd6a1eec0",
+      "install_path": "runtime/delivery_pilot/discovery.py",
+      "source": "src/delivery_pilot/discovery.py"
+    },
+    {
+      "digest": "sha256:0092b4cf88fb8a05925027f054cc13d39feb963c909d32e7f6185add662c894a",
+      "install_path": "runtime/delivery_pilot/gates.py",
+      "source": "src/delivery_pilot/gates.py"
+    },
+    {
+      "digest": "sha256:2dc7bd04e2e5a0e31a9452c36fc0a47056abd66f62d37a5cf0333dba454663d8",
+      "install_path": "runtime/delivery_pilot/git_control.py",
+      "source": "src/delivery_pilot/git_control.py"
+    },
+    {
+      "digest": "sha256:b30ddb2126392615bca686898e96fcad56818fe5bee2d09eb5ffc30b64661edb",
+      "install_path": "runtime/delivery_pilot/github_merge.py",
+      "source": "src/delivery_pilot/github_merge.py"
+    },
+    {
+      "digest": "sha256:417ed5873fc0c23e7b3a1d36590d0cd5ed64a536792daea1d25245a5be21a0ea",
+      "install_path": "runtime/delivery_pilot/interfaces.py",
+      "source": "src/delivery_pilot/interfaces.py"
+    },
+    {
+      "digest": "sha256:d708a42979c7f7fc2e5f0336a1512474df3c2776eb654cee1827bf84eaf3e2c3",
+      "install_path": "runtime/delivery_pilot/interim.py",
+      "source": "src/delivery_pilot/interim.py"
+    },
+    {
+      "digest": "sha256:1103cc43d5a49376f0e0e9c9fae76b4df2b116b675c4240f6a356ad9fd1cfefb",
+      "install_path": "runtime/delivery_pilot/interim_advance.py",
+      "source": "src/delivery_pilot/interim_advance.py"
+    },
+    {
+      "digest": "sha256:2b548323f77ebdfbd4753092155c8f58132f8d3ecfa5076a24dafcab6aa99982",
+      "install_path": "runtime/delivery_pilot/interim_conductor_host.py",
+      "source": "src/delivery_pilot/interim_conductor_host.py"
+    },
+    {
+      "digest": "sha256:b4674ae63afb950d1f48ed8b7b272d14bf78376fba29ab0fcc163819c91f0af4",
+      "install_path": "runtime/delivery_pilot/interim_coordinator.py",
+      "source": "src/delivery_pilot/interim_coordinator.py"
+    },
+    {
+      "digest": "sha256:0fc0f207f49e36496928f860ecbe17be5100edf301541c2157b971d0c401d3ff",
+      "install_path": "runtime/delivery_pilot/interim_disposition.py",
+      "source": "src/delivery_pilot/interim_disposition.py"
+    },
+    {
+      "digest": "sha256:162130417195b4e9e7234a170f3737139e73f74292a6edcc67b02602cc5991bc",
+      "install_path": "runtime/delivery_pilot/interim_github.py",
+      "source": "src/delivery_pilot/interim_github.py"
+    },
+    {
+      "digest": "sha256:aace9136d2eeeb944657d0fc11142973aab991753301f1979afc8cccde5f5c14",
+      "install_path": "runtime/delivery_pilot/interim_host_fixtures.py",
+      "source": "src/delivery_pilot/interim_host_fixtures.py"
+    },
+    {
+      "digest": "sha256:cc433ada8716db4126b119b39ba4714189576d7a791ce81c5ba6c6806294b54a",
+      "install_path": "runtime/delivery_pilot/interim_identity.py",
+      "source": "src/delivery_pilot/interim_identity.py"
+    },
+    {
+      "digest": "sha256:cc9bbed0f2a0d64b5e98e2001da82bc89b93ed7f64247d06ae6258e9fc4638f2",
+      "install_path": "runtime/delivery_pilot/interim_monitor.py",
+      "source": "src/delivery_pilot/interim_monitor.py"
+    },
+    {
+      "digest": "sha256:a420a44ff1748c64905c97e41915d09cbe20b5502da8a9b5b7317465e699804a",
+      "install_path": "runtime/delivery_pilot/interim_pr.py",
+      "source": "src/delivery_pilot/interim_pr.py"
+    },
+    {
+      "digest": "sha256:da790a7b20652694693a4c007b775942ec739256d69df2c3005101bc3f18b8ba",
+      "install_path": "runtime/delivery_pilot/interim_recovery.py",
+      "source": "src/delivery_pilot/interim_recovery.py"
+    },
+    {
+      "digest": "sha256:f5bd94cb79bdaa4e0ae073c6ea855c9dc5f88191a6d0d10dc4ec87fe1d14cd64",
+      "install_path": "runtime/delivery_pilot/interim_repair.py",
+      "source": "src/delivery_pilot/interim_repair.py"
+    },
+    {
+      "digest": "sha256:764431559cade930443a4815a1747c4583004a960b7f8a4d9336d2d00d41f4c9",
+      "install_path": "runtime/delivery_pilot/interim_repair_coordinator.py",
+      "source": "src/delivery_pilot/interim_repair_coordinator.py"
+    },
+    {
+      "digest": "sha256:fc4995003abdcbc2c2f0e373307317e4b9a0c86fab43484915da838f80124f01",
+      "install_path": "runtime/delivery_pilot/interim_routes.py",
+      "source": "src/delivery_pilot/interim_routes.py"
+    },
+    {
+      "digest": "sha256:6256afdb67a6ccceb0a30aedda4e4806b97d93812ac43cbbf6fef185d9fd2a5e",
+      "install_path": "runtime/delivery_pilot/interim_semantics.py",
+      "source": "src/delivery_pilot/interim_semantics.py"
+    },
+    {
+      "digest": "sha256:069e196c358647ba6748402f4deb6153f002887b02488047244625d63529bfde",
+      "install_path": "runtime/delivery_pilot/interim_stack.py",
+      "source": "src/delivery_pilot/interim_stack.py"
+    },
+    {
+      "digest": "sha256:655631f76e80b39037ece0fe938e0518a1ce07f18528d416c346afbcedcb692e",
+      "install_path": "runtime/delivery_pilot/interim_stack_dispatch.py",
+      "source": "src/delivery_pilot/interim_stack_dispatch.py"
+    },
+    {
+      "digest": "sha256:b14a0140f587077df14bb6908c9aa424bf2ef40a88c937494c7bf5c031a62916",
+      "install_path": "runtime/delivery_pilot/interim_watchdog.py",
+      "source": "src/delivery_pilot/interim_watchdog.py"
+    },
+    {
+      "digest": "sha256:1d3113f1f3fc498656b396ebe27321f13f23e6cb08f3e7e10d2998b43e350506",
+      "install_path": "runtime/delivery_pilot/interim_worker_limits.py",
+      "source": "src/delivery_pilot/interim_worker_limits.py"
+    },
+    {
+      "digest": "sha256:e784e5501098fda8f567396ec4e03b131823f084da34c78e1718defcb3982743",
+      "install_path": "runtime/delivery_pilot/merge_bridge.py",
+      "source": "src/delivery_pilot/merge_bridge.py"
+    },
+    {
+      "digest": "sha256:abdfbaabdf12698c88c16293f75c60dcc40b782017f590c36d23502fe92e37f9",
+      "install_path": "runtime/delivery_pilot/operations.py",
+      "source": "src/delivery_pilot/operations.py"
+    },
+    {
+      "digest": "sha256:62c9d5578aa2a4318b1c07eac08079ea82b60fe61b298a5bb76a3e23727f9b64",
+      "install_path": "runtime/delivery_pilot/state.py",
+      "source": "src/delivery_pilot/state.py"
+    },
+    {
+      "digest": "sha256:334daeab0983d217f91c6c91e7a3003c02f367820f7b78da4952aa3d2ac5c897",
+      "install_path": "runtime/delivery_pilot/verification.py",
+      "source": "src/delivery_pilot/verification.py"
+    },
+    {
+      "digest": "sha256:0b41be31021c3450d15af993c436821bed3d3933ee438075ffe2c022c62f57f8",
+      "install_path": "runtime/delivery_pilot/workflow.py",
+      "source": "src/delivery_pilot/workflow.py"
+    },
+    {
+      "digest": "sha256:a3f92339d3f38ea658c3d23326b07275df21a40b8b769fe7e67b9c78ea34e8ea",
+      "install_path": null,
+      "source": "tests/test_checker_monitor.py"
+    },
+    {
+      "digest": "sha256:d05f972e577796b33170c84eeff7ee2be5d1f96ee2885692c6a63f5c3841b174",
+      "install_path": null,
+      "source": "tests/test_cloud.py"
+    },
+    {
+      "digest": "sha256:4e45cbf0609c6ebc3615ab16547bfbe6128fd492d9b2907219adbb26579500da",
+      "install_path": null,
+      "source": "tests/test_continuation.py"
+    },
+    {
+      "digest": "sha256:68067f8ce650a14ec1d1765bc0376356c1e15571208779a2903165109aac4f22",
+      "install_path": null,
+      "source": "tests/test_core.py"
+    },
+    {
+      "digest": "sha256:9d7dea5db96260689f7c4003cf9ef881510c9419fe6f3bae29d412db55af661c",
+      "install_path": null,
+      "source": "tests/test_interim.py"
+    },
+    {
+      "digest": "sha256:cad8a2aa16d39f5995781e90520af4965b1b09864278220c214bdd7593981eb4",
+      "install_path": null,
+      "source": "tests/test_interim_advance.py"
+    },
+    {
+      "digest": "sha256:b7a905b0a1c481e6bb7ce9085cfea0cae2d60a14608aba9a83394566f57db2c4",
+      "install_path": null,
+      "source": "tests/test_interim_conductor_host.py"
+    },
+    {
+      "digest": "sha256:b9cf86bdd4626a806c9194d7fe92b2a1fe677e5381d88f801cb249c20951d49a",
+      "install_path": null,
+      "source": "tests/test_interim_coordinator.py"
+    },
+    {
+      "digest": "sha256:42f69a88a39b996c9bc987587a8ce393da1e26a3494552d7d71380be104bd61e",
+      "install_path": null,
+      "source": "tests/test_interim_host_continuation.py"
+    },
+    {
+      "digest": "sha256:f7d3bfbcd22b3d0d3872e0d69a9ec025ad84b037d4f2a4c1d5ba3498bd077d7a",
+      "install_path": null,
+      "source": "tests/test_interim_monitor.py"
+    },
+    {
+      "digest": "sha256:01072b3ce7f5dbae5149cb1af298b0e13514954f2faf6ceadb6824ded4200cec",
+      "install_path": null,
+      "source": "tests/test_interim_recovery.py"
+    },
+    {
+      "digest": "sha256:ea1a770693a8d68a0ae33339a56e171f669824a0a31642a172a97e1a2e9efb9b",
+      "install_path": null,
+      "source": "tests/test_interim_repair.py"
+    },
+    {
+      "digest": "sha256:3c0c22ca14aed6b9af722835663b47a2946b8d204896fa2fc8838efa31f25f13",
+      "install_path": null,
+      "source": "tests/test_interim_stack.py"
+    },
+    {
+      "digest": "sha256:78cbb62bc5e1b2fe8f78a502a8cb2a08dee41797e08cfe7c6d08d3bbad95e156",
+      "install_path": null,
+      "source": "tests/test_interim_watchdog.py"
+    },
+    {
+      "digest": "sha256:308a18a85400f3ca47cdf8a965cde922f174ade3afdfd388a999c08c00cd3eda",
+      "install_path": null,
+      "source": "tests/test_pack_lifecycle.py"
+    }
+  ],
+  "manifest_schema_version": 1,
+  "manifest_self_rule": "pack_digest covers the complete non-manifest source inventory",
+  "pack_digest": "sha256:f6074ab716f6f801c825a63f4ee60768dacf9f7c8112717478d19d5d58cf1307"
+}

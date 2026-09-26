@@ -1,0 +1,41 @@
+{
+  "$id": "https://playbook.local/delivery-pilot/merge-operation-intent/v1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "decision_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "expected_head_sha": {
+      "pattern": "^[0-9a-f]{40}$",
+      "type": "string"
+    },
+    "operation_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "operation_ref": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "schema_version": {
+      "const": 1
+    },
+    "status": {
+      "enum": [
+        "intent_committed"
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "operation_id",
+    "decision_digest",
+    "operation_ref",
+    "expected_head_sha",
+    "status"
+  ],
+  "title": "merge-operation-intent/v1",
+  "type": "object"
+}

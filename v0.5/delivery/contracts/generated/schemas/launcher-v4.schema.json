@@ -1,0 +1,309 @@
+{
+  "$id": "https://playbook.local/delivery-pilot/launcher-v4/v4",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "candidate": {
+      "type": "object"
+    },
+    "checkout": {
+      "additionalProperties": false,
+      "properties": {
+        "builder_context_input": {
+          "enum": [
+            false
+          ]
+        },
+        "clean": {
+          "enum": [
+            true
+          ]
+        },
+        "end_head_sha": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "end_index_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "end_noncheckpoint_refs_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "end_staged_diff_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "end_tree": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "end_untracked": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "end_worktree_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "read_only": {
+          "enum": [
+            true
+          ]
+        },
+        "start_head_sha": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "start_index_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "start_noncheckpoint_refs_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "start_staged_diff_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "start_tree": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "start_untracked": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "start_worktree_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "start_head_sha",
+        "end_head_sha",
+        "start_tree",
+        "end_tree",
+        "start_index_digest",
+        "end_index_digest",
+        "start_staged_diff_digest",
+        "end_staged_diff_digest",
+        "start_worktree_digest",
+        "end_worktree_digest",
+        "start_untracked",
+        "end_untracked",
+        "start_noncheckpoint_refs_digest",
+        "end_noncheckpoint_refs_digest",
+        "clean",
+        "read_only",
+        "builder_context_input"
+      ],
+      "type": "object"
+    },
+    "ended_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "envelope_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "execution_policy": {
+      "additionalProperties": false,
+      "properties": {
+        "provider_checkpoint_policy": {
+          "enum": [
+            "conductor-turn-bound"
+          ]
+        },
+        "python_bytecode_control": {
+          "enum": [
+            "env-and-flag"
+          ]
+        },
+        "repository_temp_policy": {
+          "enum": [
+            "outside-checkout"
+          ]
+        },
+        "repository_write_policy": {
+          "enum": [
+            "forbidden-except-provider-checkpoints"
+          ]
+        },
+        "transient_write_monitor": {
+          "enum": [
+            "enabled"
+          ]
+        }
+      },
+      "required": [
+        "python_bytecode_control",
+        "repository_temp_policy",
+        "repository_write_policy",
+        "transient_write_monitor",
+        "provider_checkpoint_policy"
+      ],
+      "type": "object"
+    },
+    "fallback_reason": {},
+    "gate_strength": {},
+    "host_proof": {},
+    "launch_id": {
+      "type": "string"
+    },
+    "parent_context": {
+      "type": "boolean"
+    },
+    "prompt_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "provider_checkpoints": {
+      "additionalProperties": false,
+      "properties": {
+        "actor_email": {
+          "enum": [
+            "checkpointer@noreply"
+          ]
+        },
+        "actor_name": {
+          "enum": [
+            "Checkpointer"
+          ]
+        },
+        "end_commit": {
+          "minLength": 1,
+          "pattern": "^[0-9a-f]{40}$",
+          "type": "string"
+        },
+        "end_created_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "end_ref": {
+          "minLength": 1,
+          "pattern": "^refs/conductor-checkpoints/session-.+-turn-.+-end$",
+          "type": "string"
+        },
+        "end_tree": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "metadata_digest": {
+          "minLength": 1,
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "provider": {
+          "enum": [
+            "conductor"
+          ]
+        },
+        "ref_namespace": {
+          "enum": [
+            "refs/conductor-checkpoints/"
+          ]
+        },
+        "start_commit": {
+          "minLength": 1,
+          "pattern": "^[0-9a-f]{40}$",
+          "type": "string"
+        },
+        "start_created_at": {
+          "format": "date-time",
+          "type": "string"
+        },
+        "start_ref": {
+          "minLength": 1,
+          "pattern": "^refs/conductor-checkpoints/session-.+-turn-.+-start$",
+          "type": "string"
+        },
+        "start_tree": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "turn_id": {
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.-]+$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "provider",
+        "actor_name",
+        "actor_email",
+        "ref_namespace",
+        "turn_id",
+        "start_ref",
+        "end_ref",
+        "start_commit",
+        "end_commit",
+        "start_tree",
+        "end_tree",
+        "start_created_at",
+        "end_created_at",
+        "metadata_digest"
+      ],
+      "type": "object"
+    },
+    "raw_evidence_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "raw_evidence_locator": {
+      "type": "string"
+    },
+    "requested": {
+      "type": "object"
+    },
+    "runtime": {
+      "type": "object"
+    },
+    "schema_version": {
+      "const": 4
+    },
+    "session_id": {
+      "type": "string"
+    },
+    "spec_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "started_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "termination_state": {
+      "const": "completed"
+    },
+    "workspace_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "launch_id",
+    "session_id",
+    "workspace_id",
+    "parent_context",
+    "requested",
+    "runtime",
+    "prompt_digest",
+    "envelope_digest",
+    "spec_digest",
+    "candidate",
+    "checkout",
+    "execution_policy",
+    "provider_checkpoints",
+    "started_at",
+    "ended_at",
+    "termination_state",
+    "raw_evidence_digest",
+    "raw_evidence_locator"
+  ],
+  "title": "launcher-v4/v4",
+  "type": "object"
+}

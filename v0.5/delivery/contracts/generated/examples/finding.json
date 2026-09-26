@@ -1,0 +1,12 @@
+{
+  "class": "defect",
+  "evidence_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "finding_id": "finding-1",
+  "locator": {
+    "type": "test",
+    "value": "test:x"
+  },
+  "schema_version": 1,
+  "severity": "ordinary",
+  "status": "open"
+}

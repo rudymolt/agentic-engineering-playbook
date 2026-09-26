@@ -1,0 +1,4 @@
+interface:
+  display_name: "What's Next"
+  short_description: "Recommend the next playbook stage from project state"
+  default_prompt: "Use $whats-next to read the project state and cadence evidence and recommend the next playbook stage."

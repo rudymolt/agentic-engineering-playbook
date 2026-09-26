@@ -1,0 +1,49 @@
+{
+  "$id": "https://playbook.local/delivery-pilot/merge-decision-attestation/v1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "attestation_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "attested_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "decision_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "readback_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": 1
+    },
+    "session_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "source_event_id": {
+      "anyOf": [
+        {
+          "pattern": "^github:issue-comment:.+$"
+        }
+      ],
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "attestation_id",
+    "decision_digest",
+    "readback_digest",
+    "source_event_id",
+    "session_id",
+    "attested_at"
+  ],
+  "title": "merge-decision-attestation/v1",
+  "type": "object"
+}

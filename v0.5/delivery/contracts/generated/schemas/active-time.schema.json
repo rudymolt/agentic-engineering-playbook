@@ -1,0 +1,47 @@
+{
+  "$id": "https://playbook.local/delivery-pilot/active-time/v1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "ended_at": {
+      "type": "string"
+    },
+    "interval_id": {
+      "type": "string"
+    },
+    "mission_id": {
+      "type": "string"
+    },
+    "phase": {
+      "type": "string"
+    },
+    "schema_version": {
+      "const": 1
+    },
+    "seconds": {
+      "type": "integer"
+    },
+    "started_at": {
+      "type": "string"
+    },
+    "status": {
+      "enum": [
+        "charged",
+        "open",
+        "unknown-end"
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "interval_id",
+    "mission_id",
+    "phase",
+    "started_at",
+    "ended_at",
+    "seconds",
+    "status"
+  ],
+  "title": "active-time/v1",
+  "type": "object"
+}

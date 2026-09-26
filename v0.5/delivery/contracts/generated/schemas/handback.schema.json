@@ -1,0 +1,110 @@
+{
+  "$id": "https://playbook.local/delivery-pilot/handback/v1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "rollout_milestone": {
+            "const": "K4.1"
+          }
+        },
+        "required": [
+          "rollout_milestone"
+        ]
+      },
+      "then": {
+        "properties": {
+          "pr_ref": {
+            "pattern": "^github:pr/[1-9][0-9]*$",
+            "type": "string"
+          }
+        }
+      }
+    }
+  ],
+  "dependentRequired": {
+    "authority_class": [
+      "rollout_milestone",
+      "maximum_action"
+    ],
+    "maximum_action": [
+      "rollout_milestone",
+      "authority_class"
+    ],
+    "rollout_milestone": [
+      "authority_class",
+      "maximum_action"
+    ]
+  },
+  "properties": {
+    "attestation_refs": {
+      "type": "array"
+    },
+    "authority_class": {
+      "enum": [
+        "process-attested-fresh-merge"
+      ]
+    },
+    "candidate": {
+      "type": "object"
+    },
+    "handback_id": {
+      "type": "string"
+    },
+    "issue_ref": {
+      "type": "string"
+    },
+    "issued_at": {
+      "type": "string"
+    },
+    "issuer": {
+      "type": "string"
+    },
+    "maximum_action": {
+      "enum": [
+        "merge"
+      ]
+    },
+    "mission_id": {
+      "type": "string"
+    },
+    "open_action_count": {
+      "type": "integer"
+    },
+    "owner_id": {
+      "type": "string"
+    },
+    "pr_ref": {
+      "type": "string"
+    },
+    "rollout_milestone": {
+      "enum": [
+        "K4.1"
+      ]
+    },
+    "schema_version": {
+      "const": 1
+    },
+    "workspace_disposition": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "handback_id",
+    "mission_id",
+    "candidate",
+    "pr_ref",
+    "attestation_refs",
+    "open_action_count",
+    "owner_id",
+    "workspace_disposition",
+    "issue_ref",
+    "issued_at",
+    "issuer"
+  ],
+  "title": "handback/v1",
+  "type": "object"
+}

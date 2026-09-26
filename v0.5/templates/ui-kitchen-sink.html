@@ -1,0 +1,3324 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sample Athletics UI Kitchen Sink</title>
+  <style>
+    :root {
+      color-scheme: dark;
+
+      --bg-base: #0a0a0b;
+      --bg-surface: #131316;
+      --bg-elevated: #1c1c21;
+      --bg-input: #18181c;
+      --border-subtle: #232329;
+      --border-focus: #8d1b3d;
+      --text-primary: #edefef;
+      --text-secondary: #8b8b8e;
+      --text-tertiary: #5c5c63;
+      --accent-primary: #8d1b3d;
+      --accent-hover: #a52148;
+      --accent-muted: #2a0b15;
+      --qatar-gold: #c4922a;
+      --status-green: #45a557;
+      --status-amber: #e5a31d;
+      --status-red: #e5484d;
+      --status-blue: #3b82f6;
+
+      --space-1: 0.25rem;
+      --space-2: 0.5rem;
+      --space-3: 0.75rem;
+      --space-4: 1rem;
+      --space-5: 1.25rem;
+      --space-6: 1.5rem;
+      --space-8: 2rem;
+      --radius-sm: 4px;
+      --radius-md: 6px;
+      --radius-lg: 8px;
+      --radius-xl: 12px;
+      --shadow-soft: 0 18px 50px rgba(0, 0, 0, 0.24);
+      --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --font-mono: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg-base);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .app-frame {
+      display: grid;
+      min-height: 100vh;
+      grid-template-columns: 260px minmax(0, 1fr);
+    }
+
+    .side-rail {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+      border-right: 1px solid var(--border-subtle);
+      background: var(--bg-surface);
+    }
+
+    .brand {
+      display: flex;
+      min-height: 56px;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-3);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 0 var(--space-4);
+    }
+
+    .brand-title {
+      font-weight: 700;
+      color: var(--qatar-gold);
+    }
+
+    .brand-kicker,
+    .toc-label,
+    .eyebrow {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+    }
+
+    .toc {
+      padding: var(--space-4) var(--space-3);
+    }
+
+    .toc-group {
+      margin-bottom: var(--space-5);
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: var(--space-4);
+    }
+
+    .toc-group:last-child {
+      border-bottom: 0;
+    }
+
+    .toc-link {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      margin-top: var(--space-1);
+      border-left: 2px solid transparent;
+      border-radius: var(--radius-sm);
+      padding: 0.52rem 0.62rem;
+      color: var(--text-secondary);
+      transition: background 160ms ease, color 160ms ease, border-color 160ms ease;
+    }
+
+    .toc-link:hover,
+    .toc-link:focus-visible {
+      background: var(--bg-elevated);
+      color: var(--text-primary);
+      outline: none;
+    }
+
+    .toc-link.is-active {
+      border-left-color: var(--accent-primary);
+      background: var(--accent-muted);
+      color: var(--text-primary);
+    }
+
+    .main-shell {
+      min-width: 0;
+    }
+
+    .top-bar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      min-height: 56px;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-3);
+      border-bottom: 1px solid var(--border-subtle);
+      background: rgba(10, 10, 11, 0.92);
+      padding: 0 var(--space-6);
+      backdrop-filter: blur(14px);
+    }
+
+    .top-bar-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-end;
+      gap: var(--space-2);
+    }
+
+    .content {
+      margin: 0 auto;
+      max-width: 1280px;
+      padding: var(--space-8) var(--space-6) 4rem;
+    }
+
+    .page-header {
+      display: grid;
+      gap: var(--space-3);
+      margin-bottom: var(--space-8);
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: var(--space-6);
+    }
+
+    .page-title {
+      margin: 0;
+      color: var(--qatar-gold);
+      font-size: clamp(2rem, 3.2vw, 3.2rem);
+      line-height: 1.05;
+    }
+
+    .page-copy {
+      max-width: 840px;
+      margin: 0;
+      color: var(--text-secondary);
+      font-size: 1rem;
+    }
+
+    .source-note {
+      display: flex;
+      flex-wrap: wrap;
+      gap: var(--space-2);
+      margin-top: var(--space-2);
+      color: var(--text-tertiary);
+      font-size: 12px;
+    }
+
+    .source-note code,
+    .code-token,
+    .kbd {
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      background: var(--bg-elevated);
+      color: var(--text-secondary);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      padding: 0.1rem 0.35rem;
+    }
+
+    .section {
+      scroll-margin-top: 84px;
+      margin-top: var(--space-8);
+    }
+
+    .section-head {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: var(--space-4);
+      margin-bottom: var(--space-4);
+    }
+
+    .section-title {
+      margin: 0;
+      color: var(--text-primary);
+      font-size: 1.35rem;
+      line-height: 1.2;
+    }
+
+    .section-description {
+      max-width: 740px;
+      margin: var(--space-1) 0 0;
+      color: var(--text-secondary);
+    }
+
+    .surface {
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      background: var(--bg-surface);
+      padding: var(--space-4);
+    }
+
+    .surface.tight {
+      padding: var(--space-3);
+    }
+
+    .grid {
+      display: grid;
+      gap: var(--space-3);
+    }
+
+    .grid.two {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .grid.three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .grid.four {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .grid.auto {
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    }
+
+    .stack {
+      display: grid;
+      gap: var(--space-3);
+    }
+
+    .stack.small {
+      gap: var(--space-2);
+    }
+
+    .stack.large {
+      gap: var(--space-5);
+    }
+
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .row.between {
+      justify-content: space-between;
+    }
+
+    .row-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .comment-label {
+      display: inline-flex;
+      width: fit-content;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      background: var(--bg-base);
+      color: var(--text-tertiary);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      line-height: 1.3;
+      padding: 0.22rem 0.45rem;
+    }
+
+    .specimen {
+      display: grid;
+      align-content: start;
+      gap: var(--space-3);
+      min-width: 0;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      background: var(--bg-surface);
+      padding: var(--space-3);
+    }
+
+    .specimen > .button,
+    .specimen > .pill,
+    .specimen > .status,
+    .specimen > .segmented,
+    .comment-label {
+      align-self: start;
+      justify-self: start;
+    }
+
+    .specimen-body {
+      min-width: 0;
+    }
+
+    .swatch {
+      min-height: 122px;
+      overflow: hidden;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      background: var(--bg-elevated);
+    }
+
+    .swatch-color {
+      height: 58px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      background: var(--swatch-color);
+    }
+
+    .swatch-body {
+      padding: var(--space-3);
+    }
+
+    .swatch-name {
+      margin: 0;
+      color: var(--text-primary);
+      font-weight: 700;
+    }
+
+    .swatch-value {
+      margin: 0.2rem 0 0;
+      color: var(--text-secondary);
+      font-family: var(--font-mono);
+      font-size: 12px;
+    }
+
+    .type-sample h1,
+    .type-sample h2,
+    .type-sample h3,
+    .type-sample p {
+      margin: 0;
+    }
+
+    .type-page-title {
+      color: var(--qatar-gold);
+      font-size: 2rem;
+      font-weight: 700;
+      line-height: 1.15;
+    }
+
+    .type-screen-title {
+      color: var(--qatar-gold);
+      font-size: 1.5rem;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .type-section-title {
+      color: var(--text-primary);
+      font-size: 1rem;
+      font-weight: 700;
+    }
+
+    .type-body {
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+    }
+
+    .type-caption {
+      color: var(--text-tertiary);
+      font-size: 0.75rem;
+    }
+
+    .type-mono {
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+      font-size: 0.78rem;
+    }
+
+    .space-demo {
+      display: grid;
+      grid-template-columns: 72px minmax(0, 1fr) 72px;
+      align-items: center;
+      gap: var(--space-3);
+      color: var(--text-secondary);
+      font-size: 12px;
+    }
+
+    .space-bar {
+      height: 18px;
+      width: var(--bar-width);
+      max-width: 100%;
+      border-radius: var(--radius-sm);
+      background: var(--accent-primary);
+    }
+
+    .button,
+    .icon-button,
+    .pill,
+    .tab,
+    .segmented-button,
+    .nav-item,
+    .table-sort,
+    .calendar-day,
+    .select-option,
+    .room-card,
+    .list-row {
+      transition: background 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms ease;
+    }
+
+    .button {
+      display: inline-flex;
+      min-height: 34px;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      border: 1px solid transparent;
+      border-radius: var(--radius-sm);
+      padding: 0.48rem 0.9rem;
+      color: var(--text-primary);
+      cursor: pointer;
+    }
+
+    .button.small {
+      min-height: 28px;
+      padding: 0.32rem 0.65rem;
+      font-size: 12px;
+    }
+
+    .button.primary {
+      background: var(--accent-primary);
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .button.primary:hover,
+    .button.primary:focus-visible {
+      background: var(--accent-hover);
+    }
+
+    .button.secondary {
+      border-color: var(--border-subtle);
+      background: var(--bg-elevated);
+    }
+
+    .button.secondary:hover,
+    .button.secondary:focus-visible {
+      background: rgba(28, 28, 33, 0.78);
+    }
+
+    .button.ghost {
+      background: transparent;
+      color: var(--text-secondary);
+    }
+
+    .button.ghost:hover,
+    .button.ghost:focus-visible {
+      background: var(--bg-elevated);
+      color: var(--text-primary);
+    }
+
+    .button.danger {
+      border-color: rgba(229, 72, 77, 0.3);
+      background: rgba(229, 72, 77, 0.1);
+      color: var(--status-red);
+    }
+
+    .button.danger:hover,
+    .button.danger:focus-visible {
+      background: rgba(229, 72, 77, 0.2);
+    }
+
+    .button:disabled {
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    .icon-button {
+      display: inline-flex;
+      width: 34px;
+      height: 34px;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      background: var(--bg-input);
+      color: var(--text-secondary);
+      cursor: pointer;
+    }
+
+    .icon-button:hover,
+    .icon-button:focus-visible {
+      background: var(--bg-elevated);
+      color: var(--text-primary);
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      border: 1px solid var(--border-subtle);
+      border-radius: 999px;
+      background: var(--bg-elevated);
+      color: var(--text-primary);
+      padding: 0.25rem 0.72rem;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .pill:hover,
+    .pill:focus-visible {
+      border-color: var(--accent-primary);
+      background: var(--accent-muted);
+      outline: none;
+    }
+
+    .pill.gold {
+      border-color: transparent;
+      background: var(--qatar-gold);
+      color: #050505;
+    }
+
+    .pill.count span {
+      display: inline-flex;
+      min-width: 1.45rem;
+      justify-content: center;
+      border-radius: 999px;
+      background: var(--bg-base);
+      color: var(--text-secondary);
+      padding: 0 0.35rem;
+      font-size: 11px;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid currentColor;
+      border-radius: 999px;
+      padding: 0.18rem 0.55rem;
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+
+    .status.green {
+      background: rgba(69, 165, 87, 0.1);
+      color: var(--status-green);
+    }
+
+    .status.amber {
+      background: rgba(229, 163, 29, 0.1);
+      color: var(--status-amber);
+    }
+
+    .status.red {
+      background: rgba(229, 72, 77, 0.1);
+      color: var(--status-red);
+    }
+
+    .status.blue {
+      background: rgba(59, 130, 246, 0.1);
+      color: var(--status-blue);
+    }
+
+    .card {
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      background: var(--bg-surface);
+      padding: var(--space-4);
+    }
+
+    .card.elevated {
+      background: rgba(28, 28, 33, 0.42);
+    }
+
+    .card.base {
+      background: var(--bg-base);
+    }
+
+    .card.gradient {
+      background: linear-gradient(180deg, var(--bg-surface), rgba(10, 10, 11, 0.8));
+    }
+
+    .metric-card {
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      background: var(--bg-surface);
+      padding: var(--space-4);
+    }
+
+    .metric-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      color: var(--text-secondary);
+      font-size: 12px;
+    }
+
+    .metric-value {
+      margin-top: var(--space-2);
+      color: var(--text-primary);
+      font-size: 1.55rem;
+      font-weight: 700;
+      line-height: 1.1;
+    }
+
+    .metric-subtitle {
+      margin-top: var(--space-1);
+      color: var(--text-secondary);
+      font-size: 12px;
+    }
+
+    .metric-card.document {
+      border-width: 2px;
+      border-color: #f5c451;
+      background: #3a2a08;
+    }
+
+    .metric-card.document .metric-value {
+      color: #ffd369;
+    }
+
+    .metric-card.qid {
+      border-width: 2px;
+      border-color: #60a5fa;
+      background: #0a274a;
+    }
+
+    .metric-card.qid .metric-value {
+      color: #93c5fd;
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: var(--space-3);
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: var(--space-3);
+    }
+
+    .panel-header h3,
+    .panel-header p {
+      margin: 0;
+    }
+
+    .panel-header h3 {
+      color: var(--qatar-gold);
+      font-size: 0.95rem;
+    }
+
+    .panel-header p {
+      margin-top: var(--space-1);
+      color: var(--text-secondary);
+      font-size: 13px;
+    }
+
+    .readonly-field {
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      background: var(--bg-base);
+      padding: 0.58rem 0.68rem;
+      color: var(--text-tertiary);
+      font-size: 13px;
+    }
+
+    .field {
+      display: grid;
+      gap: var(--space-1);
+    }
+
+    .field label {
+      color: var(--text-secondary);
+      font-size: 12px;
+    }
+
+    .field small {
+      color: var(--text-tertiary);
+      font-size: 12px;
+    }
+
+    .input,
+    .select,
+    .textarea {
+      width: 100%;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      background: var(--bg-input);
+      color: var(--text-primary);
+      outline: none;
+      padding: 0.58rem 0.68rem;
+    }
+
+    .input:hover,
+    .select:hover,
+    .textarea:hover {
+      border-color: rgba(141, 27, 61, 0.65);
+    }
+
+    .input:focus,
+    .select:focus,
+    .textarea:focus {
+      border-color: var(--border-focus);
+    }
+
+    .textarea {
+      min-height: 96px;
+      resize: vertical;
+    }
+
+    .input.error {
+      border-color: var(--status-red);
+    }
+
+    .error-text {
+      color: var(--status-red);
+      font-size: 12px;
+    }
+
+    .input-wrap {
+      position: relative;
+    }
+
+    .input-wrap .icon-button {
+      position: absolute;
+      top: 50%;
+      right: 4px;
+      width: 30px;
+      height: 30px;
+      transform: translateY(-50%);
+      border-color: transparent;
+      background: transparent;
+    }
+
+    .date-popover,
+    .country-popover {
+      display: none;
+      position: absolute;
+      z-index: 10;
+      width: min(100%, 320px);
+      margin-top: var(--space-2);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      background: var(--bg-elevated);
+      box-shadow: var(--shadow-soft);
+      padding: var(--space-3);
+    }
+
+    .popover-holder {
+      position: relative;
+    }
+
+    .popover-holder.is-open .date-popover,
+    .popover-holder.is-open .country-popover {
+      display: block;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 4px;
+      text-align: center;
+    }
+
+    .calendar-weekday {
+      color: var(--text-secondary);
+      font-size: 11px;
+      padding: 0.25rem 0;
+    }
+
+    .calendar-day {
+      border: 0;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--text-primary);
+      cursor: pointer;
+      padding: 0.42rem 0;
+    }
+
+    .calendar-day:hover {
+      background: var(--bg-input);
+    }
+
+    .calendar-day.muted {
+      color: var(--text-tertiary);
+    }
+
+    .calendar-day.selected {
+      background: var(--accent-primary);
+      color: #fff;
+    }
+
+    .select-option {
+      display: block;
+      width: 100%;
+      border: 0;
+      border-bottom: 1px solid var(--border-subtle);
+      background: transparent;
+      color: var(--text-primary);
+      cursor: pointer;
+      padding: 0.55rem 0.65rem;
+      text-align: left;
+    }
+
+    .select-option:last-child {
+      border-bottom: 0;
+    }
+
+    .select-option:hover,
+    .select-option:focus-visible {
+      background: var(--bg-surface);
+      outline: none;
+    }
+
+    .select-option small {
+      display: block;
+      color: var(--text-secondary);
+    }
+
+    .radio-card,
+    .checkbox-line,
+    .toggle-line {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-2);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      background: var(--bg-surface);
+      padding: var(--space-3);
+    }
+
+    .radio-card:has(input:checked) {
+      border-color: var(--qatar-gold);
+      background: rgba(196, 146, 42, 0.1);
+    }
+
+    .checkbox-line input,
+    .radio-card input {
+      accent-color: var(--accent-primary);
+      margin-top: 0.18rem;
+    }
+
+    .toggle-switch {
+      position: relative;
+      display: inline-flex;
+      width: 42px;
+      height: 24px;
+      flex: 0 0 auto;
+      border-radius: 999px;
+      background: var(--bg-elevated);
+      border: 1px solid var(--border-subtle);
+    }
+
+    .toggle-switch::after {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 16px;
+      height: 16px;
+      border-radius: 999px;
+      background: var(--text-secondary);
+      content: "";
+      transition: transform 160ms ease, background 160ms ease;
+    }
+
+    input:checked + .toggle-switch {
+      background: var(--accent-muted);
+      border-color: var(--accent-primary);
+    }
+
+    input:checked + .toggle-switch::after {
+      transform: translateX(18px);
+      background: var(--qatar-gold);
+    }
+
+    .tabs {
+      display: flex;
+      min-width: max-content;
+      gap: var(--space-2);
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: var(--space-2);
+    }
+
+    .tab {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      border: 1px solid transparent;
+      border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+      background: transparent;
+      color: var(--text-secondary);
+      cursor: pointer;
+      padding: 0.52rem 0.88rem;
+    }
+
+    .tab:hover,
+    .tab:focus-visible {
+      border-color: var(--border-subtle);
+      background: var(--bg-elevated);
+      color: var(--text-primary);
+      outline: none;
+    }
+
+    .tab.is-active {
+      border-color: var(--accent-primary);
+      background: var(--accent-muted);
+      color: var(--text-primary);
+    }
+
+    .tab-badge {
+      border-radius: var(--radius-sm);
+      background: rgba(141, 27, 61, 0.15);
+      color: var(--qatar-gold);
+      font-size: 10px;
+      font-weight: 700;
+      padding: 0.1rem 0.42rem;
+    }
+
+    .settings-nav {
+      display: grid;
+      gap: var(--space-1);
+    }
+
+    .nav-item {
+      display: grid;
+      grid-template-columns: 20px minmax(0, 1fr);
+      gap: var(--space-2);
+      border-left: 2px solid transparent;
+      border-radius: var(--radius-sm);
+      color: var(--text-secondary);
+      padding: 0.55rem 0.72rem;
+    }
+
+    .nav-item:hover,
+    .nav-item:focus-visible {
+      background: var(--bg-elevated);
+      color: var(--text-primary);
+      outline: none;
+    }
+
+    .nav-item.is-active {
+      border-left-color: var(--accent-primary);
+      background: var(--accent-muted);
+      color: var(--text-primary);
+    }
+
+    .nav-item small {
+      display: block;
+      color: var(--text-secondary);
+      font-size: 11px;
+    }
+
+    .segmented {
+      display: inline-flex;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      background: var(--bg-input);
+      padding: 3px;
+    }
+
+    .segmented-button {
+      border: 0;
+      border-radius: var(--radius-md);
+      background: transparent;
+      color: var(--text-secondary);
+      cursor: pointer;
+      padding: 0.35rem 0.7rem;
+    }
+
+    .segmented-button:hover,
+    .segmented-button:focus-visible {
+      color: var(--text-primary);
+      outline: none;
+    }
+
+    .segmented-button.is-active {
+      background: var(--bg-elevated);
+      color: var(--text-primary);
+    }
+
+    .modal-backdrop,
+    .drawer-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      background: rgba(0, 0, 0, 0.5);
+      padding: var(--space-6);
+    }
+
+    .modal-backdrop.is-open,
+    .drawer-backdrop.is-open {
+      display: flex;
+    }
+
+    .modal-backdrop {
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-panel {
+      width: min(100%, 520px);
+      max-height: calc(100vh - 48px);
+      overflow: hidden;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      background: var(--bg-surface);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .modal-head,
+    .modal-body,
+    .modal-foot {
+      padding: var(--space-4);
+    }
+
+    .modal-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: var(--space-4);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .modal-head h3,
+    .modal-head p {
+      margin: 0;
+    }
+
+    .modal-head h3 {
+      font-size: 1.05rem;
+    }
+
+    .modal-head p {
+      margin-top: var(--space-1);
+      color: var(--text-secondary);
+      font-size: 13px;
+    }
+
+    .modal-foot {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: var(--space-2);
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .drawer-backdrop {
+      justify-content: flex-end;
+      padding: 0;
+    }
+
+    .drawer-panel {
+      width: min(100%, 440px);
+      height: 100vh;
+      border-left: 1px solid var(--border-subtle);
+      background: var(--bg-surface);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .drawer-panel .modal-body {
+      height: calc(100vh - 84px);
+      overflow-y: auto;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      background: var(--bg-surface);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    th,
+    td {
+      border-bottom: 1px solid var(--border-subtle);
+      padding: 0.75rem;
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    th {
+      color: var(--text-secondary);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    tbody tr:hover {
+      background: var(--bg-elevated);
+    }
+
+    .table-sort {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-1);
+      border: 0;
+      background: transparent;
+      color: inherit;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .table-sort:hover,
+    .table-sort:focus-visible {
+      color: var(--text-primary);
+      outline: none;
+    }
+
+    .table-header-controls {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      min-width: max-content;
+    }
+
+    .table-filter-trigger {
+      display: inline-grid;
+      place-items: center;
+      width: 28px;
+      height: 28px;
+      border: 1px solid transparent;
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--text-tertiary);
+      cursor: pointer;
+    }
+
+    .table-filter-trigger:hover,
+    .table-filter-trigger:focus-visible,
+    .table-filter-trigger.is-active {
+      border-color: rgba(196, 151, 53, 0.48);
+      background: rgba(196, 151, 53, 0.1);
+      color: var(--qatar-gold);
+      outline: none;
+    }
+
+    .column-filter-menu {
+      display: grid;
+      gap: var(--space-3);
+      width: min(360px, 100%);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      background: var(--bg-surface);
+      box-shadow: 0 20px 48px rgba(0, 0, 0, 0.42);
+      padding: var(--space-3);
+    }
+
+    .column-filter-menu-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: var(--space-3);
+    }
+
+    .column-filter-menu-head span {
+      display: block;
+      color: var(--text-tertiary);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .column-filter-menu-head strong {
+      color: var(--text-primary);
+      font-size: 14px;
+    }
+
+    .column-filter-sort-row,
+    .column-filter-actions {
+      display: grid;
+      gap: var(--space-2);
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .column-filter-search,
+    .column-filter-option {
+      display: grid;
+      align-items: center;
+      gap: var(--space-2);
+      grid-template-columns: auto minmax(0, 1fr);
+    }
+
+    .column-filter-search {
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      background: var(--bg-input);
+      color: var(--text-tertiary);
+      padding: 0 0.7rem;
+    }
+
+    .column-filter-search input {
+      min-width: 0;
+      min-height: 38px;
+      border: 0;
+      background: transparent;
+      color: var(--text-primary);
+      outline: 0;
+    }
+
+    .column-filter-options {
+      display: grid;
+      gap: 1px;
+      max-height: 180px;
+      overflow-y: auto;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      background: var(--bg-base);
+    }
+
+    .column-filter-option {
+      min-height: 38px;
+      background: var(--bg-surface);
+      color: var(--text-secondary);
+      padding: 0.55rem 0.7rem;
+    }
+
+    .column-filter-option.select-all {
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+    }
+
+    .column-filter-option input {
+      accent-color: var(--qatar-gold);
+    }
+
+    .table-filter-chips {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .table-filter-chip-label {
+      color: var(--text-tertiary);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .table-filter-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-1);
+      min-height: 30px;
+      border: 1px solid rgba(196, 151, 53, 0.42);
+      border-radius: 999px;
+      background: rgba(196, 151, 53, 0.1);
+      color: var(--text-primary);
+      font-size: 12px;
+      font-weight: 800;
+      padding: 0 var(--space-3);
+    }
+
+    .roster-summary {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--space-2);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: var(--space-3);
+    }
+
+    .roster-sex-count {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .sex-symbol {
+      display: inline-flex;
+      align-items: center;
+      font-weight: 900;
+    }
+
+    .sex-symbol.male {
+      color: var(--status-blue);
+    }
+
+    .sex-symbol.female {
+      color: var(--status-pink);
+    }
+
+    .list-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-3);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: 0.65rem 0.75rem;
+    }
+
+    .list-row:hover {
+      background: var(--bg-elevated);
+    }
+
+    .message {
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      padding: var(--space-3);
+      font-weight: 600;
+    }
+
+    .message.success {
+      border-color: rgba(69, 165, 87, 0.3);
+      background: rgba(69, 165, 87, 0.1);
+      color: var(--status-green);
+    }
+
+    .message.warning {
+      border-color: rgba(229, 163, 29, 0.3);
+      background: rgba(229, 163, 29, 0.1);
+      color: var(--status-amber);
+    }
+
+    .message.error {
+      border-color: rgba(229, 72, 77, 0.3);
+      background: rgba(229, 72, 77, 0.1);
+      color: var(--status-red);
+    }
+
+    .message.info {
+      border-color: rgba(59, 130, 246, 0.3);
+      background: rgba(59, 130, 246, 0.1);
+      color: var(--status-blue);
+    }
+
+    .progress {
+      height: 8px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: var(--bg-elevated);
+    }
+
+    .progress span {
+      display: block;
+      height: 100%;
+      width: var(--progress-width);
+      border-radius: inherit;
+      background: var(--status-green);
+    }
+
+    .progress.warning span {
+      background: var(--status-amber);
+    }
+
+    .progress.danger span {
+      background: var(--status-red);
+    }
+
+    .skeleton {
+      min-height: 14px;
+      overflow: hidden;
+      border-radius: var(--radius-sm);
+      background: linear-gradient(90deg, var(--bg-elevated), #25252b, var(--bg-elevated));
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite linear;
+    }
+
+    @keyframes shimmer {
+      from {
+        background-position: 200% 0;
+      }
+      to {
+        background-position: -200% 0;
+      }
+    }
+
+    .loader {
+      display: inline-flex;
+      width: 18px;
+      height: 18px;
+      border: 2px solid var(--border-subtle);
+      border-top-color: var(--qatar-gold);
+      border-radius: 999px;
+      animation: spin 800ms linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .empty-state {
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      background: var(--bg-surface);
+      padding: var(--space-8);
+      text-align: center;
+    }
+
+    .empty-state h3,
+    .empty-state p {
+      margin: 0;
+    }
+
+    .empty-state p {
+      margin-top: var(--space-2);
+      color: var(--text-secondary);
+    }
+
+    .transfer-list {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+      gap: var(--space-3);
+      align-items: stretch;
+    }
+
+    .transfer-column {
+      min-height: 220px;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      background: var(--bg-base);
+      padding: var(--space-3);
+    }
+
+    .transfer-controls {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: var(--space-2);
+    }
+
+    .room-card {
+      display: flex;
+      min-height: 220px;
+      flex-direction: column;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      background: var(--bg-surface);
+      color: inherit;
+      padding: var(--space-4);
+      text-align: left;
+    }
+
+    .room-card:hover {
+      border-color: var(--accent-primary);
+      background: var(--bg-elevated);
+      transform: translateY(-1px);
+    }
+
+    .bed-zone {
+      border: 1px solid rgba(35, 35, 41, 0.85);
+      border-radius: var(--radius-sm);
+      background: rgba(28, 28, 33, 0.6);
+      padding: var(--space-3);
+    }
+
+    .accordion-item {
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+
+    .accordion-trigger {
+      display: flex;
+      width: 100%;
+      align-items: center;
+      justify-content: space-between;
+      border: 0;
+      background: var(--bg-surface);
+      color: var(--text-primary);
+      cursor: pointer;
+      padding: var(--space-3);
+      text-align: left;
+    }
+
+    .accordion-body {
+      display: none;
+      border-top: 1px solid var(--border-subtle);
+      background: var(--bg-base);
+      color: var(--text-secondary);
+      padding: var(--space-3);
+    }
+
+    .accordion-item.is-open .accordion-body {
+      display: block;
+    }
+
+    .toast-region {
+      position: fixed;
+      right: var(--space-5);
+      bottom: var(--space-5);
+      z-index: 60;
+      display: grid;
+      gap: var(--space-2);
+      pointer-events: none;
+    }
+
+    .toast {
+      min-width: 260px;
+      border: 1px solid rgba(69, 165, 87, 0.32);
+      border-radius: var(--radius-lg);
+      background: var(--bg-elevated);
+      box-shadow: var(--shadow-soft);
+      color: var(--status-green);
+      padding: var(--space-3);
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 160ms ease, transform 160ms ease;
+    }
+
+    .toast.warning {
+      border-color: rgba(229, 163, 29, 0.34);
+      color: var(--status-amber);
+    }
+
+    .toast.error {
+      border-color: rgba(229, 72, 77, 0.34);
+      color: var(--status-red);
+    }
+
+    .toast.info {
+      border-color: rgba(59, 130, 246, 0.34);
+      color: var(--status-blue);
+    }
+
+    .toast.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .toast-shelf {
+      display: grid;
+      gap: var(--space-2);
+    }
+
+    .toast-shelf .toast {
+      opacity: 1;
+      transform: none;
+    }
+
+    .command-panel {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 55;
+      background: rgba(0, 0, 0, 0.5);
+      padding: var(--space-4);
+    }
+
+    .command-panel.is-open {
+      display: block;
+    }
+
+    .command-box {
+      width: min(100%, 620px);
+      margin: 15vh auto 0;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      background: var(--bg-elevated);
+      box-shadow: var(--shadow-soft);
+      padding: var(--space-2);
+    }
+
+    .command-box .input {
+      border-width: 0 0 1px;
+      border-radius: 0;
+      background: transparent;
+    }
+
+    .command-list {
+      max-height: 320px;
+      overflow-y: auto;
+      padding: var(--space-1);
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--border-subtle);
+    }
+
+    @media (max-width: 980px) {
+      .app-frame {
+        grid-template-columns: 1fr;
+      }
+
+      .side-rail {
+        position: static;
+        height: auto;
+      }
+
+      .toc {
+        display: none;
+      }
+
+      .grid.two,
+      .grid.three,
+      .grid.four {
+        grid-template-columns: 1fr;
+      }
+
+      .top-bar {
+        position: static;
+      }
+
+      .transfer-list {
+        grid-template-columns: 1fr;
+      }
+
+      .transfer-controls {
+        flex-direction: row;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .content {
+        padding: var(--space-5) var(--space-4) 3rem;
+      }
+
+      .top-bar {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: var(--space-3) var(--space-4);
+      }
+
+      .top-bar-actions {
+        width: 100%;
+        justify-content: flex-start;
+      }
+
+      .section-head {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .modal-backdrop {
+        padding: var(--space-3);
+      }
+    }
+
+    /* ============================================================
+       V2 POLISH LAYER  (additive — overrides selected base rules)
+       ============================================================ */
+    :root {
+      --shadow-sm: 0 1px 2px rgba(0,0,0,.4), 0 2px 8px rgba(0,0,0,.18);
+      --ring: 0 0 0 2px var(--bg-base), 0 0 0 4px rgba(196,146,42,.55);
+      --status-pink: #ec4899;
+      --silver: #b8bcc4;
+      --bronze: #c9824e;
+    }
+    html { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+    body { line-height: 1.55; }
+    .metric-value, .type-mono, .swatch-value, td, .kbd, .code-token,
+    .change-badge, .vt-time, .prep-time strong { font-variant-numeric: tabular-nums; }
+
+    /* unified, accessible focus ring */
+    a:focus-visible, button:focus-visible, .button:focus-visible,
+    .toc-link:focus-visible, .nav-item:focus-visible, .tab:focus-visible,
+    .calendar-day:focus-visible, .select-option:focus-visible, summary:focus-visible,
+    .segmented-button:focus-visible, .icon-button:focus-visible {
+      outline: none; box-shadow: var(--ring);
+    }
+    .input:focus, .select:focus, .textarea:focus { box-shadow: 0 0 0 3px rgba(141,27,61,.25); }
+
+    /* section rhythm: hairline separators + gold eyebrow tick */
+    .section { padding-top: var(--space-6); border-top: 1px solid color-mix(in srgb, var(--border-subtle) 70%, transparent); }
+    .section:first-of-type { border-top: 0; padding-top: 0; }
+    .section-head .eyebrow { position: relative; padding-left: 14px; }
+    .section-head .eyebrow::before { content:""; position:absolute; left:0; top:50%; transform:translateY(-50%); width:6px; height:6px; border-radius:2px; background:var(--qatar-gold); }
+    .section-title { letter-spacing:-.01em; font-size:1.4rem; display:inline-flex; align-items:center; gap:.5ch; }
+
+    /* gentle elevation */
+    .card, .metric-card, .swatch, .specimen { box-shadow: var(--shadow-sm); }
+    .metric-value { font-size:1.62rem; letter-spacing:-.01em; }
+    .button.primary { box-shadow: 0 1px 0 rgba(255,255,255,.06) inset, 0 1px 8px rgba(141,27,61,.35); }
+
+    /* status chips: a touch more contrast */
+    .status { padding:.2rem .6rem; gap:5px; }
+    .status.green { background: rgba(69,165,87,.16); }
+    .status.amber { background: rgba(229,163,29,.16); }
+    .status.red   { background: rgba(229,72,77,.16); }
+    .status.blue  { background: rgba(59,130,246,.16); }
+
+    /* custom dark scrollbars */
+    * { scrollbar-width: thin; scrollbar-color: #2c2c33 transparent; }
+    *::-webkit-scrollbar { width:10px; height:10px; }
+    *::-webkit-scrollbar-thumb { background:#2c2c33; border-radius:999px; border:2px solid var(--bg-base); }
+
+    /* heading anchor links */
+    .anchor { opacity:0; color:var(--text-tertiary); font-weight:400; text-decoration:none; font-size:.8em; transition:opacity .15s; }
+    .section-head:hover .anchor { opacity:1; }
+    .anchor:hover { color:var(--qatar-gold); }
+
+    /* click-to-copy affordance */
+    .swatch, .code-token, .swatch-value { cursor:copy; }
+    .swatch:hover { border-color: rgba(196,146,42,.5); }
+
+    /* TOC search */
+    .toc-search { margin-bottom: var(--space-4); }
+    .toc-search input { width:100%; border:1px solid var(--border-subtle); border-radius:var(--radius-sm); background:var(--bg-input); color:var(--text-primary); padding:.45rem .6rem; font-size:12px; outline:none; }
+    .toc-link.is-hidden { display:none; }
+
+    /* ---------- v2 new components ---------- */
+    .name-chip { display:inline-flex; min-height:26px; align-items:center; border:1px solid currentColor; border-radius:999px; background:color-mix(in srgb,currentColor 12%,transparent); font-size:12px; font-weight:800; line-height:1; padding:0 var(--space-3); }
+    .name-chip.male{color:var(--status-blue);} .name-chip.female{color:var(--status-pink);} .name-chip.count{color:var(--text-secondary);}
+
+    .change-badge{display:inline-flex;align-items:center;gap:5px;border-radius:999px;padding:.16rem .5rem;font-size:11.5px;font-weight:800;border:1px solid var(--status-amber);color:var(--status-amber);background:rgba(229,163,29,.14);}
+    .change-badge.big{border-color:var(--status-red);color:var(--status-red);background:rgba(229,72,77,.14);}
+    .change-badge s{color:var(--text-tertiary);text-decoration:line-through;font-weight:700;}
+    .change-badge .arr{opacity:.7;}
+
+    .legend{display:flex;flex-wrap:wrap;gap:var(--space-4);align-items:center;}
+    .legend .leg{display:inline-flex;align-items:center;gap:6px;color:var(--text-secondary);font-size:12px;}
+    .leg .dot{width:9px;height:9px;border-radius:999px;}
+
+    .prep-times{display:flex;flex-wrap:wrap;gap:var(--space-2);}
+    .prep-time{display:grid;gap:2px;min-width:74px;border:1px solid var(--border-subtle);border-radius:var(--radius-md);background:var(--bg-base);padding:.5rem .6rem;}
+    .prep-time strong{color:var(--text-primary);}
+    .prep-time span{color:var(--text-tertiary);font-size:11px;text-transform:uppercase;letter-spacing:.04em;}
+    .prep-time.bus{border-color:rgba(196,146,42,.4);background:rgba(196,146,42,.08);}
+
+    details.kv{border:1px solid var(--border-subtle);border-radius:var(--radius-lg);background:var(--bg-surface);overflow:hidden;}
+    details.kv+details.kv{margin-top:var(--space-2);}
+    details.kv>summary{display:grid;grid-template-columns:16px 1fr auto;align-items:center;gap:var(--space-2);cursor:pointer;list-style:none;padding:.7rem .85rem;}
+    details.kv>summary::-webkit-details-marker{display:none;}
+    details.kv .chev{color:var(--text-tertiary);transition:transform .15s ease;}
+    details.kv[open] .chev{transform:rotate(90deg);color:var(--accent-primary);}
+    details.kv[open]{box-shadow:inset 3px 0 0 rgba(141,27,61,.7);}
+    details.kv .kv-body{border-top:1px solid var(--border-subtle);background:var(--bg-base);color:var(--text-secondary);padding:.7rem .85rem .8rem 2.2rem;}
+
+    .tip{position:relative;border-bottom:1px dotted var(--text-tertiary);cursor:help;}
+    .tip::after{content:attr(data-tip);position:absolute;left:50%;bottom:140%;transform:translateX(-50%);width:max-content;max-width:240px;padding:.4rem .55rem;border:1px solid var(--border-subtle);border-radius:var(--radius-sm);background:#000;color:var(--text-primary);font-size:12px;font-weight:600;line-height:1.35;box-shadow:var(--shadow-soft);opacity:0;pointer-events:none;transition:opacity .12s;z-index:30;}
+    .tip:hover::after,.tip:focus-visible::after{opacity:1;}
+
+    .avatar{display:inline-flex;width:34px;height:34px;flex:0 0 auto;align-items:center;justify-content:center;border-radius:999px;background:var(--accent-muted);border:1px solid rgba(196,146,42,.4);color:var(--qatar-gold);font-weight:800;font-size:12px;}
+    .avatar.sq{border-radius:var(--radius-md);}
+    .identity{display:inline-flex;align-items:center;gap:var(--space-2);}
+    .identity strong{color:var(--text-primary);} .identity small{color:var(--text-secondary);display:block;font-size:11px;}
+
+    /* ---------- results & placings (v2.1) ---------- */
+    .avatar.male{color:var(--status-blue);border-color:rgba(59,130,246,.5);background:rgba(59,130,246,.12);}
+    .avatar.female{color:var(--status-pink);border-color:rgba(236,72,153,.5);background:rgba(236,72,153,.12);}
+    .sex{display:inline-flex;align-items:center;gap:5px;font-weight:700;color:var(--text-secondary);font-size:12px;}
+    .sex.male{color:var(--status-blue);} .sex.female{color:var(--status-pink);}
+    .identity .who{display:grid;gap:1px;}
+    .medal{flex:0 0 auto;} .medal.gold{color:var(--qatar-gold);} .medal.silver{color:var(--silver);} .medal.bronze{color:var(--bronze);}
+    .medal-cell{display:inline-flex;align-items:center;justify-content:center;}
+    .place-badge{display:inline-flex;align-items:center;justify-content:center;min-width:42px;border:1px solid var(--status-blue);color:var(--status-blue);border-radius:999px;padding:.12rem .5rem;font-size:12px;font-weight:800;}
+    .place-num{font-weight:800;font-variant-numeric:tabular-nums;color:var(--text-secondary);}
+    .entry-chip{display:inline-flex;align-items:center;border:1px solid var(--border-subtle);border-radius:999px;background:var(--bg-base);color:var(--text-secondary);font-size:11px;font-weight:800;padding:.05rem .5rem;}
+    .identity .who .entry-chip{justify-self:start;}
+    .entry-chip.confirmed{color:var(--status-green);border-color:rgba(69,165,87,.4);background:rgba(69,165,87,.08);}
+    .perf-legend{display:flex;flex-wrap:wrap;gap:var(--space-4);align-items:center;}
+    .perf-legend .leg{display:inline-flex;align-items:center;gap:6px;color:var(--text-secondary);font-size:12px;}
+    .placings{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:var(--space-2);}
+    @media (max-width:1000px){.placings{grid-template-columns:repeat(4,1fr);}}
+    .placing{border:1px solid var(--border-subtle);border-radius:var(--radius-md);background:var(--bg-base);padding:var(--space-3);text-align:center;}
+    .placing .lbl{color:var(--text-secondary);font-size:12px;font-weight:700;}
+    .placing .val{font-size:1.5rem;font-weight:800;font-variant-numeric:tabular-nums;}
+    .placing.g1{border-color:rgba(196,146,42,.5);background:rgba(196,146,42,.08);}
+    .placing.g2{border-color:rgba(184,188,196,.4);background:rgba(184,188,196,.06);}
+    .placing.g3{border-color:rgba(201,130,78,.45);background:rgba(201,130,78,.07);}
+    .medal-lbl{display:inline-flex;align-items:center;justify-content:center;gap:5px;}
+    .place-centered th:first-child,.place-centered td:first-child{text-align:center;}
+    .type-chip{display:inline-flex;align-items:center;border:1px solid var(--border-subtle);border-radius:999px;background:var(--bg-base);color:var(--text-secondary);font-size:11px;font-weight:800;padding:.1rem .55rem;}
+    .type-chip.staff{color:var(--qatar-gold);border-color:rgba(196,146,42,.4);background:rgba(196,146,42,.08);}
+
+    .crumbs{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2);color:var(--text-secondary);font-size:13px;}
+    .crumbs a:hover{color:var(--text-primary);} .crumbs .sep{color:var(--text-tertiary);} .crumbs .here{color:var(--text-primary);font-weight:700;}
+
+    .banner{display:flex;align-items:center;gap:var(--space-3);border:1px solid rgba(196,146,42,.35);border-left-width:3px;border-radius:var(--radius-md);background:rgba(196,146,42,.08);padding:var(--space-3) var(--space-4);}
+    .banner .banner-body{flex:1 1 auto;} .banner strong{color:var(--text-primary);} .banner p{margin:.1rem 0 0;color:var(--text-secondary);font-size:13px;}
+
+    .tag-input{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2);border:1px solid var(--border-subtle);border-radius:var(--radius-sm);background:var(--bg-input);padding:.4rem .5rem;}
+    .tag{display:inline-flex;align-items:center;gap:6px;border-radius:var(--radius-sm);background:var(--accent-muted);border:1px solid var(--accent-primary);color:var(--text-primary);font-size:12px;font-weight:700;padding:.2rem .5rem;}
+    .tag button{border:0;background:transparent;color:var(--text-secondary);cursor:pointer;padding:0;line-height:1;}
+    .tag-input input{flex:1 1 80px;min-width:80px;border:0;background:transparent;color:var(--text-primary);outline:none;padding:.2rem;}
+
+    .stepper{display:flex;flex-wrap:wrap;align-items:center;gap:var(--space-2);}
+    .step{display:inline-flex;align-items:center;gap:8px;color:var(--text-secondary);font-size:13px;}
+    .step .num{display:inline-flex;width:22px;height:22px;align-items:center;justify-content:center;border-radius:999px;border:1px solid var(--border-subtle);background:var(--bg-elevated);font-size:11px;font-weight:800;}
+    .step.done .num{background:rgba(69,165,87,.15);border-color:var(--status-green);color:var(--status-green);}
+    .step.active .num{background:var(--accent-muted);border-color:var(--accent-primary);color:var(--qatar-gold);}
+    .step.active{color:var(--text-primary);font-weight:700;}
+    .stepper .bar{width:26px;height:1px;background:var(--border-subtle);}
+
+    .vtimeline{display:grid;gap:0;}
+    .vt-item{position:relative;display:grid;grid-template-columns:1fr;gap:2px;padding:0 0 var(--space-4) var(--space-4);border-left:1px solid var(--border-subtle);margin-left:5px;}
+    .vt-item:last-child{border-left-color:transparent;padding-bottom:0;}
+    .vt-dot{position:absolute;left:-5px;top:2px;width:10px;height:10px;border-radius:999px;background:var(--qatar-gold);box-shadow:0 0 0 3px var(--bg-surface);}
+    .vt-dot.green{background:var(--status-green);} .vt-dot.amber{background:var(--status-amber);} .vt-dot.muted{background:var(--text-tertiary);}
+    .vt-body strong{color:var(--text-primary);} .vt-time{color:var(--text-tertiary);font-size:11px;}
+
+    .guides{display:grid;gap:var(--space-2);grid-template-columns:1fr 1fr;}
+    .guide{display:grid;grid-template-columns:18px 1fr;gap:var(--space-2);border:1px solid var(--border-subtle);border-radius:var(--radius-md);padding:.6rem .7rem;font-size:13px;}
+    .guide .mk{font-weight:900;}
+    .guide.do{border-color:rgba(69,165,87,.35);background:rgba(69,165,87,.07);} .guide.do .mk{color:var(--status-green);}
+    .guide.dont{border-color:rgba(229,72,77,.32);background:rgba(229,72,77,.06);} .guide.dont .mk{color:var(--status-red);}
+    @media (max-width:640px){.guides{grid-template-columns:1fr;}}
+
+    /* fix: keep status pills on one line so the rounded shape stays intact */
+    .status{ white-space: nowrap; }
+
+    /* ---------- row banding (Option D · stronger zebra + hover) ---------- */
+    tbody tr:nth-child(odd){ background: var(--bg-base); }
+    tbody tr:nth-child(even){ background: var(--bg-elevated); }
+    tbody tr{ transition: background .12s ease; }
+    tbody td{ border-bottom-color: color-mix(in srgb, var(--border-subtle) 55%, transparent); }
+    tbody tr:hover{ background: rgba(141,27,61,.20); }   /* burgundy active row — wins (declared last) */
+
+    /* list rows: alternating fill within a stack, same hover */
+    .stack .list-row:nth-child(odd){ background: var(--bg-base); }
+    .stack .list-row:nth-child(even){ background: var(--bg-elevated); }
+    .stack .list-row:hover{ background: rgba(141,27,61,.20); }
+
+  </style>
+</head>
+<body>
+  <div class="app-frame">
+    <aside class="side-rail" aria-label="Kitchen sink sections">
+      <div class="brand">
+        <div>
+          <div class="brand-title">Sample Athletics</div>
+          <div class="brand-kicker">Sample Athletics UI glossary</div>
+        </div>
+        <button class="icon-button" type="button" aria-label="Collapse sidebar">&lt;</button>
+      </div>
+      <nav class="toc">
+        <div class="toc-search"><input type="search" placeholder="Filter sections…" data-toc-search aria-label="Filter sections"></div>
+        <div class="toc-group">
+          <div class="toc-label">Foundations</div>
+          <a class="toc-link is-active" href="#colors">Colors</a>
+          <a class="toc-link" href="#typography">Typography</a>
+          <a class="toc-link" href="#spacing">Spacing</a>
+        </div>
+        <div class="toc-group">
+          <div class="toc-label">Elements</div>
+          <a class="toc-link" href="#buttons">Buttons and Pills</a>
+          <a class="toc-link" href="#containers">Containers and Cards</a>
+          <a class="toc-link" href="#inputs">Inputs</a>
+          <a class="toc-link" href="#feedback">Feedback States</a>
+        </div>
+        <div class="toc-group">
+          <div class="toc-label">Collections</div>
+          <a class="toc-link" href="#navigation">Navigation</a>
+          <a class="toc-link" href="#tables">Tables and Lists</a>
+          <a class="toc-link" href="#workflow">Workflow Surfaces</a>
+        </div>
+        <div class="toc-group">
+          <div class="toc-label">Modules</div>
+          <a class="toc-link" href="#modals">Modals and Drawers</a>
+          <a class="toc-link" href="#overlays">Overlays and Commands</a>
+          <a class="toc-link" href="#patterns">Sample Athletics Screen Patterns</a>
+        </div>
+        <div class="toc-group">
+          <div class="toc-label">New in v2</div>
+          <a class="toc-link" href="#timetable">Timetable &amp; Athletics</a>
+          <a class="toc-link" href="#primitives">Modern Primitives</a>
+          <a class="toc-link" href="#guidance">Do / Don't Guidance</a>
+          <a class="toc-link" href="#results">Results &amp; Placings</a>
+        </div>
+      </nav>
+    </aside>
+
+    <main class="main-shell">
+      <header class="top-bar">
+        <div class="row">
+          <strong style="color: var(--qatar-gold);">Sample Athletics V2.0</strong>
+          <!-- Data lane badge -->
+          <span class="pill">Development - ams.dev.db</span>
+        </div>
+        <div class="top-bar-actions">
+          <!-- Command palette trigger -->
+          <button class="button secondary small" type="button" data-command-open>
+            Search <span class="kbd">Cmd K</span>
+          </button>
+          <!-- Primary action in top bar -->
+          <button class="button primary small" type="button" data-toast="Reference action clicked.">Save Reference</button>
+        </div>
+      </header>
+
+      <div class="content">
+        <section class="page-header">
+          <div class="eyebrow">Living design system reference</div>
+          <h1 class="page-title">Sample Athletics UI Kitchen Sink</h1>
+          <p class="page-copy">
+            A single-file visual glossary for Sample Athletics operations app. The structure follows broad kitchen-sink catalogues:
+            foundations first, then elements, collections, and modules. The visuals are copied from the current Sample Athletics
+            Tailwind tokens and shared UI patterns, not from an external theme.
+          </p>
+          <div class="source-note">
+            <span>Local anchors: <code>src/app/globals.css</code></span>
+            <span><code>src/components/ui/*</code></span>
+            <span><code>src/components/layout/*</code></span>
+          </div>
+        </section>
+
+        <section class="section" id="colors">
+          <div class="section-head">
+            <div>
+              <div class="eyebrow">Foundations</div>
+              <h2 class="section-title">Colors</h2>
+              <p class="section-description">Core Sample Athletics tokens from the app shell: dark surfaces, subtle borders, brand burgundy/gold, and operational status colors.</p>
+            </div>
+          </div>
+          <div class="grid four">
+            <div class="swatch" style="--swatch-color: var(--bg-base);">
+              <div class="swatch-color"></div>
+              <div class="swatch-body">
+                <p class="swatch-name">Base</p>
+                <p class="swatch-value">#0a0a0b</p>
+              </div>
+            </div>
+            <div class="swatch" style="--swatch-color: var(--bg-surface);">
+              <div class="swatch-color"></div>
+              <div class="swatch-body">
+                <p class="swatch-name">Surface</p>
+                <p class="swatch-value">#131316</p>
+              </div>
+            </div>
+            <div class="swatch" style="--swatch-color: var(--bg-elevated);">
+              <div class="swatch-color"></div>
+              <div class="swatch-body">
+                <p class="swatch-name">Elevated</p>
+                <p class="swatch-value">#1c1c21</p>
+              </div>
+            </div>
+            <div class="swatch" style="--swatch-color: var(--bg-input);">
+              <div class="swatch-color"></div>
+              <div class="swatch-body">
+                <p class="swatch-name">Input</p>
+                <p class="swatch-value">#18181c</p>
+              </div>
+            </div>
+            <div class="swatch" style="--swatch-color: var(--accent-primary);">
+              <div class="swatch-color"></div>
+              <div class="swatch-body">
+                <p class="swatch-name">Accent primary</p>
+                <p class="swatch-value">#8d1b3d</p>
+              </div>
+            </div>
+            <div class="swatch" style="--swatch-color: var(--qatar-gold);">
+              <div class="swatch-color"></div>
+              <div class="swatch-body">
+                <p class="swatch-name">brand gold</p>
+                <p class="swatch-value">#c4922a</p>
+              </div>
+            </div>
+            <div class="swatch" style="--swatch-color: var(--status-green);">
+              <div class="swatch-color"></div>
+              <div class="swatch-body">
+                <p class="swatch-name">Status green</p>
+                <p class="swatch-value">#45a557</p>
+              </div>
+            </div>
+            <div class="swatch" style="--swatch-color: var(--status-red);">
+              <div class="swatch-color"></div>
+              <div class="swatch-body">
+                <p class="swatch-name">Status red</p>
+                <p class="swatch-value">#e5484d</p>
+              </div>
+            </div>
+            <div class="swatch" style="--swatch-color: var(--silver);">
+              <div class="swatch-color"></div>
+              <div class="swatch-body">
+                <p class="swatch-name">Silver (2nd)</p>
+                <p class="swatch-value">#b8bcc4</p>
+              </div>
+            </div>
+            <div class="swatch" style="--swatch-color: var(--bronze);">
+              <div class="swatch-color"></div>
+              <div class="swatch-body">
+                <p class="swatch-name">Bronze (3rd)</p>
+                <p class="swatch-value">#c9824e</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="typography">
+          <div class="section-head">
+            <div>
+              <div class="eyebrow">Foundations</div>
+              <h2 class="section-title">Typography</h2>
+              <p class="section-description">Sample Athletics typography is compact and operational: gold page titles, small section titles, muted helper copy, and mono for paths/IDs.</p>
+            </div>
+          </div>
+          <div class="grid two">
+            <div class="specimen type-sample">
+              <span class="comment-label">&lt;!-- Page and screen headings --&gt;</span>
+              <div class="stack">
+                <!-- Page title -->
+                <h1 class="type-page-title">Athletes</h1>
+                <!-- Screen title -->
+                <h2 class="type-screen-title">Sample Team</h2>
+                <!-- Section title -->
+                <h3 class="type-section-title">Event Group Coverage</h3>
+                <!-- Uppercase kicker -->
+                <p class="eyebrow">Calendar event</p>
+              </div>
+            </div>
+            <div class="specimen type-sample">
+              <span class="comment-label">&lt;!-- Body, helper, and mono text --&gt;</span>
+              <div class="stack">
+                <!-- Body copy -->
+                <p class="type-body">Current runtime values are read-only. Lane and port edits apply on the next Sample Athletics launch.</p>
+                <!-- Helper copy -->
+                <p class="type-caption">Type DD-MM-YYYY or use the picker.</p>
+                <!-- Mono value -->
+                <p class="type-mono">data/ams.dev.db</p>
+                <!-- Inline link -->
+                <a href="#" class="type-body" style="color: var(--qatar-gold);">Back to app</a>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="spacing">
+          <div class="section-head">
+            <div>
+              <div class="eyebrow">Foundations</div>
+              <h2 class="section-title">Spacing</h2>
+              <p class="section-description">The running app mostly uses 8px, 12px, 16px, 20px, and 24px gaps; dense tools use 8px and cards usually use 12px or 16px padding.</p>
+            </div>
+          </div>
+          <div class="surface">
+            <div class="stack">
+              <!-- Four pixel spacing token -->
+              <div class="space-demo"><span>4px</span><div class="space-bar" style="--bar-width: 4px;"></div><code class="code-token">space-1</code></div>
+              <!-- Eight pixel spacing token -->
+              <div class="space-demo"><span>8px</span><div class="space-bar" style="--bar-width: 8px;"></div><code class="code-token">space-2</code></div>
+              <!-- Twelve pixel spacing token -->
+              <div class="space-demo"><span>12px</span><div class="space-bar" style="--bar-width: 12px;"></div><code class="code-token">space-3</code></div>
+              <!-- Sixteen pixel spacing token -->
+              <div class="space-demo"><span>16px</span><div class="space-bar" style="--bar-width: 16px;"></div><code class="code-token">space-4</code></div>
+              <!-- Twenty four pixel spacing token -->
+              <div class="space-demo"><span>24px</span><div class="space-bar" style="--bar-width: 24px;"></div><code class="code-token">space-6</code></div>
+              <!-- Thirty two pixel spacing token -->
+              <div class="space-demo"><span>32px</span><div class="space-bar" style="--bar-width: 32px;"></div><code class="code-token">space-8</code></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="buttons">
+          <div class="section-head">
+            <div>
+              <div class="eyebrow">Elements</div>
+              <h2 class="section-title">Buttons and Pills</h2>
+              <p class="section-description">Shared Sample Athletics button variants map to primary, secondary, ghost, and danger; pills carry event filters, counts, and status labels.</p>
+            </div>
+          </div>
+          <div class="grid three">
+            <div class="specimen">
+              <span class="comment-label">&lt;!-- Button variants --&gt;</span>
+              <div class="row">
+                <!-- Primary button -->
+                <button class="button primary" type="button" data-toast="Primary button hover/click state works.">Save</button>
+                <!-- Secondary button -->
+                <button class="button secondary" type="button">Backup now</button>
+                <!-- Ghost button -->
+                <button class="button ghost" type="button">Close</button>
+                <!-- Danger button -->
+                <button class="button danger" type="button">Delete</button>
+                <!-- Disabled button -->
+                <button class="button secondary" type="button" disabled>Disabled</button>
+              </div>
+            </div>
+            <div class="specimen">
+              <span class="comment-label">&lt;!-- Primary pill button --&gt;</span>
+              <div class="row">
+                <!-- Primary pill button -->
+                <button class="pill gold" type="button">All Events</button>
+                <!-- Count pill button -->
+                <button class="pill count" type="button">100m <span>7</span></button>
+                <!-- Neutral pill button -->
+                <button class="pill" type="button">Long Jump</button>
+                <!-- Data lane badge pill -->
+                <span class="pill">Local Production</span>
+              </div>
+            </div>
+            <div class="specimen">
+              <span class="comment-label">&lt;!-- Status badge set --&gt;</span>
+              <div class="row">
+                <!-- Valid status badge -->
+                <span class="status green">Valid</span>
+                <!-- Warning status badge -->
+                <span class="status amber">Expiring</span>
+                <!-- Error status badge -->
+                <span class="status red">Expired</span>
+                <!-- Info status badge -->
+                <span class="status blue">Info</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="containers">
+          <div class="section-head">
+            <div>
+              <div class="eyebrow">Views</div>
+              <h2 class="section-title">Containers and Cards</h2>
+              <p class="section-description">Cards stay compact, bordered, and usually 8px radius or less. Feature surfaces use subtle gradients only when matching current athlete summary patterns.</p>
+            </div>
+          </div>
+          <div class="grid three">
+            <div class="specimen">
+              <span class="comment-label">&lt;!-- Metric card --&gt;</span>
+              <!-- Metric card -->
+              <div class="metric-card">
+                <div class="metric-head"><span>Athletes</span><span>users</span></div>
+                <div class="metric-value">428</div>
+                <div class="metric-subtitle">Active records</div>
+              </div>
+            </div>
+            <div class="specimen">
+              <span class="comment-label">&lt;!-- Document metric card --&gt;</span>
+              <!-- Document metric card -->
+              <div class="metric-card document">
+                <div class="metric-head"><span>Documents expiring</span><span>doc</span></div>
+                <div class="metric-value">18</div>
+                <div class="metric-subtitle">Within 180 days</div>
+              </div>
+            </div>
+            <div class="specimen">
+              <span class="comment-label">&lt;!-- document ID metric card --&gt;</span>
+              <!-- document ID metric card -->
+              <div class="metric-card qid">
+                <div class="metric-head"><span>Expired documents</span><span>id</span></div>
+                <div class="metric-value">3</div>
+                <div class="metric-subtitle">Immediate follow-up</div>
+              </div>
+            </div>
+            <div class="specimen">
+              <span class="comment-label">&lt;!-- Section panel card --&gt;</span>
+              <!-- Section panel card -->
+              <div class="card">
+                <div class="panel-header">
+                  <div>
+                    <h3>Data Lane</h3>
+                    <p>Application-level operational configuration.</p>
+                  </div>
+                  <span class="pill">Active</span>
+                </div>
+                <div class="grid two" style="margin-top: var(--space-3);">
+                  <div class="readonly-field">Development</div>
+                  <div class="readonly-field">Port 3001</div>
+                </div>
+              </div>
+            </div>
+            <div class="specimen">
+              <span class="comment-label">&lt;!-- Read-only calculated identity card --&gt;</span>
+              <!-- Read-only calculated identity card -->
+              <div class="card base">
+                <div class="field">
+                  <label>Age Group</label>
+                  <div class="readonly-field">U20</div>
+                  <small>Calculated from selected reference date</small>
+                </div>
+              </div>
+            </div>
+            <div class="specimen">
+              <span class="comment-label">&lt;!-- Empty state card --&gt;</span>
+              <!-- Empty state card -->
+              <div class="empty-state">
+                <h3>No recent results</h3>
+                <p>Competition and championship results will appear here once entered.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="inputs">
+          <div class="section-head">
+            <div>
+              <div class="eyebrow">Elements</div>
+              <h2 class="section-title">Inputs</h2>
+              <p class="section-description">Form controls mirror the Tailwind Forms idea: native inputs normalized into a consistent Sample Athletics baseline with clear focus, error, helper, and disabled states.</p>
+            </div>
+          </div>
+          <div class="grid two">
+            <div class="specimen">
+              <span class="comment-label">&lt;!-- Basic form fields --&gt;</span>
+              <div class="grid two">
+                <!-- Text input -->
+                <div class="field">
+                  <label for="sample-name">Given name(s)</label>
+                  <input id="sample-name" class="input" value="Mariam">
+                  <small>Manual input remains editable here.</small>
+                </div>
+                <!-- Select input -->
+                <div class="field">
+                  <label for="sample-gender">Gender</label>
+                  <select id="sample-gender" class="select">
+                    <option>-</option>
+                    <option selected>Female</option>
+                    <option>Male</option>
+                  </select>
+                </div>
+                <!-- Error input -->
+                <div class="field">
+                  <label for="sample-qid">document ID number</label>
+                  <input id="sample-qid" class="input error" value="123">
+                  <span class="error-text">document ID must use the expected length.</span>
+                </div>
+                <!-- Textarea input -->
+                <div class="field">
+                  <label for="sample-notes">Source notes</label>
+                  <textarea id="sample-notes" class="textarea">Document scan reviewed during intake.</textarea>
+                </div>
+              </div>
+            </div>
+
+            <div class="specimen">
+              <span class="comment-label">&lt;!-- DateField with picker --&gt;</span>
+              <div class="grid two">
+                <!-- DateField text input -->
+                <div class="field popover-holder" data-popover>
+                  <label for="sample-date">Reference Date</label>
+                  <div class="input-wrap">
+                    <input id="sample-date" class="input" value="03-01-2000">
+                    <button class="icon-button" type="button" data-popover-toggle aria-label="Open calendar">cal</button>
+                  </div>
+                  <small>Type DD-MM-YYYY or use the picker.</small>
+                  <div class="date-popover">
+                    <div class="row between" style="margin-bottom: var(--space-2);">
+                      <button class="icon-button" type="button" aria-label="Previous month">&lt;</button>
+                      <strong>April 2007</strong>
+                      <button class="icon-button" type="button" aria-label="Next month">&gt;</button>
+                    </div>
+                    <div class="calendar-grid">
+                      <div class="calendar-weekday">Mo</div><div class="calendar-weekday">Tu</div><div class="calendar-weekday">We</div><div class="calendar-weekday">Th</div><div class="calendar-weekday">Fr</div><div class="calendar-weekday">Sa</div><div class="calendar-weekday">Su</div>
+                      <button class="calendar-day muted" type="button">31</button><button class="calendar-day" type="button">1</button><button class="calendar-day" type="button">2</button><button class="calendar-day" type="button">3</button><button class="calendar-day" type="button">4</button><button class="calendar-day" type="button">5</button><button class="calendar-day" type="button">6</button>
+                      <button class="calendar-day" type="button">7</button><button class="calendar-day" type="button">8</button><button class="calendar-day" type="button">9</button><button class="calendar-day" type="button">10</button><button class="calendar-day" type="button">11</button><button class="calendar-day" type="button">12</button><button class="calendar-day" type="button">13</button>
+                      <button class="calendar-day" type="button">14</button><button class="calendar-day" type="button">15</button><button class="calendar-day" type="button">16</button><button class="calendar-day" type="button">17</button><button class="calendar-day selected" type="button">18</button><button class="calendar-day" type="button">19</button><button class="calendar-day" type="button">20</button>
+                    </div>
+                    <div class="row" style="border-top: 1px solid var(--border-subtle); margin-top: var(--space-3); padding-top: var(--space-3);">
+                      <button class="button secondary small" type="button">Today</button>
+                      <button class="button secondary small" type="button">Clear</button>
+                      <button class="button ghost small" type="button" data-popover-close>Close</button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- CountrySelect autocomplete -->
+                <div class="field popover-holder" data-popover>
+                  <label for="sample-country">Nationality</label>
+                  <div class="input-wrap">
+                    <input id="sample-country" class="input" value="Qatar (QAT)">
+                    <button class="icon-button" type="button" data-popover-toggle aria-label="Open countries">v</button>
+                  </div>
+                  <small>Shows World Athletics code with ISO reference where relevant.</small>
+                  <div class="country-popover">
+                    <button class="select-option" type="button">Qatar (QAT)<small>ISO: QAT</small></button>
+                    <button class="select-option" type="button">United States (USA)<small>ISO: USA</small></button>
+                    <button class="select-option" type="button">Germany (GER)<small>ISO: DEU</small></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="specimen">
+              <span class="comment-label">&lt;!-- Checkbox, radio, and toggle inputs --&gt;</span>
+              <div class="grid two">
+                <!-- Checkbox row -->
+                <label class="checkbox-line">
+                  <input type="checkbox" checked>
+                  <span><strong>Active athlete</strong><br><small class="type-caption">Visible in selectors and reports.</small></span>
+                </label>
+                <!-- Toggle input -->
+                <label class="toggle-line">
+                  <input type="checkbox" checked hidden>
+                  <span class="toggle-switch" aria-hidden="true"></span>
+                  <span><strong>Require auth</strong><br><small class="type-caption">Fails closed outside development/test.</small></span>
+                </label>
+                <!-- Radio card -->
+                <label class="radio-card">
+                  <input type="radio" name="lane" checked>
+                  <span><strong>Development</strong><br><small class="type-caption">Next launch only.</small></span>
+                </label>
+                <!-- Radio card -->
+                <label class="radio-card">
+                  <input type="radio" name="lane">
+                  <span><strong>Local Production</strong><br><small class="type-caption">Requires verified backup.</small></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="specimen">
+              <span class="comment-label">&lt;!-- File and range inputs --&gt;</span>
+              <div class="grid two">
+                <!-- File input -->
+                <div class="field">
+                  <label for="sample-file">Excel import</label>
+                  <input id="sample-file" class="input" type="file" accept=".xlsx,.xls">
+                  <small>Use for athlete imports and document uploads.</small>
+                </div>
+                <!-- Range input -->
+                <div class="field">
+                  <label for="sample-range">Preview confidence</label>
+                  <input id="sample-range" type="range" min="0" max="100" value="72" style="accent-color: var(--qatar-gold); width: 100%;">
+                  <small>Reserved for review or scan confidence controls.</small>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="navigation">
+          <div class="section-head">
+            <div>
+              <div class="eyebrow">Collections</div>
+              <h2 class="section-title">Navigation</h2>
+              <p class="section-description">Sample Athletics navigation is a dense app shell: left rail, sticky top bar, horizontal tabs, settings side nav, segmented controls, and pagination.</p>
+            </div>
+          </div>
+          <div class="grid two">
+            <div class="specimen">
+              <span class="comment-label">&lt;!-- App sidebar navigation --&gt;</span>
+              <!-- App sidebar navigation -->
+              <nav class="surface tight">
+                <div class="toc-label">People</div>
+                <a class="nav-item is-active" href="#"><span>U</span><span>Athletes<small>Profiles and documents</small></span></a>
+                <a class="nav-item" href="#"><span>S</span><span>Staff<small>Coaches and operations</small></span></a>
+                <a class="nav-item" href="#"><span>C</span><span>Clubs<small>Clubs and teams</small></span></a>
+              </nav>
+            </div>
+            <div class="specimen">
+              <span class="comment-label">&lt;!-- Tabs with badge --&gt;</span>
+              <!-- Tabs with badge -->
+              <div class="tabs" role="tablist">
+                <button class="tab is-active" type="button" data-tab-button="details">Details <span class="tab-badge">3</span></button>
+                <button class="tab" type="button" data-tab-button="assignments">Assignments</button>
+                <button class="tab" type="button" data-tab-button="csv">CSV</button>
+              </div>
+              <div class="card base" style="margin-top: var(--space-3);" data-tab-panel>
+                Details tab content. Click another tab to switch active state.
+              </div>
+            </div>
+            <div class="specimen">
+              <span class="comment-label">&lt;!-- Segmented view control --&gt;</span>
+              <!-- Segmented view control -->
+              <div class="segmented" data-segmented>
+                <button class="segmented-button is-active" type="button">Month</button>
+                <button class="segmented-button" type="button">Agenda</button>
+                <button class="segmented-button" type="button">Next 30</button>
+              </div>
+            </div>
+            <div class="specimen">
+              <span class="comment-label">&lt;!-- Pagination controls --&gt;</span>
+              <!-- Pagination controls -->
+              <div class="row between">
+                <span class="type-body">Page 2 of 9</span>
+                <div class="row">
+                  <button class="button secondary small" type="button">Previous</button>
+                  <button class="button secondary small" type="button">Next</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="modals">
+          <div class="section-head">
+            <div>
+              <div class="eyebrow">Modules</div>
+              <h2 class="section-title">Modals and Drawers</h2>
+              <p class="section-description">Modal and drawer surfaces use the same dark overlay, bordered panel, compact header, and explicit close affordance.</p>
+            </div>
+          </div>
+          <div class="grid three">
+            <div class="specimen">
+              <span class="comment-label">&lt;!-- Modal trigger --&gt;</span>
+              <!-- Modal trigger -->
+              <button class="button primary" type="button" data-modal-open="sample-modal">Open modal</button>
+            </div>
+            <div class="specimen">
+              <span class="comment-label">&lt;!-- Drawer trigger --&gt;</span>
+              <!-- Drawer trigger -->
+              <button class="button secondary" type="button" data-drawer-open="sample-drawer">Open event drawer</button>
+            </div>
+            <div class="specimen">
+              <span class="comment-label">&lt;!-- Inline confirmation panel --&gt;</span>
+              <!-- Inline confirmation panel -->
+              <div class="card">
+                <h3 class="type-section-title">Delete competition?</h3>
+                <p class="type-body">This action should remain explicit and scoped.</p>
+                <div class="row" style="margin-top: var(--space-3);">
+                  <button class="button danger small" type="button">Delete</button>
+                  <button class="button ghost small" type="button">Cancel</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="feedback">
+          <div class="section-head">
+            <div>
+              <div class="eyebrow">Elements</div>
+              <h2 class="section-title">Feedback States</h2>
+              <p class="section-description">Use persistent inline messages for save/API results, badges for compact status, and skeletons/loaders only while a fetch is actually pending.</p>
+            </div>
+          </div>
+          <div class="grid two">
+            <div class="specimen">
+              <span class="comment-label">&lt;!-- Feedback message variants --&gt;</span>
+              <div class="stack small">
+                <!-- Success message -->
+                <div class="message success">Camp saved. Attendees were updated.</div>
+                <!-- Warning message -->
+                <div class="message warning">Manual return date is missing for 2 attendees.</div>
+                <!-- Error message -->
+                <div class="message error">Failed to save Profile.</div>
+                <!-- Info message -->
+                <div class="message info">Calendar event API is not available yet.</div>
+              </div>
+            </div>
+            <div class="specimen">
+              <span class="comment-label">&lt;!-- Loading and progress states --&gt;</span>
+              <div class="stack">
+                <!-- Inline loader -->
+                <div class="row"><span class="loader" aria-label="Loading"></span><span class="type-body">Loading competition detail...</span></div>
+                <!-- Skeleton loading block -->
+                <div class="stack small">
+                  <div class="skeleton" style="width: 90%;"></div>
+                  <div class="skeleton" style="width: 65%;"></div>
+                  <div class="skeleton" style="width: 78%;"></div>
+                </div>
+                <!-- Progress bar -->
+                <div class="progress warning" style="--progress-width: 72%;"><span></span></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="tables">
+          <div class="section-head">
+            <div>
+              <div class="eyebrow">Collections</div>
+              <h2 class="section-title">Tables and Lists</h2>
+              <p class="section-description">Mission-control tables are page-owned row renderers with shared URL-driven controls: clickable sort labels, funnel filter menus, active filter chips, and a reset action that preserves page-level workflow state.</p>
+            </div>
+          </div>
+          <div class="grid two">
+            <div class="specimen">
+              <span class="comment-label">&lt;!-- Standard table controls: sortable labels + funnel filters + filter chips --&gt;</span>
+              <!-- Standard table controls: sortable labels + funnel filters + filter chips -->
+              <div class="table-wrap">
+                <table data-sortable-table>
+                  <thead>
+                    <tr>
+                      <th>
+                        <span class="table-header-controls">
+                          <button class="table-sort" type="button" data-sort-index="0">Given name <span>A-Z</span></button>
+                          <button aria-label="Filter Given name" class="table-filter-trigger is-active" type="button">≡</button>
+                        </span>
+                      </th>
+                      <th>
+                        <span class="table-header-controls">
+                          <button class="table-sort" type="button" data-sort-index="1">Family name <span>sort</span></button>
+                          <button aria-label="Filter Family name" class="table-filter-trigger" type="button">≡</button>
+                        </span>
+                      </th>
+                      <th>
+                        <span class="table-header-controls">
+                          <button class="table-sort" type="button" data-sort-index="2">M/F <span>sort</span></button>
+                          <button aria-label="Filter M/F" class="table-filter-trigger" type="button">≡</button>
+                        </span>
+                      </th>
+                      <th>Type</th>
+                      <th>Review</th>
+                      <th>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Sample</td>
+                      <td>ABDALLAH</td>
+                      <td><span class="sex-symbol male" title="Male">♂</span></td>
+                      <td><span class="type-chip">Athlete</span></td>
+                      <td><span class="status green">Official</span></td>
+                      <td><span class="row-actions"><button class="button secondary small" type="button">Edit</button><button class="button secondary small" type="button">Remove</button></span></td>
+                    </tr>
+                    <tr>
+                      <td>Sample</td>
+                      <td>RUNNER B</td>
+                      <td><span class="sex-symbol female" title="Female">♀</span></td>
+                      <td><span class="type-chip">Athlete</span></td>
+                      <td><span class="status green">Official</span></td>
+                      <td><span class="row-actions"><button class="button secondary small" type="button">Edit</button><button class="button secondary small" type="button">Remove</button></span></td>
+                    </tr>
+                    <tr>
+                      <td>Sample Staff A</td>
+                      <td>STAFF</td>
+                      <td><span class="sex-symbol male" title="Male">♂</span></td>
+                      <td><span class="type-chip staff">Staff</span></td>
+                      <td><span class="status green">Official</span></td>
+                      <td><span class="row-actions"><button class="button secondary small" type="button">Edit</button><button class="button danger small" type="button">Remove</button></span></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+              <div class="table-filter-chips" style="margin-top: var(--space-3);">
+                <span class="table-filter-chip-label">Table filters</span>
+                <span class="table-filter-chip">Given name: Sample ×</span>
+                <span class="table-filter-chip">Type: Athlete ×</span>
+                <button class="button secondary small" type="button">Reset table</button>
+              </div>
+            </div>
+            <div class="specimen">
+              <span class="comment-label">&lt;!-- Roster table summary: page-owned controls stay outside table headers --&gt;</span>
+              <!-- Roster table summary: page-owned controls stay outside table headers -->
+              <div class="table-wrap">
+                <div class="roster-summary" aria-label="Roster counts">
+                  <span class="pill muted">41 people</span>
+                  <span class="pill muted">19 athletes</span>
+                  <span class="pill muted">22 staff</span>
+                  <span class="pill muted roster-sex-count" aria-label="2 female / 39 male">
+                    <span>2</span><span class="sex-symbol female" title="Female">♀</span><span>/</span><span>39</span><span class="sex-symbol male" title="Male">♂</span>
+                  </span>
+                </div>
+                <div class="surface" style="border: 0; border-radius: 0;">
+                  <div class="legend">
+                    <span class="leg"><span class="sex-symbol male" title="Male">♂</span> Male</span>
+                    <span class="leg"><span class="sex-symbol female" title="Female">♀</span> Female</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="specimen">
+              <span class="comment-label">&lt;!-- Column filter menu --&gt;</span>
+              <!-- Column filter menu -->
+              <div class="column-filter-menu">
+                <div class="column-filter-menu-head">
+                  <div>
+                    <span>Column filter</span>
+                    <strong>Given name</strong>
+                  </div>
+                  <button class="button secondary small" type="button">Close</button>
+                </div>
+                <div class="column-filter-sort-row">
+                  <button class="button secondary small" type="button">Sort A to Z</button>
+                  <button class="button secondary small" type="button">Sort Z to A</button>
+                </div>
+                <label class="column-filter-search">
+                  <span>⌕</span>
+                  <input placeholder="Search given name values" type="search" value="Sample" />
+                </label>
+                <label class="column-filter-option select-all">
+                  <input checked type="checkbox" />
+                  <span>Select all</span>
+                </label>
+                <div class="column-filter-options">
+                  <label class="column-filter-option">
+                    <input checked type="checkbox" />
+                    <span>Sample</span>
+                  </label>
+                  <label class="column-filter-option">
+                    <input type="checkbox" />
+                    <span>Sample</span>
+                  </label>
+                  <label class="column-filter-option">
+                    <input type="checkbox" />
+                    <span>Sample Staff A</span>
+                  </label>
+                </div>
+                <div class="column-filter-actions">
+                  <button class="button primary small" type="button">Apply</button>
+                  <button class="button secondary small" type="button">Clear filter</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="workflow">
+          <div class="section-head">
+            <div>
+              <div class="eyebrow">Collections</div>
+              <h2 class="section-title">Workflow Surfaces</h2>
+              <p class="section-description">Sample Athletics workflow screens rely on cards, status pills, assignment lists, readiness summaries, and clear source-module ownership.</p>
+            </div>
+          </div>
+          <div class="grid two">
+            <div class="specimen">
+              <span class="comment-label">&lt;!-- Competition readiness card --&gt;</span>
+              <!-- Competition readiness card -->
+              <div class="card">
+                <div class="panel-header">
+                  <div>
+                    <h3>Athletics.app Export Readiness</h3>
+                    <p>Warnings can be reviewed while blocker count remains zero.</p>
+                  </div>
+                  <span class="status amber">2 warnings</span>
+                </div>
+                <div class="grid three" style="margin-top: var(--space-3);">
+                  <div class="card base"><div class="type-caption">Blockers</div><div class="metric-value">0</div></div>
+                  <div class="card base"><div class="type-caption">Warnings</div><div class="metric-value">2</div></div>
+                  <div class="card base"><div class="type-caption">Can export</div><div class="metric-value">Yes</div></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="specimen">
+              <span class="comment-label">&lt;!-- Assignment transfer list --&gt;</span>
+              <!-- Assignment transfer list -->
+              <div class="transfer-list">
+                <div class="transfer-column">
+                  <strong>Available athletes</strong>
+                  <div class="stack small" style="margin-top: var(--space-3);">
+                    <button class="list-row" type="button"><span>Sample Runner E</span><span class="type-caption">100m</span></button>
+                    <button class="list-row" type="button"><span>Sample Runner F</span><span class="type-caption">200m</span></button>
+                  </div>
+                </div>
+                <div class="transfer-controls">
+                  <button class="icon-button" type="button" aria-label="Assign">&gt;</button>
+                  <button class="icon-button" type="button" aria-label="Remove">&lt;</button>
+                </div>
+                <div class="transfer-column">
+                  <strong>Assigned</strong>
+                  <div class="stack small" style="margin-top: var(--space-3);">
+                    <button class="list-row" type="button"><span>Sample Runner C</span><span class="type-caption">100m</span></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="specimen">
+              <span class="comment-label">&lt;!-- Dormitory room card --&gt;</span>
+              <!-- Dormitory room card -->
+              <button class="room-card" type="button">
+                <div class="row between">
+                  <div>
+                    <h3 style="margin: 0; font-size: 1.2rem;">W-204</h3>
+                    <p class="type-caption" style="margin: 0;">Quad</p>
+                  </div>
+                  <span class="status green">On site</span>
+                </div>
+                <div class="grid two" style="margin-top: var(--space-4); flex: 1;">
+                  <div class="bed-zone">
+                    <div class="eyebrow">Subroom A</div>
+                    <p class="type-body">In residence: Amal Y.</p>
+                    <p class="type-caption">Empty bed</p>
+                  </div>
+                  <div class="bed-zone">
+                    <div class="eyebrow">Subroom B</div>
+                    <p class="type-body">Away: Sara K.</p>
+                    <p class="type-caption">Empty bed</p>
+                  </div>
+                </div>
+                <div style="margin-top: var(--space-4);">
+                  <div class="row between type-caption"><span>2 / 4</span><span>1 away</span></div>
+                  <div class="progress" style="--progress-width: 50%; margin-top: var(--space-2);"><span></span></div>
+                </div>
+              </button>
+            </div>
+
+            <div class="specimen">
+              <span class="comment-label">&lt;!-- Accordion detail module --&gt;</span>
+              <!-- Accordion detail module -->
+              <div class="stack small" data-accordion>
+                <div class="accordion-item is-open">
+                  <button class="accordion-trigger" type="button">Identity source <span>toggle</span></button>
+                  <div class="accordion-body">Manual Input is complete. Operational identity follows the active primary source.</div>
+                </div>
+                <div class="accordion-item">
+                  <button class="accordion-trigger" type="button">Travel plan context <span>toggle</span></button>
+                  <div class="accordion-body">Return dates can be manual or inherited from the linked championship travel plan.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="overlays">
+          <div class="section-head">
+            <div>
+              <div class="eyebrow">Modules</div>
+              <h2 class="section-title">Overlays and Commands</h2>
+              <p class="section-description">Command palette, popovers, and toast feedback are transient. Toasts are app-shell feedback for completed commands; durable validation, warnings, and recovery instructions stay inline on the owning screen.</p>
+            </div>
+          </div>
+          <div class="grid three">
+            <div class="specimen">
+              <span class="comment-label">&lt;!-- Command palette --&gt;</span>
+              <!-- Command palette -->
+              <button class="button secondary" type="button" data-command-open>Open command palette</button>
+            </div>
+            <div class="specimen">
+              <span class="comment-label">&lt;!-- Site-wide toast feedback --&gt;</span>
+              <!-- Site-wide toast feedback -->
+              <div class="stack">
+                <button class="button primary" type="button" data-toast="Team member updated: Sample Runner A.">Show success toast</button>
+                <div class="toast-shelf" aria-label="Toast variants">
+                  <div class="toast is-visible">Team member updated: Sample Runner A.</div>
+                  <div class="toast warning is-visible">Undo expired: a newer roster change exists.</div>
+                  <div class="toast error is-visible">Save failed. Check the inline error.</div>
+                </div>
+              </div>
+            </div>
+            <div class="specimen">
+              <span class="comment-label">&lt;!-- Search popover --&gt;</span>
+              <!-- Search popover -->
+              <div class="field popover-holder" data-popover>
+                <label for="sample-search">Search athlete</label>
+                <div class="input-wrap">
+                  <input id="sample-search" class="input" value="sample">
+                  <button class="icon-button" type="button" data-popover-toggle aria-label="Open search results">go</button>
+                </div>
+                <div class="country-popover">
+                  <button class="select-option" type="button">Sample Runner C<small>U20 - 100m</small></button>
+                  <button class="select-option" type="button">Sample Runner G<small>Senior - Long Jump</small></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="timetable">
+          <div class="section-head">
+            <div>
+              <div class="eyebrow">New in v2 · Athletics</div>
+              <h2 class="section-title">Timetable &amp; Athletics</h2>
+              <p class="section-description">Operational specimens promoted from the timetable work: sex-coded entry chips, time-change badges, an event-preparation timeline, status legends, and expandable schedule rows.</p>
+            </div>
+          </div>
+          <div class="grid two">
+            <div class="specimen">
+              <span class="comment-label">&lt;!-- Sex-coded athlete name chips --&gt;</span>
+              <div class="row">
+                <span class="name-chip male">Sample Runner H</span>
+                <span class="name-chip female">Sample Runner B</span>
+                <span class="name-chip count">+3</span>
+              </div>
+            </div>
+            <div class="specimen">
+              <span class="comment-label">&lt;!-- Time-change badge: old → new + delta --&gt;</span>
+              <span style="display:inline-flex;align-items:center;">
+                <div class="row">
+                  <span class="change-badge"><s>08:50</s><span class="arr">&rarr;</span>08:40 <span style="opacity:.8">(&minus;10 min)</span></span>
+                  <span class="change-badge big"><s>17:00</s><span class="arr">&rarr;</span>18:10 <span style="opacity:.85">(+70 min)</span></span>
+                </div>
+
+              </span>
+            </div>
+            <div class="specimen">
+              <span class="comment-label">&lt;!-- Status legend (colour + label) --&gt;</span>
+              <div class="legend">
+                <span class="leg"><span class="dot" style="background:var(--status-green)"></span> On schedule</span>
+                <span class="leg"><span class="dot" style="background:var(--status-amber)"></span> Time changed</span>
+                <span class="leg"><span class="dot" style="background:var(--status-red)"></span> Needs setup</span>
+              </div>
+            </div>
+            <div class="specimen">
+              <span class="comment-label">&lt;!-- Event-preparation timeline --&gt;</span>
+              <div class="prep-times">
+                <div class="prep-time"><strong>09:36</strong><span>Event</span></div>
+                <div class="prep-time"><strong>08:50</strong><span>Gathering</span></div>
+                <div class="prep-time"><strong>08:30</strong><span>Warm-up</span></div>
+                <div class="prep-time"><strong>08:10</strong><span>Arrive</span></div>
+                <div class="prep-time bus"><strong>07:40 &rarr; 08:05</strong><span>Bus</span></div>
+              </div>
+            </div>
+            <div class="specimen" style="grid-column:1 / -1;">
+              <span class="comment-label">&lt;!-- Expandable schedule rows (disclosure) --&gt;</span>
+              <details class="kv" open>
+                <summary>
+                  <svg class="chev" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+                  <span class="row" style="gap:var(--space-2);"><strong>08:30</strong> 110m Hurdles <span class="status red">Needs event-reporting group</span></span>
+                  <span class="button secondary small" role="button">Manage</span>
+                </summary>
+                <div class="kv-body">The inline event-reporting group control appears here once the row is expanded.</div>
+              </details>
+              <details class="kv">
+                <summary>
+                  <svg class="chev" viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+                  <span class="row" style="gap:var(--space-2);"><strong>10:17</strong> 200m <span class="name-chip female" style="min-height:22px;">Sample Runner B</span> <span class="change-badge"><s>10:12</s><span class="arr">&rarr;</span>10:17</span></span>
+                  <span class="button secondary small" role="button">Manage</span>
+                </summary>
+                <div class="kv-body">Entries and results preview for the row.</div>
+              </details>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="primitives">
+          <div class="section-head">
+            <div>
+              <div class="eyebrow">New in v2 · Primitives</div>
+              <h2 class="section-title">Modern Primitives</h2>
+              <p class="section-description">Common interface pieces the original sink did not yet define: announcement banner, tooltips, identity avatars, breadcrumbs, tag input, a step indicator, and a vertical activity timeline.</p>
+            </div>
+          </div>
+          <div class="banner" style="margin-bottom:var(--space-3);">
+            <span class="avatar sq">!</span>
+            <div class="banner-body">
+              <strong>Championship window opens 28-05-2026.</strong>
+              <p>Entries lock 24 hours before each session. Late changes route through the review queue.</p>
+            </div>
+            <button class="button secondary small" type="button">Dismiss</button>
+          </div>
+          <div class="grid two">
+            <div class="specimen">
+              <span class="comment-label">&lt;!-- Tooltip on hover/focus --&gt;</span>
+              <p class="type-body">Bus suitability uses the
+                <span class="tip" tabindex="0" data-tip="Venue arrival target = event start minus warm-up, gathering, and travel buffers.">venue arrival target</span>
+                to choose a departure.</p>
+            </div>
+            <div class="specimen">
+              <span class="comment-label">&lt;!-- Identity avatars --&gt;</span>
+              <div class="stack small">
+                <span class="identity"><span class="avatar">R8</span><span><strong>Sample Runner H</strong><small>U20 · 800m</small></span></span>
+                <span class="identity"><span class="avatar" style="color:var(--status-pink);border-color:rgba(236,72,153,.5);background:rgba(236,72,153,.12);">R2</span><span><strong>Sample Runner B</strong><small>U20 · 200m</small></span></span>
+              </div>
+            </div>
+            <div class="specimen">
+              <span class="comment-label">&lt;!-- Breadcrumbs --&gt;</span>
+              <nav class="crumbs" aria-label="Breadcrumb">
+                <a href="#">Roster</a><span class="sep">/</span>
+                <a href="#">Sample Team</a><span class="sep">/</span>
+                <span class="here">Sample Runner H</span>
+              </nav>
+            </div>
+            <div class="specimen">
+              <span class="comment-label">&lt;!-- Tag / chips input --&gt;</span>
+              <div class="tag-input">
+                <span class="tag">100m <button type="button" aria-label="Remove 100m">&times;</button></span>
+                <span class="tag">200m <button type="button" aria-label="Remove 200m">&times;</button></span>
+                <span class="tag">4&times;100m Relay <button type="button" aria-label="Remove relay">&times;</button></span>
+                <input type="text" placeholder="Add event…" aria-label="Add event">
+              </div>
+            </div>
+            <div class="specimen">
+              <span class="comment-label">&lt;!-- Step indicator / wizard --&gt;</span>
+              <div class="stepper">
+                <span class="step done"><span class="num">&check;</span> Import</span>
+                <span class="bar"></span>
+                <span class="step active"><span class="num">2</span> Review</span>
+                <span class="bar"></span>
+                <span class="step"><span class="num">3</span> Publish</span>
+              </div>
+            </div>
+            <div class="specimen">
+              <span class="comment-label">&lt;!-- Vertical activity timeline --&gt;</span>
+              <div class="vtimeline">
+                <div class="vt-item"><span class="vt-dot green"></span><div class="vt-body"><strong>Result imported</strong><div class="vt-time">09:42 · 800m R1 H1</div></div></div>
+                <div class="vt-item"><span class="vt-dot amber"></span><div class="vt-body"><strong>Start time changed</strong><div class="vt-time">08:40 · was 08:50</div></div></div>
+                <div class="vt-item"><span class="vt-dot muted"></span><div class="vt-body"><strong>Entry added</strong><div class="vt-time">Sample Runner B · 200m</div></div></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="guidance">
+          <div class="section-head">
+            <div>
+              <div class="eyebrow">New in v2 · Guidance</div>
+              <h2 class="section-title">Do / Don't Guidance</h2>
+              <p class="section-description">A reusable annotation block, matching the glossary entry template, for documenting how each surface should and should not be used.</p>
+            </div>
+          </div>
+          <div class="specimen">
+            <span class="comment-label">&lt;!-- Do / Don't annotation blocks --&gt;</span>
+            <div class="guides">
+              <div class="guide do"><span class="mk">&check;</span><span>Use one primary button per surface so the main action is unmistakable.</span></div>
+              <div class="guide dont"><span class="mk">&times;</span><span>Don't stack multiple primary buttons; demote others to <code class="code-token">.secondary</code>.</span></div>
+              <div class="guide do"><span class="mk">&check;</span><span>Pair every status colour with a text label (WCAG 1.4.1).</span></div>
+              <div class="guide dont"><span class="mk">&times;</span><span>Don't rely on colour alone to communicate state.</span></div>
+              <div class="guide do"><span class="mk">&check;</span><span>Show dates to operators as <code class="code-token">DD-MM-YYYY</code>.</span></div>
+              <div class="guide dont"><span class="mk">&times;</span><span>Don't surface raw <code class="code-token">YYYY-MM-DD</code> machine formats in the UI.</span></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="results">
+          <div class="section-head">
+            <div>
+              <div class="eyebrow">New in v2 · Results</div>
+              <h2 class="section-title">Results &amp; Placings</h2>
+              <p class="section-description">Medal icons, placing tiles, place badges, and the athlete sex indicator — the result-surface pieces used on Mission Control and Results. Medal colour = place (gold 1st, silver 2nd, bronze 3rd); 4th–8th use a numbered badge.</p>
+            </div>
+          </div>
+          <div class="grid two">
+            <div class="specimen">
+              <span class="comment-label">&lt;!-- Medal icons (1st–3rd) --&gt;</span>
+              <div class="row"><svg class="medal gold" viewBox="0 0 24 24" width="20" height="20" role="img" aria-label="Gold"><title>Gold</title><path d="M7 2l3.5 7M17 2l-3.5 7" stroke="currentColor" stroke-width="2" fill="none" opacity=".55"/><circle cx="12" cy="15.5" r="6.5" fill="currentColor"/><path d="M12 12.1l1.05 2.13 2.35.34-1.7 1.66.4 2.34-2.1-1.1-2.1 1.1.4-2.34-1.7-1.66 2.35-.34z" fill="#0a0a0b"/></svg> <svg class="medal silver" viewBox="0 0 24 24" width="20" height="20" role="img" aria-label="Silver"><title>Silver</title><path d="M7 2l3.5 7M17 2l-3.5 7" stroke="currentColor" stroke-width="2" fill="none" opacity=".55"/><circle cx="12" cy="15.5" r="6.5" fill="currentColor"/><path d="M12 12.1l1.05 2.13 2.35.34-1.7 1.66.4 2.34-2.1-1.1-2.1 1.1.4-2.34-1.7-1.66 2.35-.34z" fill="#0a0a0b"/></svg> <svg class="medal bronze" viewBox="0 0 24 24" width="20" height="20" role="img" aria-label="Bronze"><title>Bronze</title><path d="M7 2l3.5 7M17 2l-3.5 7" stroke="currentColor" stroke-width="2" fill="none" opacity=".55"/><circle cx="12" cy="15.5" r="6.5" fill="currentColor"/><path d="M12 12.1l1.05 2.13 2.35.34-1.7 1.66.4 2.34-2.1-1.1-2.1 1.1.4-2.34-1.7-1.66 2.35-.34z" fill="#0a0a0b"/></svg></div>
+            </div>
+            <div class="specimen">
+              <span class="comment-label">&lt;!-- Sex indicator + sex-tinted avatar --&gt;</span>
+              <div class="row" style="gap:var(--space-5);">
+                <span class="identity"><span class="avatar male">R8</span><span class="who"><strong>Sample Runner H</strong><span class="sex male">♂ Male</span></span></span>
+                <span class="identity"><span class="avatar female">R2</span><span class="who"><strong>Sample Runner B</strong><span class="sex female">♀ Female</span></span></span>
+              </div>
+            </div>
+            <div class="specimen">
+              <span class="comment-label">&lt;!-- Type chip (category: athlete / staff) --&gt;</span>
+              <div class="row"><span class="type-chip">Athlete</span><span class="type-chip staff">Staff</span></div>
+            </div>
+            <div class="specimen" style="grid-column:1 / -1;">
+              <span class="comment-label">&lt;!-- Placing tiles (medal counts, 1st–8th) --&gt;</span>
+              <div class="placings">
+                <div class="placing g1"><div class="lbl medal-lbl"><svg class="medal gold" viewBox="0 0 24 24" width="18" height="18" role="img" aria-label="Gold"><title>Gold</title><path d="M7 2l3.5 7M17 2l-3.5 7" stroke="currentColor" stroke-width="2" fill="none" opacity=".55"/><circle cx="12" cy="15.5" r="6.5" fill="currentColor"/><path d="M12 12.1l1.05 2.13 2.35.34-1.7 1.66.4 2.34-2.1-1.1-2.1 1.1.4-2.34-1.7-1.66 2.35-.34z" fill="#0a0a0b"/></svg> Gold</div><div class="val">2</div></div>
+                <div class="placing g2"><div class="lbl medal-lbl"><svg class="medal silver" viewBox="0 0 24 24" width="18" height="18" role="img" aria-label="Silver"><title>Silver</title><path d="M7 2l3.5 7M17 2l-3.5 7" stroke="currentColor" stroke-width="2" fill="none" opacity=".55"/><circle cx="12" cy="15.5" r="6.5" fill="currentColor"/><path d="M12 12.1l1.05 2.13 2.35.34-1.7 1.66.4 2.34-2.1-1.1-2.1 1.1.4-2.34-1.7-1.66 2.35-.34z" fill="#0a0a0b"/></svg> Silver</div><div class="val">2</div></div>
+                <div class="placing g3"><div class="lbl medal-lbl"><svg class="medal bronze" viewBox="0 0 24 24" width="18" height="18" role="img" aria-label="Bronze"><title>Bronze</title><path d="M7 2l3.5 7M17 2l-3.5 7" stroke="currentColor" stroke-width="2" fill="none" opacity=".55"/><circle cx="12" cy="15.5" r="6.5" fill="currentColor"/><path d="M12 12.1l1.05 2.13 2.35.34-1.7 1.66.4 2.34-2.1-1.1-2.1 1.1.4-2.34-1.7-1.66 2.35-.34z" fill="#0a0a0b"/></svg> Bronze</div><div class="val">1</div></div>
+                <div class="placing"><div class="lbl">4th</div><div class="val">-</div></div>
+                <div class="placing"><div class="lbl">5th</div><div class="val">-</div></div>
+                <div class="placing"><div class="lbl">6th</div><div class="val">1</div></div>
+                <div class="placing"><div class="lbl">7th</div><div class="val">-</div></div>
+                <div class="placing"><div class="lbl">8th</div><div class="val">-</div></div>
+              </div>
+            </div>
+            <div class="specimen" style="grid-column:1 / -1;">
+              <span class="comment-label">&lt;!-- Final placings table: medals 1st–3rd, numbered badge 4th–8th, centred PLACE column --&gt;</span>
+              <div class="table-wrap">
+                <table class="place-centered">
+                  <thead><tr><th>Place</th><th>Athlete</th><th>Event</th><th>Mark</th></tr></thead>
+                  <tbody>
+                    <tr><td><span class="medal-cell"><svg class="medal gold" viewBox="0 0 24 24" width="22" height="22" role="img" aria-label="Gold — 1st"><title>Gold — 1st</title><path d="M7 2l3.5 7M17 2l-3.5 7" stroke="currentColor" stroke-width="2" fill="none" opacity=".55"/><circle cx="12" cy="15.5" r="6.5" fill="currentColor"/><path d="M12 12.1l1.05 2.13 2.35.34-1.7 1.66.4 2.34-2.1-1.1-2.1 1.1.4-2.34-1.7-1.66 2.35-.34z" fill="#0a0a0b"/></svg></span></td><td><span class="identity"><span class="avatar male">R1</span> Sample Runner One</span></td><td>M 3000m</td><td>7:56.08</td></tr>
+                    <tr><td><span class="medal-cell"><svg class="medal silver" viewBox="0 0 24 24" width="22" height="22" role="img" aria-label="Silver — 2nd"><title>Silver — 2nd</title><path d="M7 2l3.5 7M17 2l-3.5 7" stroke="currentColor" stroke-width="2" fill="none" opacity=".55"/><circle cx="12" cy="15.5" r="6.5" fill="currentColor"/><path d="M12 12.1l1.05 2.13 2.35.34-1.7 1.66.4 2.34-2.1-1.1-2.1 1.1.4-2.34-1.7-1.66 2.35-.34z" fill="#0a0a0b"/></svg></span></td><td><span class="identity"><span class="avatar male">R2</span> Sample Runner Two</span></td><td>M 400m</td><td>45.19</td></tr>
+                    <tr><td><span class="medal-cell"><svg class="medal bronze" viewBox="0 0 24 24" width="22" height="22" role="img" aria-label="Bronze — 3rd"><title>Bronze — 3rd</title><path d="M7 2l3.5 7M17 2l-3.5 7" stroke="currentColor" stroke-width="2" fill="none" opacity=".55"/><circle cx="12" cy="15.5" r="6.5" fill="currentColor"/><path d="M12 12.1l1.05 2.13 2.35.34-1.7 1.66.4 2.34-2.1-1.1-2.1 1.1.4-2.34-1.7-1.66 2.35-.34z" fill="#0a0a0b"/></svg></span></td><td><span class="identity"><span class="avatar male">R3</span> Sample Runner Three</span></td><td>M 400m</td><td>45.58</td></tr>
+                    <tr><td><span class="place-badge">4th</span></td><td>—</td><td>—</td><td>—</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="specimen">
+              <span class="comment-label">&lt;!-- Entry-status chip (Results: Confirmed = green, Planned = neutral) --&gt;</span>
+              <div class="row"><span class="entry-chip confirmed">Confirmed entry</span> <span class="entry-chip">Planned entry</span></div>
+            </div>
+            <div class="specimen" style="grid-column:1 / -1;">
+              <span class="comment-label">&lt;!-- Place / medal legend (Results daily table): medals 1st–3rd, plain .place-num for 4th+ --&gt;</span>
+              <div class="perf-legend" aria-label="Place and medal key">
+                <span class="leg"><svg class="medal gold" viewBox="0 0 24 24" width="16" height="16" role="img" aria-label="Gold — 1st"><title>Gold — 1st</title><path d="M7 2l3.5 7M17 2l-3.5 7" stroke="currentColor" stroke-width="2" fill="none" opacity=".55"/><circle cx="12" cy="15.5" r="6.5" fill="currentColor"/><path d="M12 12.1l1.05 2.13 2.35.34-1.7 1.66.4 2.34-2.1-1.1-2.1 1.1.4-2.34-1.7-1.66 2.35-.34z" fill="#0a0a0b"/></svg> 1st</span>
+                <span class="leg"><svg class="medal silver" viewBox="0 0 24 24" width="16" height="16" role="img" aria-label="Silver — 2nd"><title>Silver — 2nd</title><path d="M7 2l3.5 7M17 2l-3.5 7" stroke="currentColor" stroke-width="2" fill="none" opacity=".55"/><circle cx="12" cy="15.5" r="6.5" fill="currentColor"/><path d="M12 12.1l1.05 2.13 2.35.34-1.7 1.66.4 2.34-2.1-1.1-2.1 1.1.4-2.34-1.7-1.66 2.35-.34z" fill="#0a0a0b"/></svg> 2nd</span>
+                <span class="leg"><svg class="medal bronze" viewBox="0 0 24 24" width="16" height="16" role="img" aria-label="Bronze — 3rd"><title>Bronze — 3rd</title><path d="M7 2l3.5 7M17 2l-3.5 7" stroke="currentColor" stroke-width="2" fill="none" opacity=".55"/><circle cx="12" cy="15.5" r="6.5" fill="currentColor"/><path d="M12 12.1l1.05 2.13 2.35.34-1.7 1.66.4 2.34-2.1-1.1-2.1 1.1.4-2.34-1.7-1.66 2.35-.34z" fill="#0a0a0b"/></svg> 3rd</span>
+                <span class="leg"><span class="place-num">7</span> Place (4th+)</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" id="patterns">
+          <div class="section-head">
+            <div>
+              <div class="eyebrow">Sample Athletics patterns</div>
+              <h2 class="section-title">Screen Pattern Composites</h2>
+              <p class="section-description">These composite examples capture the main visual language from Dashboard, Settings, Athlete detail/edit, Competitions, Camps, Dormitory, and Calendar surfaces.</p>
+            </div>
+          </div>
+          <div class="grid two">
+            <div class="specimen">
+              <span class="comment-label">&lt;!-- Read-only athlete detail banner --&gt;</span>
+              <!-- Read-only athlete detail banner -->
+              <div class="card" style="border-color: rgba(141, 27, 61, 0.2); background: rgba(42, 11, 21, 0.4);">
+                <span class="type-section-title">This page is now read-only.</span>
+                <p class="type-body" style="margin-bottom: 0;">Use the edit workspace for mutation, validation, and dirty state.</p>
+              </div>
+            </div>
+            <div class="specimen">
+              <span class="comment-label">&lt;!-- Calendar event drawer summary --&gt;</span>
+              <!-- Calendar event drawer summary -->
+              <div class="card elevated">
+                <div class="eyebrow">Calendar event</div>
+                <h3 style="margin: var(--space-1) 0; font-size: 1.2rem;">Document renewal due</h3>
+                <p class="type-body">23-05-2026</p>
+                <div class="grid two" style="margin-top: var(--space-3);">
+                  <div class="card base"><div class="eyebrow">Type</div><p>Document</p></div>
+                  <div class="card base"><div class="eyebrow">Severity</div><span class="status red">Critical</span></div>
+                </div>
+              </div>
+            </div>
+            <div class="specimen">
+              <span class="comment-label">&lt;!-- Profile summary performance card --&gt;</span>
+              <!-- Profile summary performance card -->
+              <div class="card gradient">
+                <div class="panel-header">
+                  <div>
+                    <h3>Profile Summary</h3>
+                    <p>Quick performance snapshot for configured events</p>
+                  </div>
+                  <span class="pill">Snapshot</span>
+                </div>
+                <div class="card base" style="margin-top: var(--space-3);">
+                  <div class="eyebrow" style="color: var(--qatar-gold);">International Caps</div>
+                  <div class="row" style="align-items: flex-end; margin-top: var(--space-2);">
+                    <span style="font-size: 2rem; font-weight: 700;">12</span>
+                    <span class="type-body">recorded appearances</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="specimen">
+              <span class="comment-label">&lt;!-- Settings lane health card --&gt;</span>
+              <!-- Settings lane health card -->
+              <div class="card elevated">
+                <div class="panel-header">
+                  <div>
+                    <h3>Lane health</h3>
+                    <p>Counts help verify the active data lane.</p>
+                  </div>
+                  <span class="pill">Development active</span>
+                </div>
+                <div class="grid two" style="margin-top: var(--space-3);">
+                  <div class="card"><div class="type-caption">Athletes</div><div class="metric-value">428</div></div>
+                  <div class="card"><div class="type-caption">Clubs</div><div class="metric-value">12</div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <div class="modal-backdrop" id="sample-modal" role="presentation">
+    <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="sample-modal-title">
+      <div class="modal-head">
+        <div>
+          <h3 id="sample-modal-title">Create camp</h3>
+          <p>Use compact form fields and explicit save/cancel controls.</p>
+        </div>
+        <button class="icon-button" type="button" data-close-overlay aria-label="Close modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="grid two">
+          <div class="field">
+            <label>Camp name</label>
+            <input class="input" value="Doha preparation camp">
+          </div>
+          <div class="field">
+            <label>Start date</label>
+            <input class="input" value="23-05-2026">
+          </div>
+        </div>
+      </div>
+      <div class="modal-foot">
+        <button class="button ghost" type="button" data-close-overlay>Cancel</button>
+        <button class="button primary" type="button" data-close-overlay data-toast="Camp modal saved.">Save camp</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="drawer-backdrop" id="sample-drawer" role="presentation">
+    <aside class="drawer-panel" role="dialog" aria-modal="true" aria-labelledby="sample-drawer-title">
+      <div class="modal-head">
+        <div>
+          <div class="eyebrow">Calendar event</div>
+          <h3 id="sample-drawer-title">Championship travel window</h3>
+          <p>25-05-2026 to 01-06-2026</p>
+        </div>
+        <button class="icon-button" type="button" data-close-overlay aria-label="Close drawer">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="grid two">
+          <div class="card base"><div class="eyebrow">Type</div><p>Championship</p></div>
+          <div class="card base"><div class="eyebrow">Ownership</div><p>Sample Team</p></div>
+        </div>
+        <div class="card elevated" style="margin-top: var(--space-3);">
+          <div class="eyebrow">Source actions</div>
+          <div class="row" style="margin-top: var(--space-3);">
+            <button class="button primary small" type="button">Open travel plan</button>
+            <button class="button secondary small" type="button">Open championship</button>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <div class="command-panel" data-command-panel>
+    <div class="command-box" role="dialog" aria-modal="true" aria-label="Command palette">
+      <input class="input" value="" placeholder="Type a command or page..." data-command-input>
+      <div class="command-list">
+        <button class="select-option" type="button">Athletes<small>/athletes</small></button>
+        <button class="select-option" type="button">Sample Team<small>/championships</small></button>
+        <button class="select-option" type="button">Settings: Data Lane<small>/settings/data-lane</small></button>
+        <button class="select-option" type="button">New Athlete<small>/athletes/new</small></button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-region" aria-live="polite" aria-atomic="true">
+    <div class="toast" data-toast-region>Reference action completed.</div>
+  </div>
+
+  <script>
+    const toast = document.querySelector('[data-toast-region]');
+    let toastTimer = 0;
+
+    function showToast(message) {
+      if (!toast) return;
+      toast.textContent = message;
+      toast.classList.add('is-visible');
+      window.clearTimeout(toastTimer);
+      toastTimer = window.setTimeout(() => toast.classList.remove('is-visible'), 2400);
+    }
+
+    document.querySelectorAll('[data-toast]').forEach((button) => {
+      button.addEventListener('click', () => showToast(button.getAttribute('data-toast') || 'Done.'));
+    });
+
+    document.querySelectorAll('[data-popover-toggle]').forEach((button) => {
+      button.addEventListener('click', (event) => {
+        event.stopPropagation();
+        const holder = button.closest('[data-popover]');
+        if (!holder) return;
+        document.querySelectorAll('[data-popover].is-open').forEach((openHolder) => {
+          if (openHolder !== holder) openHolder.classList.remove('is-open');
+        });
+        holder.classList.toggle('is-open');
+      });
+    });
+
+    document.querySelectorAll('[data-popover-close]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const holder = button.closest('[data-popover]');
+        if (holder) holder.classList.remove('is-open');
+      });
+    });
+
+    document.addEventListener('click', (event) => {
+      if (!(event.target instanceof Element)) return;
+      if (event.target.closest('[data-popover]')) return;
+      document.querySelectorAll('[data-popover].is-open').forEach((holder) => holder.classList.remove('is-open'));
+    });
+
+    document.querySelectorAll('[data-tab-button]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const tabs = button.closest('.specimen');
+        if (!tabs) return;
+        tabs.querySelectorAll('[data-tab-button]').forEach((item) => item.classList.remove('is-active'));
+        button.classList.add('is-active');
+        const panel = tabs.querySelector('[data-tab-panel]');
+        if (panel) {
+          const key = button.getAttribute('data-tab-button') || 'tab';
+          panel.textContent = key.charAt(0).toUpperCase() + key.slice(1) + ' tab content. Click another tab to switch active state.';
+        }
+      });
+    });
+
+    document.querySelectorAll('[data-segmented]').forEach((group) => {
+      group.querySelectorAll('button').forEach((button) => {
+        button.addEventListener('click', () => {
+          group.querySelectorAll('button').forEach((item) => item.classList.remove('is-active'));
+          button.classList.add('is-active');
+        });
+      });
+    });
+
+    document.querySelectorAll('[data-modal-open], [data-drawer-open]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const id = button.getAttribute('data-modal-open') || button.getAttribute('data-drawer-open');
+        if (!id) return;
+        const overlay = document.getElementById(id);
+        if (overlay) overlay.classList.add('is-open');
+      });
+    });
+
+    document.querySelectorAll('[data-close-overlay]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const overlay = button.closest('.modal-backdrop, .drawer-backdrop');
+        if (overlay) overlay.classList.remove('is-open');
+      });
+    });
+
+    document.querySelectorAll('.modal-backdrop, .drawer-backdrop').forEach((overlay) => {
+      overlay.addEventListener('click', (event) => {
+        if (event.target === overlay) overlay.classList.remove('is-open');
+      });
+    });
+
+    const commandPanel = document.querySelector('[data-command-panel]');
+    document.querySelectorAll('[data-command-open]').forEach((button) => {
+      button.addEventListener('click', () => {
+        if (!commandPanel) return;
+        commandPanel.classList.add('is-open');
+        const input = commandPanel.querySelector('[data-command-input]');
+        if (input) input.focus();
+      });
+    });
+
+    if (commandPanel) {
+      commandPanel.addEventListener('click', (event) => {
+        if (event.target === commandPanel) commandPanel.classList.remove('is-open');
+      });
+    }
+
+    document.addEventListener('keydown', (event) => {
+      const metaK = (event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k';
+      if (metaK && commandPanel) {
+        event.preventDefault();
+        commandPanel.classList.toggle('is-open');
+      }
+      if (event.key === 'Escape') {
+        document.querySelectorAll('.modal-backdrop.is-open, .drawer-backdrop.is-open, .command-panel.is-open').forEach((overlay) => overlay.classList.remove('is-open'));
+        document.querySelectorAll('[data-popover].is-open').forEach((holder) => holder.classList.remove('is-open'));
+      }
+    });
+
+    document.querySelectorAll('[data-accordion] .accordion-trigger').forEach((button) => {
+      button.addEventListener('click', () => {
+        const item = button.closest('.accordion-item');
+        if (item) item.classList.toggle('is-open');
+      });
+    });
+
+    document.querySelectorAll('[data-sortable-table] [data-sort-index]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const table = button.closest('table');
+        const tbody = table ? table.querySelector('tbody') : null;
+        if (!tbody) return;
+        const index = Number(button.getAttribute('data-sort-index'));
+        const rows = Array.from(tbody.querySelectorAll('tr'));
+        const direction = button.getAttribute('data-direction') === 'asc' ? 'desc' : 'asc';
+        button.setAttribute('data-direction', direction);
+        rows.sort((left, right) => {
+          const leftText = left.children[index] ? left.children[index].textContent.trim() : '';
+          const rightText = right.children[index] ? right.children[index].textContent.trim() : '';
+          return direction === 'asc' ? leftText.localeCompare(rightText) : rightText.localeCompare(leftText);
+        });
+        rows.forEach((row) => tbody.appendChild(row));
+      });
+    });
+
+    const sections = Array.from(document.querySelectorAll('.section'));
+    const tocLinks = Array.from(document.querySelectorAll('.toc-link'));
+    const observer = new IntersectionObserver((entries) => {
+      const visible = entries
+        .filter((entry) => entry.isIntersecting)
+        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+      if (!visible) return;
+      tocLinks.forEach((link) => {
+        link.classList.toggle('is-active', link.getAttribute('href') === '#' + visible.target.id);
+      });
+    }, { rootMargin: '-25% 0px -60% 0px', threshold: [0, 0.2, 0.5, 1] });
+
+    sections.forEach((section) => observer.observe(section));
+
+    // ---- v2: click-to-copy tokens & colours ----
+    function _copy(t){ if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).catch(function(){});} }
+    document.querySelectorAll('.swatch').forEach(function(s){
+      s.addEventListener('click',function(){
+        var v=s.querySelector('.swatch-value'), n=s.querySelector('.swatch-name');
+        if(v){ _copy(v.textContent.trim()); showToast('Copied '+(n?n.textContent.trim()+' — ':'')+v.textContent.trim()); }
+      });
+    });
+    document.querySelectorAll('.code-token').forEach(function(c){
+      c.addEventListener('click',function(){ _copy(c.textContent.trim()); showToast('Copied '+c.textContent.trim()); });
+    });
+
+    // ---- v2: heading anchor links ----
+    document.querySelectorAll('.section').forEach(function(sec){
+      var t=sec.querySelector('.section-title');
+      if(t&&sec.id&&!t.querySelector('.anchor')){
+        var a=document.createElement('a'); a.className='anchor'; a.href='#'+sec.id; a.textContent='#';
+        a.setAttribute('aria-label','Link to '+sec.id); t.appendChild(a);
+      }
+    });
+
+    // ---- v2: TOC filter ----
+    var _ts=document.querySelector('[data-toc-search]');
+    if(_ts){ _ts.addEventListener('input',function(){
+      var q=_ts.value.trim().toLowerCase();
+      document.querySelectorAll('.toc-link').forEach(function(l){
+        l.classList.toggle('is-hidden', q!=='' && l.textContent.toLowerCase().indexOf(q)===-1);
+      });
+    }); }
+
+  </script>
+</body>
+</html>

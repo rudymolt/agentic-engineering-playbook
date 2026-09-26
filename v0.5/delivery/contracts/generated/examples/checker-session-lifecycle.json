@@ -1,0 +1,16 @@
+{
+  "all_exit_codes_observed": true,
+  "all_required_commands_completed": true,
+  "candidate_tree": "tree",
+  "child_processes_reaped": true,
+  "command_count": 3,
+  "command_manifest_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "command_manifest_locator": "artifact:checker/commands.json",
+  "completion_marker": "checker-session-complete/v1",
+  "last_command_completed_at": "2026-08-08T00:00:30Z",
+  "launch_id": "launch-v4-1",
+  "lifecycle_id": "checker-lifecycle-1",
+  "monitor_stopped_at": "2026-08-08T00:00:45Z",
+  "schema_version": 1,
+  "session_id": "s1"
+}

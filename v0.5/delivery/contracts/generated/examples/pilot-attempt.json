@@ -1,0 +1,14 @@
+{
+  "attempt_id": "attempt-1",
+  "envelope_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "feature": "example",
+  "mission_id": "delivery-example",
+  "observation_contract_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "observation_contract_ref": "planning/example/pilot-observation-contract.json",
+  "project": "sample-project",
+  "registered_at": "2026-08-08T00:02:00Z",
+  "schema_version": 3,
+  "test_manifest_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "tier": "A",
+  "venue": "local"
+}

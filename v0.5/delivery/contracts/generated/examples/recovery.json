@@ -1,0 +1,9 @@
+{
+  "operation_id": "op-1",
+  "outcome": "rolled-back",
+  "owned_release_id": "release-1",
+  "predecessor_release_id": "release-0",
+  "recovery_id": "recovery-1",
+  "schema_version": 1,
+  "verification": {}
+}

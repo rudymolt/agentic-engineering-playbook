@@ -1,0 +1,1709 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{Project Name} Frontend Design Language Guide</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg-base: #0a0a0b;
+      --bg-surface: #131316;
+      --bg-elevated: #1c1c21;
+      --bg-input: #18181c;
+      --border-subtle: #232329;
+      --border-focus: #8d1b3d;
+      --text-primary: #edefef;
+      --text-secondary: #8b8b8e;
+      --text-tertiary: #5c5c63;
+      --accent-primary: #8d1b3d;
+      --accent-hover: #a52148;
+      --accent-muted: #2a0b15;
+      --accent-gold: #c4922a;
+      --status-green: #45a557;
+      --status-amber: #e5a31d;
+      --status-red: #e5484d;
+      --status-blue: #3b82f6;
+      --status-pink: #ec4899;
+      --silver: #b8bcc4;
+      --bronze: #c9824e;
+      --space-1: 0.25rem;
+      --space-2: 0.5rem;
+      --space-3: 0.75rem;
+      --space-4: 1rem;
+      --space-5: 1.25rem;
+      --space-6: 1.5rem;
+      --space-8: 2rem;
+      --radius-sm: 4px;
+      --radius-md: 6px;
+      --radius-lg: 8px;
+      --radius-xl: 12px;
+      --shadow-soft: 0 18px 50px rgba(0, 0, 0, 0.24);
+      --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.18);
+      --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --font-mono: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg-base);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      font-size: 14px;
+      line-height: 1.45;
+    }
+
+    button:disabled,
+    button[aria-disabled="true"] {
+      cursor: not-allowed;
+      opacity: 0.45;
+    }
+
+    body.overlay-open {
+      overflow: hidden;
+    }
+
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .app-frame {
+      display: grid;
+      min-height: 100vh;
+      grid-template-columns: 248px minmax(0, 1fr);
+    }
+
+    .side-rail {
+      position: sticky;
+      top: 0;
+      display: grid;
+      height: 100vh;
+      align-content: start;
+      overflow-y: auto;
+      border-right: 1px solid var(--border-subtle);
+      background: var(--bg-surface);
+    }
+
+    .brand {
+      display: grid;
+      gap: var(--space-1);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: var(--space-4);
+    }
+
+    .brand-title {
+      color: var(--accent-gold);
+      font-size: 1rem;
+      font-weight: 800;
+    }
+
+    .brand-subtitle,
+    .eyebrow,
+    .table th {
+      color: var(--text-secondary);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .toc {
+      display: grid;
+      gap: var(--space-1);
+      padding: var(--space-3);
+    }
+
+    .toc a {
+      border-left: 2px solid transparent;
+      border-radius: var(--radius-sm);
+      color: var(--text-secondary);
+      padding: 0.58rem 0.7rem;
+      transition: background 160ms ease, border-color 160ms ease, color 160ms ease;
+    }
+
+    .toc a:hover,
+    .toc a:focus-visible {
+      border-left-color: var(--accent-primary);
+      background: var(--accent-muted);
+      color: var(--text-primary);
+      outline: none;
+    }
+
+    .main-shell {
+      min-width: 0;
+    }
+
+    .top-bar {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      display: flex;
+      min-height: 58px;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-3);
+      border-bottom: 1px solid var(--border-subtle);
+      background: rgba(10, 10, 11, 0.92);
+      padding: 0 var(--space-6);
+      backdrop-filter: blur(14px);
+    }
+
+    .top-title {
+      margin: 0;
+      color: var(--accent-gold);
+      font-size: 1.18rem;
+      line-height: 1.2;
+    }
+
+    .top-actions,
+    .row,
+    .drawer-actions,
+    .modal-actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .content {
+      display: grid;
+      gap: var(--space-8);
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: var(--space-6) var(--space-6) 4rem;
+    }
+
+    .page-head {
+      display: grid;
+      gap: var(--space-3);
+      border-bottom: 1px solid var(--border-subtle);
+      padding-bottom: var(--space-6);
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin: 0;
+    }
+
+    /* Page titles are text-primary at 1.65rem under an eyebrow; gold is
+       reserved for the top-bar title and panel headings (matches .page-title
+       in globals.css). */
+    h1 {
+      color: var(--text-primary);
+      font-size: 1.65rem;
+      line-height: 1.15;
+    }
+
+    h2 {
+      font-size: 1.35rem;
+      line-height: 1.2;
+    }
+
+    h3 {
+      font-size: 1rem;
+      line-height: 1.25;
+    }
+
+    .lead,
+    .section-copy,
+    .muted {
+      color: var(--text-secondary);
+    }
+
+    .lead {
+      max-width: 840px;
+      font-size: 1rem;
+    }
+
+    .section {
+      display: grid;
+      gap: var(--space-4);
+      scroll-margin-top: 80px;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: var(--space-4);
+    }
+
+    .section-copy {
+      max-width: 760px;
+      margin-top: var(--space-1);
+    }
+
+    .surface {
+      overflow: hidden;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      background: var(--bg-surface);
+    }
+
+    .surface-pad {
+      display: grid;
+      gap: var(--space-4);
+      padding: var(--space-4);
+    }
+
+    .rule-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-3);
+    }
+
+    .rule-card,
+    .mini-card,
+    .drawer-card {
+      display: grid;
+      gap: var(--space-2);
+      min-width: 0;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      background: var(--bg-elevated);
+      padding: var(--space-4);
+    }
+
+    .rule-card strong,
+    .mini-card strong {
+      color: var(--text-primary);
+    }
+
+    .rule-card p,
+    .mini-card p,
+    .drawer-card p {
+      color: var(--text-secondary);
+    }
+
+    .code-token {
+      display: inline-flex;
+      width: fit-content;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      background: var(--bg-base);
+      color: var(--text-secondary);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      padding: 0.1rem 0.35rem;
+    }
+
+    .button,
+    .icon-button,
+    .pill,
+    .status,
+    .work-row,
+    .tab-button {
+      transition: background 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms ease;
+    }
+
+    .button {
+      display: inline-flex;
+      min-height: 34px;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      border: 1px solid transparent;
+      border-radius: var(--radius-sm);
+      padding: 0.48rem 0.9rem;
+      color: var(--text-primary);
+      white-space: nowrap;
+    }
+
+    .button.primary {
+      background: var(--accent-primary);
+      color: #fff;
+      font-weight: 700;
+    }
+
+    .button.primary:hover,
+    .button.primary:focus-visible {
+      background: var(--accent-hover);
+      outline: none;
+    }
+
+    .button.secondary {
+      border-color: var(--border-subtle);
+      background: var(--bg-elevated);
+    }
+
+    .button.secondary:hover,
+    .button.secondary:focus-visible {
+      background: rgba(28, 28, 33, 0.78);
+      outline: none;
+    }
+
+    .button.ghost {
+      background: transparent;
+      color: var(--accent-gold);
+    }
+
+    .button.ghost:hover,
+    .button.ghost:focus-visible {
+      background: var(--bg-elevated);
+      outline: none;
+    }
+
+    .button.small {
+      min-height: 28px;
+      padding: 0.32rem 0.65rem;
+      font-size: 12px;
+    }
+
+    .button.danger {
+      border-color: rgba(229, 72, 77, 0.58);
+      background: rgba(229, 72, 77, 0.1);
+      color: #ff7378;
+    }
+
+    .icon-button {
+      display: inline-flex;
+      width: 34px;
+      height: 34px;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      background: var(--bg-input);
+      color: var(--text-secondary);
+    }
+
+    .icon-button:hover,
+    .icon-button:focus-visible {
+      background: var(--bg-elevated);
+      color: var(--text-primary);
+      outline: none;
+    }
+
+    .pill,
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .pill {
+      border: 1px solid var(--border-subtle);
+      background: var(--bg-elevated);
+      color: var(--text-primary);
+      padding: 0.25rem 0.72rem;
+    }
+
+    .pill.gold {
+      border-color: transparent;
+      background: var(--accent-gold);
+      color: #050505;
+    }
+
+    .status {
+      border: 1px solid currentColor;
+      padding: 0.18rem 0.55rem;
+    }
+
+    .status.green {
+      background: rgba(69, 165, 87, 0.16);
+      color: var(--status-green);
+    }
+
+    .status.amber {
+      background: rgba(229, 163, 29, 0.16);
+      color: var(--status-amber);
+    }
+
+    .status.blue {
+      background: rgba(59, 130, 246, 0.16);
+      color: var(--status-blue);
+    }
+
+    .status.red {
+      background: rgba(229, 72, 77, 0.16);
+      color: #ff7378;
+    }
+
+    .mock-shell {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 280px;
+      min-height: 520px;
+    }
+
+    .work-area {
+      min-width: 0;
+      border-right: 1px solid var(--border-subtle);
+    }
+
+    .work-head,
+    .history-head {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: var(--space-3);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: var(--space-4);
+    }
+
+    /* panel headings are gold (matches .panel-head h2/h3 in globals.css) */
+    .work-head h3,
+    .history-head h3 {
+      color: var(--accent-gold);
+    }
+
+    .filter-row {
+      display: grid;
+      grid-template-columns: minmax(180px, 1fr) 150px 150px auto;
+      gap: var(--space-3);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: var(--space-4);
+    }
+
+    .field {
+      display: grid;
+      gap: var(--space-1);
+      min-width: 0;
+    }
+
+    .field label {
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .input,
+    .select,
+    .textarea {
+      width: 100%;
+      min-height: 36px;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-sm);
+      background: var(--bg-input);
+      color: var(--text-primary);
+      outline: none;
+      padding: 0.58rem 0.68rem;
+    }
+
+    .textarea {
+      min-height: 86px;
+      resize: vertical;
+    }
+
+    .input:hover,
+    .select:hover,
+    .textarea:hover {
+      border-color: rgba(141, 27, 61, 0.65);
+    }
+
+    .input:focus,
+    .select:focus,
+    .textarea:focus {
+      border-color: var(--accent-primary);
+    }
+
+    /* segmented control — pill container; used for binary choices such as
+       Athlete/Staff in the roster drawer (matches .segmented in globals.css) */
+    .segmented {
+      display: inline-flex;
+      width: fit-content;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      background: var(--bg-input);
+      padding: 3px;
+    }
+
+    .segmented-option {
+      border: 0;
+      border-radius: var(--radius-md);
+      background: transparent;
+      color: var(--text-secondary);
+      cursor: pointer;
+      padding: 0.35rem 0.7rem;
+      font-weight: 700;
+    }
+
+    .segmented-option:hover,
+    .segmented-option:focus-visible {
+      color: var(--text-primary);
+      outline: none;
+    }
+
+    .segmented-option.is-active {
+      background: var(--bg-elevated);
+      color: var(--text-primary);
+    }
+
+    .work-list {
+      display: grid;
+      gap: 0;
+    }
+
+    .work-row {
+      display: grid;
+      width: 100%;
+      min-height: 72px;
+      grid-template-columns: minmax(0, 1.4fr) 130px 120px 94px;
+      align-items: center;
+      gap: var(--space-3);
+      border: 0;
+      border-bottom: 1px solid color-mix(in srgb, var(--border-subtle) 60%, transparent);
+      background: var(--bg-base);
+      color: var(--text-primary);
+      padding: 0.78rem var(--space-4);
+      text-align: left;
+    }
+
+    .work-row:nth-child(even) {
+      background: var(--bg-elevated);
+    }
+
+    .work-row:hover,
+    .work-row:focus-visible,
+    .work-row.is-selected {
+      background: rgba(141, 27, 61, 0.2);
+      outline: none;
+    }
+
+    .identity {
+      display: flex;
+      min-width: 0;
+      align-items: center;
+      gap: var(--space-2);
+    }
+
+    .avatar {
+      display: inline-flex;
+      width: 30px;
+      height: 30px;
+      flex: 0 0 auto;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(59, 130, 246, 0.5);
+      border-radius: 999px;
+      background: rgba(59, 130, 246, 0.12);
+      color: var(--status-blue);
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .avatar.female {
+      border-color: rgba(236, 72, 153, 0.5);
+      background: rgba(236, 72, 153, 0.12);
+      color: var(--status-pink);
+    }
+
+    .identity-text {
+      min-width: 0;
+    }
+
+    .identity-text strong,
+    .truncate {
+      display: block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .identity-text span,
+    .cell-note {
+      color: var(--text-secondary);
+      font-size: 12px;
+    }
+
+    .side-guide {
+      display: grid;
+      align-content: start;
+      gap: var(--space-3);
+      padding: var(--space-4);
+    }
+
+    .guidance-list {
+      display: grid;
+      gap: var(--space-2);
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .guidance-list li {
+      display: grid;
+      gap: var(--space-1);
+      border-left: 2px solid var(--accent-primary);
+      background: var(--bg-base);
+      padding: var(--space-2) var(--space-3);
+    }
+
+    .guidance-list strong {
+      font-size: 13px;
+    }
+
+    .guidance-list span {
+      color: var(--text-secondary);
+      font-size: 12px;
+    }
+
+    .history-preview {
+      display: grid;
+      gap: var(--space-3);
+      border-top: 1px solid var(--border-subtle);
+      padding: var(--space-4);
+    }
+
+    /* vertical-timeline — glossary anatomy: vt-item rows on a left rail with
+       an absolutely-positioned vt-dot (mirrors .vtimeline in globals.css). */
+    .vtimeline {
+      display: grid;
+    }
+
+    .vt-item {
+      position: relative;
+      display: grid;
+      gap: 2px;
+      margin-left: 5px;
+      border-left: 1px solid var(--border-subtle);
+      padding: 0 0 var(--space-4) var(--space-4);
+    }
+
+    .vt-item:last-child {
+      border-left-color: transparent;
+      padding-bottom: 0;
+    }
+
+    .vt-dot {
+      position: absolute;
+      top: 4px;
+      left: -5px;
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      background: var(--accent-gold);
+      box-shadow: 0 0 0 3px var(--bg-surface);
+    }
+
+    .vt-dot.green {
+      background: var(--status-green);
+    }
+
+    .vt-dot.amber {
+      background: var(--status-amber);
+    }
+
+    .vt-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: var(--space-3);
+    }
+
+    .vt-row .button {
+      flex: 0 0 auto;
+    }
+
+    .vt-body {
+      min-width: 0;
+    }
+
+    .vt-body strong {
+      display: block;
+      color: var(--text-primary);
+      font-weight: 600;
+      overflow-wrap: anywhere;
+    }
+
+    .vt-body a {
+      color: var(--status-blue);
+      font-weight: 700;
+    }
+
+    .vt-time {
+      color: var(--text-tertiary);
+      font-size: 11px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* family names render uppercase throughout the app */
+    .family-name {
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+
+    /* disclosure footer — Show more expands the list in place; it never opens
+       a modal (mirrors .recent-roster-changes-footer in globals.css). */
+    .history-list.is-collapsed .vt-item:nth-child(n + 2) {
+      display: none;
+    }
+
+    .history-list.is-expanded {
+      max-height: 420px;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+    }
+
+    .history-disclosure-footer {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-3);
+      border-top: 1px solid var(--border-subtle);
+      color: var(--text-secondary);
+      font-size: 12px;
+      font-weight: 700;
+      padding: var(--space-3) var(--space-4);
+    }
+
+    .history-disclosure-footer .chevron {
+      display: inline-block;
+      transition: transform 160ms ease;
+    }
+
+    .history-disclosure-footer .chevron.is-open {
+      transform: rotate(180deg);
+    }
+
+    .decision-table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      background: var(--bg-surface);
+    }
+
+    .table {
+      width: 100%;
+      min-width: 820px;
+      border-collapse: collapse;
+    }
+
+    .table th,
+    .table td {
+      border-bottom: 1px solid color-mix(in srgb, var(--border-subtle) 60%, transparent);
+      padding: 0.78rem 0.85rem;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    .table tbody tr:nth-child(odd) {
+      background: var(--bg-base);
+    }
+
+    .table tbody tr:nth-child(even) {
+      background: var(--bg-elevated);
+    }
+
+    .table tbody tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .drawer-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: none;
+      background: rgba(0, 0, 0, 0.48);
+    }
+
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 80;
+      display: none;
+      background: rgba(0, 0, 0, 0.68);
+    }
+
+    .drawer-backdrop.is-open,
+    .modal-backdrop.is-open {
+      display: flex;
+    }
+
+    .drawer-backdrop {
+      justify-content: flex-end;
+    }
+
+    .drawer-panel {
+      display: grid;
+      width: min(520px, calc(100vw - 248px));
+      height: 100vh;
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      border-left: 1px solid var(--border-subtle);
+      background: var(--bg-surface);
+      box-shadow: -20px 0 50px rgba(0, 0, 0, 0.32);
+    }
+
+    .drawer-head,
+    .drawer-foot,
+    .modal-head,
+    .modal-foot {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: var(--space-3);
+      padding: var(--space-4);
+    }
+
+    .drawer-head,
+    .modal-head {
+      border-bottom: 1px solid var(--border-subtle);
+      background: rgba(19, 19, 22, 0.96);
+      backdrop-filter: blur(12px);
+    }
+
+    .drawer-head h2 {
+      font-size: 20px;
+      line-height: 1.15;
+      overflow-wrap: anywhere;
+    }
+
+    .drawer-foot,
+    .modal-foot {
+      align-items: center;
+      border-top: 1px solid var(--border-subtle);
+      background: rgba(19, 19, 22, 0.96);
+    }
+
+    .drawer-body {
+      overflow-y: auto;
+    }
+
+    .tab-strip {
+      display: flex;
+      gap: var(--space-1);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: var(--space-3) var(--space-4) 0;
+    }
+
+    .tab-button {
+      border: 1px solid transparent;
+      border-bottom: 0;
+      border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+      background: transparent;
+      color: var(--text-secondary);
+      padding: 0.48rem 0.75rem;
+    }
+
+    .tab-button:hover,
+    .tab-button:focus-visible,
+    .tab-button.is-active {
+      background: var(--bg-elevated);
+      color: var(--text-primary);
+      outline: none;
+    }
+
+    .drawer-section {
+      display: grid;
+      gap: var(--space-3);
+      border-bottom: 1px solid var(--border-subtle);
+      padding: var(--space-4);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: var(--space-3);
+    }
+
+    .modal-backdrop.is-open {
+      align-items: center;
+      justify-content: center;
+      padding: var(--space-4);
+    }
+
+    /* confirm-dialog — the app's modal use is the small destructive
+       confirmation (mirrors .confirm-dialog in globals.css). */
+    .modal-panel {
+      display: grid;
+      width: min(480px, 100%);
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      overflow: hidden;
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      background: var(--bg-surface);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .modal-head h2 {
+      color: var(--text-primary);
+      font-size: 1rem;
+    }
+
+    .modal-body {
+      display: grid;
+      gap: var(--space-3);
+      overflow-y: auto;
+      color: var(--text-secondary);
+      padding: var(--space-4);
+    }
+
+    .window-rule {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--space-3);
+    }
+
+    @media (max-width: 980px) {
+      .app-frame {
+        grid-template-columns: 1fr;
+      }
+
+      .side-rail {
+        position: static;
+        height: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--border-subtle);
+      }
+
+      .toc {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+
+      .mock-shell {
+        grid-template-columns: 1fr;
+      }
+
+      .work-area {
+        border-right: 0;
+        border-bottom: 1px solid var(--border-subtle);
+      }
+
+      .rule-grid,
+      .window-rule {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 760px) {
+      .top-bar,
+      .section-head,
+      .work-head,
+      .history-head,
+      .drawer-head,
+      .drawer-foot,
+      .modal-head,
+      .modal-foot {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .content {
+        padding: var(--space-5) var(--space-4) 3rem;
+      }
+
+      .toc {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .filter-row,
+      .work-row,
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .work-row {
+        align-items: start;
+      }
+
+      .vt-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .vt-row .button {
+        width: fit-content;
+      }
+
+      .button.primary,
+      .button.secondary,
+      .button.ghost {
+        white-space: normal;
+      }
+
+      .modal-backdrop {
+        padding: var(--space-3);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-frame">
+    <aside class="side-rail">
+      <div class="brand">
+        <div class="brand-title">{Project Name}</div>
+        <div class="brand-subtitle">Design language guide</div>
+      </div>
+      <nav class="toc" aria-label="Guide sections">
+        <a href="#principles">Principles</a>
+        <a href="#workflow">Workflow surface</a>
+        <a href="#drawer">Drawer changes</a>
+        <a href="#history">History disclosure</a>
+        <a href="#decisions">Decision rules</a>
+      </nav>
+    </aside>
+
+    <div class="main-shell">
+      <header class="top-bar">
+        <h2 class="top-title">Frontend design language</h2>
+        <div class="top-actions">
+          <button class="button secondary" type="button" data-open-confirm>Show confirm dialog</button>
+          <button class="button primary" type="button" data-open-drawer="new">Open change drawer</button>
+        </div>
+      </header>
+
+      <main class="content">
+        <section class="page-head">
+          <div class="eyebrow">Durable design guidance</div>
+          <h1>Build screens as dense workspaces, not card galleries.</h1>
+          <p class="lead">This guide documents the interaction language that sits above the kitchen sink: full-width operational items, right-side drawers for routine changes, and an in-place history disclosure for longer edit history. The app is desktop-first (body min-width 1200px); responsive behaviour in this guide is for the document only.</p>
+          <div class="row">
+            <span class="code-token">ui-kitchen-sink.html tokens</span>
+            <span class="code-token">src/app/globals.css source of truth</span>
+            <span class="code-token">DESIGN-GLOSSARY.md vocabulary</span>
+            <span class="code-token">DD-MM-YYYY display dates</span>
+          </div>
+        </section>
+
+        <section class="section" id="principles">
+          <div class="section-head">
+            <div>
+              <div class="eyebrow">Foundation</div>
+              <h2>Application-Level Principles</h2>
+              <p class="section-copy">Use these when turning a product idea into a screen before choosing individual controls.</p>
+            </div>
+          </div>
+          <div class="rule-grid">
+            <article class="rule-card">
+              <span class="pill gold">1</span>
+              <strong>Items are full width by default.</strong>
+              <p>Roster members, timetable entries, transport movements, room assignments, and review items should read as horizontal rows or table rows. Reserve cards for repeated summary blocks or modal content.</p>
+            </article>
+            <article class="rule-card">
+              <span class="pill gold">2</span>
+              <strong>Routine changes happen in a drawer.</strong>
+              <p>Add, edit, review, assign, restore, and route changes should open a right-side drawer. The source list stays visible as context while the operator completes the change.</p>
+            </article>
+            <article class="rule-card">
+              <span class="pill gold">3</span>
+              <strong>History is short inline, long behind a disclosure.</strong>
+              <p>Show the latest event near the object it belongs to. A Show more action expands the vertical timeline in place (capped height, internal scroll). Modals are reserved for destructive confirmations, not for reading history.</p>
+            </article>
+            <article class="rule-card">
+              <span class="pill gold">4</span>
+              <strong>State should be visible before action.</strong>
+              <p>Use filter chips, status badges, legends, and row selection before opening an editor. Never make the drawer carry information the row needed for scanning.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="section" id="workflow">
+          <div class="section-head">
+            <div>
+              <div class="eyebrow">Live specimen</div>
+              <h2>Workflow Surface</h2>
+              <p class="section-copy">Click a full-width item to see how a routine edit stays attached to its source workspace.</p>
+            </div>
+            <button class="button primary" type="button" data-open-drawer="new">Add team member</button>
+          </div>
+
+          <div class="surface mock-shell">
+            <div class="work-area">
+              <div class="work-head">
+                <div>
+                  <div class="eyebrow">Roster</div>
+                  <h3>Championship team roster</h3>
+                  <p class="muted">Rows are the default object shape. Filters and status sit above the list.</p>
+                </div>
+                <span class="status green">Ready</span>
+              </div>
+
+              <div class="filter-row">
+                <div class="field">
+                  <label for="search">Search</label>
+                  <input class="input" id="search" value="sprint">
+                </div>
+                <div class="field">
+                  <label for="role">Role</label>
+                  <select class="select" id="role">
+                    <option>All roles</option>
+                    <option>Athlete</option>
+                    <option>Staff</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="state">State</label>
+                  <select class="select" id="state">
+                    <option>Active only</option>
+                    <option>Removed</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label>Active filters</label>
+                  <span class="pill">Event: sprint</span>
+                </div>
+              </div>
+
+              <div class="work-list" aria-label="Roster rows">
+                <button class="work-row is-selected" type="button" data-open-drawer="faycal">
+                  <span class="identity">
+                    <span class="avatar">R1</span>
+                    <span class="identity-text">
+                      <strong>Sample <span class="family-name">Runner A</span></strong>
+                      <span>Male athlete · 100m, 200m</span>
+                    </span>
+                  </span>
+                  <span class="status green">Active</span>
+                  <span class="truncate">Sprint group</span>
+                  <span class="pill">Edit</span>
+                </button>
+                <button class="work-row" type="button" data-open-drawer="dana">
+                  <span class="identity">
+                    <span class="avatar female">R2</span>
+                    <span class="identity-text">
+                      <strong>Sample <span class="family-name">Runner B</span></strong>
+                      <span>Female athlete · 400m</span>
+                    </span>
+                  </span>
+                  <span class="status amber">Needs check</span>
+                  <span class="truncate">Travel pending</span>
+                  <span class="pill">Edit</span>
+                </button>
+                <button class="work-row" type="button" data-open-drawer="maya">
+                  <span class="identity">
+                    <span class="avatar female">S1</span>
+                    <span class="identity-text">
+                      <strong>Sample <span class="family-name">Staff A</span></strong>
+                      <span>Staff member · physiotherapist</span>
+                    </span>
+                  </span>
+                  <span class="status blue">Staff</span>
+                  <span class="truncate">Medical team</span>
+                  <span class="pill">Edit</span>
+                </button>
+              </div>
+            </div>
+
+            <aside class="side-guide" aria-label="Surface guidance">
+              <div>
+                <div class="eyebrow">Pattern notes</div>
+                <h3>Why this shape works</h3>
+              </div>
+              <ul class="guidance-list">
+                <li>
+                  <strong>Full-width rows carry scan data.</strong>
+                  <span>Name, role, status, and the next action stay on one horizontal read line.</span>
+                </li>
+                <li>
+                  <strong>The drawer handles change.</strong>
+                  <span>The row does not expand into a form. It opens a focused editing surface.</span>
+                </li>
+                <li>
+                  <strong>Inline history stays tiny.</strong>
+                  <span>Only the latest event appears here. Older events expand in place behind the Show more disclosure.</span>
+                </li>
+              </ul>
+              <div class="history-preview">
+                <div class="row" style="justify-content: space-between;">
+                  <div>
+                    <strong>Latest edit</strong>
+                    <p class="muted">30-05-2026 · 15:08 · human</p>
+                  </div>
+                  <a class="button ghost small" href="#history">Show more</a>
+                </div>
+                <p class="muted">Removed athlete was restored from structured audit event. Newer changes remain protected.</p>
+              </div>
+            </aside>
+          </div>
+        </section>
+
+        <section class="section" id="drawer">
+          <div class="section-head">
+            <div>
+              <div class="eyebrow">Change pattern</div>
+              <h2>Drawer Changes</h2>
+              <p class="section-copy">The drawer is the default surface for changing one selected object. It should have a sticky header, clear save/cancel actions, and enough context to avoid jumping away from the current workspace.</p>
+            </div>
+            <button class="button secondary" type="button" data-open-drawer="dana">Open example drawer</button>
+          </div>
+          <div class="rule-grid">
+            <article class="mini-card">
+              <strong>Use drawers for</strong>
+              <p>Add/edit forms, assignment details, import review decisions, restore flows, selected row details, and workflow-specific secondary data.</p>
+            </article>
+            <article class="mini-card">
+              <strong>Avoid drawers for</strong>
+              <p>Destructive confirmations with no form, broad page navigation, large comparisons, or history reading beyond the selected object.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="section" id="history">
+          <div class="section-head">
+            <div>
+              <div class="eyebrow">Audit pattern</div>
+              <h2>History Disclosure</h2>
+              <p class="section-copy">History should not make the main workspace taller. Keep the latest event inline, then let Show more expand the vertical timeline in place — capped at 420px with internal scroll. The layout below it stays put.</p>
+            </div>
+          </div>
+          <div class="surface">
+            <div class="history-head">
+              <div>
+                <h3>Recent roster changes</h3>
+                <p class="muted">Official roster changes only. Proposed changes stay in Review Queue.</p>
+              </div>
+              <span class="pill">Audit events</span>
+            </div>
+            <div class="surface-pad">
+              <div class="vtimeline history-list is-collapsed" data-history-list>
+                <article class="vt-item">
+                  <span class="vt-dot green" aria-hidden="true"></span>
+                  <div class="vt-row">
+                    <div class="vt-body">
+                      <strong>Restored athlete — <a href="#workflow">Sample <span class="family-name">Runner A</span></a></strong>
+                      <div class="vt-time">30-05-2026 · 15:08 · human</div>
+                    </div>
+                    <button class="button secondary small" type="button">Undo</button>
+                  </div>
+                </article>
+                <article class="vt-item">
+                  <span class="vt-dot" aria-hidden="true"></span>
+                  <div class="vt-row">
+                    <div class="vt-body">
+                      <strong>Added staff member — <a href="#workflow">Sample <span class="family-name">Staff A</span></a></strong>
+                      <div class="vt-time">30-05-2026 · 14:42 · human</div>
+                    </div>
+                    <button class="button secondary small" type="button">Undo</button>
+                  </div>
+                </article>
+                <article class="vt-item">
+                  <span class="vt-dot amber" aria-hidden="true"></span>
+                  <div class="vt-row">
+                    <div class="vt-body">
+                      <strong>Restored athlete — <a href="#workflow">Sample <span class="family-name">Runner B</span></a></strong>
+                      <div class="vt-time">30-05-2026 · 13:59 · human</div>
+                    </div>
+                    <button class="button secondary small" type="button" aria-disabled="true">Newer change exists</button>
+                  </div>
+                </article>
+                <article class="vt-item">
+                  <span class="vt-dot" aria-hidden="true"></span>
+                  <div class="vt-row">
+                    <div class="vt-body">
+                      <strong>Edited athlete — <a href="#workflow">Sample <span class="family-name">Runner A</span></a></strong>
+                      <div class="vt-time">30-05-2026 · 12:29 · human</div>
+                    </div>
+                    <button class="button secondary small" type="button" aria-disabled="true">Needs structured audit data</button>
+                  </div>
+                </article>
+                <article class="vt-item">
+                  <span class="vt-dot" aria-hidden="true"></span>
+                  <div class="vt-row">
+                    <div class="vt-body">
+                      <strong>Added athlete — <a href="#workflow">Sample <span class="family-name">Runner C</span></a></strong>
+                      <div class="vt-time">30-05-2026 · 11:54 · agent</div>
+                    </div>
+                    <button class="button secondary small" type="button" aria-disabled="true">Needs structured audit data</button>
+                  </div>
+                </article>
+              </div>
+            </div>
+            <div class="history-disclosure-footer">
+              <span data-history-count>Showing latest change. 4 more available.</span>
+              <button class="button secondary small" type="button" data-toggle-history>
+                <span data-history-label>Show more</span>
+                <span class="chevron" data-history-chevron aria-hidden="true">⌄</span>
+              </button>
+            </div>
+          </div>
+          <div class="window-rule">
+            <article class="mini-card">
+              <strong>Inline</strong>
+              <p>Use for the newest event and immediate undo/recovery when the operator is still working on the same object.</p>
+            </article>
+            <article class="mini-card">
+              <strong>Disclosure expand</strong>
+              <p>Show more expands the timeline in place with a capped, scrollable height. Disabled actions keep their explanation as the button label (for example "Newer change exists").</p>
+            </article>
+            <article class="mini-card">
+              <strong>Dedicated page</strong>
+              <p>Use only when history needs sorting, filtering, export, or cross-object investigation.</p>
+            </article>
+          </div>
+        </section>
+
+        <section class="section" id="decisions">
+          <div class="section-head">
+            <div>
+              <div class="eyebrow">Reference</div>
+              <h2>Surface Decision Rules</h2>
+              <p class="section-copy">When a new screen is being designed, choose the surface by operator task rather than by visual novelty.</p>
+            </div>
+          </div>
+          <div class="decision-table-wrap">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>Operator need</th>
+                  <th>Default surface</th>
+                  <th>Required behaviour</th>
+                  <th>Avoid</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Scan or select many records</td>
+                  <td>Full-width rows or table rows</td>
+                  <td>Visible status, row hover, filter chips, stable columns, internal horizontal scroll for wide tables.</td>
+                  <td>Independent cards that make comparison slower.</td>
+                </tr>
+                <tr>
+                  <td>Add or edit one record</td>
+                  <td>Right-side drawer</td>
+                  <td>Sticky header, save/cancel footer, selected-object title, validation inline with fields.</td>
+                  <td>Expanding row forms that push the list around.</td>
+                </tr>
+                <tr>
+                  <td>Review a proposed change</td>
+                  <td>Drawer attached to the review item</td>
+                  <td>Show before/after values, provenance, accept/reject actions, and any conflict state.</td>
+                  <td>Modal-only review flows with no source row context.</td>
+                </tr>
+                <tr>
+                  <td>Read recent edit history</td>
+                  <td>Inline latest event plus Show more disclosure</td>
+                  <td>Latest event visible; Show more expands in place with capped height and internal scroll; disabled actions explain why.</td>
+                  <td>History modals, or long accordions that stretch the workspace.</td>
+                </tr>
+                <tr>
+                  <td>Confirm destructive action</td>
+                  <td>Small confirm-dialog modal (480px)</td>
+                  <td>Explicit confirmation check before submission, visible consequence copy, cancel path, danger-styled action.</td>
+                  <td>Destructive action hidden inside a toast or hover-only control.</td>
+                </tr>
+                <tr>
+                  <td>Compare operational state</td>
+                  <td>Table/list with legend</td>
+                  <td>Colour paired with words, status legend where colour carries meaning, no colour-only decisions.</td>
+                  <td>Unlabelled colour strips or decorative status-only icons.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <div class="drawer-backdrop" data-drawer-backdrop role="presentation">
+    <aside class="drawer-panel" role="dialog" aria-modal="true" aria-labelledby="drawer-title">
+      <div class="drawer-head">
+        <div>
+          <div class="eyebrow" id="drawer-mode">Edit team member</div>
+          <h2 id="drawer-title">SAMPLE RUNNER A</h2>
+          <p class="muted" id="drawer-subtitle">Official changes are logged immediately.</p>
+        </div>
+        <button class="button secondary small" type="button" data-close-drawer aria-label="Close drawer">⊗ Close</button>
+      </div>
+
+      <div class="drawer-body">
+        <div class="tab-strip" role="tablist" aria-label="Drawer sections">
+          <button class="tab-button is-active" type="button" role="tab" aria-selected="true" data-drawer-tab="details">Details</button>
+          <button class="tab-button" type="button" role="tab" aria-selected="false" data-drawer-tab="history">History</button>
+        </div>
+
+        <section class="drawer-section" data-tab-panel="details">
+          <div class="field">
+            <span>Type</span>
+            <div class="segmented" role="group" aria-label="Team member type">
+              <button class="segmented-option is-active" type="button" data-type-option="Athlete">Athlete</button>
+              <button class="segmented-option" type="button" data-type-option="Staff">Staff</button>
+            </div>
+          </div>
+          <div class="form-grid">
+            <div class="field">
+              <label for="drawer-given">Given name</label>
+              <input class="input" id="drawer-given" value="Sample">
+            </div>
+            <div class="field">
+              <label for="drawer-family">Family name</label>
+              <input class="input" id="drawer-family" value="Runner A">
+            </div>
+            <div class="field">
+              <label for="drawer-sex">M/F</label>
+              <select class="select" id="drawer-sex">
+                <option>M</option>
+                <option>F</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="drawer-reference-date">Reference date</label>
+              <input class="input" id="drawer-reference-date" value="01-01-2000">
+            </div>
+          </div>
+        </section>
+
+        <section class="drawer-section" data-tab-panel="details">
+          <div class="drawer-card">
+            <strong>Drawer anatomy rule</strong>
+            <p>Sticky header names the selected object (family name uppercase). Body contains the edit task. Footer owns save/cancel. Drawer state is URL-driven (for example <span class="code-token">?edit=&lt;id&gt;</span>) so an open drawer is shareable and survives reload.</p>
+          </div>
+        </section>
+
+        <section class="drawer-section" data-tab-panel="history" hidden>
+          <div class="vtimeline">
+            <article class="vt-item">
+              <span class="vt-dot green" aria-hidden="true"></span>
+              <div class="vt-body">
+                <strong>Edited athlete details</strong>
+                <div class="vt-time">30-05-2026 · 15:08 · human</div>
+              </div>
+            </article>
+            <article class="vt-item">
+              <span class="vt-dot amber" aria-hidden="true"></span>
+              <div class="vt-body">
+                <strong>Import proposed duplicate warning</strong>
+                <div class="vt-time">30-05-2026 · 14:42 · agent</div>
+              </div>
+            </article>
+            <article class="vt-item">
+              <span class="vt-dot" aria-hidden="true"></span>
+              <div class="vt-body">
+                <strong>Added to championship team roster</strong>
+                <div class="vt-time">29-05-2026 · 18:10 · human</div>
+              </div>
+            </article>
+          </div>
+          <p class="muted">Older events live in the page-level history disclosure. The drawer is not the audit archive.</p>
+        </section>
+      </div>
+
+      <div class="drawer-foot">
+        <span class="muted">Creates an audit event on save.</span>
+        <div class="drawer-actions">
+          <button class="button ghost" type="button" data-close-drawer>Cancel</button>
+          <button class="button primary" type="button" data-close-drawer>Save official change</button>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <div class="modal-backdrop" data-confirm-backdrop role="presentation">
+    <section class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+      <div class="modal-head">
+        <div>
+          <div class="eyebrow">Confirm destructive action</div>
+          <h2 id="confirm-title">Remove team member?</h2>
+        </div>
+        <button class="icon-button" type="button" data-close-confirm aria-label="Close dialog">x</button>
+      </div>
+      <div class="modal-body">
+        <p>Sample <span class="family-name">Runner A</span> will be removed from the championship team roster. The record stays recoverable from the audit trail.</p>
+        <label class="row" style="gap: 0.5rem;">
+          <input type="checkbox"> I understand this removes the athlete from the active roster.
+        </label>
+      </div>
+      <div class="modal-foot">
+        <span class="muted">Destructive actions always require an explicit confirmation check.</span>
+        <div class="modal-actions">
+          <button class="button secondary" type="button" data-close-confirm>Cancel</button>
+          <button class="button danger" type="button" data-close-confirm>Remove from roster</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    const people = {
+      new: {
+        mode: "Add team member",
+        title: "New championship team member",
+        subtitle: "Use the drawer for routine create flows.",
+        given: "",
+        family: "",
+        type: "Athlete",
+        sex: "M",
+        referenceDate: ""
+      },
+      faycal: {
+        mode: "Edit team member",
+        title: "SAMPLE RUNNER A",
+        subtitle: "Official changes are logged immediately.",
+        given: "Sample",
+        family: "Runner A",
+        type: "Athlete",
+        sex: "M",
+        referenceDate: "01-01-2000"
+      },
+      dana: {
+        mode: "Edit team member",
+        title: "SAMPLE RUNNER B",
+        subtitle: "The source roster row remains visible behind the drawer.",
+        given: "Sample",
+        family: "Runner B",
+        type: "Athlete",
+        sex: "F",
+        referenceDate: "02-01-2000"
+      },
+      maya: {
+        mode: "Edit staff member",
+        title: "SAMPLE STAFF A",
+        subtitle: "Staff records use the same drawer structure as athletes.",
+        given: "Sample",
+        family: "Staff A",
+        type: "Staff",
+        sex: "F",
+        referenceDate: ""
+      }
+    };
+
+    const body = document.body;
+    const drawerBackdrop = document.querySelector("[data-drawer-backdrop]");
+    const confirmBackdrop = document.querySelector("[data-confirm-backdrop]");
+    const drawerMode = document.querySelector("#drawer-mode");
+    const drawerTitle = document.querySelector("#drawer-title");
+    const drawerSubtitle = document.querySelector("#drawer-subtitle");
+    const drawerGiven = document.querySelector("#drawer-given");
+    const drawerFamily = document.querySelector("#drawer-family");
+    const drawerSex = document.querySelector("#drawer-sex");
+    const drawerReferenceDate = document.querySelector("#drawer-reference-date");
+
+    function setOverlayState() {
+      const anyOpen = drawerBackdrop.classList.contains("is-open") || confirmBackdrop.classList.contains("is-open");
+      body.classList.toggle("overlay-open", anyOpen);
+    }
+
+    function setDrawerType(type) {
+      document.querySelectorAll("[data-type-option]").forEach((option) => {
+        option.classList.toggle("is-active", option.getAttribute("data-type-option") === type);
+      });
+    }
+
+    function openDrawer(key) {
+      const person = people[key] || people.faycal;
+      drawerMode.textContent = person.mode;
+      drawerTitle.textContent = person.title;
+      drawerSubtitle.textContent = person.subtitle;
+      drawerGiven.value = person.given;
+      drawerFamily.value = person.family;
+      drawerSex.value = person.sex;
+      drawerReferenceDate.value = person.referenceDate;
+      setDrawerType(person.type);
+
+      document.querySelectorAll(".work-row").forEach((row) => {
+        row.classList.toggle("is-selected", row.getAttribute("data-open-drawer") === key);
+      });
+
+      drawerBackdrop.classList.add("is-open");
+      setOverlayState();
+      document.querySelector("[data-close-drawer]").focus();
+    }
+
+    function closeDrawer() {
+      drawerBackdrop.classList.remove("is-open");
+      setOverlayState();
+    }
+
+    function openConfirm() {
+      confirmBackdrop.classList.add("is-open");
+      setOverlayState();
+      document.querySelector("[data-close-confirm]").focus();
+    }
+
+    function closeConfirm() {
+      confirmBackdrop.classList.remove("is-open");
+      setOverlayState();
+    }
+
+    document.querySelectorAll("[data-open-drawer]").forEach((button) => {
+      button.addEventListener("click", () => openDrawer(button.getAttribute("data-open-drawer")));
+    });
+
+    document.querySelectorAll("[data-close-drawer]").forEach((button) => {
+      button.addEventListener("click", closeDrawer);
+    });
+
+    document.querySelectorAll("[data-open-confirm]").forEach((button) => {
+      button.addEventListener("click", openConfirm);
+    });
+
+    document.querySelectorAll("[data-close-confirm]").forEach((button) => {
+      button.addEventListener("click", closeConfirm);
+    });
+
+    document.querySelectorAll("[data-type-option]").forEach((option) => {
+      option.addEventListener("click", () => setDrawerType(option.getAttribute("data-type-option")));
+    });
+
+    drawerBackdrop.addEventListener("click", (event) => {
+      if (event.target === drawerBackdrop) {
+        closeDrawer();
+      }
+    });
+
+    confirmBackdrop.addEventListener("click", (event) => {
+      if (event.target === confirmBackdrop) {
+        closeConfirm();
+      }
+    });
+
+    // History disclosure — Show more expands the timeline in place.
+    const historyList = document.querySelector("[data-history-list]");
+    const historyToggle = document.querySelector("[data-toggle-history]");
+    const historyLabel = document.querySelector("[data-history-label]");
+    const historyCount = document.querySelector("[data-history-count]");
+    const historyChevron = document.querySelector("[data-history-chevron]");
+
+    historyToggle.addEventListener("click", () => {
+      const expanded = historyList.classList.toggle("is-expanded");
+      historyList.classList.toggle("is-collapsed", !expanded);
+      historyLabel.textContent = expanded ? "Show less" : "Show more";
+      historyCount.textContent = expanded
+        ? "Showing all 5 official changes."
+        : "Showing latest change. 4 more available.";
+      historyChevron.classList.toggle("is-open", expanded);
+    });
+
+    document.querySelectorAll("[data-drawer-tab]").forEach((tab) => {
+      tab.addEventListener("click", () => {
+        const active = tab.getAttribute("data-drawer-tab");
+        document.querySelectorAll("[data-drawer-tab]").forEach((button) => {
+          const selected = button === tab;
+          button.classList.toggle("is-active", selected);
+          button.setAttribute("aria-selected", String(selected));
+        });
+        document.querySelectorAll("[data-tab-panel]").forEach((panel) => {
+          panel.hidden = panel.getAttribute("data-tab-panel") !== active;
+        });
+      });
+    });
+
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        closeDrawer();
+        closeConfirm();
+      }
+    });
+  </script>
+</body>
+</html>

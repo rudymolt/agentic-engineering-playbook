@@ -1,0 +1,444 @@
+{
+  "$id": "https://playbook.local/delivery-pilot/merge-decision/v1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "else": {
+        "properties": {
+          "reason_codes": {
+            "minItems": 1,
+            "type": "array"
+          }
+        }
+      },
+      "if": {
+        "properties": {
+          "decision": {
+            "const": "allow"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "protected_path_matches": {
+            "maxItems": 0,
+            "type": "array"
+          },
+          "reason_codes": {
+            "const": [
+              "all-controls-pass"
+            ]
+          }
+        }
+      }
+    },
+    {
+      "else": {
+        "properties": {
+          "decision": {
+            "const": "deny"
+          },
+          "reason_codes": {
+            "contains": {
+              "const": "scope-outside-approved-paths"
+            },
+            "type": "array"
+          }
+        }
+      },
+      "if": {
+        "properties": {
+          "changed_paths": {
+            "items": {
+              "pattern": "^(?!/)(?!.*\\\\)(?!.*//)(?!.*(?:^|/)\\.\\.?(?:/|$))(?!.*\\/$).+$",
+              "type": "string"
+            },
+            "minItems": 1,
+            "type": "array",
+            "uniqueItems": true
+          }
+        }
+      }
+    }
+  ],
+  "properties": {
+    "agent": {
+      "additionalProperties": false,
+      "properties": {
+        "builder_separation": {
+          "const": "live-controller-session-different"
+        },
+        "effort": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "family": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "fresh_context": {
+          "const": true
+        },
+        "model": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "role": {
+          "const": "fresh-merge-agent"
+        },
+        "session_id": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "role",
+        "session_id",
+        "family",
+        "model",
+        "effort",
+        "fresh_context",
+        "builder_separation"
+      ],
+      "type": "object"
+    },
+    "approval_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "approved_scope": {
+      "additionalProperties": false,
+      "properties": {
+        "implementation_paths": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "minItems": 1,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "planning_prefix": {
+          "pattern": "^planning/[^/]+/$",
+          "type": "string"
+        },
+        "risk_class": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "risk_class",
+        "planning_prefix",
+        "implementation_paths"
+      ],
+      "type": "object"
+    },
+    "attempt_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "authority_class": {
+      "enum": [
+        "process-attested-fresh-merge"
+      ]
+    },
+    "base_ref": {
+      "type": "string"
+    },
+    "changed_paths": {
+      "type": "array"
+    },
+    "control_commit": {
+      "pattern": "^[0-9a-f]{40}$",
+      "type": "string"
+    },
+    "control_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "control_ref": {
+      "pattern": "^refs/heads/delivery-control/.+$",
+      "type": "string"
+    },
+    "controller_generation": {
+      "minimum": 1,
+      "type": "integer"
+    },
+    "decision": {
+      "enum": [
+        "allow",
+        "deny"
+      ]
+    },
+    "decision_id": {
+      "type": "string"
+    },
+    "deploy_authority": {
+      "enum": [
+        false
+      ]
+    },
+    "envelope_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "evidence_locators": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "expected_candidate": {
+      "additionalProperties": false,
+      "properties": {
+        "base_sha": {
+          "pattern": "^[0-9a-f]{40}$",
+          "type": "string"
+        },
+        "head_sha": {
+          "pattern": "^[0-9a-f]{40}$",
+          "type": "string"
+        },
+        "merge_group_sha": {
+          "pattern": "^[0-9a-f]{40}$",
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "policy_sha": {
+          "pattern": "^[0-9a-f]{40}$",
+          "type": "string"
+        },
+        "ruleset_fingerprint": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "tree_sha": {
+          "pattern": "^[0-9a-f]{40}$",
+          "type": "string"
+        },
+        "verification_environment_digest": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "head_sha",
+        "tree_sha",
+        "base_sha",
+        "policy_sha",
+        "ruleset_fingerprint",
+        "verification_environment_digest",
+        "merge_group_sha"
+      ],
+      "type": "object"
+    },
+    "expected_head_sha": {
+      "pattern": "^[0-9a-f]{40}$",
+      "type": "string"
+    },
+    "expected_tree_sha": {
+      "pattern": "^[0-9a-f]{40}$",
+      "type": "string"
+    },
+    "gate_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "handback_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "issued_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "launcher_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "merge_method": {
+      "enum": [
+        "squash",
+        "merge",
+        "rebase"
+      ]
+    },
+    "mission_id": {
+      "type": "string"
+    },
+    "non_bypass_protection": {
+      "enum": [
+        false
+      ]
+    },
+    "policy_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "pr_number": {
+      "type": "integer"
+    },
+    "process_attested_only": {
+      "enum": [
+        true
+      ]
+    },
+    "protected_path_matches": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "reason_codes": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "release_authority": {
+      "enum": [
+        false
+      ]
+    },
+    "repository": {
+      "type": "string"
+    },
+    "risk_class": {
+      "type": "string"
+    },
+    "risk_policy": {
+      "additionalProperties": false,
+      "properties": {
+        "allowed_risk_classes": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "minItems": 1,
+          "type": "array"
+        },
+        "authority_class": {
+          "const": "process-attested-fresh-merge"
+        },
+        "human_merge_path_name_prefixes": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "minItems": 1,
+          "type": "array"
+        },
+        "human_merge_path_names": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "minItems": 1,
+          "type": "array"
+        },
+        "human_merge_path_prefixes": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "minItems": 1,
+          "type": "array"
+        },
+        "policy_version": {
+          "const": 1
+        },
+        "source_branch": {
+          "const": "default-branch-only"
+        }
+      },
+      "required": [
+        "allowed_risk_classes",
+        "authority_class",
+        "human_merge_path_prefixes",
+        "human_merge_path_names",
+        "human_merge_path_name_prefixes",
+        "policy_version",
+        "source_branch"
+      ],
+      "type": "object"
+    },
+    "rollout_milestone": {
+      "enum": [
+        "K4.1"
+      ]
+    },
+    "schema_version": {
+      "const": 1
+    },
+    "standing_authority_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "tier_b_authority": {
+      "enum": [
+        false
+      ]
+    },
+    "verification_digests": {
+      "items": {
+        "pattern": "^sha256:[0-9a-f]{64}$",
+        "type": "string"
+      },
+      "minItems": 1,
+      "type": "array"
+    }
+  },
+  "required": [
+    "schema_version",
+    "decision_id",
+    "mission_id",
+    "rollout_milestone",
+    "authority_class",
+    "repository",
+    "pr_number",
+    "base_ref",
+    "expected_head_sha",
+    "expected_tree_sha",
+    "expected_candidate",
+    "merge_method",
+    "policy_digest",
+    "risk_policy",
+    "approved_scope",
+    "standing_authority_digest",
+    "envelope_digest",
+    "approval_digest",
+    "attempt_digest",
+    "handback_digest",
+    "gate_digest",
+    "launcher_digest",
+    "verification_digests",
+    "risk_class",
+    "changed_paths",
+    "protected_path_matches",
+    "controller_generation",
+    "control_ref",
+    "control_commit",
+    "control_digest",
+    "agent",
+    "decision",
+    "reason_codes",
+    "process_attested_only",
+    "non_bypass_protection",
+    "tier_b_authority",
+    "deploy_authority",
+    "release_authority",
+    "issued_at",
+    "evidence_locators"
+  ],
+  "title": "merge-decision/v1",
+  "type": "object"
+}

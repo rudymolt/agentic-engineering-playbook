@@ -1,0 +1,51 @@
+{
+  "allowed_risk_classes": [
+    "bounded-non-ui-bug",
+    "bounded-product-taste-resolved",
+    "documentation-maintenance",
+    "test-tooling"
+  ],
+  "authority_class": "process-attested-fresh-merge",
+  "human_merge_path_prefixes": [
+    ".agents/",
+    ".claude/",
+    ".codex/",
+    ".conductor/",
+    ".cursor/",
+    ".github/",
+    "auth/",
+    "billing/",
+    "database/migrations/",
+    ".playbook/",
+    "delivery-pilot/",
+    "delivery/",
+    "infrastructure/",
+    "payments/",
+    "prisma/migrations/",
+    "scripts/",
+    "secrets/"
+  ],
+  "human_merge_path_names": [
+    "AGENTS.md",
+    "CLAUDE.md",
+    "CODEOWNERS",
+    "CONTEXT.md",
+    "PLAYBOOK-PROFILE.md",
+    "package.json",
+    "package-lock.json",
+    "pnpm-lock.yaml",
+    "yarn.lock",
+    "bun.lock",
+    "bun.lockb",
+    "pytest.ini",
+    "pyproject.toml",
+    "tox.ini",
+    "SKILL.md"
+  ],
+  "human_merge_path_name_prefixes": [
+    "AGENTS",
+    "CLAUDE"
+  ],
+  "policy_version": 1,
+  "source_branch": "default-branch-only"
+}

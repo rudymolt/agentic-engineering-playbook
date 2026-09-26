@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Foundations · AI Engineering Playbook V0.2</title>
+<link rel="stylesheet" href="assets/playbook-docs.css">
+</head>
+<body class="playbook-doc">
+<nav class="site-nav" aria-label="Playbook guides">
+  <a class="brand" href="index.html">AI Engineering Playbook</a>
+  <div class="links">
+    <a href="50-how-to-write-code-with-ai.html">How to drive the agent</a>
+    <a href="60-the-theory-behind-the-playbook.html">Theory</a>
+    <a href="00-foundations.html" aria-current="page">Foundations</a>
+    <a href="10-process/index.html">Process map</a>
+    <a href="30-document-lifecycle.html">Docs lifecycle</a>
+  </div>
+</nav>
+
+<main class="page">
+  <header class="doc-head">
+    <div class="eyebrow">AI Engineering Playbook · §00</div>
+    <h1>Foundations</h1>
+    <p class="lede">
+      The principles every stage assumes: ask before acting, use the project's
+      vocabulary, keep one source of truth, slice vertically, and verify in
+      proportion to risk.
+    </p>
+    <div class="meta">
+      <span><strong>Source reference</strong> · <a href="00-foundations.md">00-foundations.md</a></span>
+      <span><strong>Format</strong> · Interactive explainer</span>
+    </div>
+  </header>
+
+  <section class="doc-toc" aria-labelledby="foundation-map">
+    <h2 id="foundation-map">Principle Map</h2>
+    <div class="toc-grid">
+      <a href="#contract">Collaboration contract<span>Human intent, agent execution.</span></a>
+      <a href="#architecture">Architecture rules<span>Deep modules, adapters, source of truth.</span></a>
+      <a href="#verification">Verification ladder<span>Match checks to risk.</span></a>
+      <a href="#pitfalls">Pitfall checklist<span>Catch common agent mistakes.</span></a>
+    </div>
+  </section>
+
+  <section id="contract">
+    <h2>The Collaboration Contract</h2>
+    <p>
+      The agent should read context, ask before inventing domain rules, push
+      back constructively, and avoid work the user did not ask for. The human
+      owns intent and approval; the agent owns execution and verification.
+    </p>
+  </section>
+
+  <section id="architecture" class="interactive-panel" data-choice-panel>
+    <h2>Architecture Decisions That Compound</h2>
+    <p>Click a decision to see why it matters.</p>
+    <div class="choice-grid">
+      <button type="button" data-choice data-choice-title="One source of truth" data-choice-body="Every piece of data has one canonical home. Everything else reads or derives from it, which removes sync bugs and gives the agent one place to debug.">One source of truth</button>
+      <button type="button" data-choice data-choice-title="Adapters at the edges" data-choice-body="Screens, routes, and outside services translate to and from the canonical form. Domain rules stay in the centre instead of leaking across the app.">Adapters at the edges</button>
+      <button type="button" data-choice data-choice-title="Deep modules" data-choice-body="A small interface with substantial behaviour behind it is easier for humans and agents to use without understanding internals.">Deep modules</button>
+      <button type="button" data-choice data-choice-title="Editability tiers" data-choice-body="Declare what is active source, generated output, frozen reference, and archive so agents know where edits are safe.">Editability tiers</button>
+    </div>
+    <div class="choice-output" data-choice-output>Choose a principle.</div>
+  </section>
+
+  <section id="verification" class="interactive-panel" data-choice-panel>
+    <h2>Verification Ladder</h2>
+    <p>Pick the change type to see the minimum verification owed.</p>
+    <div class="choice-grid">
+      <button type="button" data-choice data-choice-title="Typo or comment edit" data-choice-body="Eyeball the change and save. Do not turn tiny edits into ceremony.">Typo</button>
+      <button type="button" data-choice data-choice-title="Single-file local refactor" data-choice-body="Run type-checking plus the relevant unit tests. The public behaviour should not change.">Local refactor</button>
+      <button type="button" data-choice data-choice-title="New behaviour in one module" data-choice-body="Use TDD: red, then green at a pre-agreed public seam. Handle structural refactoring during review.">New behaviour</button>
+      <button type="button" data-choice data-choice-title="New behaviour across modules" data-choice-body="Use TDD, integration tests, and a browser QA run when the workflow has a UI.">Cross-module</button>
+      <button type="button" data-choice data-choice-title="Auth, payments, user data, public endpoints, or deploy" data-choice-body="Run the full ladder plus security review, monitored rollout, and rollback or backup thinking.">High risk</button>
+    </div>
+    <div class="choice-output" data-choice-output>Choose a change type.</div>
+  </section>
+
+  <section id="pitfalls" class="interactive-panel" data-checklist>
+    <h2>Pitfall Checklist</h2>
+    <div class="checklist">
+      <label><input type="checkbox"> I am not inventing a domain rule.</label>
+      <label><input type="checkbox"> I am using the vocabulary from <code>CONTEXT.md</code>.</label>
+      <label><input type="checkbox"> I am patching surgically, not rewriting by default.</label>
+      <label><input type="checkbox"> I matched verification depth to the risk.</label>
+      <label><input type="checkbox"> I kept feature work and refactors separate.</label>
+    </div>
+    <div class="checklist-status" data-checklist-output></div>
+  </section>
+</main>
+
+<script src="assets/playbook-glossary.js"></script>
+<script src="assets/playbook-docs.js"></script>
+</body>
+</html>

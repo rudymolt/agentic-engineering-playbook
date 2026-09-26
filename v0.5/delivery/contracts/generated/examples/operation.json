@@ -1,0 +1,17 @@
+{
+  "attempt_count": 0,
+  "controller_generation": 1,
+  "correlation_key": "op-1",
+  "expected_prior_state": null,
+  "external_ref": null,
+  "intent_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "issuer": "process-attested",
+  "kind": "pr-upsert",
+  "mission_id": "delivery-example",
+  "observations": [],
+  "operation_id": "op-1",
+  "schema_version": 1,
+  "status": "intent_committed",
+  "target": "repo#branch",
+  "terminal_evidence_digest": null
+}

@@ -1,0 +1,22 @@
+{
+  "closeout_merge_sha": null,
+  "envelope_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "event_chain_root_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "evidence_manifest_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "feature_merge_sha": null,
+  "finalization_intent_id": "finalize-1",
+  "host_proof": {},
+  "issued_at": "2026-08-08T00:00:00Z",
+  "last_control_snapshot_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "locator_observation": {},
+  "mission_id": "delivery-example",
+  "operation_root_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "outstanding_action_count": 0,
+  "policy_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "receipt_id": "terminal-1",
+  "ref_deletion_observation": {},
+  "release_refs": [],
+  "schema_version": 1,
+  "terminal_outcome": "pr_ready",
+  "workspace_archive_receipts": []
+}

@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Align Before Code · AI Engineering Playbook V0.2</title>
+<link rel="stylesheet" href="../assets/playbook-docs.css">
+</head>
+<body class="playbook-doc">
+<nav class="site-nav" aria-label="Playbook guides">
+  <a class="brand" href="../index.html">AI Engineering Playbook</a>
+  <div class="links">
+    <a href="../50-how-to-write-code-with-ai.html">How to drive the agent</a>
+    <a href="../60-the-theory-behind-the-playbook.html">Theory</a>
+    <a href="../00-foundations.html">Foundations</a>
+    <a href="index.html">Process map</a>
+    <a href="../30-document-lifecycle.html">Docs lifecycle</a>
+  </div>
+</nav>
+
+<main class="page">
+  <header class="doc-head">
+    <div class="eyebrow">AI Engineering Playbook · §10.01</div>
+    <h1>Align Before Code</h1>
+    <p class="lede">
+      The cheapest moment to fix a misunderstanding is before code exists. Use
+      the smallest set of alignment tools that settles the product, design,
+      engineering, and vocabulary questions.
+    </p>
+    <div class="meta">
+      <span><strong>Source reference</strong> · <a href="01-align.md">01-align.md</a></span>
+    </div>
+  </header>
+
+  <section class="interactive-panel" data-choice-panel>
+    <h2>Which Alignment Tool?</h2>
+    <div class="choice-grid">
+      <button type="button" data-choice data-choice-title="/grill-with-docs" data-choice-body="Use when the product is settled and the change is code-level. It challenges the plan against existing docs and updates CONTEXT.md or ADRs as decisions settle.">Settled product</button>
+      <button type="button" data-choice data-choice-title="/office-hours -> /plan-ceo-review -> /grill-with-docs" data-choice-body="Use when the project is greenfield or strategic fit is unclear. First test whether this is the right problem, then sharpen the product shape, then settle technical branches.">Greenfield</button>
+      <button type="button" data-choice data-choice-title="/plan-design-review plus mockup" data-choice-body="Use when the request changes a user-facing workflow or screen. Alignment is not complete until a mockup exists or the user explicitly defers it.">UI-heavy</button>
+      <button type="button" data-choice data-choice-title="/plan-devex-review" data-choice-body="Use when the output is an API, CLI, SDK, docs, or other developer-facing surface. Optimize for time-to-first-success and clear errors.">Developer-facing</button>
+      <button type="button" data-choice data-choice-title="/autoplan" data-choice-body="Use when you want CEO, design, and engineering lenses without manually choosing the sequence.">All lenses</button>
+    </div>
+    <div class="choice-output" data-choice-output>Choose the shape of the request.</div>
+  </section>
+
+  <section>
+    <h2>Exit Criteria</h2>
+    <ul>
+      <li>Every meaningful branch has an answer or explicit out-of-scope decision.</li>
+      <li>Stable vocabulary has been captured or queued for <code>CONTEXT.md</code>.</li>
+      <li>Hard-to-reverse trade-offs have been captured or queued for ADRs.</li>
+      <li>UI-affecting work has an accepted mockup or explicit deferral.</li>
+      <li>The user has confirmed moving forward.</li>
+    </ul>
+  </section>
+</main>
+
+<script src="../assets/playbook-glossary.js"></script>
+<script src="../assets/playbook-docs.js"></script>
+</body>
+</html>

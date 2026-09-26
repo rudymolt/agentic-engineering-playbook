@@ -1,0 +1,54 @@
+{
+  "$id": "https://playbook.local/delivery-pilot/composite-policy-identity/v1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "contract_registry_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "evidence_plan_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "gate_test_manifest_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "identity_id": {
+      "type": "string"
+    },
+    "pilot_pack_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "pinned_v03_release_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "policy_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "project_policy_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": 1
+    }
+  },
+  "required": [
+    "schema_version",
+    "identity_id",
+    "pinned_v03_release_digest",
+    "pilot_pack_digest",
+    "contract_registry_digest",
+    "project_policy_digest",
+    "evidence_plan_digest",
+    "gate_test_manifest_digest",
+    "policy_digest"
+  ],
+  "title": "composite-policy-identity/v1",
+  "type": "object"
+}

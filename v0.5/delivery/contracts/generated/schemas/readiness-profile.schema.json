@@ -1,0 +1,332 @@
+{
+  "$id": "https://playbook.local/delivery-pilot/readiness-profile/v1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "browser_review": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence": {
+          "items": {
+            "enum": [
+              "assertions",
+              "screenshots",
+              "console",
+              "failed-network",
+              "trace"
+            ]
+          },
+          "maxItems": 5,
+          "minItems": 5,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "journeys_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "journeys_ref": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "journeys_ref",
+        "journeys_digest",
+        "evidence"
+      ],
+      "type": "object"
+    },
+    "cleanup": {
+      "type": "string"
+    },
+    "cleanup_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "cloud": {
+      "additionalProperties": false,
+      "properties": {
+        "build_epoch_name": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "expected_build_epoch": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "expected_setup_epoch": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "os_family": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "repository_setup_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "repository_setup_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "required_environment": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "kind": {
+                "enum": [
+                  "secret",
+                  "non-secret"
+                ]
+              },
+              "name": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "probe": {
+                "const": "presence-only"
+              }
+            },
+            "required": [
+              "name",
+              "kind",
+              "probe"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        },
+        "setup_epoch_name": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "tool_probes": {
+          "items": {
+            "additionalProperties": false,
+            "properties": {
+              "command": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "name": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "version": {
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "command",
+              "version"
+            ],
+            "type": "object"
+          },
+          "type": "array"
+        }
+      },
+      "required": [
+        "build_epoch_name",
+        "expected_build_epoch",
+        "setup_epoch_name",
+        "expected_setup_epoch",
+        "repository_setup_ref",
+        "repository_setup_digest",
+        "os_family",
+        "required_environment",
+        "tool_probes"
+      ],
+      "type": "object"
+    },
+    "data": {
+      "additionalProperties": false,
+      "properties": {
+        "fixture_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "migrate": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "reset": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "seed": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "test_accounts_ref": {
+          "pattern": "^secret-ref:.+",
+          "type": "string"
+        }
+      },
+      "required": [
+        "migrate",
+        "reset",
+        "seed",
+        "fixture_digest",
+        "test_accounts_ref"
+      ],
+      "type": "object"
+    },
+    "local_only_dependencies": {
+      "type": "array"
+    },
+    "preview": {
+      "additionalProperties": false,
+      "properties": {
+        "health_url": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "human_forward_sandbox_port": {
+          "maximum": 65535,
+          "minimum": 1,
+          "type": "integer"
+        },
+        "review_route": {
+          "enum": [
+            "same-workspace-headless",
+            "isolated-workspace-rebuild",
+            "external-preview"
+          ]
+        }
+      },
+      "required": [
+        "review_route",
+        "health_url",
+        "human_forward_sandbox_port"
+      ],
+      "type": "object"
+    },
+    "profile_id": {
+      "type": "string"
+    },
+    "project": {
+      "type": "string"
+    },
+    "recovery": {
+      "additionalProperties": false,
+      "properties": {
+        "process_loss_probe": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "process_loss_probe_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "resume": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "resume_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "process_loss_probe",
+        "process_loss_probe_digest",
+        "resume",
+        "resume_digest"
+      ],
+      "type": "object"
+    },
+    "schema_version": {
+      "const": 1
+    },
+    "services": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "healthcheck": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "log_paths": {
+            "items": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "minItems": 1,
+            "type": "array"
+          },
+          "port": {
+            "maximum": 65535,
+            "minimum": 1,
+            "type": "integer"
+          },
+          "restart": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "start": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "stop": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "start",
+          "restart",
+          "stop",
+          "port",
+          "healthcheck",
+          "log_paths"
+        ],
+        "type": "object"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "verification": {
+      "additionalProperties": false,
+      "properties": {
+        "commands": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "minItems": 1,
+          "type": "array"
+        }
+      },
+      "required": [
+        "commands"
+      ],
+      "type": "object"
+    }
+  },
+  "required": [
+    "schema_version",
+    "profile_id",
+    "project",
+    "cloud",
+    "services",
+    "data",
+    "verification",
+    "preview",
+    "browser_review",
+    "recovery",
+    "cleanup",
+    "cleanup_digest",
+    "local_only_dependencies"
+  ],
+  "title": "readiness-profile/v1",
+  "type": "object"
+}

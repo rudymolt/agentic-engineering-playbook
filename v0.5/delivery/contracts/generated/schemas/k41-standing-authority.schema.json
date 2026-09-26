@@ -1,0 +1,144 @@
+{
+  "$id": "https://playbook.local/delivery-pilot/k41-standing-authority/v1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "actor_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "approved_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "authority_class": {
+      "enum": [
+        "process-attested-fresh-merge"
+      ]
+    },
+    "authority_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "authority_path": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "default_branch": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "deploy_authority": {
+      "enum": [
+        false
+      ]
+    },
+    "enabled": {
+      "enum": [
+        true
+      ]
+    },
+    "expires_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "implementation_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "kill_generation": {
+      "exclusiveMinimum": 0,
+      "type": "integer"
+    },
+    "maximum_action": {
+      "enum": [
+        "merge"
+      ]
+    },
+    "non_bypass_protection": {
+      "enum": [
+        false
+      ]
+    },
+    "policy_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "policy_path": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "process_attested_only": {
+      "enum": [
+        true
+      ]
+    },
+    "project": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "prompt_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "release_authority": {
+      "enum": [
+        false
+      ]
+    },
+    "repository": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "rollout_milestone": {
+      "enum": [
+        "K4.1"
+      ]
+    },
+    "schema_version": {
+      "const": 1
+    },
+    "source_event_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "spec_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "tier_b_authority": {
+      "enum": [
+        false
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "authority_id",
+    "project",
+    "repository",
+    "default_branch",
+    "policy_path",
+    "authority_path",
+    "rollout_milestone",
+    "authority_class",
+    "maximum_action",
+    "implementation_digest",
+    "spec_digest",
+    "prompt_digest",
+    "policy_digest",
+    "enabled",
+    "kill_generation",
+    "actor_id",
+    "source_event_id",
+    "approved_at",
+    "expires_at",
+    "process_attested_only",
+    "non_bypass_protection",
+    "tier_b_authority",
+    "deploy_authority",
+    "release_authority"
+  ],
+  "title": "k41-standing-authority/v1",
+  "type": "object"
+}

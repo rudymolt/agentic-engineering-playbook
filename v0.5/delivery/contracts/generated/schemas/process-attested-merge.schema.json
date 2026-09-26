@@ -1,0 +1,207 @@
+{
+  "$id": "https://playbook.local/delivery-pilot/process-attested-merge/v1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "else": {
+        "properties": {
+          "merge_commit_sha": {
+            "type": "null"
+          }
+        }
+      },
+      "if": {
+        "properties": {
+          "outcome": {
+            "const": "merged"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "merge_commit_sha": {
+            "pattern": "^[0-9a-f]{40}$",
+            "type": "string"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "dispatch_mode": {
+            "const": "reconcile-only"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "ambiguous_response_observed": {
+            "const": true
+          },
+          "merge_commit_sha": {
+            "type": "null"
+          },
+          "outcome": {
+            "const": "ambiguous"
+          }
+        }
+      }
+    },
+    {
+      "else": {
+        "properties": {
+          "ambiguous_response_observed": {
+            "const": false
+          }
+        }
+      },
+      "if": {
+        "properties": {
+          "outcome": {
+            "const": "ambiguous"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "ambiguous_response_observed": {
+            "const": true
+          }
+        }
+      }
+    }
+  ],
+  "properties": {
+    "actor": {
+      "pattern": "^fresh-merge-agent:",
+      "type": "string"
+    },
+    "ambiguous_response_observed": {
+      "type": "boolean"
+    },
+    "base_ref": {
+      "type": "string"
+    },
+    "decision_authorization": {
+      "enum": [
+        "allow"
+      ]
+    },
+    "decision_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "deploy_authority": {
+      "enum": [
+        false
+      ]
+    },
+    "dispatch_mode": {
+      "enum": [
+        "dispatched",
+        "reconcile-only"
+      ]
+    },
+    "dispatched_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "expected_head_sha": {
+      "pattern": "^[0-9a-f]{40}$",
+      "type": "string"
+    },
+    "host_evidence_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "host_evidence_locator": {
+      "type": "string"
+    },
+    "merge_commit_sha": {
+      "pattern": "^[0-9a-f]{40}$",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "merge_method": {
+      "enum": [
+        "squash",
+        "merge",
+        "rebase"
+      ]
+    },
+    "non_bypass_protection": {
+      "enum": [
+        false
+      ]
+    },
+    "observed_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "outcome": {
+      "enum": [
+        "merged",
+        "denied",
+        "ambiguous"
+      ]
+    },
+    "pr_number": {
+      "type": "integer"
+    },
+    "process_attested_only": {
+      "enum": [
+        true
+      ]
+    },
+    "receipt_id": {
+      "type": "string"
+    },
+    "release_authority": {
+      "enum": [
+        false
+      ]
+    },
+    "repository": {
+      "type": "string"
+    },
+    "schema_version": {
+      "const": 1
+    },
+    "tier_b_authority": {
+      "enum": [
+        false
+      ]
+    }
+  },
+  "required": [
+    "schema_version",
+    "receipt_id",
+    "decision_digest",
+    "decision_authorization",
+    "repository",
+    "pr_number",
+    "base_ref",
+    "expected_head_sha",
+    "merge_commit_sha",
+    "merge_method",
+    "dispatch_mode",
+    "actor",
+    "dispatched_at",
+    "observed_at",
+    "outcome",
+    "ambiguous_response_observed",
+    "host_evidence_digest",
+    "host_evidence_locator",
+    "process_attested_only",
+    "non_bypass_protection",
+    "tier_b_authority",
+    "deploy_authority",
+    "release_authority"
+  ],
+  "title": "process-attested-merge/v1",
+  "type": "object"
+}

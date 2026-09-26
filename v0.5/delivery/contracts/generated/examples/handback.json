@@ -1,0 +1,14 @@
+{
+  "attestation_refs": [],
+  "candidate": {},
+  "handback_id": "handback-1",
+  "issue_ref": "TASK-1",
+  "issued_at": "2026-08-08T00:00:00Z",
+  "issuer": "process-attested",
+  "mission_id": "delivery-example",
+  "open_action_count": 0,
+  "owner_id": "human-1",
+  "pr_ref": "github:pr/1",
+  "schema_version": 1,
+  "workspace_disposition": "sleep"
+}

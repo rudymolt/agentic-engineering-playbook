@@ -1,0 +1,4 @@
+interface:
+  display_name: "Evidence-Based How"
+  short_description: "Trace current behavior with source-read and runtime qualifications"
+  default_prompt: "Use $ai-playbook-how to trace a bounded input-to-result behavior with cited evidence."

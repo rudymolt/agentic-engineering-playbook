@@ -1,0 +1,12 @@
+{
+  "bundle_id": "final-bundle-1",
+  "control_ref_deleted": true,
+  "event_chain_root_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "final_projection_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "locator_closed": true,
+  "mission_id": "delivery-example",
+  "preserved_at": "2026-08-08T00:00:00Z",
+  "receipt_manifest_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "schema_version": 1,
+  "workspace_archive_receipts": []
+}

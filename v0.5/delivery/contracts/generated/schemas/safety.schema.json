@@ -1,0 +1,55 @@
+{
+  "$id": "https://playbook.local/delivery-pilot/safety/v1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "answer_ref": {},
+    "blast_radius": {
+      "type": "string"
+    },
+    "dispositions": {
+      "type": "array"
+    },
+    "evidence_refs": {
+      "type": "array"
+    },
+    "interrupt_id": {
+      "type": "string"
+    },
+    "mission_id": {
+      "type": "string"
+    },
+    "phase": {
+      "type": "string"
+    },
+    "recommended": {
+      "type": "string"
+    },
+    "schema_version": {
+      "const": 1
+    },
+    "status": {
+      "enum": [
+        "open",
+        "resolved"
+      ]
+    },
+    "trigger": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "interrupt_id",
+    "mission_id",
+    "phase",
+    "trigger",
+    "evidence_refs",
+    "blast_radius",
+    "dispositions",
+    "recommended",
+    "status"
+  ],
+  "title": "safety/v1",
+  "type": "object"
+}

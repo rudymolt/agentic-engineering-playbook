@@ -1,0 +1,102 @@
+{
+  "base_sha": "base",
+  "bound_digests": {
+    "setup": "sha256:0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "conditions": {
+    "CR1": {
+      "evidence_locators": [
+        "artifact:cloud/CR1"
+      ],
+      "outcome": "pass"
+    },
+    "CR10": {
+      "evidence_locators": [
+        "artifact:cloud/CR10"
+      ],
+      "outcome": "pass"
+    },
+    "CR2": {
+      "evidence_locators": [
+        "artifact:cloud/CR2"
+      ],
+      "outcome": "pass"
+    },
+    "CR3": {
+      "evidence_locators": [
+        "artifact:cloud/CR3"
+      ],
+      "outcome": "pass"
+    },
+    "CR4": {
+      "evidence_locators": [
+        "artifact:cloud/CR4"
+      ],
+      "outcome": "pass"
+    },
+    "CR5": {
+      "evidence_locators": [
+        "artifact:cloud/CR5"
+      ],
+      "outcome": "pass"
+    },
+    "CR6": {
+      "evidence_locators": [
+        "artifact:cloud/CR6"
+      ],
+      "outcome": "pass"
+    },
+    "CR7": {
+      "evidence_locators": [
+        "artifact:cloud/CR7"
+      ],
+      "outcome": "pass"
+    },
+    "CR8": {
+      "evidence_locators": [
+        "artifact:cloud/CR8"
+      ],
+      "outcome": "pass"
+    },
+    "CR9": {
+      "evidence_locators": [
+        "artifact:cloud/CR9"
+      ],
+      "outcome": "pass"
+    }
+  },
+  "dependency_lock_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "ended_at": "2026-08-08T00:01:00Z",
+  "environment_presence": {
+    "DATABASE_URL": true
+  },
+  "expires_at": "2026-09-07T00:01:00Z",
+  "fingerprints": {
+    "node": "22.0.0"
+  },
+  "head_sha": "head",
+  "issuer": "process-attested:conductor:workspace-1",
+  "mode": "admission",
+  "observed_build_epoch": "build-1",
+  "observed_setup_epoch": "setup-1",
+  "profile_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "profile_id": "project-cloud-v1",
+  "raw_evidence_locators": [
+    "artifact:cloud/CR1",
+    "artifact:cloud/CR2",
+    "artifact:cloud/CR3",
+    "artifact:cloud/CR4",
+    "artifact:cloud/CR5",
+    "artifact:cloud/CR6",
+    "artifact:cloud/CR7",
+    "artifact:cloud/CR8",
+    "artifact:cloud/CR9",
+    "artifact:cloud/CR10"
+  ],
+  "readiness_id": "ready-1",
+  "repository": "owner/repo",
+  "review_route": "same-workspace-headless",
+  "schema_version": 1,
+  "started_at": "2026-08-08T00:00:00Z",
+  "tree_sha": "tree"
+}

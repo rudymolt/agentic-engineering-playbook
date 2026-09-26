@@ -1,0 +1,10 @@
+{
+  "actor_id": "human-1",
+  "approval_id": "approval-1",
+  "approved_at": "2026-08-08T00:00:00Z",
+  "channel": "linear",
+  "envelope_digest": "sha256:0000000000000000000000000000000000000000000000000000000000000000",
+  "envelope_ref": "planning/example/delivery-envelope.yml",
+  "schema_version": 2,
+  "source_event_id": "event-1"
+}

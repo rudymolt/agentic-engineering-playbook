@@ -1,0 +1,12 @@
+{
+  "blast_radius": "candidate",
+  "dispositions": [],
+  "evidence_refs": [],
+  "interrupt_id": "safety-1",
+  "mission_id": "delivery-example",
+  "phase": "build",
+  "recommended": "fix",
+  "schema_version": 1,
+  "status": "open",
+  "trigger": "risk"
+}

@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Process Map · AI Engineering Playbook V0.2</title>
+<link rel="stylesheet" href="../assets/playbook-docs.css">
+</head>
+<body class="playbook-doc">
+<nav class="site-nav" aria-label="Playbook guides">
+  <a class="brand" href="../index.html">AI Engineering Playbook</a>
+  <div class="links">
+    <a href="../50-how-to-write-code-with-ai.html">How to drive the agent</a>
+    <a href="../60-the-theory-behind-the-playbook.html">Theory</a>
+    <a href="../00-foundations.html">Foundations</a>
+    <a href="index.html" aria-current="page">Process map</a>
+    <a href="../30-document-lifecycle.html">Docs lifecycle</a>
+  </div>
+</nav>
+
+<main class="page">
+  <header class="doc-head">
+    <div class="eyebrow">AI Engineering Playbook · §10</div>
+    <h1>The 13-Stage Process Map</h1>
+    <p class="lede">
+      The playbook is per-feature, not per-sprint: align, capture context,
+      specify, slice, triage, design architecture, implement, review, QA, ship,
+      debug when needed, then retro and learn.
+    </p>
+    <div class="meta">
+      <span><strong>Source reference</strong> · <a href="README.md">10-process/README.md</a></span>
+      <span><strong>Format</strong> · Interactive route map</span>
+    </div>
+  </header>
+
+  <section class="interactive-panel" data-choice-panel>
+    <h2>Route A Request</h2>
+    <p>Pick what the user said. The output is the stage an agent should route to.</p>
+    <div class="choice-grid">
+      <button type="button" data-choice data-choice-title="Build, add, or create a feature" data-choice-body="Route to Stage 01 Align. Grill before code unless it is genuinely a one-liner.">Build feature</button>
+      <button type="button" data-choice data-choice-title="Fix or debug something" data-choice-body="Route to Stage 11 Debug. Reproduce first, then investigate, then fix with a regression test.">Fix bug</button>
+      <button type="button" data-choice data-choice-title="Ship or deploy" data-choice-body="Route to Stage 10 Ship and deploy. Verify, doc-close, open PR, then watch production when configured.">Ship</button>
+      <button type="button" data-choice data-choice-title="What should I work on?" data-choice-body="Route to Stage 05 Triage or /whats-next when no tracker is configured.">What's next?</button>
+      <button type="button" data-choice data-choice-title="The codebase feels messy" data-choice-body="Route to Stage 06 Architecture. Look for shallow modules, duplicated rules, and vocabulary drift.">Messy code</button>
+      <button type="button" data-choice data-choice-title="Is this safe to merge?" data-choice-body="Route to Stage 08 Review. Add design, devex, or security review when the surface demands it.">Review risk</button>
+    </div>
+    <div class="choice-output" data-choice-output>Choose a request.</div>
+  </section>
+
+  <section>
+    <h2>Stage Index</h2>
+    <div class="learning-grid">
+      <article class="learning-card"><h3>00 · Prereqs</h3><p>Every session starts by checking skills, repo setup, and guardrails.</p></article>
+      <article class="learning-card"><h3>01 · Align</h3><p>Settle the plan before code. <a href="01-align.html">Open the alignment explainer.</a></p></article>
+      <article class="learning-card"><h3>02 · Context and ADRs</h3><p>Promote settled vocabulary and durable decisions.</p></article>
+      <article class="learning-card"><h3>03 · Spec</h3><p>Turn alignment into a short feature contract.</p></article>
+      <article class="learning-card"><h3>04 · Breakdown</h3><p>Convert the spec into vertical slices. <a href="04-breakdown.html">Open the slice checker.</a></p></article>
+      <article class="learning-card"><h3>05 · Triage</h3><p>Keep the issue tracker honest and decide what is worth doing.</p></article>
+      <article class="learning-card"><h3>06 · Architecture</h3><p>Review module depth, data flow, and seams every few slices.</p></article>
+      <article class="learning-card"><h3>07 · Implementation</h3><p>Build one slice at a time with TDD.</p></article>
+      <article class="learning-card"><h3>08 · Review</h3><p>Run staff-engineer, design, devex, or security review before PR.</p></article>
+      <article class="learning-card"><h3>09 · QA</h3><p>Use a real browser and add regression tests for found bugs.</p></article>
+      <article class="learning-card"><h3>10 · Ship</h3><p>Open the PR, doc-close, deploy, canary, and benchmark.</p></article>
+      <article class="learning-card"><h3>11 · Debug</h3><p>Diagnose before fixing. No guessing-and-hoping.</p></article>
+      <article class="learning-card"><h3>12 · Retro</h3><p>Capture lessons and promote reusable patterns.</p></article>
+    </div>
+  </section>
+</main>
+
+<script src="../assets/playbook-glossary.js"></script>
+<script src="../assets/playbook-docs.js"></script>
+</body>
+</html>

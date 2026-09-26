@@ -1,0 +1,54 @@
+{
+  "registry_digest": "sha256:2b0d6e2d0ba325cd87adfba94edd8caf23f6157a60af13b9fd78ced9edd24cf0",
+  "schema_version": 1,
+  "sets": {
+    "A-cloud": [
+      "cloud-setup",
+      "readiness",
+      "api-lifecycle",
+      "runtime-review",
+      "process-loss"
+    ],
+    "A-complete": [
+      "A-core-local",
+      "A-cloud"
+    ],
+    "A-core-local": [
+      "contracts",
+      "pack-lifecycle",
+      "state",
+      "budget",
+      "authority",
+      "operations",
+      "checker",
+      "qa",
+      "gates",
+      "handback",
+      "recovery"
+    ],
+    "B": [
+      "A-complete",
+      "protected-evaluator",
+      "dispatcher",
+      "chain-replay",
+      "closeout",
+      "finalizer"
+    ],
+    "C": [
+      "B",
+      "deploy",
+      "canary",
+      "rollback"
+    ],
+    "K4.1": [
+      "A-complete",
+      "bridge-authority",
+      "standing-authority",
+      "fresh-merge-agent",
+      "risk-policy",
+      "merge-decision",
+      "expected-head",
+      "observe-before-retry"
+    ]
+  }
+}

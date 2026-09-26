@@ -1,0 +1,587 @@
+{
+  "$id": "https://playbook.local/delivery-pilot/mission/v1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "revision": {
+            "const": 1
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "prior_digest": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "revision": {
+            "minimum": 2
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "prior_digest": {
+            "pattern": "^sha256:[0-9a-f]{64}$",
+            "type": "string"
+          }
+        }
+      }
+    }
+  ],
+  "properties": {
+    "aggregate": {
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "else": {
+            "properties": {
+              "status": {
+                "not": {
+                  "enum": [
+                    "complete",
+                    "cancelled"
+                  ]
+                }
+              },
+              "terminal_outcome": {
+                "type": "null"
+              }
+            }
+          },
+          "if": {
+            "properties": {
+              "phase": {
+                "const": "complete"
+              }
+            },
+            "required": [
+              "phase"
+            ]
+          },
+          "then": {
+            "properties": {
+              "status": {
+                "enum": [
+                  "complete",
+                  "cancelled"
+                ]
+              },
+              "terminal_outcome": {
+                "enum": [
+                  "delivered",
+                  "rolled_back",
+                  "merged_no_deploy",
+                  "pr_ready",
+                  "cancelled"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "cancelled"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "terminal_outcome": {
+                "const": "cancelled"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "complete"
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "terminal_outcome": {
+                "enum": [
+                  "delivered",
+                  "rolled_back",
+                  "merged_no_deploy",
+                  "pr_ready"
+                ]
+              }
+            }
+          }
+        },
+        {
+          "else": {
+            "properties": {
+              "wake_guard": {
+                "minLength": 1,
+                "type": "string"
+              }
+            }
+          },
+          "if": {
+            "properties": {
+              "status": {
+                "enum": [
+                  "running",
+                  "complete",
+                  "cancelled"
+                ]
+              }
+            },
+            "required": [
+              "status"
+            ]
+          },
+          "then": {
+            "properties": {
+              "wake_guard": {
+                "type": "null"
+              }
+            }
+          }
+        }
+      ],
+      "properties": {
+        "phase": {
+          "enum": [
+            "archive-ready",
+            "authorized",
+            "build",
+            "canary",
+            "candidate-readiness",
+            "cleanup",
+            "closeout",
+            "complete",
+            "deploy",
+            "externally-archived",
+            "final-check",
+            "freeze",
+            "handback",
+            "merge",
+            "pr-ready",
+            "qa",
+            "recovery",
+            "retro",
+            "slice-check"
+          ]
+        },
+        "status": {
+          "enum": [
+            "cancelled",
+            "cancelling",
+            "ceiling",
+            "complete",
+            "errored",
+            "intervention_required",
+            "parked",
+            "running",
+            "waiting_capacity",
+            "waiting_safety",
+            "waiting_taste"
+          ]
+        },
+        "terminal_outcome": {
+          "enum": [
+            "delivered",
+            "rolled_back",
+            "merged_no_deploy",
+            "pr_ready",
+            "cancelled",
+            null
+          ]
+        },
+        "wake_guard": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "phase",
+        "status",
+        "terminal_outcome",
+        "wake_guard"
+      ],
+      "type": "object"
+    },
+    "authority": {
+      "additionalProperties": false,
+      "properties": {
+        "approval_receipt_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "command": {
+          "const": "deliver-to-pr"
+        },
+        "effective_tier": {
+          "const": "A"
+        },
+        "envelope_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "envelope_ref": {
+          "pattern": "^planning/.+",
+          "type": "string"
+        },
+        "policy_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "policy_kind": {
+          "const": "pilot-composite"
+        },
+        "policy_ref": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "requested_tier": {
+          "const": "A"
+        }
+      },
+      "required": [
+        "command",
+        "requested_tier",
+        "effective_tier",
+        "envelope_ref",
+        "envelope_digest",
+        "approval_receipt_ref",
+        "policy_kind",
+        "policy_ref",
+        "policy_digest"
+      ],
+      "type": "object"
+    },
+    "budget": {
+      "type": "object"
+    },
+    "candidate": {
+      "additionalProperties": false,
+      "properties": {
+        "base_sha": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "builder_session_ids": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "frozen_at": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "head_sha": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "merge_group_sha": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "policy_sha": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "ruleset_fingerprint": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "tree_sha": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "verification_environment_digest": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "required": [
+        "head_sha",
+        "tree_sha",
+        "base_sha",
+        "policy_sha",
+        "ruleset_fingerprint",
+        "merge_group_sha",
+        "verification_environment_digest",
+        "frozen_at",
+        "builder_session_ids"
+      ],
+      "type": "object"
+    },
+    "checks": {
+      "type": "object"
+    },
+    "control_path": {
+      "type": "string"
+    },
+    "control_ref": {
+      "type": "string"
+    },
+    "controller": {
+      "additionalProperties": false,
+      "properties": {
+        "generation": {
+          "minimum": 1,
+          "type": "integer"
+        },
+        "session_id": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "workspace_id": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "generation",
+        "workspace_id",
+        "session_id"
+      ],
+      "type": "object"
+    },
+    "deployment": {
+      "type": "object"
+    },
+    "findings": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "class": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "evidence_digest": {
+            "pattern": "^sha256:[0-9a-f]{64}$",
+            "type": "string"
+          },
+          "finding_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "locator": {
+            "additionalProperties": false,
+            "properties": {
+              "type": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "value": {
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "type",
+              "value"
+            ],
+            "type": "object"
+          },
+          "schema_version": {
+            "const": 1
+          },
+          "severity": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "open",
+              "closed"
+            ]
+          }
+        },
+        "required": [
+          "schema_version",
+          "finding_id",
+          "severity",
+          "class",
+          "evidence_digest",
+          "locator",
+          "status"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "interrupts": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "answer_ref": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "blast_radius": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "dispositions": {
+            "items": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "evidence_refs": {
+            "items": {
+              "minLength": 1,
+              "type": "string"
+            },
+            "type": "array"
+          },
+          "interrupt_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "mission_id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "phase": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "recommended": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "schema_version": {
+            "const": 1
+          },
+          "status": {
+            "enum": [
+              "open",
+              "resolved"
+            ]
+          },
+          "trigger": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "schema_version",
+          "interrupt_id",
+          "mission_id",
+          "phase",
+          "trigger",
+          "evidence_refs",
+          "blast_radius",
+          "dispositions",
+          "recommended",
+          "status"
+        ],
+        "type": "object"
+      },
+      "type": "array"
+    },
+    "metrics": {
+      "type": "object"
+    },
+    "mission_id": {
+      "type": "string"
+    },
+    "operations": {
+      "type": "array"
+    },
+    "prior_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "required_actions": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "revision": {
+      "minimum": 1,
+      "type": "integer"
+    },
+    "schema_version": {
+      "const": 1
+    },
+    "slices": {
+      "type": "object"
+    },
+    "terminal": {
+      "type": "object"
+    },
+    "updated_at": {
+      "format": "date-time",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "mission_id",
+    "revision",
+    "prior_digest",
+    "updated_at",
+    "control_ref",
+    "control_path",
+    "controller",
+    "authority",
+    "aggregate",
+    "budget",
+    "slices",
+    "candidate",
+    "checks",
+    "findings",
+    "interrupts",
+    "required_actions",
+    "operations",
+    "deployment",
+    "metrics",
+    "terminal"
+  ],
+  "title": "mission/v1",
+  "type": "object"
+}

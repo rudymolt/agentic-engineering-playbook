@@ -1,0 +1,163 @@
+{
+  "$id": "https://playbook.local/delivery-pilot/pilot-observation/v4",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "attempt_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "defect_adjudications": {
+      "type": "array"
+    },
+    "host_events": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "event": {
+            "enum": [
+              "merged_at",
+              "released_at"
+            ]
+          },
+          "evidence_locator": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "occurred_at": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "subject_id": {
+            "minLength": 1,
+            "type": "string"
+          }
+        },
+        "required": [
+          "event",
+          "subject_id",
+          "occurred_at",
+          "evidence_locator"
+        ],
+        "type": "object"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "host_proof": {
+      "additionalProperties": false,
+      "minProperties": 1,
+      "properties": {
+        "event_digest": {
+          "minLength": 1,
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "evidence_locator": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "provider": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "provider",
+        "event_digest",
+        "evidence_locator"
+      ],
+      "type": "object"
+    },
+    "merged_sha_or_release_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "observation_contract_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "observation_id": {
+      "minLength": 1,
+      "type": "string"
+    },
+    "observed_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "raw_evidence_locators": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "receipt_issuer": {
+      "anyOf": [
+        {
+          "pattern": "^process-attested:linear:.+$"
+        },
+        {
+          "pattern": "^protected-store:.+$"
+        }
+      ],
+      "minLength": 1,
+      "type": "string"
+    },
+    "schema_version": {
+      "const": 4
+    },
+    "signals": {
+      "items": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "result": {
+            "enum": [
+              "pass",
+              "fail",
+              "inconclusive"
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "result"
+        ],
+        "type": "object"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "window_ended_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "window_started_at": {
+      "format": "date-time",
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "observation_id",
+    "attempt_id",
+    "observation_contract_digest",
+    "merged_sha_or_release_id",
+    "window_started_at",
+    "window_ended_at",
+    "signals",
+    "raw_evidence_locators",
+    "defect_adjudications",
+    "host_events",
+    "receipt_issuer",
+    "observed_at",
+    "host_proof"
+  ],
+  "title": "pilot-observation/v4",
+  "type": "object"
+}

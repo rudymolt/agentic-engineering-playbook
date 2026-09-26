@@ -1,0 +1,39 @@
+{
+  "$id": "https://playbook.local/delivery-pilot/host-evidence-manifest/v1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "host_proof": {
+      "type": "object"
+    },
+    "issued_at": {
+      "type": "string"
+    },
+    "manifest_id": {
+      "type": "string"
+    },
+    "mission_id": {
+      "type": "string"
+    },
+    "raw_retention_until": {
+      "type": "string"
+    },
+    "receipts": {
+      "type": "array"
+    },
+    "schema_version": {
+      "const": 1
+    }
+  },
+  "required": [
+    "schema_version",
+    "manifest_id",
+    "mission_id",
+    "receipts",
+    "raw_retention_until",
+    "issued_at",
+    "host_proof"
+  ],
+  "title": "host-evidence-manifest/v1",
+  "type": "object"
+}

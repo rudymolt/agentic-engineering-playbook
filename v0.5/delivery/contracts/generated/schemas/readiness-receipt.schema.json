@@ -1,0 +1,383 @@
+{
+  "$id": "https://playbook.local/delivery-pilot/readiness-receipt/v1",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "base_sha": {
+      "type": "string"
+    },
+    "bound_digests": {
+      "type": "object"
+    },
+    "candidate": {},
+    "conditions": {
+      "additionalProperties": false,
+      "properties": {
+        "CR1": {
+          "additionalProperties": false,
+          "properties": {
+            "evidence_locators": {
+              "items": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "outcome": {
+              "enum": [
+                "pass",
+                "fail",
+                "not-run",
+                "reused"
+              ]
+            }
+          },
+          "required": [
+            "outcome",
+            "evidence_locators"
+          ],
+          "type": "object"
+        },
+        "CR10": {
+          "additionalProperties": false,
+          "properties": {
+            "evidence_locators": {
+              "items": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "outcome": {
+              "enum": [
+                "pass",
+                "fail",
+                "not-run",
+                "reused"
+              ]
+            }
+          },
+          "required": [
+            "outcome",
+            "evidence_locators"
+          ],
+          "type": "object"
+        },
+        "CR2": {
+          "additionalProperties": false,
+          "properties": {
+            "evidence_locators": {
+              "items": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "outcome": {
+              "enum": [
+                "pass",
+                "fail",
+                "not-run",
+                "reused"
+              ]
+            }
+          },
+          "required": [
+            "outcome",
+            "evidence_locators"
+          ],
+          "type": "object"
+        },
+        "CR3": {
+          "additionalProperties": false,
+          "properties": {
+            "evidence_locators": {
+              "items": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "outcome": {
+              "enum": [
+                "pass",
+                "fail",
+                "not-run",
+                "reused"
+              ]
+            }
+          },
+          "required": [
+            "outcome",
+            "evidence_locators"
+          ],
+          "type": "object"
+        },
+        "CR4": {
+          "additionalProperties": false,
+          "properties": {
+            "evidence_locators": {
+              "items": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "outcome": {
+              "enum": [
+                "pass",
+                "fail",
+                "not-run",
+                "reused"
+              ]
+            }
+          },
+          "required": [
+            "outcome",
+            "evidence_locators"
+          ],
+          "type": "object"
+        },
+        "CR5": {
+          "additionalProperties": false,
+          "properties": {
+            "evidence_locators": {
+              "items": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "outcome": {
+              "enum": [
+                "pass",
+                "fail",
+                "not-run",
+                "reused"
+              ]
+            }
+          },
+          "required": [
+            "outcome",
+            "evidence_locators"
+          ],
+          "type": "object"
+        },
+        "CR6": {
+          "additionalProperties": false,
+          "properties": {
+            "evidence_locators": {
+              "items": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "outcome": {
+              "enum": [
+                "pass",
+                "fail",
+                "not-run",
+                "reused"
+              ]
+            }
+          },
+          "required": [
+            "outcome",
+            "evidence_locators"
+          ],
+          "type": "object"
+        },
+        "CR7": {
+          "additionalProperties": false,
+          "properties": {
+            "evidence_locators": {
+              "items": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "outcome": {
+              "enum": [
+                "pass",
+                "fail",
+                "not-run",
+                "reused"
+              ]
+            }
+          },
+          "required": [
+            "outcome",
+            "evidence_locators"
+          ],
+          "type": "object"
+        },
+        "CR8": {
+          "additionalProperties": false,
+          "properties": {
+            "evidence_locators": {
+              "items": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "outcome": {
+              "enum": [
+                "pass",
+                "fail",
+                "not-run",
+                "reused"
+              ]
+            }
+          },
+          "required": [
+            "outcome",
+            "evidence_locators"
+          ],
+          "type": "object"
+        },
+        "CR9": {
+          "additionalProperties": false,
+          "properties": {
+            "evidence_locators": {
+              "items": {
+                "minLength": 1,
+                "type": "string"
+              },
+              "type": "array"
+            },
+            "outcome": {
+              "enum": [
+                "pass",
+                "fail",
+                "not-run",
+                "reused"
+              ]
+            }
+          },
+          "required": [
+            "outcome",
+            "evidence_locators"
+          ],
+          "type": "object"
+        }
+      },
+      "required": [
+        "CR1",
+        "CR2",
+        "CR3",
+        "CR4",
+        "CR5",
+        "CR6",
+        "CR7",
+        "CR8",
+        "CR9",
+        "CR10"
+      ],
+      "type": "object"
+    },
+    "dependency_lock_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "ended_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "environment_presence": {
+      "type": "object"
+    },
+    "expires_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "fingerprints": {
+      "type": "object"
+    },
+    "head_sha": {
+      "type": "string"
+    },
+    "host_proof": {},
+    "issuer": {
+      "type": "string"
+    },
+    "mode": {
+      "enum": [
+        "admission",
+        "candidate"
+      ]
+    },
+    "observed_build_epoch": {
+      "type": "string"
+    },
+    "observed_setup_epoch": {
+      "type": "string"
+    },
+    "profile_digest": {
+      "pattern": "^sha256:[0-9a-f]{64}$",
+      "type": "string"
+    },
+    "profile_id": {
+      "type": "string"
+    },
+    "raw_evidence_locators": {
+      "items": {
+        "minLength": 1,
+        "type": "string"
+      },
+      "minItems": 1,
+      "type": "array"
+    },
+    "readiness_id": {
+      "type": "string"
+    },
+    "repository": {
+      "type": "string"
+    },
+    "review_route": {
+      "enum": [
+        "same-workspace-headless",
+        "isolated-workspace-rebuild",
+        "external-preview"
+      ]
+    },
+    "schema_version": {
+      "const": 1
+    },
+    "started_at": {
+      "format": "date-time",
+      "type": "string"
+    },
+    "tree_sha": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "schema_version",
+    "readiness_id",
+    "mode",
+    "profile_id",
+    "profile_digest",
+    "observed_build_epoch",
+    "observed_setup_epoch",
+    "repository",
+    "base_sha",
+    "head_sha",
+    "tree_sha",
+    "dependency_lock_digest",
+    "bound_digests",
+    "environment_presence",
+    "fingerprints",
+    "conditions",
+    "raw_evidence_locators",
+    "review_route",
+    "started_at",
+    "ended_at",
+    "expires_at",
+    "issuer"
+  ],
+  "title": "readiness-receipt/v1",
+  "type": "object"
+}

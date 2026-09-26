@@ -1,0 +1,4 @@
+interface:
+  display_name: "Evidence-Based Why"
+  short_description: "Explain historical motivation with cited facts and calibrated unknowns"
+  default_prompt: "Use $ai-playbook-why to explain why a current decision exists from bounded, cited evidence."

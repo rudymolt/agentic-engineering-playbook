@@ -1,0 +1,1274 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How To Write Code With AI · AI Engineering Playbook V0.2</title>
+<!--
+  ==========================================================================
+  MAINTAINER NOTE
+  This document is the canonical, interactive replacement for the previous
+  50-how-to-write-code-with-ai.md. The HTML format is the source of truth.
+  All future edits — new phrases, new stages, role changes, ship-process
+  changes — should be made directly to this file. Do not regenerate it as
+  a Markdown document.
+
+  Status: Source of truth
+  Last verified: 2026-06-12 (playbook V0.2.3)
+  Audience: Human project owner
+
+  Backup of the previous version: 50-how-to-write-code-with-ai.v0.1.5-backup.html
+  ==========================================================================
+-->
+<style>
+  :root {
+    --bg:           #fbfaf6;
+    --panel:        #ffffff;
+    --ink:          #161614;
+    --ink-soft:     #4a4a44;
+    --ink-mute:     #7a786f;
+    --rule:         #e2dfd3;
+    --rule-soft:    #ece9dd;
+    --code-bg:      #f2efe5;
+    --code-ink:     #1a1a1a;
+    --human:        #1e4e8c;
+    --human-tint:   #e6edf6;
+    --agent:        #2a6e4f;
+    --agent-tint:   #e3efe7;
+    --warn:         #8a4b16;
+    --warn-tint:    #f6ece0;
+
+    --font-sans:    'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    --font-serif:   'Source Serif Pro', Charter, 'Iowan Old Style', Georgia, serif;
+    --font-mono:    'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+    --measure:      68ch;
+    --pad-x:        clamp(20px, 4vw, 56px);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: 17px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  .page {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 56px var(--pad-x) 96px;
+  }
+
+  /* ---- Header ---- */
+  header.doc-head {
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 28px;
+    margin-bottom: 40px;
+  }
+  .eyebrow {
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-mute);
+    font-weight: 600;
+  }
+  h1 {
+    font-family: var(--font-serif);
+    font-weight: 600;
+    font-size: clamp(34px, 5vw, 52px);
+    line-height: 1.1;
+    margin: 14px 0 12px;
+    letter-spacing: -0.01em;
+  }
+  .lede {
+    font-size: 19px;
+    line-height: 1.55;
+    color: var(--ink-soft);
+    max-width: var(--measure);
+    margin: 18px 0 0;
+  }
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px 28px;
+    margin-top: 22px;
+    font-size: 13px;
+    color: var(--ink-mute);
+  }
+  .meta span strong {
+    color: var(--ink-soft);
+    font-weight: 600;
+  }
+
+  /* ---- Sections & typography ---- */
+  section { margin-top: 56px; }
+  h2 {
+    font-family: var(--font-serif);
+    font-size: 30px;
+    line-height: 1.2;
+    margin: 0 0 6px;
+    letter-spacing: -0.005em;
+    font-weight: 600;
+  }
+  h2 .num {
+    color: var(--ink-mute);
+    font-weight: 500;
+    margin-right: 14px;
+    font-variant-numeric: tabular-nums;
+  }
+  h2 + p.section-lede {
+    color: var(--ink-soft);
+    margin: 4px 0 28px;
+    max-width: var(--measure);
+  }
+  h3 {
+    font-size: 18px;
+    margin: 32px 0 8px;
+    letter-spacing: 0;
+    font-weight: 600;
+  }
+  p { max-width: var(--measure); }
+  p, ul, ol { margin: 0 0 16px; }
+  ul, ol { padding-left: 22px; max-width: var(--measure); }
+  li { margin-bottom: 6px; }
+
+  /* ---- Code blocks ---- */
+  pre {
+    background: var(--code-bg);
+    color: var(--code-ink);
+    font-family: var(--font-mono);
+    font-size: 14px;
+    line-height: 1.5;
+    padding: 14px 18px;
+    border-radius: 6px;
+    border: 1px solid var(--rule);
+    overflow-x: auto;
+    margin: 12px 0 18px;
+    max-width: var(--measure);
+  }
+  code {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    background: var(--code-bg);
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+  pre code { background: none; padding: 0; font-size: 14px; }
+
+  /* ---- Role split (diagram + cards) ---- */
+  .role-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin: 24px 0 8px;
+  }
+  .role-card {
+    background: var(--panel);
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    padding: 22px 22px 18px;
+    position: relative;
+  }
+  .role-card.human { border-top: 3px solid var(--human); }
+  .role-card.agent { border-top: 3px solid var(--agent); }
+  .role-card h4 {
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    margin: 0 0 4px;
+    color: var(--ink-mute);
+    font-weight: 700;
+  }
+  .role-card .role-name {
+    font-family: var(--font-serif);
+    font-size: 24px;
+    margin: 0 0 4px;
+  }
+  .role-card .owns {
+    font-size: 13px;
+    color: var(--ink-mute);
+    margin: 0 0 14px;
+  }
+  .role-card ul { padding-left: 18px; margin: 0; }
+  .role-card li { margin-bottom: 4px; font-size: 15px; }
+
+  @media (max-width: 720px) {
+    .role-split { grid-template-columns: 1fr; }
+  }
+
+  /* ---- Cards & callouts ---- */
+  .callout {
+    border-left: 3px solid var(--warn);
+    background: var(--warn-tint);
+    padding: 14px 18px;
+    border-radius: 0 8px 8px 0;
+    margin: 20px 0;
+    font-size: 15px;
+    max-width: var(--measure);
+  }
+  .callout strong { color: var(--warn); }
+
+  .acknowledgement {
+    background: var(--panel);
+    border: 1px solid var(--rule);
+    border-left: 3px solid var(--human);
+    border-radius: 0 8px 8px 0;
+    padding: 16px 18px;
+    margin: 0 0 40px;
+    max-width: var(--measure);
+    font-size: 15px;
+    color: var(--ink-soft);
+  }
+  .acknowledgement h2 {
+    font-family: var(--font-sans);
+    font-size: 12px;
+    line-height: 1.2;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin: 0 0 8px;
+    color: var(--human);
+  }
+  .acknowledgement p { margin: 0; }
+  .acknowledgement a {
+    color: var(--human);
+    text-decoration: none;
+    border-bottom: 1px solid var(--human-tint);
+  }
+  .acknowledgement a:hover { border-bottom-color: var(--human); }
+
+  /* ---- Stage strip ---- */
+  .stage-strip {
+    background: var(--panel);
+    border: 1px solid var(--rule);
+    border-radius: 12px;
+    padding: 26px;
+    margin: 16px 0 36px;
+  }
+
+  /* ---- Stage detail blocks ---- */
+  .stage-block {
+    background: var(--panel);
+    border: 1px solid var(--rule);
+    border-radius: 10px;
+    padding: 22px 24px;
+    margin: 22px 0;
+  }
+  .stage-block .stage-head {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 8px;
+  }
+  .stage-block .badge {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    background: var(--code-bg);
+    color: var(--ink-soft);
+    padding: 3px 8px;
+    border-radius: 4px;
+    letter-spacing: 0.05em;
+  }
+  .stage-block h3 { margin: 0; font-size: 19px; }
+
+  /* ---- Phrase cards ---- */
+  .phrase-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+    margin: 28px 0 0;
+  }
+  .phrase-card {
+    background: var(--panel);
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    padding: 16px 18px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .phrase-card .phrase {
+    font-family: var(--font-mono);
+    font-size: 14px;
+    background: var(--code-bg);
+    padding: 8px 10px;
+    border-radius: 4px;
+    color: var(--code-ink);
+    white-space: pre-wrap;
+  }
+  .phrase-card .when {
+    font-size: 14px;
+    color: var(--ink-soft);
+    line-height: 1.45;
+  }
+  .phrase-card .tag {
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--ink-mute);
+  }
+  .phrase-card.align .tag { color: var(--human); }
+  .phrase-card.build .tag { color: var(--agent); }
+  .phrase-card.ship .tag  { color: var(--warn); }
+
+  /* ---- Rules of thumb ---- */
+  .rule-list {
+    list-style: none;
+    padding: 0;
+    margin: 18px 0 0;
+    counter-reset: rule;
+    max-width: var(--measure);
+  }
+  .rule-list li {
+    counter-increment: rule;
+    padding: 10px 0 10px 36px;
+    border-bottom: 1px dashed var(--rule);
+    position: relative;
+  }
+  .rule-list li:last-child { border-bottom: none; }
+  .rule-list li::before {
+    content: counter(rule, decimal-leading-zero);
+    position: absolute;
+    left: 0;
+    top: 12px;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--ink-mute);
+  }
+
+  /* ---- SVG diagram defaults ---- */
+  svg.diagram {
+    width: 100%;
+    height: auto;
+    display: block;
+    margin: 8px 0 12px;
+    overflow: visible;
+  }
+  svg .label-sm    { font: 600 11px var(--font-sans); letter-spacing: 0.12em; text-transform: uppercase; }
+  svg .label-md    { font: 600 14px var(--font-sans); }
+  svg .label-lg    { font: 600 16px var(--font-serif); }
+  svg .label-mono  { font: 500 12px var(--font-mono); }
+  svg .label-body  { font: 400 13px var(--font-sans); }
+  svg .muted       { fill: var(--ink-mute); }
+  svg .ink         { fill: var(--ink); }
+  svg .ink-soft    { fill: var(--ink-soft); }
+  svg .stroke-rule { stroke: var(--rule); fill: none; }
+
+  /* ---- Footer ---- */
+  footer.doc-foot {
+    margin-top: 88px;
+    padding-top: 22px;
+    border-top: 1px solid var(--rule);
+    color: var(--ink-mute);
+    font-size: 13px;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  /* ---- Jargon term & popover ---- */
+  button.term {
+    font: inherit;
+    color: inherit;
+    background: transparent;
+    border: 0;
+    border-bottom: 1px dotted var(--human);
+    padding: 0 1px;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: background 80ms ease;
+  }
+  button.term:hover,
+  button.term:focus-visible {
+    background: var(--human-tint);
+    outline: none;
+  }
+  button.term::after {
+    content: "?";
+    display: inline-block;
+    vertical-align: super;
+    font-size: 0.65em;
+    margin-left: 1px;
+    opacity: 0.55;
+    color: var(--human);
+    font-weight: 600;
+  }
+  button.term:hover::after,
+  button.term:focus-visible::after { opacity: 1; }
+  /* When a term wraps a <code> element, let the term styling lead. */
+  button.term > code {
+    background: transparent;
+    padding: 0;
+    font-size: inherit;
+  }
+
+  .term-popover {
+    position: absolute;
+    max-width: 320px;
+    background: #ffffff;
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    box-shadow: 0 6px 24px rgba(20, 18, 10, 0.14);
+    padding: 14px 40px 14px 16px;
+    z-index: 100;
+    display: none;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .term-popover.open { display: block; }
+  .term-popover .pop-title {
+    font-weight: 700;
+    font-size: 13px;
+    margin: 0 0 4px;
+    color: var(--human);
+    letter-spacing: 0.01em;
+  }
+  .term-popover .pop-def {
+    margin: 0;
+    color: var(--ink-soft);
+  }
+  .term-popover .pop-close {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    background: none;
+    border: 0;
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    color: var(--ink-mute);
+    padding: 2px 7px;
+    border-radius: 4px;
+  }
+  .term-popover .pop-close:hover { color: var(--ink); background: var(--rule-soft); }
+  @media (max-width: 480px) {
+    .term-popover { max-width: calc(100vw - 32px); }
+  }
+
+  /* Inline tip banner explaining the dotted-underline convention */
+  .term-hint {
+    background: var(--human-tint);
+    border-left: 3px solid var(--human);
+    padding: 10px 14px;
+    border-radius: 0 6px 6px 0;
+    font-size: 14px;
+    color: var(--ink-soft);
+    margin: 14px 0 26px;
+    max-width: var(--measure);
+  }
+  .term-hint strong { color: var(--human); }
+  .term-hint kbd {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    background: #ffffff;
+    border: 1px solid var(--rule);
+    border-bottom-width: 2px;
+    border-radius: 4px;
+    padding: 1px 6px;
+    color: var(--ink);
+  }
+
+  /* ---- Print ---- */
+  @media print {
+    body { background: white; font-size: 12pt; }
+    .page { padding: 0; max-width: 100%; }
+    section { break-inside: avoid; }
+    pre, .stage-block, .role-card, .phrase-card { break-inside: avoid; }
+    button.term { border-bottom: none; padding: 0; }
+    button.term::after { display: none; }
+    .term-popover { display: none !important; }
+    .term-hint { display: none; }
+  }
+</style>
+<link rel="stylesheet" href="assets/playbook-docs.css">
+</head>
+<body class="playbook-doc">
+<nav class="site-nav" aria-label="Playbook guides">
+  <a class="brand" href="index.html">AI Engineering Playbook</a>
+  <div class="links">
+    <a href="50-how-to-write-code-with-ai.html" aria-current="page">How to drive the agent</a>
+    <a href="60-the-theory-behind-the-playbook.html">Theory</a>
+    <a href="00-foundations.html">Foundations</a>
+    <a href="10-process/index.html">Process map</a>
+    <a href="30-document-lifecycle.html">Docs lifecycle</a>
+  </div>
+</nav>
+<main class="page">
+
+  <header class="doc-head">
+    <div class="eyebrow">AI Engineering Playbook · V0.2 · §50</div>
+    <h1>How To Write Code With AI</h1>
+    <p class="lede">
+      A field guide to driving an AI coding agent through the playbook
+      without reading every process file yourself. The short version:
+      <strong>you own intent and approval; the agent owns execution,
+      verification, and keeping the project documents current.</strong>
+    </p>
+    <div class="meta">
+      <span><strong>Status</strong> · Source of truth</span>
+      <span><strong>Last verified</strong> · 2026-06-12 · playbook V0.2.3</span>
+      <span><strong>Audience</strong> · Human project owner</span>
+      <span><strong>Format</strong> · Interactive HTML (canonical)</span>
+    </div>
+  </header>
+
+  <aside class="acknowledgement" aria-labelledby="acknowledgement-title">
+    <h2 id="acknowledgement-title">Acknowledgement</h2>
+    <p>
+      This playbook grew out of an exploration of how to turn modern AI-agent
+      skills into a practical engineering process for building real
+      applications. It is especially influenced by
+      <a href="https://www.mattpocock.com/">Matt Pocock</a>'s work on
+      composable engineering skills, including
+      <a href="https://github.com/mattpocock/skills">mattpocock/skills</a> and
+      <a href="https://www.skills.sh/mattpocock/skills">skills.sh</a>, and by
+      <a href="https://www.ycombinator.com/people/garry-tan">Garry Tan</a>'s
+      <a href="https://gstack.lol/">GStack</a> project and
+      <a href="https://github.com/garrytan/gstack">garrytan/gstack</a>. This
+      guide adapts those ideas into a human-led, agent-assisted playbook built
+      around explicit alignment, shared language, TDD, review, QA, shipping,
+      and learning loops.
+    </p>
+  </aside>
+
+  <nav class="doc-toc" aria-labelledby="toc-title">
+    <h2 id="toc-title">On This Page</h2>
+    <div class="toc-grid">
+      <a href="#roles">Who owns what<span>The human/agent contract</span></a>
+      <a href="#loop">Development loop<span>Align, slice, build, review, ship</span></a>
+      <a href="#ship">GitHub handoff<span>What crosses the human boundary</span></a>
+      <a href="#smoke-floor">UI smoke floor<span>Minimum responsive checks</span></a>
+      <a href="#phrases">Phrase tool<span>Copy the right prompt</span></a>
+      <a href="#rules">Rules of thumb<span>What to remember</span></a>
+    </div>
+  </nav>
+
+  <!-- ====================================================== -->
+  <!-- 1. ROLE SPLIT                                          -->
+  <!-- ====================================================== -->
+  <section id="roles">
+    <h2><span class="num">01</span>Who owns what</h2>
+    <p class="section-lede">
+      The contract between you and the agent is the single most important
+      thing to internalise. Everything downstream depends on it.
+    </p>
+
+    <div class="term-hint" role="note">
+      <strong>Tip.</strong> Words with a dotted underline — like
+      <button class="term" type="button" data-def="pr">PR</button> or
+      <button class="term" type="button" data-def="branch">branch</button> —
+      are short bits of engineering jargon. Click or tap any of them for a
+      one-sentence, plain-English explanation. Press <kbd>Esc</kbd> or
+      click outside to close the explanation.
+    </div>
+
+    <!-- Role split diagram -->
+    <svg viewBox="0 0 880 280" class="diagram" role="img" aria-label="Human owns intent and approval; agent owns execution and verification. Intent flows from human to agent; a pull request flows from agent back to human for review.">
+      <defs>
+        <marker id="arrow-human" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="#1e4e8c"/>
+        </marker>
+        <marker id="arrow-agent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="#2a6e4f"/>
+        </marker>
+      </defs>
+
+      <!-- Human panel -->
+      <rect x="20" y="40" width="360" height="200" rx="12" fill="#ffffff" stroke="#1e4e8c" stroke-width="1.5"/>
+      <rect x="20" y="40" width="360" height="6" rx="3" fill="#1e4e8c"/>
+      <text x="40" y="76" class="label-sm muted">HUMAN</text>
+      <text x="40" y="106" class="label-lg ink">You</text>
+      <text x="40" y="128" class="label-body ink-soft">owns intent &amp; approval</text>
+
+      <text x="40" y="160" class="label-md ink">· Describe the feature</text>
+      <text x="40" y="182" class="label-md ink">· Make product calls</text>
+      <text x="40" y="204" class="label-md ink">· Review &amp; merge the PR</text>
+      <text x="40" y="226" class="label-md ink">· Say when to ship</text>
+
+      <!-- Agent panel -->
+      <rect x="500" y="40" width="360" height="200" rx="12" fill="#ffffff" stroke="#2a6e4f" stroke-width="1.5"/>
+      <rect x="500" y="40" width="360" height="6" rx="3" fill="#2a6e4f"/>
+      <text x="520" y="76" class="label-sm muted">AGENT</text>
+      <text x="520" y="106" class="label-lg ink">The agent</text>
+      <text x="520" y="128" class="label-body ink-soft">owns execution &amp; verification</text>
+
+      <text x="520" y="160" class="label-md ink">· Read repo, follow playbook</text>
+      <text x="520" y="182" class="label-md ink">· Branch, build, test, browser-check</text>
+      <text x="520" y="204" class="label-md ink">· Keep docs &amp; vocab current</text>
+      <text x="520" y="226" class="label-md ink">· Open a draft PR, never self-merge</text>
+
+      <!-- Arrows -->
+      <path d="M 380 110 C 430 110, 450 110, 500 110"
+            stroke="#1e4e8c" stroke-width="2" fill="none"
+            marker-end="url(#arrow-human)"/>
+      <text x="395" y="100" class="label-mono" fill="#1e4e8c">intent →</text>
+
+      <path d="M 500 170 C 450 170, 430 170, 380 170"
+            stroke="#2a6e4f" stroke-width="2" fill="none"
+            marker-end="url(#arrow-agent)"/>
+      <text x="395" y="190" class="label-mono" fill="#2a6e4f">← pull request</text>
+    </svg>
+
+    <div class="role-split" aria-hidden="true">
+      <div class="role-card human">
+        <h4>Human</h4>
+        <p class="role-name">You</p>
+        <p class="owns">Make the important decisions explicit.</p>
+        <ul>
+          <li>Describe what to build, in plain language.</li>
+          <li>Answer <button class="term" type="button" data-def="productcall">product</button> questions when the agent asks.</li>
+          <li>Read and <button class="term" type="button" data-def="merge">merge</button> the <button class="term" type="button" data-def="pr">PR</button> on <button class="term" type="button" data-def="github">GitHub</button>.</li>
+          <li>Tell the agent when to ship and what to do next.</li>
+        </ul>
+      </div>
+      <div class="role-card agent">
+        <h4>Agent</h4>
+        <p class="role-name">The agent</p>
+        <p class="owns">Do the work; show the work; never self-approve.</p>
+        <ul>
+          <li>Read the project contract and domain vocabulary.</li>
+          <li>Clarify before coding when the request is <button class="term" type="button" data-def="nontrivial">non-trivial</button>.</li>
+          <li><button class="term" type="button" data-def="branch">Branch</button>, build <button class="term" type="button" data-def="slice">vertical slices</button>, test as you go.</li>
+          <li>Run full verification before opening a <button class="term" type="button" data-def="draftpr">draft PR</button>.</li>
+        </ul>
+      </div>
+    </div>
+
+    <p>Good prompts from you are usually small and concrete:</p>
+<pre><code>I want to start building Mission Control for the sample team
+at the sample youth athletics championship.</code></pre>
+<pre><code>Build slice 3.</code></pre>
+<pre><code>I found a bug: an athlete cannot be changed to staff.
+This should be possible.</code></pre>
+
+    <p>
+      You do not need to specify the implementation. The agent should read
+      the <button class="term" type="button" data-def="repo">repo</button>, follow the <button class="term" type="button" data-def="playbook">playbook</button>, ask only necessary questions, and
+      propose a path when product choices are unclear.
+    </p>
+
+    <div class="callout">
+      <strong>The non-negotiable.</strong> The agent should never silently
+      <button class="term" type="button" data-def="merge">merge</button> its own work into <button class="term" type="button" data-def="main"><code>main</code></button>. The PR exists so a human
+      remains accountable for what enters the <button class="term" type="button" data-def="trunk">trunk</button>.
+    </div>
+
+    <div class="callout">
+      <strong>Names for the costs you are watching.</strong> We adopt this
+      vocabulary from Addy Osmani's <em>Loop Engineering</em> essay and our own
+      synthesis of it — names, not empirical findings. Four silent costs compound
+      when nobody names them: <strong>verification debt</strong>, where unconfirmed
+      "done" claims accumulate; <strong>comprehension rot</strong>, where your
+      mental map falls behind the code; <strong>cognitive surrender</strong>, where
+      you accept output without an opinion; and <strong>token blowout</strong>,
+      where spend runs without a cap. The standing disciplines are simple: read a
+      representative sample of shipped code and explain it to yourself; cap spend
+      before you ship; and keep one human checkpoint permanently open. Before you
+      walk away from a run, set ceilings for token/cost spend, session spend,
+      retries, and wall time.
+    </div>
+
+    <div class="callout">
+      <strong>The agent now finds its own way through the process.</strong>
+      As of V0.2 the agent reads a one-page map of the playbook before it
+      starts, each step tells it where to go next, and the project keeps a
+      pre-computed running status the agent reads in one glance. None of this
+      changes your side of the contract — you still type the same plain-English
+      requests below. It simply makes each session quicker and less likely to
+      lose the thread. The reasoning is in <a href="60-the-theory-behind-the-playbook.html#agent-surface">§60 · Designing for the agent</a>.
+    </div>
+  </section>
+
+  <!-- ====================================================== -->
+  <!-- 2. THE DEVELOPMENT LOOP                                -->
+  <!-- ====================================================== -->
+  <section id="loop">
+    <h2><span class="num">02</span>The development loop</h2>
+    <p class="section-lede">
+      Five stages, run in order. Loop back to <em>Align</em> for the next
+      feature. Keep the trips around the loop short — one slice at a time, with
+      the agent pausing for your go-ahead after each slice.
+    </p>
+
+    <!-- Loop diagram -->
+    <div class="stage-strip">
+    <svg viewBox="0 0 940 320" class="diagram" role="img" aria-label="A five-stage development loop. Align, Slice, Build, Review and correct, Ship. After Ship a curved arrow returns to Align for the next feature.">
+      <defs>
+        <marker id="arrow-loop" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="#4a4a44"/>
+        </marker>
+      </defs>
+
+      <!-- Five stage nodes -->
+      <!-- 1. Align -->
+      <g transform="translate(40,100)">
+        <circle cx="60" cy="60" r="54" fill="#e6edf6" stroke="#1e4e8c" stroke-width="1.5"/>
+        <text x="60" y="50" text-anchor="middle" class="label-sm" fill="#1e4e8c">STAGE 01</text>
+        <text x="60" y="72" text-anchor="middle" class="label-lg ink">Align</text>
+        <text x="60" y="92" text-anchor="middle" class="label-body ink-soft">grill the plan</text>
+      </g>
+
+      <!-- 2. Slice -->
+      <g transform="translate(220,100)">
+        <circle cx="60" cy="60" r="54" fill="#e6edf6" stroke="#1e4e8c" stroke-width="1.5"/>
+        <text x="60" y="50" text-anchor="middle" class="label-sm" fill="#1e4e8c">STAGE 02</text>
+        <text x="60" y="72" text-anchor="middle" class="label-lg ink">Slice</text>
+        <text x="60" y="92" text-anchor="middle" class="label-body ink-soft">break it up</text>
+      </g>
+
+      <!-- 3. Build -->
+      <g transform="translate(400,100)">
+        <circle cx="60" cy="60" r="54" fill="#e3efe7" stroke="#2a6e4f" stroke-width="1.5"/>
+        <text x="60" y="50" text-anchor="middle" class="label-sm" fill="#2a6e4f">STAGE 03</text>
+        <text x="60" y="72" text-anchor="middle" class="label-lg ink">Build</text>
+        <text x="60" y="92" text-anchor="middle" class="label-body ink-soft">one slice</text>
+      </g>
+
+      <!-- 4. Review -->
+      <g transform="translate(580,100)">
+        <circle cx="60" cy="60" r="54" fill="#e3efe7" stroke="#2a6e4f" stroke-width="1.5"/>
+        <text x="60" y="50" text-anchor="middle" class="label-sm" fill="#2a6e4f">STAGE 04</text>
+        <text x="60" y="72" text-anchor="middle" class="label-lg ink">Review</text>
+        <text x="60" y="92" text-anchor="middle" class="label-body ink-soft">&amp; correct</text>
+      </g>
+
+      <!-- 5. Ship -->
+      <g transform="translate(760,100)">
+        <circle cx="60" cy="60" r="54" fill="#f6ece0" stroke="#8a4b16" stroke-width="1.5"/>
+        <text x="60" y="50" text-anchor="middle" class="label-sm" fill="#8a4b16">STAGE 05</text>
+        <text x="60" y="72" text-anchor="middle" class="label-lg ink">Ship</text>
+        <text x="60" y="92" text-anchor="middle" class="label-body ink-soft">draft PR</text>
+      </g>
+
+      <!-- Arrows between stages -->
+      <line x1="154" y1="160" x2="220" y2="160" stroke="#4a4a44" stroke-width="1.5" marker-end="url(#arrow-loop)"/>
+      <line x1="334" y1="160" x2="400" y2="160" stroke="#4a4a44" stroke-width="1.5" marker-end="url(#arrow-loop)"/>
+      <line x1="514" y1="160" x2="580" y2="160" stroke="#4a4a44" stroke-width="1.5" marker-end="url(#arrow-loop)"/>
+      <line x1="694" y1="160" x2="760" y2="160" stroke="#4a4a44" stroke-width="1.5" marker-end="url(#arrow-loop)"/>
+
+      <!-- Loop-back arrow from Ship back to Align -->
+      <path d="M 820 210 C 820 280, 100 280, 100 215"
+            stroke="#4a4a44" stroke-width="1.5" fill="none"
+            stroke-dasharray="5 4"
+            marker-end="url(#arrow-loop)"/>
+      <text x="460" y="275" text-anchor="middle" class="label-mono muted">next feature →</text>
+
+      <!-- Trigger phrases below each node -->
+      <text x="100" y="245" text-anchor="middle" class="label-mono" fill="#1e4e8c">"I want to build…"</text>
+      <text x="280" y="245" text-anchor="middle" class="label-mono" fill="#1e4e8c">"Break into slices."</text>
+      <text x="460" y="245" text-anchor="middle" class="label-mono" fill="#2a6e4f">"Build slice 1."</text>
+      <text x="640" y="245" text-anchor="middle" class="label-mono" fill="#2a6e4f">"This label is wrong."</text>
+      <text x="820" y="245" text-anchor="middle" class="label-mono" fill="#8a4b16">"Ship the feature."</text>
+
+      <!-- Top header -->
+      <text x="470" y="40" text-anchor="middle" class="label-sm muted">THE LOOP · ONE SLICE AT A TIME</text>
+      <line x1="120" y1="60" x2="820" y2="60" class="stroke-rule"/>
+    </svg>
+    </div>
+
+    <!-- Stage detail blocks -->
+    <div class="stage-block">
+      <div class="stage-head">
+        <span class="badge">01 · ALIGN</span>
+        <h3>Use this when the feature is still fuzzy</h3>
+      </div>
+      <p>Say:</p>
+<pre><code>I want to build [feature].</code></pre>
+      <p>
+        The agent should grill the plan, settle terms, and write the decisions
+        into planning docs, <button class="term" type="button" data-def="contextmd"><code>CONTEXT.md</code></button>, and <button class="term" type="button" data-def="adr">ADRs</button> where needed.
+      </p>
+      <div class="callout">
+        <strong>Mockup before code, for anything with a screen.</strong> Once
+        the grilling settles the vocabulary, the agent should turn the agreed
+        terms into an HTML <button class="term" type="button" data-def="mockup">mockup</button> — in the project's own visual language — and
+        show it to you <em>before</em> any implementation planning. You react to
+        a real screen instead of a description, which heads off layout churn
+        later. Alignment isn't done until the mockup is accepted or you've
+        explicitly deferred it.
+      </div>
+    </div>
+
+    <div class="stage-block">
+      <div class="stage-head">
+        <span class="badge">02 · SLICE</span>
+        <h3>Once the feature is understood, break it into small slices</h3>
+      </div>
+      <p>Say:</p>
+<pre><code>Break this into slices.</code></pre>
+      <p>
+        Each <button class="term" type="button" data-def="slice">slice</button> should produce something testable. Avoid giant
+        all-or-nothing builds.
+      </p>
+    </div>
+
+    <div class="stage-block">
+      <div class="stage-head">
+        <span class="badge">03 · BUILD</span>
+        <h3>Ask for one slice at a time</h3>
+      </div>
+      <p>Say:</p>
+<pre><code>Build slice 1.</code></pre>
+      <p>
+        The agent should implement, test, and show what changed. If the app
+        has a UI, the agent should use the browser to check the actual
+        screen at desktop, tablet, and mobile widths — not just rely on code
+        inspection. See §04 for the full <button class="term" type="button" data-def="smokefloor">smoke floor</button> it owes you.
+      </p>
+      <div class="callout">
+        <strong>Branch first.</strong> For any non-trivial product slice,
+        bug fix, or <button class="term" type="button" data-def="refactor">refactor</button>, the agent should start from a fresh <button class="term" type="button" data-def="featurebranch">feature
+        branch</button> <em>before</em> coding. Moving finished work onto a branch
+        at the end is only a recovery path when work accidentally started
+        on <code>main</code>.
+      </div>
+      <div class="callout">
+        <strong>One slice, then a pause.</strong> When a slice is built and
+        verified, the agent makes one <button class="term" type="button" data-def="atomiccommit">atomic commit</button> for it and then
+        <em>stops</em> — it will not roll straight into the next slice on its own.
+        It reports what changed, which checks passed, and the commit, then asks
+        whether to continue, pause, or change direction. Each slice boundary is
+        a decision point that belongs to you. Reply <code>Build the next slice.</code>
+        when you're happy to proceed.
+      </div>
+    </div>
+
+    <div class="stage-block">
+      <div class="stage-head">
+        <span class="badge">04 · REVIEW &amp; CORRECT</span>
+        <h3>Use plain language for feedback</h3>
+      </div>
+      <p>Say:</p>
+<pre><code>This label is wrong.</code></pre>
+<pre><code>This screen should be desktop-only.</code></pre>
+<pre><code>This breaks on my phone.</code></pre>
+<pre><code>This workflow is missing a way to restore removed people.</code></pre>
+      <p>
+        The agent should convert that feedback into code, tests, and
+        documentation updates. For UI work, its <button class="term" type="button" data-def="designreview">design review</button> must report
+        how the screen behaves at desktop, tablet, and mobile widths, so a
+        phone-sized regression is caught here rather than after ship.
+      </p>
+    </div>
+
+    <div class="stage-block">
+      <div class="stage-head">
+        <span class="badge">05 · SHIP</span>
+        <h3>When the feature is complete</h3>
+      </div>
+      <p>Say:</p>
+<pre><code>Ship the feature.</code></pre>
+      <p>The agent should now follow the ship sequence — see §03 below.</p>
+    </div>
+  </section>
+
+  <!-- ====================================================== -->
+  <!-- 3. SHIP & GITHUB HANDOFF                               -->
+  <!-- ====================================================== -->
+  <section id="ship">
+    <h2><span class="num">03</span>The ship &amp; GitHub handoff</h2>
+    <p class="section-lede">
+      Ship is the only stage where work explicitly crosses the
+      agent/human boundary twice. The diagram below is the whole
+      contract — keep it visible until it's second nature.
+    </p>
+
+    <!-- Swimlane diagram -->
+    <svg viewBox="0 0 940 540" class="diagram" role="img" aria-label="A swimlane diagram. The agent runs through eight pre-PR steps: confirm branch, recover if on main, run tests, review diff, update docs, commit, push, open draft PR. The work then crosses to the human, who opens the PR, reads the summary, skims files, checks CI, marks ready and merges. Control returns to the agent, who confirms the merge, verifies state, checks post-merge steps and recommends what's next.">
+      <defs>
+        <marker id="arrow-flow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="#4a4a44"/>
+        </marker>
+        <marker id="arrow-cross" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+          <path d="M 0 0 L 10 5 L 0 10 z" fill="#8a4b16"/>
+        </marker>
+      </defs>
+
+      <!-- Lane backgrounds -->
+      <rect x="0"   y="20"  width="940" height="160" fill="#e3efe7" opacity="0.35"/>
+      <rect x="0"   y="190" width="940" height="160" fill="#f6ece0" opacity="0.55"/>
+      <rect x="0"   y="360" width="940" height="160" fill="#e3efe7" opacity="0.35"/>
+
+      <!-- Lane labels -->
+      <text x="20" y="48" class="label-sm" fill="#2a6e4f">AGENT · PRE-PR</text>
+      <text x="20" y="218" class="label-sm" fill="#8a4b16">HUMAN · GITHUB</text>
+      <text x="20" y="388" class="label-sm" fill="#2a6e4f">AGENT · POST-MERGE</text>
+
+      <!-- Agent steps row 1 -->
+      <g font-family="var(--font-sans)">
+      <!-- 1 -->
+      <rect x="20"  y="62"  width="130" height="50" rx="6" fill="#ffffff" stroke="#2a6e4f"/>
+      <text x="85" y="82" text-anchor="middle" class="label-sm muted">01</text>
+      <text x="85" y="100" text-anchor="middle" class="label-md ink">On a branch?</text>
+
+      <rect x="170" y="62"  width="130" height="50" rx="6" fill="#ffffff" stroke="#2a6e4f"/>
+      <text x="235" y="82" text-anchor="middle" class="label-sm muted">02</text>
+      <text x="235" y="100" text-anchor="middle" class="label-md ink">Recover if not</text>
+
+      <rect x="320" y="62"  width="130" height="50" rx="6" fill="#ffffff" stroke="#2a6e4f"/>
+      <text x="385" y="82" text-anchor="middle" class="label-sm muted">03</text>
+      <text x="385" y="100" text-anchor="middle" class="label-md ink">Tests &amp; build</text>
+
+      <rect x="470" y="62"  width="130" height="50" rx="6" fill="#ffffff" stroke="#2a6e4f"/>
+      <text x="535" y="82" text-anchor="middle" class="label-sm muted">04</text>
+      <text x="535" y="100" text-anchor="middle" class="label-md ink">Review the diff</text>
+
+      <!-- Agent steps row 2 -->
+      <rect x="20"  y="122" width="130" height="50" rx="6" fill="#ffffff" stroke="#2a6e4f"/>
+      <text x="85" y="142" text-anchor="middle" class="label-sm muted">05</text>
+      <text x="85" y="160" text-anchor="middle" class="label-md ink">Update docs</text>
+
+      <rect x="170" y="122" width="130" height="50" rx="6" fill="#ffffff" stroke="#2a6e4f"/>
+      <text x="235" y="142" text-anchor="middle" class="label-sm muted">06</text>
+      <text x="235" y="160" text-anchor="middle" class="label-md ink">Commit</text>
+
+      <rect x="320" y="122" width="130" height="50" rx="6" fill="#ffffff" stroke="#2a6e4f"/>
+      <text x="385" y="142" text-anchor="middle" class="label-sm muted">07</text>
+      <text x="385" y="160" text-anchor="middle" class="label-md ink">Push branch</text>
+
+      <rect x="470" y="122" width="180" height="50" rx="6" fill="#ffffff" stroke="#2a6e4f" stroke-width="2"/>
+      <text x="560" y="142" text-anchor="middle" class="label-sm" fill="#2a6e4f">08 · HANDOFF</text>
+      <text x="560" y="160" text-anchor="middle" class="label-md ink">Open draft PR</text>
+
+      <!-- Flow arrows agent row 1 -->
+      <line x1="150" y1="87" x2="170" y2="87" stroke="#4a4a44" stroke-width="1.4" marker-end="url(#arrow-flow)"/>
+      <line x1="300" y1="87" x2="320" y2="87" stroke="#4a4a44" stroke-width="1.4" marker-end="url(#arrow-flow)"/>
+      <line x1="450" y1="87" x2="470" y2="87" stroke="#4a4a44" stroke-width="1.4" marker-end="url(#arrow-flow)"/>
+      <!-- Wrap to row 2 -->
+      <path d="M 600 87 C 700 87, 700 147, 50 147" stroke="#4a4a44" stroke-width="1.4" fill="none" stroke-dasharray="3 3"/>
+      <line x1="50" y1="147" x2="20" y2="147" stroke="#4a4a44" stroke-width="1.4" marker-end="url(#arrow-flow)" transform="translate(20,0)"/>
+      <!-- Agent row 2 arrows -->
+      <line x1="150" y1="147" x2="170" y2="147" stroke="#4a4a44" stroke-width="1.4" marker-end="url(#arrow-flow)"/>
+      <line x1="300" y1="147" x2="320" y2="147" stroke="#4a4a44" stroke-width="1.4" marker-end="url(#arrow-flow)"/>
+      <line x1="450" y1="147" x2="470" y2="147" stroke="#4a4a44" stroke-width="1.4" marker-end="url(#arrow-flow)"/>
+
+      <!-- Cross-boundary arrow agent → human -->
+      <path d="M 560 172 C 560 200, 560 200, 560 232"
+            stroke="#8a4b16" stroke-width="2.2" fill="none"
+            marker-end="url(#arrow-cross)"/>
+      <text x="575" y="200" class="label-mono" fill="#8a4b16">PR link →</text>
+
+      <!-- Human steps -->
+      <rect x="20"  y="232" width="130" height="50" rx="6" fill="#ffffff" stroke="#8a4b16"/>
+      <text x="85" y="252" text-anchor="middle" class="label-sm muted">01</text>
+      <text x="85" y="270" text-anchor="middle" class="label-md ink">Open the PR</text>
+
+      <rect x="170" y="232" width="130" height="50" rx="6" fill="#ffffff" stroke="#8a4b16"/>
+      <text x="235" y="252" text-anchor="middle" class="label-sm muted">02</text>
+      <text x="235" y="270" text-anchor="middle" class="label-md ink">Read summary</text>
+
+      <rect x="320" y="232" width="130" height="50" rx="6" fill="#ffffff" stroke="#8a4b16"/>
+      <text x="385" y="252" text-anchor="middle" class="label-sm muted">03</text>
+      <text x="385" y="270" text-anchor="middle" class="label-md ink">Skim files</text>
+
+      <rect x="470" y="232" width="130" height="50" rx="6" fill="#ffffff" stroke="#8a4b16"/>
+      <text x="535" y="252" text-anchor="middle" class="label-sm muted">04</text>
+      <text x="535" y="270" text-anchor="middle" class="label-md ink">Check CI</text>
+
+      <rect x="620" y="232" width="130" height="50" rx="6" fill="#ffffff" stroke="#8a4b16"/>
+      <text x="685" y="252" text-anchor="middle" class="label-sm muted">05</text>
+      <text x="685" y="270" text-anchor="middle" class="label-md ink">Mark ready</text>
+
+      <rect x="770" y="232" width="150" height="50" rx="6" fill="#ffffff" stroke="#8a4b16" stroke-width="2"/>
+      <text x="845" y="252" text-anchor="middle" class="label-sm" fill="#8a4b16">06 · MERGE</text>
+      <text x="845" y="270" text-anchor="middle" class="label-md ink">Merge the PR</text>
+
+      <!-- Human flow arrows -->
+      <line x1="150" y1="257" x2="170" y2="257" stroke="#4a4a44" stroke-width="1.4" marker-end="url(#arrow-flow)"/>
+      <line x1="300" y1="257" x2="320" y2="257" stroke="#4a4a44" stroke-width="1.4" marker-end="url(#arrow-flow)"/>
+      <line x1="450" y1="257" x2="470" y2="257" stroke="#4a4a44" stroke-width="1.4" marker-end="url(#arrow-flow)"/>
+      <line x1="600" y1="257" x2="620" y2="257" stroke="#4a4a44" stroke-width="1.4" marker-end="url(#arrow-flow)"/>
+      <line x1="750" y1="257" x2="770" y2="257" stroke="#4a4a44" stroke-width="1.4" marker-end="url(#arrow-flow)"/>
+
+      <!-- Human note -->
+      <text x="20"  y="312" class="label-body ink-soft">After merge, tell the agent:</text>
+      <text x="20"  y="332" class="label-mono" fill="#8a4b16">"I reviewed and merged the PR. Can you check?"</text>
+
+      <!-- Cross-boundary back to agent -->
+      <path d="M 845 282 C 845 360, 845 360, 845 388"
+            stroke="#8a4b16" stroke-width="2.2" fill="none"
+            marker-end="url(#arrow-cross)"/>
+      <text x="780" y="370" class="label-mono" fill="#8a4b16">"merged" →</text>
+
+      <!-- Agent post-merge steps -->
+      <rect x="770" y="402" width="150" height="50" rx="6" fill="#ffffff" stroke="#2a6e4f"/>
+      <text x="845" y="422" text-anchor="middle" class="label-sm muted">01</text>
+      <text x="845" y="440" text-anchor="middle" class="label-md ink">Confirm merge</text>
+
+      <rect x="620" y="402" width="130" height="50" rx="6" fill="#ffffff" stroke="#2a6e4f"/>
+      <text x="685" y="422" text-anchor="middle" class="label-sm muted">02</text>
+      <text x="685" y="440" text-anchor="middle" class="label-md ink">Verify state</text>
+
+      <rect x="470" y="402" width="130" height="50" rx="6" fill="#ffffff" stroke="#2a6e4f"/>
+      <text x="535" y="422" text-anchor="middle" class="label-sm muted">03</text>
+      <text x="535" y="440" text-anchor="middle" class="label-md ink">Post-merge?</text>
+
+      <rect x="320" y="402" width="130" height="50" rx="6" fill="#ffffff" stroke="#2a6e4f"/>
+      <text x="385" y="422" text-anchor="middle" class="label-sm muted">04</text>
+      <text x="385" y="440" text-anchor="middle" class="label-md ink">Next action</text>
+
+      <rect x="20"  y="402" width="280" height="50" rx="6" fill="#ffffff" stroke="#2a6e4f" stroke-dasharray="4 3"/>
+      <text x="160" y="422" text-anchor="middle" class="label-sm muted">05 · LOOP READY</text>
+      <text x="160" y="440" text-anchor="middle" class="label-md ink">main pulled · new branch cut</text>
+
+      <!-- Post-merge arrows (right-to-left) -->
+      <line x1="770" y1="427" x2="750" y2="427" stroke="#4a4a44" stroke-width="1.4" marker-end="url(#arrow-flow)" transform="translate(0,0)"/>
+      <line x1="620" y1="427" x2="600" y2="427" stroke="#4a4a44" stroke-width="1.4" marker-end="url(#arrow-flow)"/>
+      <line x1="470" y1="427" x2="450" y2="427" stroke="#4a4a44" stroke-width="1.4" marker-end="url(#arrow-flow)"/>
+      <line x1="320" y1="427" x2="300" y2="427" stroke="#4a4a44" stroke-width="1.4" marker-end="url(#arrow-flow)"/>
+
+      <text x="470" y="485" class="label-body ink-soft">Then back to §02 Align for the next feature.</text>
+    </svg>
+
+    <h3>What the agent does on <code>Ship the feature.</code></h3>
+    <ol>
+      <li>Confirm the work is already on a feature branch.</li>
+      <li>If work accidentally happened on <code>main</code>, move it to a feature branch as a recovery step.</li>
+      <li>Run tests, <button class="term" type="button" data-def="typecheck">typecheck</button>, <button class="term" type="button" data-def="build">build</button>, and any relevant <button class="term" type="button" data-def="browsercheck">browser checks</button>.</li>
+      <li>Review the <button class="term" type="button" data-def="diff">diff</button> for obvious mistakes.</li>
+      <li><button class="term" type="button" data-def="docclose">Close the docs</button>: write the release note, promote any lasting decisions and vocabulary into the durable docs (ADRs, <code>CONTEXT.md</code>, the design glossary), and move the finished planning folder into <code>archive/</code>. This cleanup is committed on purpose, not left as a loose end.</li>
+      <li><button class="term" type="button" data-def="commit">Commit</button> the work.</li>
+      <li><button class="term" type="button" data-def="push">Push</button> the branch.</li>
+      <li>Open a <button class="term" type="button" data-def="draftpr"><strong>draft</strong> pull request</button>.</li>
+    </ol>
+    <p>At this point the work is <em>not</em> finished from the human side.</p>
+
+    <h3>The manual GitHub step</h3>
+    <p>After the agent opens the pull request, you must go to GitHub yourself. Do this manually:</p>
+    <ol>
+      <li>Open the PR link the agent gives you.</li>
+      <li>Read the PR summary.</li>
+      <li>Skim the changed files.</li>
+      <li>Check that <button class="term" type="button" data-def="test">tests</button> passed, if <button class="term" type="button" data-def="ci">CI</button> exists.</li>
+      <li>If it looks right, mark the PR ready if it is still draft.</li>
+      <li>Merge the PR.</li>
+      <li>Tell the agent:</li>
+    </ol>
+<pre><code>I reviewed and merged the PR. Can you check?</code></pre>
+    <p>
+      This manual step matters because the human remains accountable for
+      what enters <code>main</code>. The agent can prepare the PR, but it
+      should not be treated as the final approver.
+    </p>
+
+    <h3>After merge</h3>
+    <p>After you tell the agent the PR was merged, it should:</p>
+    <ol>
+      <li>Confirm the PR is merged.</li>
+      <li>Fetch or otherwise verify the merged state.</li>
+      <li>Check whether any post-merge step is needed.</li>
+      <li>Recommend the next useful action.</li>
+    </ol>
+    <p>
+      If there is a deployment target, this is where deploy, <button class="term" type="button" data-def="canary">canary</button>, and
+      <button class="term" type="button" data-def="benchmark">benchmark</button> work happens. If there is no deployment target yet, the
+      next step is usually choosing the next feature or running a <button class="term" type="button" data-def="retro">retro</button>.
+    </p>
+    <p>
+      Before starting the next feature, the agent should switch back to
+      <code>main</code>, pull the merged GitHub state, and create a new
+      feature branch from there.
+    </p>
+  </section>
+
+  <!-- ====================================================== -->
+  <!-- 4. THE UI SMOKE FLOOR                                  -->
+  <!-- ====================================================== -->
+  <section id="smoke-floor">
+    <h2><span class="num">04</span>The UI smoke floor</h2>
+    <p class="section-lede">
+      For anything with a screen, this is the minimum the agent must check
+      before calling a slice done — at <strong>desktop, tablet, and mobile</strong>
+      widths. You don't have to memorise it; just know you can hold the agent
+      to it. Most of the late, annoying bugs in real projects were caught here
+      or not at all.
+    </p>
+
+    <ul>
+      <li><strong>No sideways scroll.</strong> The page body shouldn't overflow horizontally on a phone.</li>
+      <li><strong>Tables stay readable.</strong> Wide data tables scroll inside their own box rather than crushing columns into nonsense.</li>
+      <li><strong>Tappable things are big enough.</strong> Buttons, links, and chips meet the ~44px <button class="term" type="button" data-def="touchtarget">touch-target</button> floor on mobile, unless a compact exception is written down.</li>
+      <li><strong>Headings match the visual order.</strong> The underlying <button class="term" type="button" data-def="headinghierarchy">heading hierarchy</button> lines up with what the eye sees.</li>
+      <li><strong>URL-driven views keep their place.</strong> Drawers, filters, tabs, and expanding rows that live in the <button class="term" type="button" data-def="urlstate">URL</button> should preserve your scroll position and keep focus where you expect — not jump you back to the top.</li>
+    </ul>
+
+    <div class="callout">
+      <strong>How to invoke it.</strong> You rarely need to. The agent owes you
+      this floor automatically on UI work. If you want to be explicit, say
+      <code>Run the responsive smoke check.</code> or just
+      <code>Check this on mobile too.</code>
+    </div>
+  </section>
+
+  <!-- ====================================================== -->
+  <!-- 5. PHRASE CHEAT SHEET                                  -->
+  <!-- ====================================================== -->
+  <section id="phrases">
+    <h2><span class="num">05</span>Phrase cheat sheet</h2>
+    <p class="section-lede">
+      These are the <button class="term" type="button" data-def="triggerphrase">trigger phrases</button> — the minimum vocabulary needed to
+      drive the loop end-to-end. Copy, paste, adjust. Coloured tags map
+      to the stage where the phrase belongs.
+    </p>
+
+    <div class="phrase-tool interactive-panel" aria-label="Phrase helper">
+      <h2>Choose The Prompt</h2>
+
+      <div class="route-builder">
+        <select data-route-select aria-label="What is happening now?">
+          <option value="">What is happening now?</option>
+          <option value="next">I do not know what to do next</option>
+          <option value="feature">I want to start a feature</option>
+          <option value="fuzzy">The UI is still fuzzy</option>
+          <option value="sliced">The plan is sliced</option>
+          <option value="continue">A slice just finished</option>
+          <option value="correction">I found something wrong</option>
+          <option value="mobile">I want responsive checking</option>
+          <option value="ship">The feature is ready</option>
+          <option value="merged">I merged the PR</option>
+        </select>
+        <div class="route-output" data-route-output>Choose what is happening now.</div>
+      </div>
+
+      <div class="segmented" role="group" aria-label="Filter phrases by stage">
+        <button type="button" data-filter-stage="all">All</button>
+        <button type="button" data-filter-stage="align">Align</button>
+        <button type="button" data-filter-stage="slice">Slice</button>
+        <button type="button" data-filter-stage="build">Build</button>
+        <button type="button" data-filter-stage="review">Review</button>
+        <button type="button" data-filter-stage="ship">Ship</button>
+      </div>
+
+      <div class="phrase-grid">
+
+      <div class="phrase-card align" data-stage="align">
+        <span class="tag">Align</span>
+        <div class="phrase">What's next?</div>
+        <div class="when">When you want the agent to inspect project state and recommend the next action.</div>
+        <div class="actions"><button class="copy-button" type="button" data-copy-phrase="What's next?">Copy</button></div>
+      </div>
+
+      <div class="phrase-card align" data-stage="align">
+        <span class="tag">Align</span>
+        <div class="phrase">I want to build [feature].</div>
+        <div class="when">Kicks off the alignment grill. Expect questions before code.</div>
+        <div class="actions"><button class="copy-button" type="button" data-copy-phrase="I want to build [feature].">Copy</button></div>
+      </div>
+
+      <div class="phrase-card align" data-stage="align">
+        <span class="tag">Align</span>
+        <div class="phrase">Before we code, make a mockup.</div>
+        <div class="when">When the UI or workflow is still hard to picture.</div>
+        <div class="actions"><button class="copy-button" type="button" data-copy-phrase="Before we code, make a mockup.">Copy</button></div>
+      </div>
+
+      <div class="phrase-card slice" data-stage="slice">
+        <span class="tag">Slice</span>
+        <div class="phrase">Break this into slices.</div>
+        <div class="when">Once the feature is understood. Each slice should produce something testable.</div>
+        <div class="actions"><button class="copy-button" type="button" data-copy-phrase="Break this into slices.">Copy</button></div>
+      </div>
+
+      <div class="phrase-card build" data-stage="build">
+        <span class="tag">Build</span>
+        <div class="phrase">Build slice 1.</div>
+        <div class="when">When the plan is settled and you want implementation to begin.</div>
+        <div class="actions"><button class="copy-button" type="button" data-copy-phrase="Build slice 1.">Copy</button></div>
+      </div>
+
+      <div class="phrase-card build" data-stage="build">
+        <span class="tag">Build</span>
+        <div class="phrase">Build the next slice.</div>
+        <div class="when">After the agent pauses on a finished slice and you're happy to carry on.</div>
+        <div class="actions"><button class="copy-button" type="button" data-copy-phrase="Build the next slice.">Copy</button></div>
+      </div>
+
+      <div class="phrase-card review" data-stage="review">
+        <span class="tag">Review</span>
+        <div class="phrase">Check this on mobile too.</div>
+        <div class="when">Triggers the desktop/tablet/mobile smoke floor (§04) when you want it called out explicitly.</div>
+        <div class="actions"><button class="copy-button" type="button" data-copy-phrase="Check this on mobile too.">Copy</button></div>
+      </div>
+
+      <div class="phrase-card review" data-stage="review">
+        <span class="tag">Review</span>
+        <div class="phrase">This label is wrong.</div>
+        <div class="when">Plain-language correction. The agent fixes the code, the test, and any doc that referenced it.</div>
+        <div class="actions"><button class="copy-button" type="button" data-copy-phrase="This label is wrong.">Copy</button></div>
+      </div>
+
+      <div class="phrase-card review" data-stage="review">
+        <span class="tag">Review</span>
+        <div class="phrase">This screen should be desktop-only.</div>
+        <div class="when">Scope or platform correction. Triggers a scoped change with tests.</div>
+        <div class="actions"><button class="copy-button" type="button" data-copy-phrase="This screen should be desktop-only.">Copy</button></div>
+      </div>
+
+      <div class="phrase-card ship" data-stage="ship">
+        <span class="tag">Ship</span>
+        <div class="phrase">Ship the feature.</div>
+        <div class="when">All slices complete and you want a draft PR. Triggers the full ship sequence.</div>
+        <div class="actions"><button class="copy-button" type="button" data-copy-phrase="Ship the feature.">Copy</button></div>
+      </div>
+
+      <div class="phrase-card ship" data-stage="ship">
+        <span class="tag">Ship</span>
+        <div class="phrase">I reviewed and merged the PR. Can you check?</div>
+        <div class="when">Hand control back to the agent after the manual GitHub merge step.</div>
+        <div class="actions"><button class="copy-button" type="button" data-copy-phrase="I reviewed and merged the PR. Can you check?">Copy</button></div>
+      </div>
+
+      </div>
+      <div class="copy-status" data-copy-status aria-live="polite"></div>
+    </div>
+  </section>
+
+  <!-- ====================================================== -->
+  <!-- 6. RULES OF THUMB                                      -->
+  <!-- ====================================================== -->
+  <section id="rules">
+    <h2><span class="num">06</span>Rules of thumb</h2>
+    <p class="section-lede">
+      If you only remember a handful of things from this guide, remember these.
+    </p>
+
+    <ol class="rule-list">
+      <li>Keep decisions small and explicit.</li>
+      <li>Insist on an HTML <button class="term" type="button" data-def="mockup">mockup</button> before building any UI that matters.</li>
+      <li>Start non-trivial work on a feature branch, not on <code>main</code>.</li>
+      <li>Review each slice as it lands — the agent now pauses and commits after every verified slice, so use that gap.</li>
+      <li>Prefer one completed slice over several half-finished branches.</li>
+      <li>Treat tests and the desktop/tablet/mobile browser check as part of the work, not an optional extra.</li>
+      <li>Do not skip the GitHub review and merge step.</li>
+      <li>Expect the agent to tidy and archive the docs at ship — a clean doc-close is part of shipping.</li>
+      <li>Keep local databases, secrets, and generated build output out of git.</li>
+    </ol>
+  </section>
+
+  <footer class="doc-foot">
+    <div>
+      AI Engineering Playbook V0.2 · §50 · How To Write Code With AI
+    </div>
+    <div>
+      Maintainer: Playbook Maintainer · Last verified 2026-06-12 · playbook V0.2.3
+    </div>
+  </footer>
+
+</main>
+
+<!-- Single shared popover element, positioned by JS next to whichever term was clicked -->
+<div class="term-popover" id="term-popover" role="dialog" aria-modal="false" aria-labelledby="pop-title" aria-live="polite">
+  <button class="pop-close" type="button" aria-label="Close definition">&times;</button>
+  <div class="pop-title" id="pop-title"></div>
+  <p class="pop-def" id="pop-def"></p>
+</div>
+<script src="assets/playbook-glossary.js"></script>
+<script src="assets/playbook-docs.js"></script>
+</body>
+</html>
