@@ -40,7 +40,7 @@ With `--profile playbook-v0.5`, the checker also reports benchmark evidence: it 
 CHANGELOG date. Run the benchmark and commit its summary, or acknowledge the gap
 explicitly with `--no-bench`; never leave the warning unaddressed in a release.
 
-If the repository is `ai-engineering-playbook`, read [`PLAYBOOK-PROFILE.md`](PLAYBOOK-PROFILE.md) completely before step 1. Its version source, readiness gate, and documentation rules augment the general procedure below.
+If the repository is `agentic-engineering-playbook`, read [`PLAYBOOK-PROFILE.md`](PLAYBOOK-PROFILE.md) completely before step 1. Its version source, readiness gate, and documentation rules augment the general procedure below.
 
 ## Procedure
 
