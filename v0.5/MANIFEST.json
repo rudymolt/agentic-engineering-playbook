@@ -178,8 +178,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "ecb5bd07ec4ead52edb943e4456b5858faa8ceac4d368383124cba117cf01fb1",
-      "size": 866
+      "sha256": "1a1e1b9d42b8091a5cdc87b98ae935f16672e6ef2fbc880f02d89fe23997f098",
+      "size": 1215
     },
     {
       "path": "MAINTENANCE.md",
@@ -1403,8 +1403,8 @@
     },
     {
       "path": "skills/ship-release/SKILL.md",
-      "sha256": "24b62c44d467c2a00ea4c12744e29611dd997f1c54b1f7e661495855c37db448",
-      "size": 7621
+      "sha256": "41ed809b9a755a2ba8d109f720e4568f25975d7b01d0e5fdf2112abccdcfa907",
+      "size": 7626
     },
     {
       "path": "skills/ship-release/agents/openai.yaml",
