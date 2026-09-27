@@ -51,9 +51,86 @@ For example, “add a way to export reports” starts with questions about who n
 
 For UI work, the playbook also keeps a shared design vocabulary and asks for an approved ASCII layout sketch before implementation, followed by an HTML mockup for interactive or substantial changes.
 
+## The playbook is powered by skills
+
+A **skill** is a reusable set of instructions that teaches an agent how to perform a particular task, such as writing a specification, investigating a bug, or reviewing code. The playbook connects these skills into a complete engineering workflow, telling the agent when to use them and what evidence to produce.
+
+The suggested skills draw on several projects:
+
+- **[Matt Pocock's skills](https://github.com/mattpocock/skills)** are small, composable engineering workflows for clarifying requirements, building shared terminology, writing specifications, splitting work into tickets, testing, and improving code. They help the human and agent agree on the work and carry it out in manageable steps.
+- **Garry Tan's [gstack](https://github.com/garrytan/gstack)** provides specialist workflows for product thinking, design, engineering review, browser-based QA, security, and shipping. It gives an agent procedures for examining work from different professional perspectives, from questioning the product idea to testing the finished experience.
+- **Lauren Tan's [pstack](https://github.com/cursor/plugins/tree/main/pstack)** combines engineering principles with skills for understanding existing code, investigating why it works that way, assessing the impact of changes, and proving results. The playbook includes adaptations of selected investigation and verification skills, with their upstream notices preserved.
+
+Here is how they map to the specific parts of the workflow.
+
+| Part of the workflow | Examples of skills and sources |
+| --- | --- |
+| Clarify the goal | Matt Pocock's `grill-with-docs`; gstack's `office-hours` and planning reviews. |
+| Explore an unclear route before writing a specification | Matt Pocock's `wayfinder`, through the playbook's optional [Wayfinder track](v0.5/92-wayfinder-track.md). |
+| Specify and divide the work | Matt Pocock's `to-spec` and `to-tickets`. |
+| Implement and investigate | Matt Pocock's `tdd` and `diagnosing-bugs`; gstack's `investigate`. |
+| Review and test the experience | Review and QA procedures drawing on Matt Pocock's skills and gstack, with compatibility checks before running upstream reviewers. |
+| Understand and verify the codebase | Playbook adaptations of [Lauren Tan's pstack](https://github.com/cursor/plugins/tree/main/pstack), including `how`, `why`, `blast-radius`, and verification-harness creation and maintenance. |
+| Set up and coordinate the project | Playbook-specific bootstrap, upgrade, next-step routing, model-routing, and delivery skills. |
+
+**Wayfinder is for when you know the destination but still need to work out how to get there.** If the uncertainty spans several sessions or connected decisions, it organises research, prototypes, and questions before you commit to a specification. The agent can suggest it, but you choose whether to invoke `/wayfinder`. Straightforward features go directly through normal alignment and specification.
+
+### What do I need to install?
+
+**Matt Pocock's skills and gstack are separate installations.** Cloning this playbook or running its bootstrap does not automatically install either collection. If you already have them installed, setup checks whether the required skills are discoverable and compatible with the playbook's procedures.
+
+- **Matt Pocock's skills:** follow the [upstream installation guide](https://github.com/mattpocock/skills#installation-30-second-setup). The playbook documents `npx skills@latest add mattpocock/skills`; the installer lets you choose skills and coding-agent environments. The upstream guide also offers a managed Claude Code plugin. Choose one installation method to avoid duplicate skills. The optional `setup-matt-pocock-skills` skill helps configure project-specific tracker and documentation choices.
+- **gstack:** follow its [installation guide](https://github.com/garrytan/gstack#install--30-seconds) for your coding-agent environment. It has its own setup script and prerequisites, including Bun for its tooling. The guide covers Claude Code and other supported agents, including Codex.
+- **pstack adaptations and playbook-local skills:** the selected adaptations are already included in this repository and installed into the target project by the playbook bootstrap. You do not need the full upstream pstack package to use those adaptations.
+- **Autonomous delivery:** the optional delivery runtime is installed separately when adopting the [delivery workflow](v0.5/10-process/delivery-mission.md). Ordinary project bootstrap alone does not enable unattended delivery to a pull request.
+
+You can start without Matt's collection or gstack if every required stage has a working manual or alternative route. Here, “manual” means following the documented stage procedure directly, without invoking a packaged skill; the agent can still perform the work. Setup records those routes, and pauses if a required capability has no usable route.
+
+Installing a package does not automatically make every version compatible. The playbook records its verified upstream versions and checks reviewer compatibility before use. Where a skill is unavailable or incompatible, the stage's documented fallback preserves the same required outputs and evidence.
+
+These are recommended starting points. You can add your own skills or adapt the workflow to tools your team already uses. A replacement should fulfil the stage's requirements: the same decisions, outputs, and verification evidence still need to exist. Document and verify the replacement route before relying on it.
+
+See the [prerequisite guide](v0.5/10-process/00-prereqs.md) for skill packages and capability checks, and the [local skill guide](v0.5/skills/README.md) for the skills maintained here.
+
+## Use the playbook with your choice of coding agent
+
+The core workflow is designed to be portable across coding-agent environments, or **harnesses**, such as Codex, Claude Code, Grok Build or Conductor. A harness is the software that lets a model read your project, use tools, and carry out development work.
+
+Setup checks how your environment reads project instructions, runs commands, loads skills, and supports independent review. Available automation depends on those capabilities. The [capability profiles](v0.5/10-process/prereqs-capability-profiles.md) describe the supported routes and their requirements.
+
+### [Conductor.build](https://www.conductor.build/) Support
+
+[Conductor](https://conductor.build) lets you run a team of coding agents in separate workspaces on your Mac or in the cloud. Its local app has a free plan; Cloud workspaces require a paid plan. You bring your own model subscriptions or API keys. See [Conductor's current plans](https://www.conductor.build/pricing) for pricing.
+
+The playbook includes Conductor-specific setup and delivery procedures alongside its general engineering workflow. During setup, the agent inspects the project and proposes appropriate setup commands, development commands, files to copy, and port or shared-resource handling. You review those changes before they are applied.
+
+### Building features autonomously
+
+Once you have planned a feature and sliced it up into smaller chunks you are ready to build. With the playbook you can choose how much work the agent completes before handing control back:
+
+- **Build one:** implement and verify the next slice, then report back.
+- **Build all:** work through the current feature's remaining slices that are approved for unattended execution, with independent checks between slices and a final review across the feature.
+- **Deliver to PR:** use the optional delivery workflow to carry approved work through implementation, independent verification, quality assurance (QA), and a pull request for review. This route requires its own setup, capability checks, and explicit approval.
+
+```text
+  WITH YOU                 APPROVED UNATTENDED WORK
+  --------                 ------------------------
+  Goal + specification --> Build --> Verify --> QA --> Pull request
+  Scope + limits              ^         |
+                              +-- Fix --+
+```
+
+The delivery workflow supports local execution and Conductor Cloud. Once you have approved the specification, scope, and execution limits, the agent can build and verify eligible work without routine human prompts. A fully specified feature can proceed through that workflow unattended when all its slices are eligible.
+
+Independent checks remain part of the process. The agent can repair eligible findings and send the changes through fresh verification, but pauses for decisions requiring your judgement, unresolved ambiguity, repeated failures, or a stopping limit.
+
+Ordinary delivery ends with a pull request for review. Merging requires human action or a separately approved merge route; deployment and release remain separate steps.
+
+See the [build choices](v0.5/10-process/07-implementation-tdd.md#the-build-choice-v0316) and [delivery workflow](v0.5/10-process/delivery-mission.md) for the full requirements.
+
 ## Get started
 
-You need a coding agent (Claude, ChatGPT, Gemini, Grok, Kimi etc) that can read local files and run project commands, Git, and Python 3.10 or newer for the playbook scripts. Setup checks which tools and review routes your environment supports. Additional skill packages can accelerate the workflow; the [prerequisite guide](v0.5/10-process/00-prereqs.md) describes the available routes.
+You need a coding-agent environment, such as Codex or Claude Code, that can read local files and run project commands, plus Git and Python 3.10 or newer for the playbook scripts. Setup checks which tools and review routes your environment supports. Additional skill packages can accelerate the workflow; the [prerequisite guide](v0.5/10-process/00-prereqs.md) describes the available routes.
 
 ### 1. Keep a stable copy of the playbook
 
