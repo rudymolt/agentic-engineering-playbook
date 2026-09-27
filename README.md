@@ -9,7 +9,7 @@
 
 # Agentic Engineering Playbook
 
-**A practical guide and toolkit for building software with AI coding agents.**
+**A practical guide and toolkit for building software with AI coding agents. If you are new to developing software or have no engineering background the playbook will keep you on track and help your agent to code like a pro.**
 
 Turn an idea into a clear specification, build it in manageable pieces, verify the result, and carry lessons into the next feature. You bring the goals and judgement. The playbook gives your agent a repeatable way to work.
 
@@ -53,7 +53,7 @@ For UI work, the playbook also keeps a shared design vocabulary and asks for an 
 
 ## Get started
 
-You need a coding agent that can read local files and run project commands, Git, and Python 3.10 or newer for the playbook scripts. Setup checks which tools and review routes your environment supports. Additional skill packages can accelerate the workflow; the [prerequisite guide](v0.5/10-process/00-prereqs.md) describes the available routes.
+You need a coding agent (Claude, ChatGPT, Gemini, Grok, Kimi etc) that can read local files and run project commands, Git, and Python 3.10 or newer for the playbook scripts. Setup checks which tools and review routes your environment supports. Additional skill packages can accelerate the workflow; the [prerequisite guide](v0.5/10-process/00-prereqs.md) describes the available routes.
 
 ### 1. Keep a stable copy of the playbook
 
