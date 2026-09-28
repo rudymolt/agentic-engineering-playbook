@@ -17,6 +17,8 @@ Turn an idea into a clear specification, build it in manageable pieces, verify t
 
 **Humans:** [Get started](#get-started) · **Agents:** [Read the agent digest](v0.5/AGENT-DIGEST.md)
 
+**Explore the [interactive guides](https://rudymolt.github.io/agent-engineering-playbook)** for practical examples, the stage map, cloud build options and explanations of technical terms.
+
 ## What is it?
 
 The playbook is a collection of **Markdown instructions, reusable project templates, agent skills, and verification scripts** that you apply to your own software project. Your agent reads the instructions, sets up shared project context, and follows the appropriate workflow for the task.

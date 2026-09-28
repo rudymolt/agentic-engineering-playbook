@@ -27,6 +27,26 @@ class PublicContentGateTest(unittest.TestCase):
             (root / "README.md").write_text("user@example.invalid and git@github.com\n")
             self.assertEqual(MODULE.problems(root), [])
 
+    def test_public_guide_link_is_allowed_only_in_root_readme(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "README.md").write_text(MODULE.PUBLIC_GUIDE_LINK)
+            self.assertEqual(MODULE.problems(root), [])
+            (root / "other.md").write_text(MODULE.PUBLIC_GUIDE_LINK)
+            self.assertTrue(any("other.md" in item for item in MODULE.problems(root)))
+
+    def test_public_link_does_not_hide_other_private_content(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            for content in (
+                MODULE.PUBLIC_GUIDE_LINK + " rudy" + "molt",
+                MODULE.PUBLIC_GUIDE_LINK.replace("playbook)", "playbook-private)"),
+                MODULE.PUBLIC_GUIDE_LINK + " owner@" + "personal.test",
+            ):
+                with self.subTest(content=content):
+                    (root / "README.md").write_text(content)
+                    self.assertTrue(MODULE.problems(root))
+
     def test_lowercase_private_fixture_identifiers_are_rejected(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
