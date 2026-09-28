@@ -16,6 +16,8 @@ PRIVATE_MARKERS = re.compile(
     re.IGNORECASE,
 )
 EMAIL = re.compile(r"(?<![\w.+-])([A-Za-z0-9._%+-]+)@([A-Za-z0-9.-]+\.[A-Za-z]{2,})")
+# The maintainer-approved public guide link is allowed only in the root README.
+PUBLIC_GUIDE_LINK = "[interactive guides](https://" + "rudy" + "molt.github.io/agent-engineering-playbook)"
 ALLOWED_EMAILS = {"git@github.com"}
 ALLOWED_DOMAINS = {"example.com", "example.invalid", "users.noreply.github.com"}
 
@@ -45,7 +47,8 @@ def problems(root: Path) -> list[str]:
             found.append(f"{relative}: non-text file requires explicit review")
             continue
         for number, line in enumerate(content.splitlines(), 1):
-            if PRIVATE_MARKERS.search(line):
+            marker_text = line.replace(PUBLIC_GUIDE_LINK, "") if relative == Path("README.md") else line
+            if PRIVATE_MARKERS.search(marker_text):
                 found.append(f"{relative}:{number}: private marker or personal path")
             for match in EMAIL.finditer(line):
                 value = match.group(0).lower()
