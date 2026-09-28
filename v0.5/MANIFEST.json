@@ -178,8 +178,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "665f30c6f0ed984f4c59d9cb07beb2c28a5c3447eff57c4973d3578866970dd6",
-      "size": 2073
+      "sha256": "d38f163c847687700b56ff54d98d87d881c2ca39cf8551aac2b304ee2f8bfbab",
+      "size": 2360
     },
     {
       "path": "MAINTENANCE.md",
@@ -1033,8 +1033,8 @@
     },
     {
       "path": "scripts/check-public-content.py",
-      "sha256": "f26b47364be92ac812908131f626ed6c677b44fca348538d4090f0035a6b502b",
-      "size": 2557
+      "sha256": "f9f23b9986585fe48dcf4b78c77c603573a97ef0144cc924fd552af5a840290a",
+      "size": 2857
     },
     {
       "path": "scripts/check-skill-metadata.py",
@@ -1188,8 +1188,8 @@
     },
     {
       "path": "scripts/test_public_content.py",
-      "sha256": "d70d878eae2a6472c469b63893bf49b7ade6831679151f39ad31808896b22e8d",
-      "size": 1667
+      "sha256": "a23c4c625120078f6f795ffae4c87471bc8eb50903f4c9cdcbd270ed939815d2",
+      "size": 2681
     },
     {
       "path": "scripts/test_public_upgrade_transition.py",
