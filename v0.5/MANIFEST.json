@@ -178,8 +178,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "7b596286e03037fc591a67c103f9b9abe5f7df8e05a6cf73c5d2dd3ce0ad8b2b",
-      "size": 1980
+      "sha256": "b3009ecf8fb11af1a16d1bd24a54138be5834150008109f6a31378141e575027",
+      "size": 2393
     },
     {
       "path": "MAINTENANCE.md",
@@ -1062,6 +1062,11 @@
       "size": 23165
     },
     {
+      "path": "scripts/delivery_ci_scope.py",
+      "sha256": "492ecbb6d1ce29a2a27a794deb28dbbd8f38097a1ca1027b5dec1a96c4dff1f5",
+      "size": 2204
+    },
+    {
       "path": "scripts/fixtures/verification-harness/cleanup.py",
       "sha256": "7498df82e39412ce2e9f7fea746a117a2b07041af4cb0062768008a36b16687b",
       "size": 808
@@ -1155,6 +1160,11 @@
       "path": "scripts/test_convention_checks.py",
       "sha256": "2259b23e67e9ad54959af5756a143c15dcb0c1b3b7fe58912e96b68ebf405922",
       "size": 24119
+    },
+    {
+      "path": "scripts/test_delivery_ci_scope.py",
+      "sha256": "6c73d15a6fd08195e9ab7cd060c24aec58a966cbe183063efa890f80ddd5bd69",
+      "size": 5055
     },
     {
       "path": "scripts/test_generate_status.py",

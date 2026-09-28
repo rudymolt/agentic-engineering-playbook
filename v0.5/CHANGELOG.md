@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Keep the required `delivery` CI job fast for unrelated changes, while retaining the full delivery suite for runtime changes, delivery contract surfaces, workflow changes, classifier changes, and manual runs.
+
+*Why — proportional verification:* documentation-only pull requests should still pass required public-edition checks without spending more than ten minutes exercising an unaffected delivery runtime.
+
 - Link the public interactive guides from the README and permit that exact link in the root README privacy check. Other personal references remain blocked.
 
 *Why — discoverability:* readers need a direct route to the human-facing guides without weakening the public-content boundary.
