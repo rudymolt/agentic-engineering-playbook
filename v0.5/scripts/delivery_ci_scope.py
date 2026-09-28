@@ -15,6 +15,11 @@ from typing import Iterable
 DELIVERY_PREFIX = "v0.5/delivery/"
 WORKFLOW_PREFIX = ".github/workflows/"
 CLASSIFIER_PATH = "v0.5/scripts/delivery_ci_scope.py"
+DELIVERY_CONTRACT_PATHS = {
+    "v0.5/00-foundations.md",
+    "v0.5/AGENT-DIGEST.md",
+    "v0.5/10-process/07-implementation-tdd.md",
+}
 
 
 @dataclass(frozen=True)
@@ -29,6 +34,8 @@ def classify(paths: Iterable[str]) -> Decision:
         return Decision(True, "CI workflow changed")
     if CLASSIFIER_PATH in changed:
         return Decision(True, "delivery CI classifier changed")
+    if changed & DELIVERY_CONTRACT_PATHS:
+        return Decision(True, "delivery contract surface changed")
     if any(path.startswith(DELIVERY_PREFIX) for path in changed):
         return Decision(True, "delivery runtime files changed")
     return Decision(False, "no delivery runtime files changed")

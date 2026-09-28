@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- Keep the required `delivery` CI job fast for changes outside `v0.5/delivery/`, while retaining the full delivery suite for runtime changes, workflow changes, and manual runs.
+- Keep the required `delivery` CI job fast for unrelated changes, while retaining the full delivery suite for runtime changes, delivery contract surfaces, workflow changes, classifier changes, and manual runs.
 
 *Why — proportional verification:* documentation-only pull requests should still pass required public-edition checks without spending more than ten minutes exercising an unaffected delivery runtime.
 

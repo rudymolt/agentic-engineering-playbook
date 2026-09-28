@@ -36,6 +36,17 @@ class DeliveryCiScopeTests(unittest.TestCase):
         self.assertTrue(decision.run_delivery)
         self.assertEqual(decision.reason, "delivery CI classifier changed")
 
+    def test_delivery_contract_surface_changes_run_delivery(self) -> None:
+        for path in (
+            "v0.5/00-foundations.md",
+            "v0.5/AGENT-DIGEST.md",
+            "v0.5/10-process/07-implementation-tdd.md",
+        ):
+            with self.subTest(path=path):
+                decision = classify([path])
+                self.assertTrue(decision.run_delivery)
+                self.assertEqual(decision.reason, "delivery contract surface changed")
+
     def test_git_diff_keeps_source_path_when_delivery_file_moves_out(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             repo = Path(temporary)
