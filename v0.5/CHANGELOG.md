@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Repair S1 configuration races with durable capture and no-clobber publication, retain conflict evidence instead of destructive rollback, bind new escalated-Verify policy to immutable approvals while preserving historical routes, and require request-bound current-availability discovery separately from guidance caches.
+
+*Why — confirmed S1 contract gaps:* arbitrary external edits must survive Apply and recovery; approved execution history must remain readable without rerouting; rereading cached guidance cannot establish current access. Regression tests cover both absent and pre-existing files, retained historical bytes, host dispatch, and adapter clocks without paid launches or S8 claims.
+
 - Add the user-invoked S1 Configure chat path and a shared versioned project-default boundary. Import all legacy roles, preserve runtime records, preview Build edits, revalidate Apply, and roll back or report recovery. Existing lane gates resolve adopted defaults without changing approval or launch authority.
 
 *Why — safe project defaults:* changing one future Build preference must preserve custom roles and active work, with one authoritative source and no silent fallback, substitution or model launch.

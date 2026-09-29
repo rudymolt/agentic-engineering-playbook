@@ -16,7 +16,7 @@ Build-all approval on 2026-09-29 supersedes planning snapshots saying build scop
 
 | Slice | Build | Independent verification | Candidate / evidence |
 | --- | --- | --- | --- |
-| S1 | Built; candidate pending acceptance | Pending fresh Verify | Inventory precedes consumer changes; 15 focused and 243 main tests pass. Full verifier reached 454 delivery tests with one missing-Python-3.12 prerequisite failure; cloud prerequisite is now installed, fresh rerun pending. |
+| S1 | Ordinary repair 1 implemented | Fresh re-verification pending | `9e5ca3e` remains rejected. Repairs add no-clobber publication and recovery evidence, preserve immutable historical escalated-Verify routes, and require request-bound current availability. Repair tests: 26 configuration, 254 main-script and 322 affected delivery tests pass; unskipped canonical gate passes 787 tests across 16 suites. These are builder results, not independent acceptance. |
 | S2 | Not started | Pending | Blocked by S1 acceptance |
 | S3 | Not started | Pending | Blocked by S1 acceptance |
 | S4 | Not started | Pending | Blocked by S3 acceptance |
@@ -31,4 +31,4 @@ Public evidence contains only redacted commands, outcomes, candidate identifiers
 
 The endpoint is a reviewed feature PR to `main`, accurately describing any remaining qualification. Mark it draft when S8, CI or review gates prevent a ready claim. Complete an independent whole-diff specification/test-gap review and prepare the [S8 walkthrough](host-qualification.md). Do not call this feature shipped or mark S8 live qualification complete based on fixtures or the approved mockup.
 
-Exactly one next action: submit the frozen S1 candidate to fresh independent Verify; do not start S2 before acceptance.
+Exactly one next action: submit the repaired exact S1 candidate to fresh Verify. Do not start S2 before acceptance.

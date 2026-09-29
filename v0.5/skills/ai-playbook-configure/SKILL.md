@@ -15,7 +15,12 @@ This skill never launches a model or edits runtime state.
 1. **Read and discover.** Identify the project and installed playbook locator.
    Use model-router's existing discovery procedure without its selection/launch
    steps. Exclude unavailable, unauthenticated, blocked, identity-unverifiable
-   or role-ineligible routes. Record fresh bounded discovery locally, not in
+   or role-ineligible routes. Supply a current-availability adapter to the
+   helper's `--discovery-command`, not a static discovery file. On each request,
+   genuinely recheck role + model + runner + reasoning through the existing
+   authority surface, echo the request ID and timestamp the observation inside
+   the helper's clock window. Never redate cached results or treat guidance's
+   24-hour interval as access evidence. Keep bounded discovery local, not in
    shareable settings. Read the helper contract at
    `{playbook-path}/v0.5/scripts/playbook-config.md` using the installed playbook
    locator, not a path relative to the copied skill. The mockup and generated
@@ -38,7 +43,7 @@ This skill never launches a model or edits runtime state.
    mirror, never replace, typed replies. Completion criterion: reviewed draft
    or cancellation, with nothing saved.
 4. **Apply the reviewed proposal.** Only after typed `Apply`, repeat genuine
-   authoritative discovery and pass the same proposal to the helper. Never
+   authoritative discovery through that adapter and pass the same proposal to the helper. Never
    silently create and Apply a refreshed proposal. Changed inputs require
    Reload and another preview/Apply. Unavailability requires Edit Build; no
    automatic substitution. Report applied/unchanged/blocked/recovery-required

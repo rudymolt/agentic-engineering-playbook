@@ -10,6 +10,7 @@ import os
 from pathlib import Path
 import re
 import tempfile
+import uuid
 from typing import Callable
 
 from playbook_state import parse_scalar, strip_inline_comment
@@ -229,14 +230,17 @@ class Configuration:
         return {"origin": origins[role], "choice": deepcopy(config["models"][role])}
 
     def _available(self):
-        evidence = deepcopy(self.discover())
+        request = {"request_id": uuid.uuid4().hex, "started_at": self.clock(),
+                   "roles": list(ROLES), "purpose": "current-availability"}
+        evidence = deepcopy(self.discover(deepcopy(request)))
+        finished_at = self.clock()
         if not isinstance(evidence, dict) or evidence.get("authority") not in {
             "host-reported-selection", "provider-response-metadata", "session-thread-metadata",
         } or not isinstance(evidence.get("revision"), str) or not evidence["revision"]:
             raise ConfigError("Authoritative current host discovery is missing; rediscover through model-router.")
-        age = (instant(self.clock()) - instant(evidence.get("checked_at"))).total_seconds()
-        if age < 0 or age > 86400:
-            raise ConfigError("Discovery is stale or future-dated; rediscover through model-router.")
+        if (evidence.get("request_id") != request["request_id"]
+                or not instant(request["started_at"]) <= instant(evidence.get("checked_at")) <= instant(finished_at)):
+            raise ConfigError("Discovery must freshly observe role/model/runner/reasoning for this request; cached guidance is not availability.")
         if not isinstance(evidence.get("routes"), list):
             raise ConfigError("Discovery routes must be a verified list; rediscover.")
         routes = []
@@ -271,7 +275,7 @@ class Configuration:
             }
             proposal["proposal_revision"] = self._revision(proposal)
             return proposal
-        except (ConfigError, OSError, UnicodeError) as error:
+        except (ConfigError, OSError, UnicodeError, TypeError) as error:
             return self._blocked(error)
 
     def _blocked(self, error):
@@ -281,7 +285,7 @@ class Configuration:
         return digest(encoded({key: proposal[key] for key in ("destination", "origins", "migration", "before", "after", "inputs", "discovery", "alternatives")}))
 
     def _discovery_revision(self, evidence):
-        return digest(encoded({key: value for key, value in evidence.items() if key != "checked_at"}))
+        return digest(encoded({key: value for key, value in evidence.items() if key not in {"checked_at", "request_id"}}))
 
     def reply(self, proposal, text):
         if not isinstance(proposal, dict) or not isinstance(text, str):
@@ -349,14 +353,22 @@ class Configuration:
             pass
         staged = None
         backup = None
+        captured_path = None
         committed = False
+        completed = False
         recover = False
+        captured = False
+        journaled = False
+        receipt = None
         candidate_bytes = encoded(candidate)
         try:
             self._check_inputs(inputs)
             previous = self._bytes(self.path)
+            if digest(previous) != inputs[DESTINATION]:
+                raise ConfigError("Configuration changed before staging; reload without overwriting it.")
             if previous is not None:
                 backup = self._stage(previous)
+                captured_path = self._stage(b"")
             staged = self._stage(candidate_bytes)
             self.checkpoint("staged")
             validate_config(strict_json(staged.read_text()))
@@ -365,8 +377,27 @@ class Configuration:
             _, current_evidence = self._available()
             if self._discovery_revision(current_evidence) != self._discovery_revision(evidence):
                 raise ConfigError("Availability evidence changed before save; reload and review current choices.")
-            os.replace(staged, self.path)
-            staged = None
+            marker = {"destination": DESTINATION, "previous": backup.name if backup else None,
+                      "captured": captured_path.name if captured_path else None,
+                      "attempted": staged.name, "attempted_digest": digest(candidate_bytes),
+                      "previous_digest": inputs[DESTINATION]}
+            with self.recovery.open("x") as stream:
+                stream.write(encoded(marker).decode())
+                stream.flush()
+                os.fsync(stream.fileno())
+            journaled = True
+            self._sync_directory()
+            if backup is not None:
+                os.replace(self.path, captured_path)
+                captured = True
+                self._sync_directory()
+                if digest(self._bytes(captured_path)) != inputs[DESTINATION]:
+                    raise ConfigError("Concurrent configuration captured intact; reconcile recovery before continuing.")
+            self.checkpoint("before_publish")
+            try:
+                os.link(staged, self.path)
+            except FileExistsError as error:
+                raise ConfigError("Destination changed during publication; external file retained, reload or reconcile recovery.") from error
             committed = True
             self.checkpoint("committed")
             actual = self._bytes(self.path)
@@ -374,39 +405,46 @@ class Configuration:
                 raise ConfigError("Saved configuration changed during validation; recovery is required.")
             validate_config(strict_json(actual.decode()))
             if digest(self._bytes(self.state_path)) != inputs[".playbook-state.yml"]:
-                raise ConfigError("Runtime inputs changed during Apply; defaults rolled back, reload the proposal.")
+                raise ConfigError("Runtime inputs changed during Apply; retained defaults require reconciliation.")
+            if captured_path is not None and digest(self._bytes(captured_path)) != inputs[DESTINATION]:
+                raise ConfigError("Captured configuration changed during Apply; retained bytes require reconciliation.")
             self._sync_directory()
+            receipt = self.project / (staged.name + ".receipt")
+            os.replace(self.recovery, receipt)
+            journaled = False
+            self._sync_directory()
+            completed = True
         except (OSError, ConfigError, UnicodeError) as error:
-            if committed:
+            if committed or captured:
+                recover = True
+                if not self.recovery.exists() and receipt is not None:
+                    try:
+                        os.link(receipt, self.recovery)
+                    except OSError:
+                        pass
                 try:
                     self.checkpoint("rollback")
-                    if self._bytes(self.path) != candidate_bytes:
-                        raise ConfigError("Concurrent configuration edit retained; reconcile recovery without overwriting it.")
-                    if backup is None:
-                        self.path.unlink()
-                    else:
-                        os.replace(backup, self.path)
-                        backup = None
+                    self._bytes(self.path)
+                    if not committed and captured_path is not None:
+                        try:
+                            os.link(captured_path, self.path)
+                        except FileExistsError:
+                            pass
                     self._sync_directory()
-                except (OSError, ConfigError) as rollback_error:
-                    recover = True
-                    marker = {"destination": DESTINATION, "previous": backup.name if backup else None, "attempted_digest": digest(candidate_bytes), "previous_digest": inputs[DESTINATION]}
-                    try:
-                        self.checkpoint("recovery")
-                        with self.recovery.open("x") as stream:
-                            stream.write(encoded(marker).decode())
-                            stream.flush()
-                            os.fsync(stream.fileno())
-                    except OSError as marker_error:
-                        retained = backup.name if backup else f"{DESTINATION} and its recorded previous digest"
-                        raise RecoveryRequired(f"Save and rollback failed; recovery record failed ({marker_error}). Retain {self.lock.name} and {retained}; reconcile {DESTINATION} before continuing.") from error
-                    raise RecoveryRequired(f"Save failed ({error}); rollback failed ({rollback_error}). Reconcile {self.recovery.name} before continuing.") from error
+                except (OSError, ConfigError):
+                    pass
+                raise RecoveryRequired(f"Save incomplete ({error}); no destructive rollback attempted. Reconcile {self.recovery.name} and retained files before continuing.") from error
+            if journaled:
+                self.recovery.unlink()
+                self._sync_directory()
             raise
         finally:
-            if staged is not None:
+            if staged is not None and not recover and not completed:
                 staged.unlink(missing_ok=True)
-            if backup is not None and not recover:
+            if backup is not None and not captured and not recover:
                 backup.unlink(missing_ok=True)
+            if captured_path is not None and not captured and not recover:
+                captured_path.unlink(missing_ok=True)
             if not recover:
                 self.lock.unlink()
 

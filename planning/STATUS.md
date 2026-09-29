@@ -4,4 +4,4 @@ active_features: 1
 
 ## Active features
 
-- **Playbook configuration UI** — `building`; build-all S1–S7 approved, S1 built and awaiting fresh independent verification. S8 live qualification remains human-owned. [Execution status](playbook-config-ui/execution.md), [approved breakdown](playbook-config-ui/slices.md).
+- **Playbook configuration UI** — `building`; build-all S1–S7 approved, S1 repair implemented and awaiting fresh independent verification. S8 live qualification remains human-owned. [Execution status](playbook-config-ui/execution.md), [approved breakdown](playbook-config-ui/slices.md).
