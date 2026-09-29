@@ -40,8 +40,10 @@ class BootstrapProjectTest(unittest.TestCase):
             self.assertIn(
                 f"playbook_version: {bootstrap_project.current_version(PLAYBOOK_ROOT)}", state
             )
-            self.assertIn("implementation: { model_id: gpt-6-sol, runner: codex, reasoning: medium }", state)
-            self.assertIn("verification: { model_id: gpt-6-sol, runner: codex, reasoning: high }", state)
+            self.assertIn("planning: { model_id: gpt-6.1-sol, runner: codex, reasoning: high }", state)
+            self.assertIn("implementation: { model_id: gpt-6.1-sol, runner: codex, reasoning: medium }", state)
+            self.assertIn("verification: { model_id: gpt-6.1-sol, runner: codex, reasoning: high }", state)
+            self.assertIn("escalated_repair: { model_id: gpt-6-astra, runner: codex, reasoning: high,", state)
             self.assertIn("no_ui: true", state)
             self.assertIn("prereqs_required: true", state)
             self.assertIn("retro: 2026-07-10", state)
@@ -204,9 +206,39 @@ class BootstrapProjectTest(unittest.TestCase):
             state = (project / ".playbook-state.yml").read_text()
             self.assertIn("no_ui: false", state)
             self.assertIn("kitchen_sink_drift_audit: 2026-07-10", state)
-            self.assertIn("implementation: { model_id: gpt-6-sol, runner: codex, reasoning: medium }", state)
-            self.assertIn("verification: { model_id: gpt-6-sol, runner: codex, reasoning: high }", state)
+            self.assertIn("implementation: { model_id: gpt-6.1-sol, runner: codex, reasoning: medium }", state)
+            self.assertIn("verification: { model_id: gpt-6.1-sol, runner: codex, reasoning: high }", state)
             self.assertEqual(report.manual_reviews, [])
+
+
+class ModelDefaultsUpgradeTest(unittest.TestCase):
+    def state(self):
+        return (PLAYBOOK_ROOT / "v0.5" / "templates" / ".playbook-state.yml").read_text()
+
+    def test_shipped_defaults_upgrade_without_changing_selected_routes(self):
+        for old_defaults in (upgrade_project.PRE_V038_MODEL_DEFAULTS,
+                             upgrade_project.V038_MODEL_DEFAULTS,
+                             upgrade_project.PRE_V061_MODEL_DEFAULTS):
+            with self.subTest(defaults=old_defaults):
+                history = "\nselected_routes:\n" + old_defaults + "\n"
+                original = self.state().replace(upgrade_project.CURRENT_MODEL_DEFAULTS, old_defaults) + history
+                migrated = upgrade_project.migrate_state(original, upgrade_project.UpgradeReport(), 0)
+                self.assertIn(upgrade_project.CURRENT_MODEL_DEFAULTS, migrated)
+                self.assertTrue(migrated.endswith(history))
+                self.assertIn("escalated_repair: { model_id: gpt-6-astra, runner: codex, reasoning: high,", migrated)
+                self.assertEqual(migrated, upgrade_project.migrate_state(migrated, upgrade_project.UpgradeReport(), 0))
+
+    def test_customized_defaults_and_historical_default_tuple_are_preserved(self):
+        custom = upgrade_project.PRE_V061_MODEL_DEFAULTS.replace("runner: codex", "runner: opencode", 1)
+        for old_defaults in (upgrade_project.PRE_V038_MODEL_DEFAULTS,
+                             upgrade_project.V038_MODEL_DEFAULTS,
+                             upgrade_project.PRE_V061_MODEL_DEFAULTS):
+            with self.subTest(defaults=old_defaults):
+                history = "\nselected_routes:\n" + old_defaults + "\n"
+                original = self.state().replace(upgrade_project.CURRENT_MODEL_DEFAULTS, custom) + history
+                migrated = upgrade_project.migrate_state(original, upgrade_project.UpgradeReport(), 0)
+                self.assertIn(custom, migrated)
+                self.assertTrue(migrated.endswith(history))
 
 
 class BootstrapProvenanceTest(unittest.TestCase):

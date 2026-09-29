@@ -12,6 +12,13 @@ K4.1 merge receipt; never deploy or release.
 
 ## Assurance boundary
 
+Before creating an approval envelope, resolve unselected preferences through
+the [shared project reader](../scripts/playbook-config.md), including repair
+preferences and retained escalation constraints. Explicit envelope choices
+override preferences. After approval, routes, escalation policy and execution
+records are immutable: Configure cannot amend/re-resolve an active mission.
+Existing discovery, identity and gate checks admit every launch independently.
+
 V0.5.0 ships two process-attested routes:
 
 | Route | Maximum action | What it proves | What it never proves |

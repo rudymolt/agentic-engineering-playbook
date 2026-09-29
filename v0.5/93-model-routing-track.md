@@ -10,15 +10,24 @@ The canonical interface is plain text. Buttons may mirror the options, but the w
 
 ## Lanes and defaults
 
+The table contains edition seeds, not project overrides. For every new choice,
+use the shared [configuration reader](scripts/playbook-config.md): explicit
+approved feature choice > adopted `.playbook-config.json` > legacy state
+default > edition. Show model, runner, reasoning and origin. Malformed adoption
+blocks instead of falling back. `/ai-playbook-configure` edits project Build
+defaults only in S1, through typed preview/Apply, without launching anything.
+Active selections, retries and immutable mission approvals never re-resolve
+when defaults change. QA inherits the selected Verify route.
+
 | User-facing lane | Stages | OpenAI default | Reasoning | Reused for |
 |---|---|---|---|---|
-| Plan | 01–06 | `gpt-5.6-sol` | high | planning retries |
-| Build | 07 and returned fixes | `gpt-6-sol` | medium | implementation fix cycles |
-| Verify | 08–09 | `gpt-6-sol` | high | one fresh verification run |
+| Plan | 01–06 | `gpt-6.1-sol` | high | planning retries |
+| Build | 07 and returned fixes | `gpt-6.1-sol` | medium | implementation fix cycles |
+| Verify | 08–09 | `gpt-6.1-sol` | high | one fresh verification run |
 
 Use **Plan**, **Build**, and **Verify** in prompts. Planning, implementation, and verification are internal state names.
 
-At Plan, `openai defaults` applies GPT-5.6 Sol/high → GPT-6 Sol/medium → GPT-6 Sol/high to this feature. It suppresses later model-selection questions, not the Build or Verify action gate. Rediscover each default before launch; stop instead of substituting when it is unavailable. Existing feature selections and historical run records retain the models that were actually approved and used; this table governs new lane selections.
+At Plan, `openai defaults` applies GPT-6.1 Sol/high → GPT-6.1 Sol/medium → GPT-6.1 Sol/high to this feature. It suppresses later model-selection questions, not the Build or Verify action gate. Rediscover each default before launch; stop instead of substituting when it is unavailable. Existing feature selections and historical run records retain the models that were actually approved and used; this table governs new lane selections.
 
 ## Default escalated repair within an approved unattended run
 
@@ -41,7 +50,7 @@ send admission. An ambiguous read reconciles the same durable session ID;
 confirmed mismatch stops with a concrete decision report. No concurrent
 builder or silent substitute is admitted.
 
-Every candidate receives fresh GPT-6 Sol/high Verify of its exact SHA, with no
+Every candidate receives fresh GPT-6.1 Sol/high Verify of its exact SHA, with no
 Astra transcript. A failing verdict closes the cycle while retaining progress.
 An unusable verifier result is reconciled and may receive at most two further
 fresh verifier dispatches for that SHA; those dispatches incur their own usage
@@ -82,7 +91,7 @@ At every lane boundary:
 2. Lead with friendly model label and action; show model ID, runner, reasoning, and exact launch consequence as secondary detail.
 3. Say how long the choice lasts and when the next model question occurs.
 4. Show no more than four typed options.
-5. Let the normal lane action accept the displayed OpenAI default.
+5. Let the normal lane action accept the resolved preference and display its origin. Edition OpenAI defaults apply only without a higher-precedence choice or as an explicit feature override.
 6. Put alternatives behind `models`; show up to three verified models plus `more`, numbered from 1.
 7. Offer `not now` when pausing would otherwise be ambiguous. It starts nothing and records nothing.
 8. After all stage inputs are known, start without another confirmation.
@@ -106,13 +115,19 @@ Display only routes verified through a host/provider catalog, CLI listing, or su
 
 Do not persist the volatile full catalog. Validate availability at each lane gate. Never invent pricing or quality claims. Reasoning-effort labels are provider-scoped: discover and sweep them within one provider, and record each label exactly as the provider names it — a label is never translated into another provider's scale.
 
-Compare the current chat's complete route identity with the playbook default: model, provider, runner, reasoning, permission strength, launch mode, and handoff delivery. Pace is compared separately because it is a run preference, not model identity. A route difference triggers the lane conflict prompt. Observing a route does not select it; persist it only after the human types the lane-specific `here` or `current` action.
+Compare the current chat's complete route identity with the effective preference: model, provider, runner, reasoning, permission strength, launch mode, and handoff delivery. Pace is compared separately because it is a run preference, not model identity. A route difference triggers the lane conflict prompt. Observing a route does not select it; persist it only after the human types the lane-specific `here` or `current` action.
 
 ## State contract
 
 V0.3.33 uses `.playbook-state.yml` schema 3.
 
-`model_routing` records the gated policy, lane defaults, and allowed runners. `pending_model_routes[]` holds a Plan choice made before stage 01 proves one normal feature exists. `active_features[].routing` holds promoted per-lane selections. `active_wayfinding_maps[].model_route_id` may link a map to its planning route.
+`model_routing` records gated policy, legacy lane defaults and allowed runners.
+After adoption, `.playbook-config.json` is the sole project-default source;
+legacy defaults remain inert history. Policy/allowed-runner constraints retain
+authority. `pending_model_routes[]` holds a Plan choice made before stage 01
+proves one normal feature exists. `active_features[].routing` holds promoted
+per-lane selections. `active_wayfinding_maps[].model_route_id` may link a map
+to its planning route.
 
 Each selection records the route fields below. Build and Verify selections also record the pace used; Plan may omit pace because the fast overlay begins at the Build action:
 

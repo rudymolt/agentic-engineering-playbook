@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+- Add the user-invoked S1 Configure chat path and a shared versioned project-default boundary. Import all legacy roles, preserve runtime records, preview Build edits, revalidate Apply, and roll back or report recovery. Existing lane gates resolve adopted defaults without changing approval or launch authority.
+
+*Why — safe project defaults:* changing one future Build preference must preserve custom roles and active work, with one authoritative source and no silent fallback, substitution or model launch.
+
+- Use GPT-6.1 Sol/high for Plan and Verify (including QA and escalated-candidate verification), and GPT-6.1 Sol/medium for Build. Retain GPT-6 Astra/high for escalated repair. Update bootstrap and upgrade defaults, preserving custom project routes and existing feature selections.
+
+*Why — current model defaults:* the approved model policy now uses GPT-6.1 Sol for planning, implementation and independent verification while retaining bounded Astra escalation for difficult repairs.
+
 - Keep the required `delivery` CI job fast for unrelated changes, while retaining the full delivery suite for runtime changes, delivery contract surfaces, workflow changes, classifier changes, and manual runs.
 
 *Why — proportional verification:* documentation-only pull requests should still pass required public-edition checks without spending more than ten minutes exercising an unaffected delivery runtime.

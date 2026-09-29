@@ -2,6 +2,11 @@
 
 Use these shapes in text-only agent chat. Replace examples with live model and runner data.
 
+Resolve new choices through the shared project configuration boundary before
+rendering. Show feature/adopted project/legacy project/edition origin; never
+label a custom choice OpenAI. Current-chat conflicts compare against the
+effective preference. `openai defaults` is a feature-only edition override.
+
 ## Normal lane prompts
 
 ```text
@@ -9,7 +14,7 @@ Plan “{feature title}”
 
 Model: {friendly label} (`{model id}`)
 Launch: {uses this tab | launches <runner> as a sidecar; this chat remains the coordinator | choose <runner> in Conductor; opens a new tab}
-OpenAI planning default · {reasoning} reasoning
+{resolved origin} planning preference · {reasoning} reasoning
 
 Used for planning and planning retries. I’ll ask again before Build.
 
@@ -25,7 +30,7 @@ Build “{feature title}”
 
 Model: {friendly label} (`{model id}`)
 Launch: {exact launch consequence}
-OpenAI build default · can edit the workspace
+{resolved origin} Build preference · {reasoning} reasoning · can edit the workspace
 Used for implementation and fixes returned from review.
 Pace: standard (default while you do other work). Add `fast` when you are waiting; supported Codex routes provide 1.5× generation speed with increased usage.
 
@@ -45,7 +50,7 @@ Verify “{feature title}”
 
 Model: {friendly label} (`{model id}`)
 Launch: {exact launch consequence}
-OpenAI verification default · {reasoning} reasoning
+{resolved origin} verification preference · {reasoning} reasoning
 Pace: {standard | fast inherited from the active Build run}
 
 Starts with fresh context. Does not receive the builder’s chat.
@@ -82,7 +87,11 @@ Omit `more` when no additional verified routes exist. If only one route is verif
 
 ## Current-chat conflict
 
-Show the current chat and OpenAI default together. Plan offers `plan here`, `plan with openai`, `openai defaults`, and `models`. Build offers `current`, `openai`, `models`, and `not now`, then returns to the build menu. Verify offers `verify here`, `verify with openai`, `models`, and `not now`.
+Show the current chat and effective preference together, with origin. Use the
+normal lane action to accept that preference. Separate `plan with openai`,
+`openai`, or `verify with openai` actions are explicit edition overrides,
+never labels for a custom project's default. Current/here actions retain
+their existing identity and approval requirements. `not now` starts nothing.
 
 Omit the current-chat action when it cannot satisfy identity, permission, or fresh-context requirements.
 

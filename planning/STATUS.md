@@ -1,7 +1,7 @@
 # Planning status
 
-active_features: 0
+active_features: 1
 
 ## Active features
 
-*(none)*
+- **Playbook configuration UI** — `building`; build-all S1–S7 approved, S1 built and awaiting fresh independent verification. S8 live qualification remains human-owned. [Execution status](playbook-config-ui/execution.md), [approved breakdown](playbook-config-ui/slices.md).

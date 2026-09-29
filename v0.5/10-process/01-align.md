@@ -20,7 +20,7 @@ Skip if the change is a one-line typo, comment, or formatting fix.
 
 Three skills, layered. Use the smallest set that settles the question.
 
-Before the first planning skill starts, use the Plan gate in [`../93-model-routing-track.md`](../93-model-routing-track.md). The normal `plan` reply accepts GPT-5.6 Sol; `models` opens verified alternatives; `openai defaults` applies GPT-5.6 Sol/high → GPT-6 Sol/medium → GPT-6 Sol/high to this feature. A pre-feature choice creates only a pending route, not a feature folder or alignment counter.
+Before the first planning skill starts, use the Plan gate in [`../93-model-routing-track.md`](../93-model-routing-track.md). The normal `plan` reply accepts the resolved project/feature preference and shows its origin (edition fallback: GPT-6.1 Sol/high); `models` opens verified alternatives; `openai defaults` applies GPT-6.1 Sol/high → GPT-6.1 Sol/medium → GPT-6.1 Sol/high to this feature only. A pre-feature choice creates only a pending route, not a feature folder or alignment counter.
 
 ### Option A — settled-product project, code-level change
 

@@ -101,9 +101,15 @@ Empty-state rule: a `STATUS.md` saying "0 active features" is an answer, not an 
 - [handoff] Every terminal stage/skill returns `playbook_result` with `outcome`, machine-readable `next_stage`, and ordered `required_actions`; recompute status after state writes and consume required closeout before unrelated work.
 - [evidence] Every routed worker result includes authoritative model, effort, thread, runner, permission, tool-use, and wall-time metadata. Reject route mismatches automatically; never infer missing identity from generated prose.
 - [handoff] A session/host/worker handoff uses the bounded `10-process/pickup-brief.md` reference: maximum-five-bullet capsule, per-thread status, failed/reverted evidence, and exactly one next action. It uses portable locators, flags Mac-only or inaccessible proof, and leaves mission re-entry and fresh review rules authoritative.
-- [prompt] At Plan, Build, and Verify boundaries, use the text-only model prompt in `93-model-routing-track.md`: normal lane action accepts the OpenAI default, `models` exposes only verified alternatives, `openai defaults` is feature-scoped, and every route states current tab, sidecar, or Conductor new-tab consequences. Never substitute an unavailable or identity-mismatched model.
+- [prompt] At Plan, Build, and Verify boundaries, use the text-only model prompt in `93-model-routing-track.md`: normal lane action accepts the effective project/feature preference with origin, `models` exposes only verified alternatives, `openai defaults` is a feature-scoped edition override, and every route states current tab, sidecar, or Conductor new-tab consequences. Never substitute an unavailable or identity-mismatched model.
 
 ## Escape hatches (full documents)
+
+Project Build defaults: user-invoked `/ai-playbook-configure` provides typed
+read/edit/preview/Apply without launching. Existing model-router resolves new
+choices through `scripts/configure-playbook.py`: feature > adopted project >
+legacy project > edition. Malformed adoption blocks; active/approved records
+remain unchanged. See `scripts/playbook-config.md` for the shared boundary.
 
 ```
 help{need,open}:

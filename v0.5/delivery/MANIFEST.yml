@@ -1,7 +1,7 @@
 {
   "files": [
     {
-      "digest": "sha256:0028d6a55b93729c563fffcd4c7c1a67de149638cf282a8a28c6ce00999419c6",
+      "digest": "sha256:4796243e5bbc8c60054aba8096d43eecfb68240df8015c646996d8d18a3c8852",
       "install_path": null,
       "source": "README.md"
     },
@@ -601,7 +601,7 @@
       "source": "src/delivery_pilot/interim_advance.py"
     },
     {
-      "digest": "sha256:2b548323f77ebdfbd4753092155c8f58132f8d3ecfa5076a24dafcab6aa99982",
+      "digest": "sha256:e559b68c92fd5e22aeb1802b1237ab7d77d3c4c4d915fc5ae8f36ef406a6569c",
       "install_path": "runtime/delivery_pilot/interim_conductor_host.py",
       "source": "src/delivery_pilot/interim_conductor_host.py"
     },
@@ -656,7 +656,7 @@
       "source": "src/delivery_pilot/interim_repair_coordinator.py"
     },
     {
-      "digest": "sha256:fc4995003abdcbc2c2f0e373307317e4b9a0c86fab43484915da838f80124f01",
+      "digest": "sha256:e1f5c2a1479b29b6dc027e05a0a04c50539dc1640367b6e0559658d2586ab82c",
       "install_path": "runtime/delivery_pilot/interim_routes.py",
       "source": "src/delivery_pilot/interim_routes.py"
     },
@@ -736,12 +736,12 @@
       "source": "tests/test_interim.py"
     },
     {
-      "digest": "sha256:cad8a2aa16d39f5995781e90520af4965b1b09864278220c214bdd7593981eb4",
+      "digest": "sha256:af35886158b9546ec9060ed34539f421347f4b30e99600c484aae4fb1c8a38e5",
       "install_path": null,
       "source": "tests/test_interim_advance.py"
     },
     {
-      "digest": "sha256:b7a905b0a1c481e6bb7ce9085cfea0cae2d60a14608aba9a83394566f57db2c4",
+      "digest": "sha256:4ab00826892f493cd918e394d5dd050ffb19af6e1875592de40fbbee82a74e36",
       "install_path": null,
       "source": "tests/test_interim_conductor_host.py"
     },
@@ -788,5 +788,5 @@
   ],
   "manifest_schema_version": 1,
   "manifest_self_rule": "pack_digest covers the complete non-manifest source inventory",
-  "pack_digest": "sha256:f6074ab716f6f801c825a63f4ee60768dacf9f7c8112717478d19d5d58cf1307"
+  "pack_digest": "sha256:8e351586761b18c4991685dfe478cb61fc60d47de9b295d9b88cd122a3373228"
 }

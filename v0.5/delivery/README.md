@@ -272,7 +272,7 @@ route and fresh idle context, while the terminal worker result separately
 attests executed tools and runtime. The public session schema does not expose
 provider execution metadata or agent identity for independent pre-send proof.
 
-Every escalated candidate receives a fresh GPT-6 Sol/high Verify of the exact
+Every escalated candidate receives a fresh GPT-6.1 Sol/high Verify of the exact
 SHA. Its brief carries the bounded task, candidate and artifact locator, not
 the Astra reasoning transcript. A failing verdict retains progress and closes
 the slot. An unusable Verify remains unaccepted until its exact worker is

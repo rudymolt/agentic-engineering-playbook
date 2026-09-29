@@ -17,6 +17,16 @@ Map stages 01–06 to **Plan**, stage 07 and fix cycles to **Build**, and stages
 
 Completion criterion: one lane, one human title, and any prior selection or retry policy are known.
 
+Before a **new** lane choice, resolve preferences through
+`python3 {playbook-path}/v0.5/scripts/configure-playbook.py --project {project-path} resolve`,
+passing JSON on stdin with `role` (`planning`, `implementation`, `verification`
+or `escalated_repair`) and an optional normalized approved `feature_choice`.
+Use explicit feature > adopted project > legacy project > edition precedence
+and show the returned origin. Malformed adoption blocks instead of falling
+back. Retried/active routes and immutable mission approvals retain selected
+identities. Read `{playbook-path}/v0.5/scripts/playbook-config.md` through the
+installed playbook locator; copied skills do not own a second scripts tree.
+
 ### Step 2 — Discover verified routes
 
 Enumerate the current host catalog, provider catalog, CLI listing, or previously validated route. Normalize each result to model ID, label, provider, runner, reasoning, launch mode, permission strength, handoff delivery, and fast-mode capability. Detect the current chat route when metadata is available.
@@ -29,9 +39,9 @@ Completion criterion: every displayed route is live and has one exact launch con
 
 ### Step 3 — Render the stage prompt
 
-Use the lane prompt in `references/chat-prompts.md`. Show the OpenAI lane default in the normal prompt. Put alternatives behind `models`, with at most three verified routes plus `more`. Use numbered choices starting at 1.
+Use the lane prompt in `references/chat-prompts.md`. Show the resolved preference and its origin; the OpenAI edition seed applies only when no higher-precedence choice exists. Put alternatives behind `models`, with at most three verified routes plus `more`. Use numbered choices starting at 1.
 
-At Plan, accept `openai defaults` to record GPT-5.6 Sol/high → GPT-6 Sol/medium → GPT-6 Sol/high for this feature. It starts Plan, but later Build and Verify action gates remain explicit. At Build, accept `fast` as a suffix on the build scope (for example `build all fast`); it changes pace for this Build → returned-fix → fresh-Verify run only, not model, reasoning, tests, permissions, or gates. When the current chat route differs in any user-relevant identity field, use the conflict prompt and persist it only after `plan here`, `current`, or `verify here`.
+At Plan, accept `openai defaults` to record GPT-6.1 Sol/high → GPT-6.1 Sol/medium → GPT-6.1 Sol/high for this feature. It starts Plan, but later Build and Verify action gates remain explicit. At Build, accept `fast` as a suffix on the build scope (for example `build all fast`); it changes pace for this Build → returned-fix → fresh-Verify run only, not model, reasoning, tests, permissions, or gates. When the current chat route differs in any user-relevant identity field, use the conflict prompt and persist it only after `plan here`, `current`, or `verify here`.
 
 Completion criterion: the prompt works in a text-only chat, uses no more than four options, and says what starts now, what starts nothing, and how the selected route launches.
 
