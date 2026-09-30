@@ -9,6 +9,7 @@ import json
 import os
 from pathlib import Path
 import re
+import stat
 import tempfile
 import uuid
 from typing import Callable
@@ -199,34 +200,103 @@ class Configuration:
         self.context = deepcopy(context)
         self.preferences = None
         self._write_stores = (self,)
+        self._directory_fd = None
         if preferences_dir is not None:
             local = Path(preferences_dir)
             if local.resolve().is_relative_to(self.project.resolve()):
                 raise ConfigError("Personal preferences require a user-local directory outside the project; preview it explicitly.")
             self.preferences = LocalPreferences(local, discover, self.clock, self.checkpoint)
             self.preferences.state_path = self.state_path
+            self.preferences.owner_project = self.project
             self._write_stores = (self, self.preferences)
             self.preferences._write_stores = self._write_stores
 
     def _guard_write(self, active=False):
         for store in self._write_stores:
+            store._check_directory()
             if active and store is self:
                 continue
-            if store.lock.exists() or store.recovery.exists():
+            if store._exists(store.lock) or store._exists(store.recovery):
                 if active:
                     raise RecoveryRequired("Paired configuration transaction/recovery pending; reconcile its retained evidence.")
                 if store.destination == DESTINATION:
                     raise ConfigError("Configuration transaction/recovery pending; reconcile before reading or writing defaults.")
                 raise RecoveryRequired("Local preferences transaction/recovery pending; reconcile its retained evidence.")
             store._reconcile_receipts()
+            store._check_directory()
 
     def _validate_candidate(self, candidate):
         return validate_config(candidate)
 
+    def _check_directory(self):
+        pass
+
+    def _filename(self, path):
+        if self._directory_fd is None:
+            return path
+        return path.name if path.parent == self.project else path.absolute()
+
+    def _open(self, path, mode):
+        if self._directory_fd is None or path.parent != self.project:
+            return path.open(mode)
+        return open(path, mode, opener=lambda name, flags: os.open(
+            path.name, flags | os.O_NOFOLLOW, 0o600, dir_fd=self._directory_fd))
+
+    def _stat(self, path):
+        return os.stat(self._filename(path), dir_fd=self._directory_fd, follow_symlinks=False)
+
+    def _exists(self, path):
+        if self._directory_fd is None:
+            return path.exists()
+        try:
+            self._stat(path)
+            return True
+        except FileNotFoundError:
+            return False
+
+    def _unlink(self, path, missing_ok=False):
+        if self._directory_fd is None:
+            return path.unlink(missing_ok=missing_ok)
+        try:
+            os.unlink(self._filename(path), dir_fd=self._directory_fd)
+        except FileNotFoundError:
+            if not missing_ok:
+                raise
+
+    def _mkdir(self, path, exist_ok=False):
+        if self._directory_fd is None:
+            return path.mkdir(exist_ok=exist_ok)
+        try:
+            os.mkdir(self._filename(path), dir_fd=self._directory_fd)
+        except FileExistsError:
+            if not exist_ok or not stat.S_ISDIR(self._stat(path).st_mode):
+                raise
+
+    def _link(self, source, destination):
+        if self._directory_fd is None:
+            return os.link(source, destination)
+        os.link(self._filename(source), self._filename(destination),
+                src_dir_fd=self._directory_fd, dst_dir_fd=self._directory_fd)
+
+    def _replace(self, source, destination):
+        if self._directory_fd is None:
+            return os.replace(source, destination)
+        os.replace(self._filename(source), self._filename(destination),
+                   src_dir_fd=self._directory_fd, dst_dir_fd=self._directory_fd)
+
     def _bytes(self, path):
-        if path.is_symlink():
+        if self._directory_fd is None:
+            if path.is_symlink():
+                raise ConfigError(f"{path.name} is a symlink; reconcile the destination before editing.")
+            return path.read_bytes() if path.exists() else None
+        if not self._exists(path):
+            if path.is_symlink():
+                raise ConfigError(f"{path.name} is a symlink; reconcile the destination before editing.")
+            return None
+        if stat.S_ISLNK(self._stat(path).st_mode):
             raise ConfigError(f"{path.name} is a symlink; reconcile the destination before editing.")
-        return path.read_bytes() if path.exists() else None
+        with self._open(path, "rb") as stream:
+            return stream.read()
 
     def _snapshot(self):
         if self.lock.exists() or self.recovery.exists():
@@ -253,10 +323,10 @@ class Configuration:
 
     def _receipt_conflicts(self, receipt, marker, completing=False):
         seal = receipt.with_name(receipt.name + ".complete")
-        if receipt.with_name(receipt.name + ".conflict").exists():
+        if self._exists(receipt.with_name(receipt.name + ".conflict")):
             raise RecoveryRequired(f"Unresolved configuration completion conflict in {receipt.name}; reconcile retained evidence.")
         if not completing and marker.get("completion_protocol") in (2, 3):
-            if not seal.is_dir() or seal.is_symlink():
+            if not self._exists(seal) or not stat.S_ISDIR(self._stat(seal).st_mode):
                 raise RecoveryRequired(f"Unfinished configuration receipt {receipt.name}; reconcile retained files before continuing.")
             if marker["completion_protocol"] == 3:
                 return
@@ -281,7 +351,10 @@ class Configuration:
             self._guard_write(active=True)
 
     def _reconcile_receipts(self):
-        for receipt in self.project.glob(".playbook-config-*.receipt"):
+        receipts = self.project.glob(".playbook-config-*.receipt") if self._directory_fd is None else (
+            self.project / name for name in os.listdir(self._directory_fd)
+            if name.startswith(".playbook-config-") and name.endswith(".receipt"))
+        for receipt in receipts:
             try:
                 marker = strict_json(self._bytes(receipt).decode())
                 if marker.get("destination") != self.destination or marker.get("completion_protocol") not in (None, 2, 3):
@@ -375,7 +448,27 @@ class Configuration:
         if self.preferences is None:
             return None
         before, inputs = self.preferences.snapshot()
-        return {"destination": str(self.preferences.path), "before": before, "after": deepcopy(before), "inputs": inputs}
+        resolved = Path(inputs["directories"]["personal"]["resolved"]) / self.preferences.destination
+        return {"destination": str(self.preferences.path), "resolved_destination": str(resolved),
+                "before": before, "after": deepcopy(before), "inputs": inputs}
+
+    def _refresh_personal_destination(self, draft):
+        if self.preferences is None or draft.get("personal") is None:
+            return False
+        try:
+            self._guard_write()
+            current = self._personal_snapshot()
+        except (ConfigError, OSError):
+            return False
+        previous = draft["personal"]
+        content = lambda inputs: {key: value for key, value in inputs.items() if key != "directories"}
+        if (current["destination"] == previous["destination"] and current["before"] == previous["before"]
+                and content(current["inputs"]) == content(previous["inputs"])
+                and current["inputs"] != previous["inputs"]):
+            current["after"] = previous["after"]
+            draft["personal"] = current
+            return True
+        return False
 
     def _present(self, proposal):
         context = proposal["context"]
@@ -399,11 +492,12 @@ class Configuration:
                                       "before": deepcopy(proposal["before"][role]), "after": deepcopy(proposal["after"][role]),
                                       "reason": "Retained starting choice or explicit edit, not a recommendation. Task-fit and cost evidence unavailable until S6."} for role in ROLES]
         proposal["choices"] = self._proposal_choices() + list(proposal["questions"].values())
-        if self.preferences is not None:
+        if personal is not None:
             proposal["choices"] += ["Guided", "Expert"]
         proposal["launched"] = False
 
-    def _revision(self, proposal):
+    @staticmethod
+    def _revision(proposal):
         return digest(encoded({key: value for key, value in proposal.items() if key != "proposal_revision"}))
 
     def _seal(self, proposal):
@@ -418,14 +512,18 @@ class Configuration:
             result = self._reply(proposal, text)
         except (ConfigError, OSError, UnicodeError, KeyError, TypeError, AttributeError) as error:
             result = self._blocked(error)
+        return self.retain_proposal(result, proposal)
+
+    @staticmethod
+    def retain_proposal(result, proposal):
         retained = proposal
         if isinstance(proposal, dict) and proposal.get("state") in {"blocked", "recovery_required"}:
             retained = proposal.get("retained_proposal")
         if (result.get("state") in {"blocked", "recovery_required"} and isinstance(retained, dict)
                 and retained.get("state") in {"decision_required", "proposal_ready"}
-                and retained.get("proposal_revision") == self._revision(retained)):
+                and retained.get("proposal_revision") == Configuration._revision(retained)):
             result["retained_proposal"] = deepcopy(retained)
-            result["choices"].append("Back")
+            result.setdefault("choices", ["Reload", "Not now"]).append("Back")
         return result
 
     def _reply(self, proposal, text):
@@ -440,7 +538,12 @@ class Configuration:
                 and (reply == "back" or reply == "edit" or reply.startswith("edit "))):
             retained = proposal["retained_proposal"]
             if retained.get("proposal_revision") == self._revision(retained):
-                return deepcopy(retained) if reply == "back" else self._reply(retained, text)
+                if reply != "back":
+                    return self._reply(retained, text)
+                restored = deepcopy(retained)
+                if self._refresh_personal_destination(restored):
+                    restored["message"] = "Directory identity changed; review the resolved personal destination. Role drafts are retained."
+                return self._seal(restored)
             return self._blocked("Retained draft changed; reload and review it.")
         if reply == "edit build" and proposal.get("state") == "blocked":
             refreshed = self.read()
@@ -468,8 +571,11 @@ class Configuration:
             if draft["personal"] is None:
                 return self._blocked("Supply an explicit user-local preferences directory before changing presentation.")
             draft["personal"]["after"] = {"schema_version": 1, "presentation": reply}
+            changed_directory = self._refresh_personal_destination(draft)
             draft.update(step="preference_preview", choices=["Apply preference", "Back", "Not now"],
                          message="Only local presentation will be saved to the displayed personal destination. Project drafts remain unsaved; no launch.")
+            if changed_directory:
+                draft["message"] += " Directory identity changed; review the resolved personal destination before Apply preference."
             draft["proposal_revision"] = self._revision(draft)
             return draft
         if reply == "apply preference" and draft.get("step") == "preference_preview":
@@ -554,12 +660,16 @@ class Configuration:
         return self._preview(draft)
 
     def _preview(self, draft):
+        changed_directory = self._refresh_personal_destination(draft)
         draft.update(step="preview", state="proposal_ready")
         self._present(draft)
+        if changed_directory:
+            draft["message"] = "Directory identity changed; review the resolved personal destination. Role drafts are retained."
         draft["proposal_revision"] = self._revision(draft)
         return draft
 
     def _apply_preference(self, draft):
+        saved = False
         try:
             self._guard_write()
             if self.preferences is None or draft["personal"]["destination"] != str(self.preferences.path):
@@ -570,10 +680,13 @@ class Configuration:
             self.preferences._validate_candidate(draft["personal"]["after"])
             if before != draft["personal"]["after"]:
                 self.preferences._save(draft["personal"]["after"], inputs, draft["discovery"], create_directory=True)
+                saved = True
             draft["personal"] = self._personal_snapshot()
             draft["message"] = "Local presentation saved and validated. Project draft remains unsaved; no model launches."
             return self._preview(draft)
         except (ConfigError, OSError, UnicodeError, KeyError, TypeError) as error:
+            if saved:
+                error = ConfigError(f"Personal save completed at {draft['personal']['resolved_destination']}, but its destination could not be revalidated ({error}). Inspect that location before retrying; the project draft remains unsaved.")
             return self._blocked(error)
 
     def apply(self, proposal):
@@ -605,7 +718,13 @@ class Configuration:
                 raise ConfigError("Discovery changed since preview; reload and review current available choices.")
             if not proposal["migration"] and candidate == config:
                 return {"state": "unchanged", "destination": DESTINATION, "message": "Already adopted; no write needed.", "launched": False}
-            self._save(candidate, inputs, evidence)
+            if self.preferences is not None:
+                self.preferences._expected_directory = proposal["personal"]["inputs"]["directories"]
+            try:
+                self._save(candidate, inputs, evidence)
+            finally:
+                if self.preferences is not None:
+                    self.preferences._expected_directory = None
             return {"state": "applied", "destination": DESTINATION, "message": "Project defaults saved and validated. Runtime records unchanged. No build starts.", "launched": False}
         except (ConfigError, OSError, UnicodeError, KeyError, TypeError) as error:
             return self._blocked(error)
@@ -614,7 +733,7 @@ class Configuration:
         self._guard_write()
         if create_directory:
             self.project.mkdir(parents=True, exist_ok=True, mode=0o700)
-        with self.lock.open("x"):
+        with self._open(self.lock, "x"):
             pass
         staged = None
         publication = None
@@ -639,7 +758,7 @@ class Configuration:
             publication = self._stage(candidate_bytes)
             self.checkpoint("staged")
             self._guard_write(active=True)
-            self._validate_candidate(strict_json(staged.read_text()))
+            self._validate_candidate(strict_json(self._bytes(staged).decode()))
             self.checkpoint("before_replace")
             self._guard_write(active=True)
             self._check_inputs(inputs)
@@ -653,7 +772,7 @@ class Configuration:
                       "published": publication.name,
                       "previous_digest": inputs[self.destination],
                       "runtime_digest": inputs[".playbook-state.yml"], "completion_protocol": 3}
-            with self.recovery.open("x") as stream:
+            with self._open(self.recovery, "x") as stream:
                 stream.write(encoded(marker).decode())
                 stream.flush()
                 os.fsync(stream.fileno())
@@ -661,7 +780,7 @@ class Configuration:
             self._sync_directory()
             self._guard_write(active=True)
             if backup is not None:
-                os.replace(self.path, captured_path)
+                self._replace(self.path, captured_path)
                 captured = True
                 self._sync_directory()
                 if digest(self._bytes(captured_path)) != inputs[self.destination]:
@@ -669,7 +788,7 @@ class Configuration:
             self.checkpoint("before_publish")
             self._guard_write(active=True)
             try:
-                os.link(publication, self.path)
+                self._link(publication, self.path)
             except FileExistsError as error:
                 raise ConfigError("Destination changed during publication; external file retained, reload or reconcile recovery.") from error
             committed = True
@@ -685,27 +804,27 @@ class Configuration:
                 raise ConfigError("Captured configuration changed during Apply; retained bytes require reconciliation.")
             self._sync_directory()
             receipt = self.project / (staged.name + ".receipt")
-            os.replace(self.recovery, receipt)
+            self._replace(self.recovery, receipt)
             journaled = False
             self._sync_directory()
             self.checkpoint("before_completion")
             self._guard_write(active=True)
             self._receipt_conflicts(receipt, marker, completing=True)
             seal = receipt.with_name(receipt.name + ".complete")
-            seal.mkdir()
+            self._mkdir(seal)
             completed = True
         except (OSError, ConfigError, UnicodeError) as error:
             if committed or captured:
                 recover = True
-                if receipt is not None and receipt.exists():
+                if receipt is not None and self._exists(receipt):
                     try:
-                        receipt.with_name(receipt.name + ".conflict").mkdir(exist_ok=True)
+                        self._mkdir(receipt.with_name(receipt.name + ".conflict"), exist_ok=True)
                         self._sync_directory()
                     except OSError:
                         pass
-                if not self.recovery.exists() and receipt is not None:
+                if not self._exists(self.recovery) and receipt is not None:
                     try:
-                        os.link(receipt, self.recovery)
+                        self._link(receipt, self.recovery)
                     except OSError:
                         pass
                 try:
@@ -713,7 +832,7 @@ class Configuration:
                     self._bytes(self.path)
                     if not committed and captured_path is not None:
                         try:
-                            os.link(captured_path, self.path)
+                            self._link(captured_path, self.path)
                         except FileExistsError:
                             pass
                     self._sync_directory()
@@ -721,20 +840,20 @@ class Configuration:
                     pass
                 raise RecoveryRequired(f"Save incomplete ({error}); no destructive rollback attempted. Reconcile {self.recovery.name} and retained files before continuing.") from error
             if journaled:
-                self.recovery.unlink()
+                self._unlink(self.recovery)
                 self._sync_directory()
             raise
         finally:
             if publication is not None and not committed and not recover:
-                publication.unlink(missing_ok=True)
+                self._unlink(publication, missing_ok=True)
             if staged is not None and not recover and not completed:
-                staged.unlink(missing_ok=True)
+                self._unlink(staged, missing_ok=True)
             if backup is not None and not captured and not recover:
-                backup.unlink(missing_ok=True)
+                self._unlink(backup, missing_ok=True)
             if captured_path is not None and not captured and not recover:
-                captured_path.unlink(missing_ok=True)
+                self._unlink(captured_path, missing_ok=True)
             if not recover:
-                self.lock.unlink()
+                self._unlink(self.lock)
 
     def _check_inputs(self, inputs):
         if digest(self._bytes(self.path)) != inputs[self.destination] or digest(self._bytes(self.state_path)) != inputs[".playbook-state.yml"]:
@@ -743,18 +862,27 @@ class Configuration:
     def _stage(self, data):
         staged = None
         try:
-            with tempfile.NamedTemporaryFile(dir=self.project, prefix=".playbook-config-", delete=False) as stream:
+            if self._directory_fd is None:
+                stream = tempfile.NamedTemporaryFile(dir=self.project, prefix=".playbook-config-", delete=False)
                 staged = Path(stream.name)
+            else:
+                destination = self.project / (".playbook-config-" + uuid.uuid4().hex)
+                stream = self._open(destination, "xb")
+                staged = destination
+            with stream:
                 stream.write(data)
                 stream.flush()
                 os.fsync(stream.fileno())
             return staged
         except OSError:
             if staged is not None:
-                staged.unlink(missing_ok=True)
+                self._unlink(staged, missing_ok=True)
             raise
 
     def _sync_directory(self):
+        if self._directory_fd is not None:
+            os.fsync(self._directory_fd)
+            return
         descriptor = os.open(self.project, os.O_RDONLY)
         try:
             os.fsync(descriptor)
@@ -767,6 +895,61 @@ class LocalPreferences(Configuration):
         super().__init__(directory, discover, clock, checkpoint)
         self.destination = "preferences.json"
         self.path = self.project / self.destination
+        self.owner_project = None
+        self._expected_directory = None
+
+    def _directory_identity(self, path):
+        resolved = path.resolve()
+        anchor = resolved
+        while not anchor.exists():
+            anchor = anchor.parent
+        info = anchor.stat()
+        if not stat.S_ISDIR(info.st_mode):
+            raise ConfigError("Personal storage requires a directory; reconcile its destination.")
+        return {"resolved": str(resolved), "anchor": str(anchor), "device": info.st_dev, "inode": info.st_ino}
+
+    def _directory_inputs(self):
+        local = self._directory_identity(self.project)
+        project = self._directory_identity(self.owner_project)
+        if Path(local["resolved"]).is_relative_to(Path(project["resolved"])):
+            raise ConfigError("Personal preferences require a user-local directory outside the project; reload and preview it explicitly.")
+        return {"personal": local, "project": project}
+
+    def _check_directory(self):
+        current = self._directory_inputs()
+        if self._expected_directory is not None and current != self._expected_directory:
+            raise ConfigError("Personal or project directory changed since preview; reload and review the destination.")
+
+    def _save(self, candidate, inputs, evidence, create_directory=False):
+        self._guard_write()
+        expected = inputs.get("directories")
+        if self._directory_inputs() != expected:
+            raise ConfigError("Personal or project directory changed since preview; reload and review the destination.")
+        local = expected["personal"]
+        anchor = Path(local["anchor"])
+        descriptor = os.open(anchor, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+        try:
+            info = os.fstat(descriptor)
+            if (info.st_dev, info.st_ino) != (local["device"], local["inode"]) or self._directory_inputs() != expected:
+                raise ConfigError("Personal directory changed while opening storage; reload and preview it again.")
+            for name in Path(local["resolved"]).relative_to(anchor).parts:
+                os.mkdir(name, mode=0o700, dir_fd=descriptor)
+                child = os.open(name, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=descriptor)
+                os.close(descriptor)
+                descriptor = child
+            info = os.fstat(descriptor)
+            self._expected_directory = deepcopy(expected)
+            self._expected_directory["personal"].update(anchor=local["resolved"], device=info.st_dev, inode=info.st_ino)
+            self._directory_fd = descriptor
+            self._check_directory()
+            super()._save(candidate, inputs, evidence)
+        except (ConfigError, OSError) as error:
+            error_type = RecoveryRequired if isinstance(error, RecoveryRequired) else ConfigError
+            raise error_type(f"{error} Reviewed personal storage: {local['resolved']}; inspect retained files there before retrying.") from error
+        finally:
+            self._directory_fd = None
+            self._expected_directory = None
+            os.close(descriptor)
 
     def _validate_candidate(self, candidate):
         if (not isinstance(candidate, dict) or set(candidate) != {"schema_version", "presentation"}
@@ -776,6 +959,7 @@ class LocalPreferences(Configuration):
         return candidate
 
     def snapshot(self):
+        directories = self._directory_inputs()
         if self.lock.exists() or self.recovery.exists():
             raise RecoveryRequired("Local preferences transaction/recovery pending; reconcile its retained evidence.")
         self._reconcile_receipts()
@@ -785,4 +969,6 @@ class LocalPreferences(Configuration):
         if self.lock.exists() or self.recovery.exists():
             raise RecoveryRequired("Local preferences changed during read; reconcile recovery.")
         self._reconcile_receipts()
-        return candidate, {self.destination: digest(saved), ".playbook-state.yml": digest(runtime)}
+        if self._directory_inputs() != directories:
+            raise ConfigError("Personal or project directory changed during preview; reload and review its destination.")
+        return candidate, {self.destination: digest(saved), ".playbook-state.yml": digest(runtime), "directories": directories}

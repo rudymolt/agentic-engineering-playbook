@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Bind personal preference previews to the resolved local and project directory identities. Use descriptor-relative personal writes and recovery bookkeeping so retargeted aliases cannot redirect transaction files into the project; preserve drafts and require a new destination preview after a directory change.
+
+*Why — preserve personal storage isolation:* a one-time directory check allowed a long-lived Configure service to publish personal settings inside a project after an alias changed. Rechecking identity and anchoring storage operations closes that alias race while preserving the existing content completion and paired recovery protocol. External relocation of the opened directory itself still requires filesystem coordination.
+
 - Check paired recovery after the final configuration content-digest comparisons before sealing success. Keep the single content completion point, retained recovery evidence and Back/Edit drafts; cover final-check entry and last-read recovery through both public save directions.
 
 *Why — close the final-check gap:* the preceding paired guard could miss recovery arising during the completing receipt check. A final paired veto catches recovery pending at the content completion point without rechecking later content edits or using timestamps.

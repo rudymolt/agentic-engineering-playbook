@@ -84,7 +84,13 @@ saved presentation skips onboarding questions. Omit context for the ordinary
 preference reader; Configure supplies existing context rather than reasking it.
 
 `Guided` / `Expert` produces a personal before/after preview and exact local
-destination. `Apply preference` is an explicit **local-only** transaction,
+destination, including `resolved_destination` behind any directory aliases.
+The preview records both personal and project directory identities (resolved
+paths and device/inode identities, or the nearest existing ancestor for a new
+directory). Apply rejects changed identities even when file bytes match.
+An explicit new preview can refresh a reconciled directory identity while
+retaining role drafts; it displays the changed destination before another Apply.
+`Apply preference` is an explicit **local-only** transaction,
 then returns to the complete unsaved project draft. Project `Apply` is separate;
 there is no multi-destination success claim. Presentation alters rendering only,
 not choices, validation or project settings. `Not now` cancels pending changes;
@@ -98,6 +104,26 @@ content-digest completion and non-destructive recovery. Their lock, recovery
 journal and `.playbook-config-*` evidence live beside the local destination,
 never in shared configuration. Invalid or newer personal schemas block rather
 than dropping unknown fields. Reconciliation remains human-owned.
+
+Personal saves open and verify the reviewed directory, create missing children
+relative to that descriptor, and keep all transaction writes, cleanup and
+directory sync relative to the opened directory. Alias changes cannot redirect
+those operations. Guards recheck both directory identities across save
+checkpoints. A detected change before capture cleans the attempt; after capture
+or publication it retains recovery evidence at the reviewed resolved location.
+A change after the content completion point can leave a completed personal
+save there while the reply blocks on the changed destination; inspect that
+location before retrying. The service never silently follows a new target.
+
+This is not a filesystem lock against external directory relocation. Another
+process with permission to rename the opened directory or its ancestors can
+move its existing contents and subsequent descriptor-relative writes under a
+project. Repointing the project root can also reclassify existing personal
+files. Identity checks detect observed changes but cannot make ancestry tests
+atomic with writes or prevent changes after observation. Keep these directories
+stationary during Apply; an absolute guarantee against such relocation requires
+filesystem permission isolation or coordination with every directory mover.
+Unsupported descriptor-relative storage operations block the save.
 
 Both save directions recheck the paired store's locks, recovery journals and
 unfinished/conflicting receipts during staging, after discovery, before capture

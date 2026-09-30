@@ -178,8 +178,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "d32f7335c362d716c59abfec1776e08ed8aa26267c1998cbed39d03ec50f4f4d",
-      "size": 7479
+      "sha256": "8159bfdcd9441b92efd62462ef4d3971cd1d3f67425ace2eafc0dc64ab9089f3",
+      "size": 8221
     },
     {
       "path": "MAINTENANCE.md",
@@ -1068,8 +1068,8 @@
     },
     {
       "path": "scripts/configure-playbook.py",
-      "sha256": "264208a93b68c738b4a8ffed562acfa81590b03e3b35f9b9c1b5ffed2099834b",
-      "size": 2862
+      "sha256": "a471c02925a8dec9ef8ac919dacb382d05957ecec08f1163a9c0d2bffe14007c",
+      "size": 3442
     },
     {
       "path": "scripts/convention_checks.py",
@@ -1118,13 +1118,13 @@
     },
     {
       "path": "scripts/playbook-config.md",
-      "sha256": "f0de903bf32df0b7e3f51efb2a18638d335942d97ead1fe09aa5d7e0cc4e0441",
-      "size": 15158
+      "sha256": "e5fede5cdfbba1742011e1289a8450abfad5b6101828b9bfb7bea7112bcc371d",
+      "size": 16979
     },
     {
       "path": "scripts/playbook_config.py",
-      "sha256": "4311b310284edf73eb3a93ec9a8e97f3206d6c7d9894797739fb5f476663e5d8",
-      "size": 45121
+      "sha256": "d27aedd144b5a25bf351a60357eaea34fd108419f82e4f1d323778338d909c85",
+      "size": 54468
     },
     {
       "path": "scripts/playbook_state.py",
@@ -1205,6 +1205,11 @@
       "path": "scripts/test_playbook_config.py",
       "sha256": "3478d2cb572771b81d4882b53832201f87dd4de53b32d778f1569cb25eedd00f",
       "size": 42709
+    },
+    {
+      "path": "scripts/test_playbook_config_directory.py",
+      "sha256": "c37e08e473a91f60a794d5413e727a05498e5d8959e77634e92bbf7032bc86c5",
+      "size": 16175
     },
     {
       "path": "scripts/test_playbook_config_roles.py",
@@ -1338,8 +1343,8 @@
     },
     {
       "path": "skills/ai-playbook-configure/SKILL.md",
-      "sha256": "782a3c6b92b4ab0e7a437f9a57d2c288c3e43382b58a8902acc18fbdf034d645",
-      "size": 6695
+      "sha256": "3b518a15b0900b0ca2193d1df7ea17ccaa21da526f8ebd423f02dceacc8fee05",
+      "size": 6895
     },
     {
       "path": "skills/ai-playbook-configure/agents/openai.yaml",

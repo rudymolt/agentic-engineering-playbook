@@ -34,12 +34,22 @@ def main():
         return strict_json(result.stdout)
 
     clock = (lambda: args.now) if args.now else None
+    request = None
     try:
         request = strict_json(sys.stdin.read() or "{}")
         if not isinstance(request, dict):
             raise ConfigError("Request must be a JSON object; use the documented helper contract.")
-        service = Configuration(args.project, discover, clock, preferences_dir=args.preferences_dir,
-                                context=request.get("context"))
+        try:
+            service = Configuration(args.project, discover, clock, preferences_dir=args.preferences_dir,
+                                    context=request.get("context"))
+        except ConfigError:
+            reply = request.get("reply", "")
+            if args.action != "reply" or not isinstance(reply, str):
+                raise
+            reply = reply.strip().lower()
+            if reply not in {"back", "edit", "not now"} and not reply.startswith("edit "):
+                raise
+            service = Configuration(args.project, discover, clock, context=request.get("context"))
         if args.action == "read":
             result = service.read()
         elif args.action == "reply":
@@ -48,6 +58,8 @@ def main():
             result = service.resolve(request["role"], request.get("feature_choice"))
     except (ConfigError, OSError, KeyError, TypeError, AttributeError, UnicodeError) as error:
         result = {"state": "recovery_required" if isinstance(error, RecoveryRequired) else "blocked", "message": str(error), "launched": False}
+        if isinstance(request, dict):
+            result = Configuration.retain_proposal(result, request.get("proposal"))
     print(json.dumps(result, sort_keys=True, indent=2))
     return 2 if result.get("state") in {"blocked", "recovery_required"} else 0
 

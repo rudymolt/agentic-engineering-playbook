@@ -75,7 +75,10 @@ This skill never launches a model or edits runtime state.
    the retained draft, never implicitly reload and discard other edits.
    Reload intentionally discards unsaved draft changes.
    `Guided` / `Expert` show a separate local preference before/after preview
-   with its exact destination. Only `Apply preference` saves it using the same
+   with its exact destination and `resolved_destination` behind directory
+   aliases. If directory identity changed, show the corrective message and
+   require the new preview before another Apply; retain unrelated role drafts.
+   Only `Apply preference` saves it using the same
    durability/completion/recovery protocol as project defaults; no project
    draft is saved by that action. Return to the complete role proposal afterward.
    `Not now` saves nothing pending; if presentation was explicitly saved earlier,
