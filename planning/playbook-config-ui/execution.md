@@ -16,9 +16,9 @@ Build-all approval on 2026-09-29 supersedes planning snapshots saying build scop
 
 | Slice | Build | Independent verification | Candidate / evidence |
 | --- | --- | --- | --- |
-| S1 | Ordinary repair 3 implemented | Fresh re-verification pending | Repair 2 (`6837bff`) was rejected for S1-V4-01: conflict detection dated content changes by filesystem timestamps, so a metadata-only change could hide a conflict. Approved repair 3 replaces timestamp dating with one content-digest check after durability steps; that check is the completion point, and later edits are ordinary edits. Builder checks: 37 focused and 265 main-script tests on Python 3.11 and 3.12, completion probes, manifests and public-content checks pass; delivery-skipped verifier passes. Two unsuccessful ordinary repairs are retained; full canonical verification remains pending. |
-| S2 | Not started | Pending | Blocked by S1 acceptance |
-| S3 | Not started | Pending | Blocked by S1 acceptance |
+| S1 | Accepted after ordinary repair 3 | Pass (fresh independent Verify, all 10 criteria) | Candidate `9568126` replaces timestamp-dated conflict detection with one content-digest check after durability steps; that check is the completion point. Independent Verify: 37 focused tests and 11 new independent tests pass on Python 3.11 and 3.12; full unskipped canonical verifier passes. Earlier probe expectations that contradict the approved completion point, and a fabricated-discovery-adapter probe outside the documented adapter contract, are recorded in private evidence. Two unsuccessful ordinary repairs retained; no escalation used. |
+| S2 | Build in progress | Pending | Built on accepted S1 `9568126` |
+| S3 | Not started | Pending | Unblocked by S1; queued after S2 (configuration writes are integrated sequentially) |
 | S4 | Not started | Pending | Blocked by S3 acceptance |
 | S5 | Not started | Pending | Blocked by S2 and S3 acceptance |
 | S6 | Not started | Pending | Blocked by S5 acceptance |
@@ -31,4 +31,4 @@ Public evidence contains only redacted commands, outcomes, candidate identifiers
 
 The endpoint is a reviewed feature PR to `main`, accurately describing any remaining qualification. Mark it draft when S8, CI or review gates prevent a ready claim. Complete an independent whole-diff specification/test-gap review and prepare the [S8 walkthrough](host-qualification.md). Do not call this feature shipped or mark S8 live qualification complete based on fixtures or the approved mockup.
 
-Exactly one next action: submit the exact S1 repair-3 candidate to fresh Verify. Do not start S2 before acceptance. Do not start S2 before S1 acceptance.
+Exactly one next action: complete the S2 Build, then submit the exact candidate to fresh Verify.
