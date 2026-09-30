@@ -402,9 +402,9 @@ class Configuration:
         except (ConfigError, OSError, UnicodeError, KeyError, TypeError, AttributeError) as error:
             result = self._blocked(error)
         retained = proposal
-        if isinstance(proposal, dict) and proposal.get("state") == "blocked":
+        if isinstance(proposal, dict) and proposal.get("state") in {"blocked", "recovery_required"}:
             retained = proposal.get("retained_proposal")
-        if (result.get("state") == "blocked" and isinstance(retained, dict)
+        if (result.get("state") in {"blocked", "recovery_required"} and isinstance(retained, dict)
                 and retained.get("state") in {"decision_required", "proposal_ready"}
                 and retained.get("proposal_revision") == self._revision(retained)):
             result["retained_proposal"] = deepcopy(retained)
@@ -419,7 +419,7 @@ class Configuration:
             return {"state": "unchanged", "message": "No pending changes applied. Project defaults, runtime records and presets unchanged; any previously saved local presentation remains saved.", "launched": False}
         if reply == "reload":
             return self.read()
-        if (proposal.get("state") == "blocked" and proposal.get("retained_proposal")
+        if (proposal.get("state") in {"blocked", "recovery_required"} and proposal.get("retained_proposal")
                 and (reply == "back" or reply == "edit" or reply.startswith("edit "))):
             retained = proposal["retained_proposal"]
             if retained.get("proposal_revision") == self._revision(retained):

@@ -303,6 +303,110 @@ class RoleConversationTests(unittest.TestCase):
         self.assertEqual(role_editor["after"], result["after"])
         self.assertEqual(self.service.reply(result, "Apply")["state"], "applied")
 
+    def test_recovery_keeps_all_role_drafts_without_allowing_writes(self):
+        for boundary in ("api", "cli"):
+            for checkpoint in ("committed", "before_completion"):
+                with self.subTest(boundary=boundary, checkpoint=checkpoint), tempfile.TemporaryDirectory() as directory:
+                    local = Path(directory) / "personal"
+                    fault = Path(directory) / "inject"
+                    fault.touch()
+
+                    def fail(point):
+                        if point == checkpoint and fault.exists():
+                            raise OSError("fixture local durability failure")
+
+                    service = self.personal_service(local, fail)
+                    adapter = Path(directory) / "adapter.py"
+                    adapter.write_text(
+                        "import json, sys\nrequest = json.load(sys.stdin)\n"
+                        "print(json.dumps({'request_id': request['request_id'], 'checked_at': request['started_at'], "
+                        "'authority': 'host-reported-selection', 'revision': 'fixture-1', 'routes': "
+                        + repr(self.routes) + "}))\n"
+                    )
+                    wrapper = (
+                        "import runpy, sys\nfrom pathlib import Path\n"
+                        "sys.path.insert(0, str(Path(sys.argv[1]).parent))\n"
+                        "from playbook_config import Configuration\n"
+                        "original = Configuration.__init__\n"
+                        "def fail(point):\n"
+                        "    if point == " + repr(checkpoint) + " and Path(" + repr(str(fault)) + ").exists():\n"
+                        "        raise OSError('fixture local durability failure')\n"
+                        "def initialize(self, *args, **kwargs):\n"
+                        "    original(self, *args, **kwargs)\n"
+                        "    if self.preferences is not None:\n"
+                        "        self.preferences.checkpoint = fail\n"
+                        "Configuration.__init__ = initialize\n"
+                        "sys.argv = sys.argv[1:]\nrunpy.run_path(sys.argv[0], run_name='__main__')\n"
+                    )
+                    command = [sys.executable, "-c", wrapper, str(Path(__file__).with_name("configure-playbook.py")),
+                               "--project", str(self.project), "--preferences-dir", str(local),
+                               "--discovery-command", json.dumps([sys.executable, str(adapter)]),
+                               "--now", "2026-09-30T12:00:00Z"]
+
+                    def run(action, proposal=None, reply=None):
+                        if boundary == "api":
+                            return service.read() if action == "read" else service.reply(proposal, reply)
+                        request = {"context": {"goal": "Known project", "billing": "unknown"}}
+                        if action == "reply":
+                            request.update(proposal=proposal, reply=reply)
+                        completed = subprocess.run(command + [action], input=json.dumps(request),
+                                                   text=True, capture_output=True)
+                        result = json.loads(completed.stdout)
+                        self.assertEqual(completed.returncode, 2 if result["state"] in {"blocked", "recovery_required"} else 0,
+                                         completed.stderr)
+                        return result
+
+                    draft = run("read")
+                    for label in ("Plan", "Build", "Verify", "Repair"):
+                        draft = run("reply", run("reply", draft, "Edit " + label), "2")
+                    draft = run("reply", draft, "Expert")
+                    selected = deepcopy(draft["after"])
+                    result = run("reply", draft, "Apply preference")
+                    self.assertEqual(result["state"], "recovery_required")
+                    self.assertEqual(result["retained_proposal"], draft)
+                    self.assertEqual(run("read")["state"], "recovery_required")
+                    saved = {path.name: path.read_bytes() for path in local.iterdir() if path.is_file()}
+                    for reply in ("Apply", "Apply preference", "Reload", "invalid"):
+                        result = run("reply", result, reply)
+                        self.assertIn(result["state"], {"blocked", "recovery_required"})
+                        self.assertEqual(result["retained_proposal"]["after"], selected)
+                    for reply in ("Back", "Edit", "Edit Build"):
+                        restored = run("reply", result, reply)
+                        self.assertEqual(restored["after"], selected)
+                        self.assertIn(run("reply", restored, "Apply")["state"], {"blocked", "recovery_required"})
+                        self.assertEqual(run("reply", run("reply", restored, "Expert"), "Apply preference")["state"], "recovery_required")
+                    self.assertEqual({path.name: path.read_bytes() for path in local.iterdir() if path.is_file()}, saved)
+                    self.assertFalse((self.project / ".playbook-config.json").exists())
+                    self.assertEqual(self.state.read_bytes(), self.runtime)
+                    for path in local.iterdir():
+                        path.rmdir() if path.is_dir() else path.unlink()
+                    fault.unlink()
+                    restored = run("reply", run("reply", result, "Back"), "Apply preference")
+                    self.assertEqual(restored["after"], selected)
+                    self.assertEqual(run("reply", restored, "Apply")["state"], "applied")
+                    (self.project / ".playbook-config.json").unlink()
+
+    def test_project_save_recovery_and_invalid_replies_keep_sealed_draft(self):
+        def fail(point):
+            if point == "before_completion":
+                raise OSError("fixture project durability failure")
+
+        service = Configuration(self.project, self.discover, lambda: "2026-09-30T12:00:00Z", fail)
+        draft = service.read()
+        for label in ("Plan", "Build", "Verify", "Repair"):
+            draft = service.reply(service.reply(draft, "Edit " + label), "2")
+        result = service.reply(draft, "Apply")
+        self.assertEqual(result["state"], "recovery_required")
+        self.assertEqual(result["retained_proposal"], draft)
+        for reply in (None, "Apply", "Reload", "invalid"):
+            result = service.reply(result, reply)
+            self.assertEqual(result["state"], "recovery_required")
+            self.assertEqual(result["retained_proposal"], draft)
+        restored = service.reply(result, "Edit Verify")
+        self.assertEqual(restored["after"], draft["after"])
+        self.assertEqual(service.reply(restored, "Apply")["state"], "recovery_required")
+        self.assertEqual(self.state.read_bytes(), self.runtime)
+
     def test_local_post_completion_edits_remain_valid_and_explanations_do_not_launch(self):
         local = Path(self.temporary.name) / "personal"
         service = self.personal_service(local)
