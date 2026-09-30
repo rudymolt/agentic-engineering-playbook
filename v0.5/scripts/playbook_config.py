@@ -277,6 +277,8 @@ class Configuration:
         for path, expected in observations:
             if digest(self._bytes(path)) != expected:
                 raise RecoveryRequired(f"Configuration completion conflict in {receipt.name} ({path.name}); reconcile reviewed, captured and attempted evidence before continuing.")
+        if completing:
+            self._guard_write(active=True)
 
     def _reconcile_receipts(self):
         for receipt in self.project.glob(".playbook-config-*.receipt"):

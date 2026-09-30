@@ -101,9 +101,12 @@ than dropping unknown fields. Reconciliation remains human-owned.
 
 Both save directions recheck the paired store's locks, recovery journals and
 unfinished/conflicting receipts during staging, after discovery, before capture
-and publication, after publication and immediately before the content-completion
-check. Only the active store's own transaction artifacts are exempt from these
-paired checks; its existing capture, journal and receipt protocol still applies.
+and publication, after publication, and before and after the final content-digest
+comparisons. The check following those comparisons vetoes success when paired
+recovery is already pending at the content completion point, including recovery
+arising during the comparisons. Only the active store's own transaction
+artifacts are exempt from these paired checks; its existing capture, journal
+and receipt protocol still applies.
 Recovery detected before publication prevents publication. If capture already
 occurred, an absent destination can be restored by an exclusive hard link while
 retaining recovery evidence. Recovery detected after publication never reports
@@ -195,9 +198,14 @@ retained, including for writers holding its open descriptor.
 Journal promotion is **not completion**. After publication and all durability
 steps, one final check compares current destination, captured previous config,
 tracked runtime and retained evidence bytes against their recorded digests;
-all matches establish the completion point. Only non-content bookkeeping
-follows: marking the protocol-3 receipt complete and removing the lock, so later
-content or metadata edits cannot retroactively turn that save into a conflict.
+all matches establish the content completion point. With a paired store, its
+recovery guard must also pass after these comparisons before the receipt can be
+sealed. This guard does not recheck content or change the content completion
+point. It can conservatively detect paired recovery arising after that point;
+it cannot guarantee against unrelated writes after its observations. Only
+non-content bookkeeping then follows: marking the protocol-3 receipt complete
+and removing the lock, so later content or metadata edits cannot retroactively
+turn that save into a conflict.
 Digest mismatches or durability failures retain a `.receipt.conflict` marker
 as well as the recovery journal and lock, without deleting concurrent bytes.
 

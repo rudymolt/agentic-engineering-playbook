@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Check paired recovery after the final configuration content-digest comparisons before sealing success. Keep the single content completion point, retained recovery evidence and Back/Edit drafts; cover final-check entry and last-read recovery through both public save directions.
+
+*Why — close the final-check gap:* the preceding paired guard could miss recovery arising during the completing receipt check. A final paired veto catches recovery pending at the content completion point without rechecking later content edits or using timestamps.
+
 - Recheck paired configuration stores throughout either save's staging, capture, publication and completion window. New locks, recovery journals and unfinished/conflicting receipts prevent publication or retain truthful recovery evidence after publication, without discarding sealed role drafts or overwriting concurrent bytes.
 
 *Why — recovery can arise after admission:* checking both stores only before a save allowed the other store's newly pending recovery to coexist with a successful write. Repeated paired checks preserve the active transaction's protocol and the approved content-digest completion point while requiring reconciliation before continuation.

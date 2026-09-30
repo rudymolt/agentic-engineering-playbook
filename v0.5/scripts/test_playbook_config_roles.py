@@ -507,12 +507,32 @@ class RoleConversationTests(unittest.TestCase):
                 "    marker.write_text(json.dumps(settings['content']) + '\\n')\n"
                 "    if settings['conflict']: marker.with_name(marker.name + '.conflict').mkdir(exist_ok=True)\n"
                 "    if settings['concurrent']: Path(settings['destination']).write_bytes(b'external concurrent bytes\\n')\n"
+                "def install_completion(store):\n"
+                "    original_check = store._receipt_conflicts\n"
+                "    original_bytes = store._bytes\n"
+                "    completing_now = False\n"
+                "    def read_bytes(path):\n"
+                "        data = original_bytes(path)\n"
+                "        if completing_now and path == store.state_path: inject('completion_last_read')\n"
+                "        return data\n"
+                "    def check(receipt, marker, completing=False):\n"
+                "        nonlocal completing_now\n"
+                "        completing_now = completing\n"
+                "        try:\n"
+                "            if completing: inject('completion_entry')\n"
+                "            return original_check(receipt, marker, completing=completing)\n"
+                "        finally:\n"
+                "            completing_now = False\n"
+                "    store._bytes = read_bytes\n"
+                "    store._receipt_conflicts = check\n"
             )
             namespace = {"fault": fault, "json": json, "Path": Path}
             exec(injection, namespace)
             service = Configuration(project, self.discover, lambda: "2026-09-30T12:00:00Z",
                                     namespace["inject"], preferences_dir=local,
                                     context={"goal": "Known", "billing": "unknown"})
+            for store in (service, service.preferences):
+                namespace["install_completion"](store)
             adapter = root / "adapter.py"
             adapter.write_text(
                 "import json, sys\nrequest = json.load(sys.stdin)\n"
@@ -528,6 +548,7 @@ class RoleConversationTests(unittest.TestCase):
                 "def initialize(self, *args, **kwargs):\n"
                 "    original(self, *args, **kwargs)\n"
                 "    self.checkpoint = inject\n"
+                "    install_completion(self)\n"
                 "    if self.preferences is not None: self.preferences.checkpoint = inject\n"
                 "Configuration.__init__ = initialize\n"
                 "sys.argv = sys.argv[1:]\nrunpy.run_path(sys.argv[0], run_name='__main__')\n")
@@ -590,7 +611,7 @@ class RoleConversationTests(unittest.TestCase):
                 self.assertEqual(observed, b"external concurrent bytes\n" if concurrent else attempted)
                 if before is not None:
                     self.assertEqual((target.parent / journal["captured"]).read_bytes(), before)
-                if point == "before_completion":
+                if point in {"before_completion", "completion_entry", "completion_last_read"}:
                     self.assertTrue(list(target.parent.glob("*.receipt.conflict")))
                     self.assertFalse(any(path.name.endswith(".complete") for path in target.parent.glob("*.receipt*")
                                          if path.name.startswith(journal["attempted"])))
@@ -598,6 +619,8 @@ class RoleConversationTests(unittest.TestCase):
                               for path in directory.iterdir() if path.is_file()}
             restored = run("reply", result, "Back")
             self.assertEqual(restored["after"], draft["after"])
+            edited = run("reply", result, "Edit Verify")
+            self.assertEqual(edited["after"], draft["after"])
             for reply in ("Apply", "Apply preference"):
                 preview = run("reply", restored, "Expert") if reply == "Apply preference" else restored
                 blocked = run("reply", preview, reply)
@@ -645,6 +668,25 @@ class RoleConversationTests(unittest.TestCase):
                             with self.subTest(boundary=boundary, destination=destination, point=point,
                                               artifact=artifact, concurrent=concurrent):
                                 self.cross_store_save(boundary, destination, point, artifact, True, concurrent)
+
+    def test_paired_recovery_at_final_content_check_blocks_both_public_saves(self):
+        for boundary in ("api", "cli"):
+            for destination in ("local", "project"):
+                for point in ("completion_entry", "completion_last_read"):
+                    for artifact in ("lock", "recovery", "unfinished", "conflict"):
+                        with self.subTest(boundary=boundary, destination=destination, point=point,
+                                          artifact=artifact):
+                            self.cross_store_save(boundary, destination, point, artifact, True)
+
+    def test_final_check_recovery_preserves_concurrent_bytes_and_absent_previous(self):
+        for boundary in ("api", "cli"):
+            for destination in ("local", "project"):
+                for point in ("completion_entry", "completion_last_read"):
+                    for existing in (False, True):
+                        with self.subTest(boundary=boundary, destination=destination, point=point,
+                                          existing=existing):
+                            self.cross_store_save(boundary, destination, point, "recovery", existing,
+                                                  concurrent=True)
 
     def test_shared_save_boundary_guards_both_stores_before_mutation(self):
         local = Path(self.temporary.name) / "personal"
