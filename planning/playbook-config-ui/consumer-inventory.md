@@ -1,4 +1,4 @@
-# S1 default and skill consumer inventory
+# Default and skill consumer inventory
 
 Completed before consumer edits on 2026-09-29. Scope: new project preferences,
 not selection or execution authority. The approved baseline already present in
@@ -131,3 +131,25 @@ recommendation engine or S2–S7 functionality. Upstream refresh/host qualificat
 remain separate maintenance/S8 work. The narrow parser accepts the existing
 legacy routing mapping syntax and blocks unsupported/ambiguous input with a
 corrective error instead of dropping custom preferences.
+
+## S2 changed surfaces
+
+The same `playbook_config.Configuration` boundary now edits all four model
+roles and keeps QA derived from Verify. Entry guidance in `README.md`,
+`AGENT-DIGEST.md`, `skills/README.md` and `93-model-routing-track.md` now
+describes the same S2 role and presentation scope instead of S1 Build-only
+editing. Existing model-router and delivery
+readers still resolve through that boundary; no launcher or approval authority
+was added. Configure's skill metadata and JSON helper now expose typed role,
+model, runner and reasoning choices, plus compact expert rendering of the same
+proposal. Discovery can report the observed current-chat Coordinator solely
+for display; it is never a project preference or independently switchable role.
+
+An explicit user-local preferences directory holds presentation only, outside
+the project and under the same save/completion/recovery protocol. Local-only
+Apply preference does not save the project draft. Project Apply remains a
+separate reviewed transaction. Goal/billing context is conversation-local in
+S2; reusable defaults, presets and billing persistence remain S5. Missing
+runtime state routes setup to the existing bootstrap approval gate without
+creating it or applying unspecified settings. No other default consumer needs
+an S2 edit: role resolution and execution gates were already integrated in S1.

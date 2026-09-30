@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Extend Configure to all four model roles with typed role/model/runner/reasoning choices, read-only explanations, QA inheritance and observed display-only Coordinator identity. Preview and save guided/expert presentation locally through the accepted content-completion/recovery protocol, separately from project Apply; route new projects back to the existing bootstrap gate.
+
+*Why — complete role editing without new execution authority:* users need a complete model proposal that retains project customisations, unrelated drafts and approved execution history, without repeating known onboarding, silently substituting a route or confusing presentation saves with project saves. Recommendation evidence, skill bindings and live host qualification remain separate slices.
+
 - Complete S1 configuration saves with a final content-digest check after durability steps, not filesystem timestamps. Completed receipts permit later edits; unfinished saves and detectable older-receipt conflicts still require non-destructive reconciliation.
 
 *Why — content-based completion:* metadata-only changes cannot date content edits or hide a conflict. A single completion check preserves concurrent bytes and reviewed evidence without retroactively rejecting successful saves.

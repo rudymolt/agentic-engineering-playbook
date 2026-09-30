@@ -25,12 +25,15 @@ Run `python3 v0.5/scripts/verify-playbook.py` from the repository root before a 
 
 ## Existing projects
 
-Use `/ai-playbook-configure` to review project defaults and edit the Build
-model through typed chat, with migration preview and explicit Apply. S1 keeps
-other roles, escalation constraints and active work unchanged; it does not
-launch a model. The [configuration boundary](scripts/playbook-config.md) is
-also the effective-default reader for existing lane gates. Broader setup,
-skills, presets and recommendations are not yet part of this narrow route.
+Use `/ai-playbook-configure` to review and edit Plan, Build, Verify and escalated
+repair defaults through guided or expert typed chat, with migration preview
+and explicit Apply. QA inherits Verify; Coordinator is display-only. S2 keeps
+escalation constraints and active work unchanged and saves presentation only
+to an explicitly previewed local destination; it does not launch a model.
+The [configuration boundary](scripts/playbook-config.md) is also the
+effective-default reader for existing lane gates. New projects still use the
+existing bootstrap approval gate. Skill bindings, presets and recommendation
+evidence remain later slices.
 
 Projects already using a private V0.4.2 checkout should use the tested [transition guide](skills/ai-playbook-upgrade-project/MIGRATIONS.md) to adopt a public V0.5 release without overwriting their content. Projects still on V0.3 first use their private migration bridge. No earlier edition source tree is distributed here.
 

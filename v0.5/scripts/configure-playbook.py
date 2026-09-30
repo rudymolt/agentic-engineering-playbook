@@ -15,6 +15,7 @@ from playbook_config import Configuration, ConfigError, RecoveryRequired, strict
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--project", type=Path, required=True)
+    parser.add_argument("--preferences-dir", type=Path, help="Explicit user-local directory outside the project for presentation preferences.")
     parser.add_argument("--discovery", type=Path)
     parser.add_argument("--discovery-command", help="JSON argv for the current-availability adapter; request JSON is sent on stdin.")
     parser.add_argument("--now", help="Fixture clock only; live use omits this option.")
@@ -33,11 +34,12 @@ def main():
         return strict_json(result.stdout)
 
     clock = (lambda: args.now) if args.now else None
-    service = Configuration(args.project, discover, clock)
     try:
         request = strict_json(sys.stdin.read() or "{}")
         if not isinstance(request, dict):
             raise ConfigError("Request must be a JSON object; use the documented helper contract.")
+        service = Configuration(args.project, discover, clock, preferences_dir=args.preferences_dir,
+                                context=request.get("context"))
         if args.action == "read":
             result = service.read()
         elif args.action == "reply":

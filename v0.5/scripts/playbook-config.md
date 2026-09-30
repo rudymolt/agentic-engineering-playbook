@@ -1,4 +1,4 @@
-# Project configuration boundary — S1
+# Project configuration boundary — S2
 
 `playbook_config.Configuration` owns read, typed edit, explain, validation and
 Apply. `configure-playbook.py` is its JSON helper for chat skills and the
@@ -12,12 +12,12 @@ Schema 1 contains exactly `schema_version: 1`, `adopted: true` and `models`.
 Models contains planning, implementation, verification and escalated_repair.
 Each role retains model_id, runner, reasoning and supported scalar metadata.
 Repair also retains trigger_unsuccessful_repairs, cycles_per_slice, scope and
-authority. These constraints are imported unchanged, not editable in S1.
+authority. These constraints are imported unchanged, never editable preferences.
 
 Adoption imports every existing role, including custom runner/reasoning.
 Missing roles use edition seeds with per-role origins. Invalid/ambiguous input,
 duplicate keys and newer schemas block without fallback or input rewrites.
-S1 changes only Build identity; non-identity constraints remain intact.
+S2 changes any of the four role identities; non-identity constraints remain intact.
 Legacy routing's inline/block mappings and scalar/list values are supported;
 advanced YAML anchors/tags/multiline values require explicit reconciliation
 before adoption rather than lossy parsing.
@@ -46,6 +46,63 @@ Typed labels are case-insensitive; route choices are numbered from 1.
 Results include before/after, per-role origins, destination, migration,
 input digests, discovery revision, proposal_revision, state and typed choices.
 Chat renders these; it does not reconstruct migration/save logic.
+
+`Edit` offers numbered Plan, Build, Verify and Repair roles; `Edit <role>`
+opens that role directly. Choose a complete numbered route or `Pick model`,
+then a numbered model, supported runner and supported reasoning. If multiple
+identities remain, select the complete identity explicitly. All editor levels
+have typed choices and `Back` / `Not now`; native controls are optional mirrors.
+Edits and explanations preserve other draft values. Invalid replies retain
+the valid draft under `retained_proposal`; `Back`, `Edit` and `Edit <role>`
+reuse it without losing unrelated edits, while explicit
+Reload discards unsaved edits. `Explain <role>` reports the selected route,
+discovery authority/date and unavailable task-fit/cost evidence without invoking
+anything. `qa` always inherits verification; Coordinator has no edit path.
+An optional `coordinator` identity in the request-bound discovery response
+reports the current chat with that observation's authority/date, never a
+catalogue default or launch proof. Without it, Coordinator is explicitly unknown.
+
+The proposal is a complete model-role proposal with origins and reasons for
+retaining starting choices, not the S6 Recommended setup. Skill-job configuration
+arrives in S3; presets and billing persistence arrive in S5. Do not imply those
+later acceptance criteria are complete. Availability is not suitability,
+comparative cost or future launch proof. Existing lane gates still require
+fresh identity, independence and approval checks before execution.
+
+## Personal presentation and first setup
+
+Supply `--preferences-dir {user-local-directory}` on read and every reply.
+The directory must be outside the project; there is no implicit path or host
+setting change. The private destination is `preferences.json` in that directory,
+containing exactly schema_version 1 and presentation `guided` or `expert`.
+It never overlays project defaults. Read takes optional `context` containing
+only known `goal` and `billing` (`api`, `subscription`, `mixed` or `unknown`).
+These facts stay in the private conversation; S2 does not persist billing.
+The helper returns only missing questions. Typed `Goal <context>`, `Billing
+<mode>`, `Guided` and `Expert` answer them. Reopening with known context and
+saved presentation skips onboarding questions. Omit context for the ordinary
+preference reader; Configure supplies existing context rather than reasking it.
+
+`Guided` / `Expert` produces a personal before/after preview and exact local
+destination. `Apply preference` is an explicit **local-only** transaction,
+then returns to the complete unsaved project draft. Project `Apply` is separate;
+there is no multi-destination success claim. Presentation alters rendering only,
+not choices, validation or project settings. `Not now` cancels pending changes;
+an earlier explicitly saved presentation remains saved. With no personal
+destination, the default rendering is guided and changing presentation blocks
+instead of writing somewhere implicitly.
+
+Local saves reuse the accepted project save protocol below: staged validation,
+request-bound discovery recheck, no-clobber publication, retained evidence,
+content-digest completion and non-destructive recovery. Their lock, recovery
+journal and `.playbook-config-*` evidence live beside the local destination,
+never in shared configuration. Invalid or newer personal schemas block rather
+than dropping unknown fields. Reconciliation remains human-owned.
+
+When runtime state is absent, `bootstrap.required` routes the model proposal to
+the existing bootstrap preview/approval gate. Project Apply blocks; no runtime
+file, second bootstrap or unspecified setting is created. Reopen and review
+after the approved bootstrap. Personal default seeding is S5, not this slice.
 
 For ordinary model-router preference resolution, use `resolve` without
 `--discovery`, passing `{"role":"implementation"}` or the appropriate role.
@@ -158,7 +215,7 @@ shareable; transaction artifacts stay local.
 
 ## Verification scope
 
-`test_playbook_config.py` uses temporary projects, fixture discovery and a clock
+`test_playbook_config.py` and `test_playbook_config_roles.py` use temporary projects, fixture discovery and a clock
 at this boundary, including injected storage checkpoints. It proves typed
 read/edit/preview/Apply/cancel, migration, next-lane resolution, revision
 conflicts, conflict-preserving recovery and runtime preservation. Fixture results are not direct

@@ -1,6 +1,6 @@
 interface:
   display_name: "Configure AI Playbook"
-  short_description: "Safely edit a project's Build model default"
-  default_prompt: "Use $ai-playbook-configure to review project defaults and edit Build with a preview before Apply."
+  short_description: "Safely edit all four project model defaults"
+  default_prompt: "Use $ai-playbook-configure to review all four model roles in guided or expert chat, with explicit project and local presentation previews before saving."
 policy:
   allow_implicit_invocation: false

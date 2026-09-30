@@ -105,8 +105,11 @@ Empty-state rule: a `STATUS.md` saying "0 active features" is an answer, not an 
 
 ## Escape hatches (full documents)
 
-Project Build defaults: user-invoked `/ai-playbook-configure` provides typed
-read/edit/preview/Apply without launching. Existing model-router resolves new
+Project model defaults: user-invoked `/ai-playbook-configure` provides guided
+or expert typed read/edit/preview/Apply for all four roles without launching.
+QA inherits Verify; Coordinator is display-only. Presentation saves locally
+with its own destination preview; new projects retain the bootstrap gate.
+Existing model-router resolves new
 choices through `scripts/configure-playbook.py`: feature > adopted project >
 legacy project > edition. Malformed adoption blocks; active/approved records
 remain unchanged. See `scripts/playbook-config.md` for the shared boundary.

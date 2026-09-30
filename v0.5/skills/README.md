@@ -50,8 +50,11 @@ an explicit approved **deliver to PR** or admitted K4.1 action starts it.
 
 ## Embedded upstream skill contract
 
-`/ai-playbook-configure` is user-invoked. It edits only project Build defaults
-in S1, with migration preview and explicit Apply; it never starts a model.
+`/ai-playbook-configure` is user-invoked. S2 edits all four project model roles
+with typed migration preview and explicit Apply; it never starts a model.
+QA inherits Verify and Coordinator is observed display-only. Guided/expert
+presentation is saved locally through a separate explicit destination preview,
+without applying the project draft. New projects retain the bootstrap gate.
 The shared [configuration boundary](../scripts/playbook-config.md) supplies
 effective preferences to model-router. Bootstrap/upgrade install the skill
 through the registry without adopting or replacing project settings.

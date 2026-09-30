@@ -17,7 +17,7 @@ Build-all approval on 2026-09-29 supersedes planning snapshots saying build scop
 | Slice | Build | Independent verification | Candidate / evidence |
 | --- | --- | --- | --- |
 | S1 | Accepted after ordinary repair 3 | Pass (fresh independent Verify, all 10 criteria) | Candidate `9568126` replaces timestamp-dated conflict detection with one content-digest check after durability steps; that check is the completion point. Independent Verify: 37 focused tests and 11 new independent tests pass on Python 3.11 and 3.12; full unskipped canonical verifier passes. Earlier probe expectations that contradict the approved completion point, and a fabricated-discovery-adapter probe outside the documented adapter contract, are recorded in private evidence. Two unsuccessful ordinary repairs retained; no escalation used. |
-| S2 | Build in progress | Pending | Built on accepted S1 `9568126` |
+| S2 | Implemented | Fresh independent verification pending | All four roles editable through typed guided/expert chat with model, runner and reasoning choices; QA inherits Verify and Coordinator is display-only; guided/expert preference saved in a user-local file through S1's preview and recovery path. Builder checks: 51 focused tests on Python 3.11 and 3.12, 279 main-script tests, and the full unskipped canonical verifier pass. |
 | S3 | Not started | Pending | Unblocked by S1; queued after S2 (configuration writes are integrated sequentially) |
 | S4 | Not started | Pending | Blocked by S3 acceptance |
 | S5 | Not started | Pending | Blocked by S2 and S3 acceptance |
@@ -31,4 +31,4 @@ Public evidence contains only redacted commands, outcomes, candidate identifiers
 
 The endpoint is a reviewed feature PR to `main`, accurately describing any remaining qualification. Mark it draft when S8, CI or review gates prevent a ready claim. Complete an independent whole-diff specification/test-gap review and prepare the [S8 walkthrough](host-qualification.md). Do not call this feature shipped or mark S8 live qualification complete based on fixtures or the approved mockup.
 
-Exactly one next action: complete the S2 Build, then submit the exact candidate to fresh Verify.
+Exactly one next action: submit the exact S2 candidate to fresh Verify.

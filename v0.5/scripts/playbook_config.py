@@ -18,6 +18,7 @@ from playbook_state import parse_scalar, strip_inline_comment
 
 DESTINATION = ".playbook-config.json"
 ROLES = ("planning", "implementation", "verification", "escalated_repair")
+ROLE_LABELS = dict(zip(ROLES, ("Plan", "Build", "Verify", "Repair")))
 IDENTITY = ("model_id", "runner", "reasoning", "provider", "label", "thinking")
 
 
@@ -184,15 +185,28 @@ def instant(value):
 
 
 class Configuration:
-    def __init__(self, project: Path, discover: Callable, clock: Callable = None, checkpoint: Callable = None):
+    def __init__(self, project: Path, discover: Callable, clock: Callable = None, checkpoint: Callable = None,
+                 preferences_dir: Path = None, context: dict = None):
         self.project = Path(project)
         self.discover = discover
         self.clock = clock or (lambda: datetime.now(timezone.utc).isoformat())
         self.path = self.project / DESTINATION
+        self.destination = DESTINATION
         self.state_path = self.project / ".playbook-state.yml"
         self.lock = self.project / ".playbook-config.lock"
         self.recovery = self.project / ".playbook-config.recovery"
         self.checkpoint = checkpoint or (lambda point: None)
+        self.context = deepcopy(context)
+        self.preferences = None
+        if preferences_dir is not None:
+            local = Path(preferences_dir)
+            if local.resolve().is_relative_to(self.project.resolve()):
+                raise ConfigError("Personal preferences require a user-local directory outside the project; preview it explicitly.")
+            self.preferences = LocalPreferences(local, discover, self.clock, self.checkpoint)
+            self.preferences.state_path = self.state_path
+
+    def _validate_candidate(self, candidate):
+        return validate_config(candidate)
 
     def _bytes(self, path):
         if path.is_symlink():
@@ -253,7 +267,7 @@ class Configuration:
         for receipt in self.project.glob(".playbook-config-*.receipt"):
             try:
                 marker = strict_json(self._bytes(receipt).decode())
-                if marker.get("destination") != DESTINATION or marker.get("completion_protocol") not in (None, 2, 3):
+                if marker.get("destination") != self.destination or marker.get("completion_protocol") not in (None, 2, 3):
                     raise ConfigError("Unsupported configuration receipt; reconcile its completion protocol.")
                 for key in ("captured", "previous", "attempted", "published"):
                     name = marker.get(key)
@@ -286,7 +300,7 @@ class Configuration:
             raise ConfigError("Discovery must freshly observe role/model/runner/reasoning for this request; cached guidance is not availability.")
         if not isinstance(evidence.get("routes"), list):
             raise ConfigError("Discovery routes must be a verified list; rediscover.")
-        routes = []
+        routes = {role: [] for role in ROLES}
         seen = set()
         for route in evidence["routes"]:
             if not isinstance(route, dict) or set(route) - set(IDENTITY) - {"roles"}:
@@ -300,8 +314,9 @@ class Configuration:
             if identity in seen:
                 raise ConfigError("Duplicate discovered route; reconcile discovery.")
             seen.add(identity)
-            if "implementation" in roles:
-                routes.append(choice)
+            for role in roles:
+                if choice not in routes[role]:
+                    routes[role].append(choice)
         return routes, evidence
 
     def read(self):
@@ -312,76 +327,262 @@ class Configuration:
                 "state": "decision_required", "step": "read", "destination": DESTINATION,
                 "origin": origins["implementation"], "origins": origins, "migration": inputs[DESTINATION] is None,
                 "before": deepcopy(config["models"]), "after": deepcopy(config["models"]),
-                "inputs": inputs, "discovery": evidence, "alternatives": routes,
-                "choices": ["Edit Build", "Apply", "Explain", "Not now"],
+                "inputs": inputs, "discovery": evidence, "alternatives": routes["implementation"],
+                "role_alternatives": routes, "edited_roles": [],
+                "qa": {"inherits": "verification", "choice": deepcopy(config["models"]["verification"])},
+                "coordinator": {"observed": False, "message": "Current-chat identity not observed; display unknown, never switch."},
+                "choices": self._proposal_choices(),
                 "message": "Project defaults only. All four roles are retained. No active selection changes; no model launches.",
+                "context": self.context, "personal": self._personal_snapshot(),
+                "bootstrap": {"required": inputs[".playbook-state.yml"] is None,
+                              "action": "Use the existing bootstrap preview/approval gate; configuration never bootstraps."},
             }
+            if evidence.get("coordinator") is not None:
+                validate_choice(evidence["coordinator"], "coordinator")
+                proposal["coordinator"] = {"observed": True, "choice": deepcopy(evidence["coordinator"]),
+                                           "authority": evidence["authority"], "checked_at": evidence["checked_at"],
+                                           "message": "Current chat observed during this discovery; display-only, not launch proof."}
+            self._present(proposal)
             proposal["proposal_revision"] = self._revision(proposal)
             return proposal
         except (ConfigError, OSError, UnicodeError, TypeError) as error:
             return self._blocked(error)
 
     def _blocked(self, error):
-        return {"state": "recovery_required" if self.recovery.exists() or isinstance(error, RecoveryRequired) else "blocked", "message": str(error), "choices": ["Edit Build", "Reload", "Not now"], "launched": False}
+        return {"state": "recovery_required" if self.recovery.exists() or isinstance(error, RecoveryRequired) else "blocked", "message": str(error), "choices": ["Edit", "Edit Build", "Reload", "Not now"], "launched": False}
+
+    def _proposal_choices(self):
+        return ["Apply", "Edit", "Edit Plan", "Edit Build", "Edit Verify", "Edit Repair", "Explain", "Not now"]
+
+    def _personal_snapshot(self):
+        if self.preferences is None:
+            return None
+        before, inputs = self.preferences.snapshot()
+        return {"destination": str(self.preferences.path), "before": before, "after": deepcopy(before), "inputs": inputs}
+
+    def _present(self, proposal):
+        context = proposal["context"]
+        if context is not None:
+            if not isinstance(context, dict) or set(context) - {"goal", "billing"}:
+                raise ConfigError("Supply only known goal and billing context; keep private evidence outside project settings.")
+            if "goal" in context and (not isinstance(context["goal"], str) or not context["goal"].strip()):
+                raise ConfigError("Known goal must be nonempty text.")
+            if "billing" in context and context["billing"] not in {"api", "subscription", "mixed", "unknown"}:
+                raise ConfigError("Billing context must be api, subscription, mixed or unknown.")
+        personal = proposal["personal"]
+        preference = personal["after"] if personal else None
+        proposal["presentation"] = preference["presentation"] if preference else "guided"
+        missing = [key for key in ("goal", "billing") if context is not None and key not in context]
+        if personal is not None and preference is None:
+            missing.append("presentation")
+        proposal["missing_context"] = missing
+        proposal["questions"] = {key: {"goal": "Goal <project context>", "billing": "Billing api / subscription / mixed / unknown", "presentation": "Guided / Expert"}[key] for key in missing}
+        proposal["qa"] = {"inherits": "verification", "choice": deepcopy(proposal["after"]["verification"])}
+        proposal["role_proposal"] = [{"role": role, "label": ROLE_LABELS[role], "origin": proposal["origins"][role],
+                                      "before": deepcopy(proposal["before"][role]), "after": deepcopy(proposal["after"][role]),
+                                      "reason": "Retained starting choice or explicit edit, not a recommendation. Task-fit and cost evidence unavailable until S6."} for role in ROLES]
+        proposal["choices"] = self._proposal_choices() + list(proposal["questions"].values())
+        if self.preferences is not None:
+            proposal["choices"] += ["Guided", "Expert"]
+        proposal["launched"] = False
 
     def _revision(self, proposal):
-        return digest(encoded({key: proposal[key] for key in ("destination", "origins", "migration", "before", "after", "inputs", "discovery", "alternatives")}))
+        return digest(encoded({key: value for key, value in proposal.items() if key != "proposal_revision"}))
+
+    def _seal(self, proposal):
+        proposal["proposal_revision"] = self._revision(proposal)
+        return proposal
 
     def _discovery_revision(self, evidence):
-        return digest(encoded({key: value for key, value in evidence.items() if key not in {"checked_at", "request_id"}}))
+        return digest(encoded({key: value for key, value in evidence.items() if key not in {"checked_at", "request_id", "coordinator"}}))
 
     def reply(self, proposal, text):
+        try:
+            result = self._reply(proposal, text)
+        except (ConfigError, OSError, UnicodeError, KeyError, TypeError, AttributeError) as error:
+            result = self._blocked(error)
+        retained = proposal
+        if isinstance(proposal, dict) and proposal.get("state") == "blocked":
+            retained = proposal.get("retained_proposal")
+        if (result.get("state") == "blocked" and isinstance(retained, dict)
+                and retained.get("state") in {"decision_required", "proposal_ready"}
+                and retained.get("proposal_revision") == self._revision(retained)):
+            result["retained_proposal"] = deepcopy(retained)
+            result["choices"].append("Back")
+        return result
+
+    def _reply(self, proposal, text):
         if not isinstance(proposal, dict) or not isinstance(text, str):
             return self._blocked("Reply requires a structured proposal and a typed choice; reload.")
         reply = text.strip().lower()
         if reply == "not now":
-            return {"state": "unchanged", "message": "Nothing applied. No defaults, runtime records or presets changed.", "launched": False}
+            return {"state": "unchanged", "message": "No pending changes applied. Project defaults, runtime records and presets unchanged; any previously saved local presentation remains saved.", "launched": False}
         if reply == "reload":
             return self.read()
+        if (proposal.get("state") == "blocked" and proposal.get("retained_proposal")
+                and (reply == "back" or reply == "edit" or reply.startswith("edit "))):
+            retained = proposal["retained_proposal"]
+            if retained.get("proposal_revision") == self._revision(retained):
+                return deepcopy(retained) if reply == "back" else self._reply(retained, text)
+            return self._blocked("Retained draft changed; reload and review it.")
         if reply == "edit build" and proposal.get("state") == "blocked":
             refreshed = self.read()
             return self.reply(refreshed, text) if refreshed.get("state") == "decision_required" else refreshed
         if proposal.get("state") not in {"decision_required", "proposal_ready"}:
             return self._blocked("Reload and review a valid proposal before continuing.")
+        try:
+            if proposal.get("proposal_revision") != self._revision(proposal):
+                raise ConfigError("Proposal changed outside the editor; reload and preview before continuing.")
+        except (ConfigError, KeyError, TypeError) as error:
+            return self._blocked(error)
         draft = deepcopy(proposal)
-        if reply == "edit build":
-            draft.update(step="edit", state="decision_required", choices=[str(index + 1) for index in range(len(draft["alternatives"]))] + ["Reload", "Not now"])
-            draft["message"] = "Choose a verified Build route by number. Availability is not suitability or cost evidence." if draft["alternatives"] else "No verified Build route is available; rediscover and Reload, or Not now."
+        if reply.startswith("goal ") or reply.startswith("billing "):
+            key, _, value = text.strip().partition(" ")
+            key = key.lower()
+            draft["context"] = draft["context"] or {}
+            draft["context"][key] = value.strip() if key == "goal" else value.strip().lower()
+            try:
+                self._present(draft)
+            except ConfigError as error:
+                return self._blocked(error)
+            draft["proposal_revision"] = self._revision(draft)
             return draft
+        if reply in {"guided", "expert"}:
+            if draft["personal"] is None:
+                return self._blocked("Supply an explicit user-local preferences directory before changing presentation.")
+            draft["personal"]["after"] = {"schema_version": 1, "presentation": reply}
+            draft.update(step="preference_preview", choices=["Apply preference", "Back", "Not now"],
+                         message="Only local presentation will be saved to the displayed personal destination. Project drafts remain unsaved; no launch.")
+            draft["proposal_revision"] = self._revision(draft)
+            return draft
+        if reply == "apply preference" and draft.get("step") == "preference_preview":
+            return self._apply_preference(draft)
+        if reply == "back":
+            if draft.get("step") == "preference_preview":
+                draft["personal"]["after"] = deepcopy(draft["personal"]["before"])
+            return self._preview(draft)
+        if reply == "edit":
+            draft.update(step="role", choices=[str(index + 1) + " " + ROLE_LABELS[role] for index, role in enumerate(ROLES)] + ["Back", "Not now"])
+            return self._seal(draft)
+        if reply.isdigit() and draft.get("step") == "role":
+            index = int(reply) - 1
+            if not 0 <= index < len(ROLES):
+                return self._blocked("Invalid role; reload and choose Plan, Build, Verify or Repair.")
+            reply = "edit " + ROLE_LABELS[ROLES[index]].lower()
+        role = next((role for role in ROLES if reply in {"edit " + role, "edit " + role.replace("_", " "), "edit " + ROLE_LABELS[role].lower()}), None)
+        if role:
+            draft["edit_role"] = role
+            draft["alternatives"] = draft["role_alternatives"][role]
+            draft.update(step="edit", state="decision_required", choices=[str(index + 1) for index in range(len(draft["alternatives"]))] + ["Pick model", "Back", "Reload", "Not now"])
+            draft["message"] = "Choose a verified " + ROLE_LABELS[role] + " route by number. Availability is not suitability or cost evidence." if draft["alternatives"] else "No verified route is available; rediscover and Reload, or Not now."
+            return self._seal(draft)
+        if reply == "pick model" and draft.get("step") == "edit":
+            return self._component(draft, "model")
+        if reply.isdigit() and draft.get("step") in {"model", "runner", "reasoning", "identity"}:
+            index = int(reply) - 1
+            if not 0 <= index < len(draft["options"]):
+                return self._blocked("Invalid editor choice; reload and select a displayed number.")
+            step = draft["step"]
+            if step == "identity":
+                return self._select(draft, draft["component_routes"][index])
+            key = {"model": "model_id", "runner": "runner", "reasoning": "reasoning"}[step]
+            draft["component_selection"][key] = draft["options"][index]
+            if step != "reasoning":
+                return self._component(draft, "runner" if step == "model" else "reasoning")
+            eligible = self._component_routes(draft)
+            if len(eligible) == 1:
+                return self._select(draft, eligible[0])
+            draft.update(step="identity", component_routes=eligible, options=eligible,
+                         choices=[str(index + 1) for index in range(len(eligible))] + ["Back", "Not now"],
+                         message="Several verified identities share these settings; choose the complete identity explicitly.")
+            return self._seal(draft)
         if reply.isdigit() and draft.get("step") == "edit":
             index = int(reply) - 1
             if not 0 <= index < len(draft["alternatives"]):
                 return self._blocked("Invalid choice; edit Build or reload the proposal.")
-            previous = draft["after"]["implementation"]
-            draft["after"]["implementation"] = {**{key: value for key, value in previous.items() if key not in IDENTITY}, **draft["alternatives"][index]}
-            draft.update(step="preview", state="proposal_ready", choices=["Apply", "Edit Build", "Explain", "Not now"])
-            draft["proposal_revision"] = self._revision(draft)
-            return draft
-        if reply == "explain":
-            draft["message"] = "Verified access only; task suitability and comparable total cost are unknown. No recommendation or paid benchmark. Discovery authority: " + draft["discovery"]["authority"] + "; checked " + draft["discovery"]["checked_at"]
-            return draft
+            return self._select(draft, draft["alternatives"][index])
+        if reply == "explain" or reply.startswith("explain "):
+            role = "implementation" if reply == "explain" else next((role for role in ROLES if reply[8:] in {role, role.replace("_", " "), ROLE_LABELS[role].lower()}), None)
+            if role is None:
+                return self._blocked("Explain Plan, Build, Verify or Repair; QA inherits Verify and Coordinator is display-only.")
+            draft["explanation"] = {"role": role, "choice": deepcopy(draft["after"][role]),
+                                    "available": {key: value for key, value in draft["after"][role].items() if key in IDENTITY} in draft["role_alternatives"][role],
+                                    "authority": draft["discovery"]["authority"], "checked_at": draft["discovery"]["checked_at"],
+                                    "limitations": "Availability is a bounded observation, not live launch proof. Suitability, costs, access consumption and comparison evidence remain unknown. No recommendation or paid benchmark."}
+            draft["message"] = draft["explanation"]["limitations"]
+            return self._seal(draft)
         if reply == "apply" and draft.get("step") in {"read", "preview"}:
             return self.apply(draft)
         return self._blocked("Use the typed choices shown; reload if the draft is stale.")
+
+    def _component_routes(self, draft):
+        return [route for route in draft["role_alternatives"][draft["edit_role"]]
+                if all(route[key] == value for key, value in draft["component_selection"].items())]
+
+    def _component(self, draft, step):
+        if step == "model":
+            draft["component_selection"] = {}
+        key = {"model": "model_id", "runner": "runner", "reasoning": "reasoning"}[step]
+        options = list(dict.fromkeys(route[key] for route in self._component_routes(draft)))
+        draft.update(step=step, options=options, choices=[str(index + 1) for index in range(len(options))] + ["Back", "Reload", "Not now"],
+                     message="Choose " + step + " by number from verified routes; no substitutions.")
+        return self._seal(draft)
+
+    def _select(self, draft, choice):
+        role = draft["edit_role"]
+        previous = draft["after"][role]
+        draft["after"][role] = {**{key: value for key, value in previous.items() if key not in IDENTITY}, **choice}
+        if role not in draft["edited_roles"]:
+            draft["edited_roles"].append(role)
+        return self._preview(draft)
+
+    def _preview(self, draft):
+        draft.update(step="preview", state="proposal_ready")
+        self._present(draft)
+        draft["proposal_revision"] = self._revision(draft)
+        return draft
+
+    def _apply_preference(self, draft):
+        try:
+            if self.preferences is None or draft["personal"]["destination"] != str(self.preferences.path):
+                raise ConfigError("Personal destination changed; reload and preview the local destination.")
+            before, inputs = self.preferences.snapshot()
+            if before != draft["personal"]["before"] or inputs != draft["personal"]["inputs"]:
+                raise ConfigError("Personal preferences or runtime changed since preview; reload without overwriting them.")
+            self.preferences._validate_candidate(draft["personal"]["after"])
+            if before != draft["personal"]["after"]:
+                self.preferences.project.mkdir(parents=True, exist_ok=True, mode=0o700)
+                self.preferences._save(draft["personal"]["after"], inputs, draft["discovery"])
+            draft["personal"] = self._personal_snapshot()
+            draft["message"] = "Local presentation saved and validated. Project draft remains unsaved; no model launches."
+            return self._preview(draft)
+        except (ConfigError, OSError, UnicodeError, KeyError, TypeError) as error:
+            return self._blocked(error)
 
     def apply(self, proposal):
         try:
             if proposal.get("proposal_revision") != self._revision(proposal):
                 raise ConfigError("Proposal changed outside the editor; reload and preview before Apply.")
+            if proposal["bootstrap"]["required"]:
+                raise ConfigError("New project setup must use the existing bootstrap approval gate first; no second bootstrap or unspecified writes.")
+            if proposal["missing_context"]:
+                raise ConfigError("Answer only the displayed missing context/preferences before project Apply.")
+            if self._personal_snapshot() != proposal["personal"]:
+                raise ConfigError("Personal preferences changed since preview; reload and review them.")
             config, _, inputs = self._snapshot()
             routes, evidence = self._available()
             if inputs != proposal.get("inputs") or config["models"] != proposal.get("before"):
                 raise ConfigError("Inputs changed since preview; reload and review the new proposal.")
             candidate = validate_config({"schema_version": 1, "adopted": True, "models": deepcopy(proposal["after"])})
-            for role in ROLES:
-                if role != "implementation" and candidate["models"][role] != config["models"][role]:
-                    raise ConfigError("S1 edits Build only; reload without other role changes.")
             constraints = lambda choice: {key: value for key, value in choice.items() if key not in IDENTITY}
-            if constraints(candidate["models"]["implementation"]) != constraints(config["models"]["implementation"]):
-                raise ConfigError("Build constraints are not editable preferences; reload without changing them.")
-            build = {key: value for key, value in candidate["models"]["implementation"].items() if key in IDENTITY}
-            if build not in routes:
-                raise ConfigError("Build choice is unavailable; edit Build and review again. No substitution.")
+            for role in ROLES:
+                choice = candidate["models"][role]
+                if constraints(choice) != constraints(config["models"][role]):
+                    raise ConfigError("Role constraints are not editable preferences; reload without changing them.")
+                if (role == "implementation" and not proposal["edited_roles"]) or role in proposal["edited_roles"] or choice != config["models"][role]:
+                    identity = {key: value for key, value in choice.items() if key in IDENTITY}
+                    if identity not in routes[role]:
+                        raise ConfigError(ROLE_LABELS[role] + " choice is unavailable; edit the role and review again. No substitution.")
             if self._discovery_revision(evidence) != self._discovery_revision(proposal["discovery"]):
                 raise ConfigError("Discovery changed since preview; reload and review current available choices.")
             if not proposal["migration"] and candidate == config:
@@ -408,7 +609,7 @@ class Configuration:
         try:
             self._check_inputs(inputs)
             previous = self._bytes(self.path)
-            if digest(previous) != inputs[DESTINATION]:
+            if digest(previous) != inputs[self.destination]:
                 raise ConfigError("Configuration changed before staging; reload without overwriting it.")
             if previous is not None:
                 backup = self._stage(previous)
@@ -416,17 +617,17 @@ class Configuration:
             staged = self._stage(candidate_bytes)
             publication = self._stage(candidate_bytes)
             self.checkpoint("staged")
-            validate_config(strict_json(staged.read_text()))
+            self._validate_candidate(strict_json(staged.read_text()))
             self.checkpoint("before_replace")
             self._check_inputs(inputs)
             _, current_evidence = self._available()
             if self._discovery_revision(current_evidence) != self._discovery_revision(evidence):
                 raise ConfigError("Availability evidence changed before save; reload and review current choices.")
-            marker = {"destination": DESTINATION, "previous": backup.name if backup else None,
+            marker = {"destination": self.destination, "previous": backup.name if backup else None,
                       "captured": captured_path.name if captured_path else None,
                       "attempted": staged.name, "attempted_digest": digest(candidate_bytes),
                       "published": publication.name,
-                      "previous_digest": inputs[DESTINATION],
+                      "previous_digest": inputs[self.destination],
                       "runtime_digest": inputs[".playbook-state.yml"], "completion_protocol": 3}
             with self.recovery.open("x") as stream:
                 stream.write(encoded(marker).decode())
@@ -438,7 +639,7 @@ class Configuration:
                 os.replace(self.path, captured_path)
                 captured = True
                 self._sync_directory()
-                if digest(self._bytes(captured_path)) != inputs[DESTINATION]:
+                if digest(self._bytes(captured_path)) != inputs[self.destination]:
                     raise ConfigError("Concurrent configuration captured intact; reconcile recovery before continuing.")
             self.checkpoint("before_publish")
             try:
@@ -450,10 +651,10 @@ class Configuration:
             actual = self._bytes(self.path)
             if actual != candidate_bytes:
                 raise ConfigError("Saved configuration changed during validation; recovery is required.")
-            validate_config(strict_json(actual.decode()))
+            self._validate_candidate(strict_json(actual.decode()))
             if digest(self._bytes(self.state_path)) != inputs[".playbook-state.yml"]:
                 raise ConfigError("Runtime inputs changed during Apply; retained defaults require reconciliation.")
-            if captured_path is not None and digest(self._bytes(captured_path)) != inputs[DESTINATION]:
+            if captured_path is not None and digest(self._bytes(captured_path)) != inputs[self.destination]:
                 raise ConfigError("Captured configuration changed during Apply; retained bytes require reconciliation.")
             self._sync_directory()
             receipt = self.project / (staged.name + ".receipt")
@@ -508,7 +709,7 @@ class Configuration:
                 self.lock.unlink()
 
     def _check_inputs(self, inputs):
-        if digest(self._bytes(self.path)) != inputs[DESTINATION] or digest(self._bytes(self.state_path)) != inputs[".playbook-state.yml"]:
+        if digest(self._bytes(self.path)) != inputs[self.destination] or digest(self._bytes(self.state_path)) != inputs[".playbook-state.yml"]:
             raise ConfigError("Inputs changed before save; reload without overwriting them.")
 
     def _stage(self, data):
@@ -531,3 +732,29 @@ class Configuration:
             os.fsync(descriptor)
         finally:
             os.close(descriptor)
+
+
+class LocalPreferences(Configuration):
+    def __init__(self, directory, discover, clock, checkpoint):
+        super().__init__(directory, discover, clock, checkpoint)
+        self.destination = "preferences.json"
+        self.path = self.project / self.destination
+
+    def _validate_candidate(self, candidate):
+        if (not isinstance(candidate, dict) or set(candidate) != {"schema_version", "presentation"}
+                or type(candidate["schema_version"]) is not int or candidate["schema_version"] != 1
+                or candidate["presentation"] not in {"guided", "expert"}):
+            raise ConfigError("Unsupported local presentation preferences; reconcile without dropping other personal settings.")
+        return candidate
+
+    def snapshot(self):
+        if self.lock.exists() or self.recovery.exists():
+            raise RecoveryRequired("Local preferences transaction/recovery pending; reconcile its retained evidence.")
+        self._reconcile_receipts()
+        saved = self._bytes(self.path)
+        runtime = self._bytes(self.state_path)
+        candidate = self._validate_candidate(strict_json(saved.decode())) if saved is not None else None
+        if self.lock.exists() or self.recovery.exists():
+            raise RecoveryRequired("Local preferences changed during read; reconcile recovery.")
+        self._reconcile_receipts()
+        return candidate, {self.destination: digest(saved), ".playbook-state.yml": digest(runtime)}

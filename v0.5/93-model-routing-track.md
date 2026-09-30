@@ -14,8 +14,10 @@ The table contains edition seeds, not project overrides. For every new choice,
 use the shared [configuration reader](scripts/playbook-config.md): explicit
 approved feature choice > adopted `.playbook-config.json` > legacy state
 default > edition. Show model, runner, reasoning and origin. Malformed adoption
-blocks instead of falling back. `/ai-playbook-configure` edits project Build
-defaults only in S1, through typed preview/Apply, without launching anything.
+blocks instead of falling back. `/ai-playbook-configure` edits all four project
+role defaults in S2 through typed preview/Apply, without launching anything.
+Guided/expert presentation is local; Coordinator is display-only. Configuration
+does not grant route selection, execution approval or verification authority.
 Active selections, retries and immutable mission approvals never re-resolve
 when defaults change. QA inherits the selected Verify route.
 
