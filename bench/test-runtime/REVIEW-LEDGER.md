@@ -182,10 +182,110 @@ Cloud verification:
   has passed edition; delivery is still running. See the draft PR for final
   published-revision CI status. A pending job is not a passing full-suite verdict.
 
-The complete per-test Linux ranking remains outstanding: existing CI validates
+At that checkpoint, the complete per-test Linux ranking remained outstanding: CI validates
 the suite but does not collect the profiler's per-test timing artifact. The
 partial 290-test local exploratory report and the earlier two-group 89% claim
 remain unsuitable for a complete ranking or suite-wide speedup claim. The three
 next-candidate IDs above were confirmed against the source class/method names;
 none has been reviewed or changed by this continuation. Do not repeat today's
 three reviewed IDs in the next batch.
+
+
+## Linux longest-test screening — completed permitted coverage
+
+Measured revision: `c4709309597e59554718c384621aee8415df0325` (clean).
+Linux x86_64, Python 3.12.14, Git 2.52.0, non-root. This is a measurement and
+documentation pass only; no additional tests were optimized or marked reviewed.
+The three improvements and their repeated comparisons above remain unchanged.
+
+The existing CI run had no artifacts. Its logs expose module totals, not
+reliable per-test durations, so they were not used to synthesize a ranking.
+The existing profiler ran the entire K4.1 set sequentially with `--repeat 1`.
+Then a separate fresh Python process reused the same profiler worker with
+`unittest.defaultTestLoader.discover` redirected to `v0.5/scripts/test_*.py`.
+Both runs disabled automatic Git maintenance as the canonical runner does.
+No concurrent workspace test workload ran. Timings include setup and cleanup.
+All source hashes match the measured revision.
+
+Coverage: **760 canonical unittest executions attempted, 756 passed (99.47%),
+four failed before useful measurement, zero skipped**. Delivery contributed
+530 successful executions out of 534; public edition contributed all 226.
+These correspond to **749 successfully timed unique IDs out of 753**: seven
+imported checkpoint IDs are discovered twice by the canonical delivery runner.
+The report retains both occurrences with their discovery module, and lists
+duplicate IDs explicitly. No test was silently omitted.
+
+Evidence: [complete successful-execution ranking and exclusions](2026-09-30-linux-ranking.json).
+The JSON contains all 756 successful timings in descending order, four failed
+attempts with reasons, 16 discovery-group summaries, and source hashes. These
+are single samples for screening, not stable medians or a complete successful
+full-suite timing baseline. Non-unittest CLI checks are outside this ranking.
+
+### Longest successfully measured tests
+
+| Rank | Exact test ID | Seconds |
+| --- | --- | --- |
+| 1 | `test_interim_recovery.RecoveryBoundaryTests.test_owned_inventory_malformed_matrix` | 312.045 |
+| 2 | `test_interim_recovery.RecoveryBoundaryTests.test_malformed_observation_and_cancellation_matrix` | 206.365 |
+| 3 | `test_interim_coordinator.CoordinatorTests.test_worker_acceptance_parity_verify_matrix` | 127.765 |
+| 4 | `test_interim_recovery.RecoveryBoundaryTests.test_transport_failures_at_every_call_site` | 91.739 |
+| 5 | `test_interim_coordinator.CoordinatorTests.test_worker_acceptance_parity_build_matrix` | 91.505 |
+| 6 | `test_interim_coordinator.CoordinatorTests.test_handoff_acceptance_parity_matrix` | 67.289 |
+| 7 | `test_interim_recovery.RecoveryBoundaryTests.test_provider_programmer_and_storage_exceptions_are_not_conflated` | 37.806 |
+| 8 | `test_interim_recovery.RecoveryBoundaryTests.test_coordinator_and_prefix_malformed_matrix` | 21.485 |
+| 9 | `test_interim_recovery.RecoveryBoundaryTests.test_unknown_active_queued_and_terminal_are_distinct` | 13.798 |
+| 10 | `test_interim_host_continuation.RepairHostContinuationTests.test_async_three_failure_diagnosis_and_stagnation_with_and_without_caps` | 13.172 |
+| 11 | `test_interim_recovery.RecoveryBoundaryTests.test_truthful_stop_proof_still_gates_validation_persist_reload_and_resume` | 11.191 |
+| 12 | `test_interim_recovery.RecoveryBoundaryTests.test_consumed_elapsed_is_validated_before_accounting` | 11.149 |
+| 13 | `test_interim_coordinator.CoordinatorTests.test_operation_binding_parity_matrix` | 9.588 |
+| 14 | `test_interim_recovery.RecoveryBoundaryTests.test_shared_boundary_red_matrix` | 8.497 |
+| 15 | `test_interim_monitor.MonitoringTests.test_repair_worker_errors_keep_one_monitored_failed_operation` | 8.313 |
+
+The longest public-edition test was
+`test_verification_harness_fixture.VerificationHarnessFixtureTest.test_actual_twice_bootstrap_and_upgrade_preserve_custom_generated_harness`
+at 1.717 s. Recovery and coordinator discovery groups together account for
+**1083.383 s / 1343.875 s = 80.6% of successfully measured delivery test time**.
+This is a new, explicit single-run denominator excluding the four failed
+watcher attempts; it does not substantiate the earlier 89% claim.
+
+### Excluded privilege-dependent measurements
+
+All four are in `test_checker_monitor.CheckerMonitorTests`:
+
+- `test_git_index_lock_records_kernel_writer_attribution`
+- `test_non_executable_helper_starts_only_after_first_probe_and_stops_cleanly`
+- `test_sub_interval_create_remove_is_event_detected`
+- `test_transient_write_invalidates_even_when_removed_before_stop`
+
+Each failed at monitor startup with `monitor failed before readiness:
+monitor-error`; diagnostic reruns reproduced all four failures. The preflight
+probe returned EPERM from the exact fanotify initialization used by the monitor.
+This sandbox has no sudo/root route, so those early-exit durations are excluded
+from the ranking. The other seven checker-monitor tests and all 93 interim
+monitor tests passed. No security change, privileged workaround, or CI workflow
+change was attempted.
+
+The measured revision already passed privileged
+[CI run 36774219181](https://github.com/{owner}/agentic-engineering-playbook/actions/runs/36774219181):
+edition passed and all 534 delivery executions passed, including these four.
+That establishes correctness, not comparable per-test durations for the four
+excluded IDs. Final documentation-commit CI status is recorded on the draft PR.
+
+### Next candidates and remaining limit
+
+The top three new candidates are now:
+
+- `test_interim_recovery.RecoveryBoundaryTests.test_owned_inventory_malformed_matrix`
+- `test_interim_recovery.RecoveryBoundaryTests.test_malformed_observation_and_cancellation_matrix`
+- `test_interim_coordinator.CoordinatorTests.test_worker_acceptance_parity_verify_matrix`
+
+The previously listed handoff parity matrix remains a candidate (rank 6).
+Profiling is not a correctness review: all these candidates remain unreviewed.
+A future batch should select two or three previously unreviewed IDs, diagnose
+costs, and collect repeated before/after evidence before claiming improvements.
+Today's three reviewed IDs must not be selected again.
+
+Remaining hard limit: a complete successful ranking including the four kernel
+watcher tests needs a permitted privileged timing environment. Existing CI has
+no per-test timing artifact, and no workflow was changed to obtain privileges.
+This pass completes the ranking available in the current permitted environment.
