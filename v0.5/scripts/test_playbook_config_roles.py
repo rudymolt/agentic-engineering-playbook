@@ -8,7 +8,7 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from playbook_config import Configuration, ROLES
+from playbook_config import ConfigError, Configuration, ROLES
 
 
 class RoleConversationTests(unittest.TestCase):
@@ -405,6 +405,109 @@ class RoleConversationTests(unittest.TestCase):
         restored = service.reply(result, "Edit Verify")
         self.assertEqual(restored["after"], draft["after"])
         self.assertEqual(service.reply(restored, "Apply")["state"], "recovery_required")
+        self.assertEqual(self.state.read_bytes(), self.runtime)
+
+    def test_pending_recovery_in_either_directory_blocks_both_public_writes(self):
+        for boundary in ("api", "cli"):
+            for origin in ("project", "local"):
+                for marker in (".playbook-config.recovery", ".playbook-config.lock",
+                               ".playbook-config-unfinished.receipt"):
+                    for existing_local in (False, True):
+                        with self.subTest(boundary=boundary, origin=origin, marker=marker,
+                                          existing_local=existing_local), tempfile.TemporaryDirectory() as temporary:
+                            root = Path(temporary)
+                            project = root / "project"
+                            local = root / "personal"
+                            project.mkdir()
+                            (project / ".playbook-state.yml").write_bytes(self.runtime)
+                            if existing_local:
+                                local.mkdir()
+                                (local / "preferences.json").write_text(
+                                    '{"schema_version":1,"presentation":"guided"}\n')
+                            service = Configuration(project, self.discover,
+                                                    lambda: "2026-09-30T12:00:00Z",
+                                                    preferences_dir=local,
+                                                    context={"goal": "Known", "billing": "unknown"})
+                            adapter = root / "adapter.py"
+                            adapter.write_text(
+                                "import json, sys\nrequest = json.load(sys.stdin)\n"
+                                "print(json.dumps({'request_id': request['request_id'], "
+                                "'checked_at': request['started_at'], "
+                                "'authority': 'host-reported-selection', 'revision': 'fixture-1', "
+                                "'coordinator': None, 'routes': " + repr(self.routes) + "}))\n")
+                            command = [sys.executable, str(Path(__file__).with_name("configure-playbook.py")),
+                                       "--project", str(project), "--preferences-dir", str(local),
+                                       "--discovery-command", json.dumps([sys.executable, str(adapter)]),
+                                       "--now", "2026-09-30T12:00:00Z"]
+
+                            def run(action, proposal=None, reply=None):
+                                if boundary == "api":
+                                    return service.read() if action == "read" else service.reply(proposal, reply)
+                                request = {"context": {"goal": "Known", "billing": "unknown"}}
+                                if action == "reply":
+                                    request.update(proposal=proposal, reply=reply)
+                                completed = subprocess.run(command + [action], input=json.dumps(request),
+                                                           text=True, capture_output=True)
+                                result = json.loads(completed.stdout)
+                                self.assertEqual(completed.returncode,
+                                                 2 if result["state"] in {"blocked", "recovery_required"} else 0,
+                                                 completed.stderr)
+                                return result
+
+                            def files():
+                                return {str(path.relative_to(root)): path.read_bytes() if path.is_file() else None
+                                        for directory in (project, local) if directory.exists()
+                                        for path in (directory, *directory.rglob("*"))}
+
+                            draft = run("read")
+                            draft = run("reply", run("reply", draft, "Edit Build"), "2")
+                            draft = run("reply", draft, "Expert")
+                            destination = project if origin == "project" else local
+                            destination.mkdir(exist_ok=True)
+                            pending = destination / marker
+                            pending.write_text("{}\n")
+                            before = files()
+                            result = run("reply", draft, "Apply")
+                            self.assertIn(result["state"], {"blocked", "recovery_required"})
+                            self.assertEqual(result["retained_proposal"], draft)
+                            restored = run("reply", result, "Back")
+                            preview = run("reply", restored, "Expert")
+                            result = run("reply", preview, "Apply preference")
+                            self.assertIn(result["state"], {"blocked", "recovery_required"})
+                            self.assertIn("reconcile", result["message"].lower())
+                            self.assertEqual(result["retained_proposal"], preview)
+                            self.assertEqual(files(), before)
+                            pending.unlink()
+                            restored = run("reply", result, "Back")
+                            saved = run("reply", restored, "Apply preference")
+                            self.assertEqual(saved["state"], "proposal_ready")
+                            self.assertEqual(saved["after"], draft["after"])
+                            self.assertEqual(run("reply", saved, "Apply")["state"], "applied")
+                            self.assertEqual(json.loads((local / "preferences.json").read_text())["presentation"],
+                                             "expert")
+                            self.assertEqual(json.loads((project / ".playbook-config.json").read_text())["models"],
+                                             draft["after"])
+                            self.assertEqual((project / ".playbook-state.yml").read_bytes(), self.runtime)
+
+    def test_shared_save_boundary_guards_both_stores_before_mutation(self):
+        local = Path(self.temporary.name) / "personal"
+        service = self.personal_service(local)
+        draft = service.reply(service.read(), "Expert")
+        marker = self.project / ".playbook-config.recovery"
+        marker.write_text("{}\n")
+        with self.assertRaisesRegex(ConfigError, "reconcile"):
+            service.preferences._save(draft["personal"]["after"], draft["personal"]["inputs"],
+                                      draft["discovery"], create_directory=True)
+        self.assertFalse(local.exists())
+        self.assertFalse(service.lock.exists())
+        marker.unlink()
+        local.mkdir()
+        (local / ".playbook-config.recovery").write_text("{}\n")
+        with self.assertRaisesRegex(ConfigError, "reconcile"):
+            service._save({"schema_version": 1, "adopted": True, "models": draft["after"]},
+                          draft["inputs"], draft["discovery"])
+        self.assertFalse(service.lock.exists())
+        self.assertFalse(service.path.exists())
         self.assertEqual(self.state.read_bytes(), self.runtime)
 
     def test_local_post_completion_edits_remain_valid_and_explanations_do_not_launch(self):

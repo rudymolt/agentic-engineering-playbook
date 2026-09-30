@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- Extend Configure to all four model roles with typed role/model/runner/reasoning choices, read-only explanations, QA inheritance and observed display-only Coordinator identity. Preview and save guided/expert presentation locally through the accepted content-completion/recovery protocol, separately from project Apply; retain sealed role drafts when a save requires recovery, without permitting writes before reconciliation. Route new projects back to the existing bootstrap gate.
+- Extend Configure to all four model roles with typed role/model/runner/reasoning choices, read-only explanations, QA inheritance and observed display-only Coordinator identity. Preview and save guided/expert presentation locally through the accepted content-completion/recovery protocol, separately from project Apply; retain sealed role drafts when a save requires recovery. A shared write guard checks both project and local recovery evidence before either save or local directory creation; Back/Edit preserves the draft until reconciliation permits Apply. Route new projects back to the existing bootstrap gate.
 
 *Why — complete role editing without new execution authority:* users need a complete model proposal that retains project customisations, unrelated drafts and approved execution history, without repeating known onboarding, silently substituting a route or confusing presentation saves with project saves. Recommendation evidence, skill bindings and live host qualification remain separate slices.
 

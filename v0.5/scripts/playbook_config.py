@@ -198,12 +198,23 @@ class Configuration:
         self.checkpoint = checkpoint or (lambda point: None)
         self.context = deepcopy(context)
         self.preferences = None
+        self._write_stores = (self,)
         if preferences_dir is not None:
             local = Path(preferences_dir)
             if local.resolve().is_relative_to(self.project.resolve()):
                 raise ConfigError("Personal preferences require a user-local directory outside the project; preview it explicitly.")
             self.preferences = LocalPreferences(local, discover, self.clock, self.checkpoint)
             self.preferences.state_path = self.state_path
+            self._write_stores = (self, self.preferences)
+            self.preferences._write_stores = self._write_stores
+
+    def _guard_write(self):
+        for store in self._write_stores:
+            if store.lock.exists() or store.recovery.exists():
+                if store.destination == DESTINATION:
+                    raise ConfigError("Configuration transaction/recovery pending; reconcile before reading or writing defaults.")
+                raise RecoveryRequired("Local preferences transaction/recovery pending; reconcile its retained evidence.")
+            store._reconcile_receipts()
 
     def _validate_candidate(self, candidate):
         return validate_config(candidate)
@@ -544,6 +555,7 @@ class Configuration:
 
     def _apply_preference(self, draft):
         try:
+            self._guard_write()
             if self.preferences is None or draft["personal"]["destination"] != str(self.preferences.path):
                 raise ConfigError("Personal destination changed; reload and preview the local destination.")
             before, inputs = self.preferences.snapshot()
@@ -551,8 +563,7 @@ class Configuration:
                 raise ConfigError("Personal preferences or runtime changed since preview; reload without overwriting them.")
             self.preferences._validate_candidate(draft["personal"]["after"])
             if before != draft["personal"]["after"]:
-                self.preferences.project.mkdir(parents=True, exist_ok=True, mode=0o700)
-                self.preferences._save(draft["personal"]["after"], inputs, draft["discovery"])
+                self.preferences._save(draft["personal"]["after"], inputs, draft["discovery"], create_directory=True)
             draft["personal"] = self._personal_snapshot()
             draft["message"] = "Local presentation saved and validated. Project draft remains unsaved; no model launches."
             return self._preview(draft)
@@ -561,6 +572,7 @@ class Configuration:
 
     def apply(self, proposal):
         try:
+            self._guard_write()
             if proposal.get("proposal_revision") != self._revision(proposal):
                 raise ConfigError("Proposal changed outside the editor; reload and preview before Apply.")
             if proposal["bootstrap"]["required"]:
@@ -592,7 +604,10 @@ class Configuration:
         except (ConfigError, OSError, UnicodeError, KeyError, TypeError) as error:
             return self._blocked(error)
 
-    def _save(self, candidate, inputs, evidence):
+    def _save(self, candidate, inputs, evidence, create_directory=False):
+        self._guard_write()
+        if create_directory:
+            self.project.mkdir(parents=True, exist_ok=True, mode=0o700)
         with self.lock.open("x"):
             pass
         staged = None
