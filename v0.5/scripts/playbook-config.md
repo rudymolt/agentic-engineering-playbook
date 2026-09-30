@@ -99,6 +99,18 @@ journal and `.playbook-config-*` evidence live beside the local destination,
 never in shared configuration. Invalid or newer personal schemas block rather
 than dropping unknown fields. Reconciliation remains human-owned.
 
+Both save directions recheck the paired store's locks, recovery journals and
+unfinished/conflicting receipts during staging, after discovery, before capture
+and publication, after publication and immediately before the content-completion
+check. Only the active store's own transaction artifacts are exempt from these
+paired checks; its existing capture, journal and receipt protocol still applies.
+Recovery detected before publication prevents publication. If capture already
+occurred, an absent destination can be restored by an exclusive hard link while
+retaining recovery evidence. Recovery detected after publication never reports
+success or destructively restores old bytes: current and attempted bytes remain
+for reconciliation. Blocked replies retain the sealed role draft; once both
+stores are reconciled, Back/Edit can resume the same reviewed proposal.
+
 When runtime state is absent, `bootstrap.required` routes the model proposal to
 the existing bootstrap preview/approval gate. Project Apply blocks; no runtime
 file, second bootstrap or unspecified setting is created. Reopen and review

@@ -208,9 +208,13 @@ class Configuration:
             self._write_stores = (self, self.preferences)
             self.preferences._write_stores = self._write_stores
 
-    def _guard_write(self):
+    def _guard_write(self, active=False):
         for store in self._write_stores:
+            if active and store is self:
+                continue
             if store.lock.exists() or store.recovery.exists():
+                if active:
+                    raise RecoveryRequired("Paired configuration transaction/recovery pending; reconcile its retained evidence.")
                 if store.destination == DESTINATION:
                     raise ConfigError("Configuration transaction/recovery pending; reconcile before reading or writing defaults.")
                 raise RecoveryRequired("Local preferences transaction/recovery pending; reconcile its retained evidence.")
@@ -632,12 +636,15 @@ class Configuration:
             staged = self._stage(candidate_bytes)
             publication = self._stage(candidate_bytes)
             self.checkpoint("staged")
+            self._guard_write(active=True)
             self._validate_candidate(strict_json(staged.read_text()))
             self.checkpoint("before_replace")
+            self._guard_write(active=True)
             self._check_inputs(inputs)
             _, current_evidence = self._available()
             if self._discovery_revision(current_evidence) != self._discovery_revision(evidence):
                 raise ConfigError("Availability evidence changed before save; reload and review current choices.")
+            self._guard_write(active=True)
             marker = {"destination": self.destination, "previous": backup.name if backup else None,
                       "captured": captured_path.name if captured_path else None,
                       "attempted": staged.name, "attempted_digest": digest(candidate_bytes),
@@ -650,6 +657,7 @@ class Configuration:
                 os.fsync(stream.fileno())
             journaled = True
             self._sync_directory()
+            self._guard_write(active=True)
             if backup is not None:
                 os.replace(self.path, captured_path)
                 captured = True
@@ -657,12 +665,14 @@ class Configuration:
                 if digest(self._bytes(captured_path)) != inputs[self.destination]:
                     raise ConfigError("Concurrent configuration captured intact; reconcile recovery before continuing.")
             self.checkpoint("before_publish")
+            self._guard_write(active=True)
             try:
                 os.link(publication, self.path)
             except FileExistsError as error:
                 raise ConfigError("Destination changed during publication; external file retained, reload or reconcile recovery.") from error
             committed = True
             self.checkpoint("committed")
+            self._guard_write(active=True)
             actual = self._bytes(self.path)
             if actual != candidate_bytes:
                 raise ConfigError("Saved configuration changed during validation; recovery is required.")
@@ -677,6 +687,7 @@ class Configuration:
             journaled = False
             self._sync_directory()
             self.checkpoint("before_completion")
+            self._guard_write(active=True)
             self._receipt_conflicts(receipt, marker, completing=True)
             seal = receipt.with_name(receipt.name + ".complete")
             seal.mkdir()

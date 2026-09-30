@@ -489,6 +489,163 @@ class RoleConversationTests(unittest.TestCase):
                                              draft["after"])
                             self.assertEqual((project / ".playbook-state.yml").read_bytes(), self.runtime)
 
+    def cross_store_save(self, boundary, destination, point, artifact, existing, concurrent=False):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            project = root / "project"
+            local = root / "personal"
+            project.mkdir()
+            local.mkdir()
+            (project / ".playbook-state.yml").write_bytes(self.runtime)
+            fault = root / "fault.json"
+            injection = (
+                "def inject(point):\n"
+                "    if not fault.exists(): return\n"
+                "    settings = json.loads(fault.read_text())\n"
+                "    if point != settings['point']: return\n"
+                "    marker = Path(settings['marker'])\n"
+                "    marker.write_text(json.dumps(settings['content']) + '\\n')\n"
+                "    if settings['conflict']: marker.with_name(marker.name + '.conflict').mkdir(exist_ok=True)\n"
+                "    if settings['concurrent']: Path(settings['destination']).write_bytes(b'external concurrent bytes\\n')\n"
+            )
+            namespace = {"fault": fault, "json": json, "Path": Path}
+            exec(injection, namespace)
+            service = Configuration(project, self.discover, lambda: "2026-09-30T12:00:00Z",
+                                    namespace["inject"], preferences_dir=local,
+                                    context={"goal": "Known", "billing": "unknown"})
+            adapter = root / "adapter.py"
+            adapter.write_text(
+                "import json, sys\nrequest = json.load(sys.stdin)\n"
+                "print(json.dumps({'request_id': request['request_id'], 'checked_at': request['started_at'], "
+                "'authority': 'host-reported-selection', 'revision': 'fixture-1', 'coordinator': None, "
+                "'routes': " + repr(self.routes) + "}))\n")
+            wrapper = (
+                "import json, runpy, sys\nfrom pathlib import Path\n"
+                "sys.path.insert(0, str(Path(sys.argv[1]).parent))\n"
+                "from playbook_config import Configuration\n"
+                "fault = Path(" + repr(str(fault)) + ")\n" + injection +
+                "original = Configuration.__init__\n"
+                "def initialize(self, *args, **kwargs):\n"
+                "    original(self, *args, **kwargs)\n"
+                "    self.checkpoint = inject\n"
+                "    if self.preferences is not None: self.preferences.checkpoint = inject\n"
+                "Configuration.__init__ = initialize\n"
+                "sys.argv = sys.argv[1:]\nrunpy.run_path(sys.argv[0], run_name='__main__')\n")
+            command = [sys.executable, "-c", wrapper, str(Path(__file__).with_name("configure-playbook.py")),
+                       "--project", str(project), "--preferences-dir", str(local),
+                       "--discovery-command", json.dumps([sys.executable, str(adapter)]),
+                       "--now", "2026-09-30T12:00:00Z"]
+
+            def run(action, proposal=None, reply=None):
+                if boundary == "api":
+                    return service.read() if action == "read" else service.reply(proposal, reply)
+                request = {"context": {"goal": "Known", "billing": "unknown"}}
+                if action == "reply":
+                    request.update(proposal=proposal, reply=reply)
+                completed = subprocess.run(command + [action], input=json.dumps(request),
+                                           text=True, capture_output=True)
+                self.assertEqual(completed.stderr, "")
+                result = json.loads(completed.stdout)
+                self.assertEqual(completed.returncode,
+                                 2 if result["state"] in {"blocked", "recovery_required"} else 0)
+                return result
+
+            if existing or destination == "project":
+                (local / "preferences.json").write_text('{"schema_version":1,"presentation":"guided"}\n')
+            if existing:
+                seed = run("read")
+                for label in ("Plan", "Build", "Verify", "Repair"):
+                    seed = run("reply", run("reply", seed, "Edit " + label), "1")
+                seeded = run("reply", seed, "Apply")
+                self.assertEqual(seeded["state"], "applied", seeded)
+            draft = run("read")
+            for label in ("Plan", "Build", "Verify", "Repair"):
+                draft = run("reply", run("reply", draft, "Edit " + label), "2")
+            proposal = run("reply", draft, "Expert") if destination == "local" else draft
+            target = local / "preferences.json" if destination == "local" else project / ".playbook-config.json"
+            other = project if destination == "local" else local
+            before = target.read_bytes() if target.exists() else None
+            receipt = artifact in {"unfinished", "conflict"}
+            marker = other / (".playbook-config-pending.receipt" if receipt else ".playbook-config." + artifact)
+            content = {"destination": ".playbook-config.json" if destination == "local" else "preferences.json",
+                       "completion_protocol": 3} if receipt else {}
+            fault.write_text(json.dumps({"point": point, "marker": str(marker), "content": content,
+                                         "conflict": artifact == "conflict", "concurrent": concurrent,
+                                         "destination": str(target)}))
+            result = run("reply", proposal, "Apply preference" if destination == "local" else "Apply")
+            self.assertEqual(result["state"], "recovery_required", result)
+            self.assertEqual(result["retained_proposal"], proposal)
+            self.assertTrue(marker.exists())
+            self.assertIn(run("read")["state"], {"blocked", "recovery_required"})
+            observed = target.read_bytes() if target.exists() else None
+            if point in {"staged", "before_replace", "before_publish"}:
+                self.assertEqual(observed, before)
+            else:
+                self.assertTrue((target.parent / ".playbook-config.recovery").exists())
+                self.assertTrue((target.parent / ".playbook-config.lock").exists())
+                journal = json.loads((target.parent / ".playbook-config.recovery").read_text())
+                attempted = (target.parent / journal["attempted"]).read_bytes()
+                self.assertEqual(json.loads(attempted)["presentation"] if destination == "local"
+                                 else json.loads(attempted)["models"], "expert" if destination == "local" else draft["after"])
+                self.assertEqual(observed, b"external concurrent bytes\n" if concurrent else attempted)
+                if before is not None:
+                    self.assertEqual((target.parent / journal["captured"]).read_bytes(), before)
+                if point == "before_completion":
+                    self.assertTrue(list(target.parent.glob("*.receipt.conflict")))
+                    self.assertFalse(any(path.name.endswith(".complete") for path in target.parent.glob("*.receipt*")
+                                         if path.name.startswith(journal["attempted"])))
+            retained_files = {path: path.read_bytes() for directory in (project, local)
+                              for path in directory.iterdir() if path.is_file()}
+            restored = run("reply", result, "Back")
+            self.assertEqual(restored["after"], draft["after"])
+            for reply in ("Apply", "Apply preference"):
+                preview = run("reply", restored, "Expert") if reply == "Apply preference" else restored
+                blocked = run("reply", preview, reply)
+                self.assertIn(blocked["state"], {"blocked", "recovery_required"})
+                self.assertEqual(blocked["retained_proposal"]["after"], draft["after"])
+            self.assertEqual({path: path.read_bytes() for directory in (project, local)
+                              for path in directory.iterdir() if path.is_file()}, retained_files)
+            fault.unlink()
+            for directory in (project, local):
+                for path in directory.glob(".playbook-config*"):
+                    if path.name == ".playbook-config.json":
+                        continue
+                    path.rmdir() if path.is_dir() else path.unlink()
+            if before is None:
+                target.unlink(missing_ok=True)
+            else:
+                target.write_bytes(before)
+            self.assertEqual(run("read")["state"], "decision_required")
+            resumed = run("reply", result, "Back")
+            self.assertEqual(resumed["after"], draft["after"])
+            if destination == "local":
+                resumed = run("reply", resumed, "Apply preference")
+                self.assertEqual(resumed["state"], "proposal_ready")
+                self.assertEqual(json.loads(target.read_text())["presentation"], "expert")
+            self.assertEqual(run("reply", resumed, "Apply")["state"], "applied")
+            self.assertEqual(json.loads((project / ".playbook-config.json").read_text())["models"], draft["after"])
+            self.assertEqual((project / ".playbook-state.yml").read_bytes(), self.runtime)
+
+    def test_recovery_arising_before_publication_blocks_both_public_saves(self):
+        for boundary in ("api", "cli"):
+            for destination in ("local", "project"):
+                for point in ("staged", "before_replace", "before_publish"):
+                    for artifact in ("lock", "recovery", "unfinished", "conflict"):
+                        for existing in (False, True):
+                            with self.subTest(boundary=boundary, destination=destination, point=point,
+                                              artifact=artifact, existing=existing):
+                                self.cross_store_save(boundary, destination, point, artifact, existing)
+
+    def test_recovery_arising_after_publication_retains_evidence_and_concurrent_bytes(self):
+        for boundary in ("api", "cli"):
+            for destination in ("local", "project"):
+                for point in ("committed", "before_completion"):
+                    for artifact in ("lock", "recovery", "unfinished", "conflict"):
+                        for concurrent in (False, True):
+                            with self.subTest(boundary=boundary, destination=destination, point=point,
+                                              artifact=artifact, concurrent=concurrent):
+                                self.cross_store_save(boundary, destination, point, artifact, True, concurrent)
+
     def test_shared_save_boundary_guards_both_stores_before_mutation(self):
         local = Path(self.temporary.name) / "personal"
         service = self.personal_service(local)
