@@ -123,42 +123,25 @@ snapshot, not the hard-linked publication inode: in-place external writes
 cannot rewrite the reviewed candidate evidence. The publication inode is also
 retained, including for writers holding its open descriptor.
 
-Journal promotion is **not completion**. Protocol-2 receipts remain pending
-until completion certification. After promotion, the helper observes the
-destination, captured inode, runtime and independent evidence again. A new
-empty `.receipt.complete` directory establishes the prospective transaction
-linearization point through its filesystem creation timestamp. Stable
-byte/version observations on both sides of this boundary, followed by directory
-sync and reconciliation, must certify it before Apply reports success. Each
-observation checks inode identity, size, modification time and change time
-around the byte read; changing evidence is not a successful observation.
-Digest differences with change timestamps at or before the boundary, missing
-files, or ambiguous observations require recovery. Timestamp equality is
-conservatively a conflict. Before returning success, a separate disposable
-filesystem probe must observe a timestamp strictly beyond the seal, ensuring
-ordinary writes begun after the completed Apply cannot share its timestamp
-tick. Three non-advancing observations fail closed rather than certifying an
-unsupported clock. Directory sync or certification failures retain a
-`.receipt.conflict` marker as well as the recovery journal and lock.
+Journal promotion is **not completion**. After publication and all durability
+steps, one final check compares current destination, captured previous config,
+tracked runtime and retained evidence bytes against their recorded digests;
+all matches establish the completion point. Only non-content bookkeeping
+follows: marking the protocol-3 receipt complete and removing the lock, so later
+content or metadata edits cannot retroactively turn that save into a conflict.
+Digest mismatches or durability failures retain a `.receipt.conflict` marker
+as well as the recovery journal and lock, without deleting concurrent bytes.
 
 All preference readers reconcile receipts before and after their configuration
 read, including when the transaction lock/recovery journal is absent. A
-protocol-2 receipt without its completion seal, a conflict marker, changed
-independent reviewed evidence, or a pre-completion byte conflict blocks every
-role with an actionable recovery error. Older receipts have no explicit seal;
-readers use their promotion change timestamp to reject detectable unresolved
-pre-promotion conflicts, rather than assuming that marker disappearance proves
-success. Receipt and seal evidence must remain untouched until reconciliation.
-
-A successful certified operation linearizes at its seal creation, not at its
-return message or later lock cleanup. Changes strictly after that boundary
-are ordinary future project edits, including later writes to a retained open
-inode; they do not retroactively fail a completed operation. Independent
-reviewed snapshots remain immutable. A detected failure stays unresolved even
-if another later write changes the file timestamp: its conflict marker requires
-explicit reconciliation. This protocol requires same-directory rename,
-hard links, durable directory sync and ordered filesystem change timestamps;
-unsupported operations and ambiguous observations block, not waive recovery.
+protocol-3 receipt without its completion marker, or any receipt with a conflict
+marker, blocks every role with an actionable recovery error. Completed
+protocol-3 receipts are not re-dated or rechecked against later content edits.
+Older receipt formats still load when their recorded digests match; detectable
+content mismatches and unfinished protocol-2 receipts require reconciliation,
+without using timestamps. Receipt and completion evidence must remain untouched
+until reconciliation. This protocol requires same-directory rename, hard links
+and durable directory sync; unsupported operations block, not waive recovery.
 
 Incomplete transactions retain `.playbook-config.recovery`, local attempted
 bytes, a local

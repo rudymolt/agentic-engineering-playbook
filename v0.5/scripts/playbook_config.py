@@ -10,7 +10,6 @@ import os
 from pathlib import Path
 import re
 import tempfile
-import time
 import uuid
 from typing import Callable
 
@@ -223,33 +222,21 @@ class Configuration:
         self._reconcile_receipts()
         return config, origins, {DESTINATION: digest(saved), ".playbook-state.yml": digest(runtime)}
 
-    def _observe(self, path):
-        before = path.stat(follow_symlinks=False) if path.exists() else None
-        contents = self._bytes(path)
-        after = path.stat(follow_symlinks=False) if path.exists() else None
-        version = lambda stat: (stat.st_dev, stat.st_ino, stat.st_size, stat.st_mtime_ns, stat.st_ctime_ns) if stat else None
-        if version(before) != version(after):
-            raise RecoveryRequired("Configuration evidence changed during observation; reconcile retained files.")
-        return digest(contents), after.st_ctime_ns if after else None
-
     def _receipt_conflicts(self, receipt, marker, completing=False):
         seal = receipt.with_name(receipt.name + ".complete")
         if receipt.with_name(receipt.name + ".conflict").exists():
             raise RecoveryRequired(f"Unresolved configuration completion conflict in {receipt.name}; reconcile retained evidence.")
-        if completing:
-            boundary = None
-        elif marker.get("completion_protocol") == 2:
+        if not completing and marker.get("completion_protocol") in (2, 3):
             if not seal.is_dir() or seal.is_symlink():
                 raise RecoveryRequired(f"Unfinished configuration receipt {receipt.name}; reconcile retained files before continuing.")
-            boundary = seal.stat().st_mtime_ns
-        else:
-            boundary = receipt.stat().st_ctime_ns
-        if marker.get("completion_protocol") == 2:
+            if marker["completion_protocol"] == 3:
+                return
+        if marker.get("completion_protocol") in (2, 3):
             evidence = [(self.project / marker["attempted"], marker["attempted_digest"])]
             if marker.get("previous"):
                 evidence.append((self.project / marker["previous"], marker["previous_digest"]))
             for path, expected in evidence:
-                if self._observe(path)[0] != expected:
+                if digest(self._bytes(path)) != expected:
                     raise RecoveryRequired(f"Retained configuration evidence changed in {receipt.name}; reconcile {path.name}.")
         observations = [(self.path, marker["attempted_digest"])]
         if marker.get("published"):
@@ -259,15 +246,14 @@ class Configuration:
         if "runtime_digest" in marker:
             observations.append((self.state_path, marker["runtime_digest"]))
         for path, expected in observations:
-            actual, changed_at = self._observe(path)
-            if actual != expected and (completing or changed_at is None or changed_at <= boundary):
+            if digest(self._bytes(path)) != expected:
                 raise RecoveryRequired(f"Configuration completion conflict in {receipt.name} ({path.name}); reconcile reviewed, captured and attempted evidence before continuing.")
 
     def _reconcile_receipts(self):
         for receipt in self.project.glob(".playbook-config-*.receipt"):
             try:
                 marker = strict_json(self._bytes(receipt).decode())
-                if marker.get("destination") != DESTINATION or marker.get("completion_protocol") not in (None, 2):
+                if marker.get("destination") != DESTINATION or marker.get("completion_protocol") not in (None, 2, 3):
                     raise ConfigError("Unsupported configuration receipt; reconcile its completion protocol.")
                 for key in ("captured", "previous", "attempted", "published"):
                     name = marker.get(key)
@@ -276,20 +262,6 @@ class Configuration:
                 self._receipt_conflicts(receipt, marker)
             except (ConfigError, OSError, UnicodeError, KeyError, TypeError, AttributeError) as error:
                 raise RecoveryRequired(f"Reconcile configuration receipt {receipt.name}: {error}") from error
-
-    def _completion_clock_barrier(self, seal):
-        probe = self._stage(b"")
-        try:
-            boundary = seal.stat().st_mtime_ns
-            for attempt in range(3):
-                if probe.stat().st_ctime_ns > boundary:
-                    return
-                time.sleep(0.01)
-                os.utime(probe, None)
-            if probe.stat().st_ctime_ns <= boundary:
-                raise RecoveryRequired("Filesystem completion timestamps did not advance; reconcile retained evidence before continuing.")
-        finally:
-            probe.unlink(missing_ok=True)
 
     def resolve(self, role, feature_choice=None):
         if role not in ROLES:
@@ -455,7 +427,7 @@ class Configuration:
                       "attempted": staged.name, "attempted_digest": digest(candidate_bytes),
                       "published": publication.name,
                       "previous_digest": inputs[DESTINATION],
-                      "runtime_digest": inputs[".playbook-state.yml"], "completion_protocol": 2}
+                      "runtime_digest": inputs[".playbook-state.yml"], "completion_protocol": 3}
             with self.recovery.open("x") as stream:
                 stream.write(encoded(marker).decode())
                 stream.flush()
@@ -488,14 +460,10 @@ class Configuration:
             os.replace(self.recovery, receipt)
             journaled = False
             self._sync_directory()
+            self.checkpoint("before_completion")
             self._receipt_conflicts(receipt, marker, completing=True)
             seal = receipt.with_name(receipt.name + ".complete")
             seal.mkdir()
-            self._receipt_conflicts(receipt, marker)
-            self._sync_directory()
-            self._receipt_conflicts(receipt, marker)
-            self._completion_clock_barrier(seal)
-            self._receipt_conflicts(receipt, marker)
             completed = True
         except (OSError, ConfigError, UnicodeError) as error:
             if committed or captured:

@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Complete S1 configuration saves with a final content-digest check after durability steps, not filesystem timestamps. Completed receipts permit later edits; unfinished saves and detectable older-receipt conflicts still require non-destructive reconciliation.
+
+*Why — content-based completion:* metadata-only changes cannot date content edits or hide a conflict. A single completion check preserves concurrent bytes and reviewed evidence without retroactively rejecting successful saves.
+
 - Separate S1 journal promotion from certified transaction completion, reconcile pending/conflicting receipts in every preference reader, and retain independent reviewed candidate bytes alongside captured and published inodes. Define the completion seal's linearization boundary so ordinary later project edits remain allowed.
 
 *Why — truthful transaction completion:* an external destination or old-open-inode write before receipt promotion must not become a successful Apply merely because recovery markers disappear. Completion-window and marker-loss regressions require actionable reconciliation without deleting external bytes or mutating approved history.
