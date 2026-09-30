@@ -138,3 +138,54 @@ other test suites concurrently with this final measurement. The initial local
 comparison remains provisional because exploratory profiling was concurrent.
 
 No merge or deployment is authorized by this checkpoint.
+
+
+## Linux cloud continuation — batch 1
+
+Measured baseline: `a57af6de259d34e9b772105e0ad0610290797cfa`.
+Measured candidate: `2d3d4e70136f2f4223738f72affa64475a056ee8`.
+Both checkouts were clean during measurement. Linux x86_64, Python 3.12.14,
+Git 2.52.0, non-root; identical Git maintenance settings and exact selected IDs.
+Three alternating baseline/candidate pairs ran in fresh subprocesses with no
+other test workload running in this cloud workspace. These measurements include
+setup and cleanup and are separate from the provisional macOS comparison.
+
+| Test suffix (same three reviewed IDs above) | Before median (range), s | After median (range), s | Reduction |
+| --- | --- | --- | --- |
+| host brief and paths | 0.701 (0.693–0.727) | 0.531 (0.511–0.535) | 24.3% |
+| candidate symlink escape | 0.692 (0.666–0.693) | 0.500 (0.499–0.509) | 27.8% |
+| verify PR helper message | 1.218 (1.180–1.248) | 0.884 (0.852–0.899) | 27.4% |
+
+All 18 executions passed; before/after ranges do not overlap. Evidence:
+[Linux before](2026-09-30-linux-before.json) and
+[Linux after](2026-09-30-linux-after.json). Source hashes match the measured
+checkouts. These are selected-test improvements, not suite-wide percentages.
+The evidence-only continuation does not change the tested implementation.
+
+Cloud verification:
+
+- Four cache guards passed (0.024 s); compilation passed for the profiler and
+  changed test module. The earlier independent implementation review remains
+  the review evidence; no new implementation was introduced in cloud.
+- Canonical public-edition aggregate `--skip-drift --skip-delivery` passed:
+  226 tests in 17.750 s plus conventions, metadata, links, public-content,
+  generated status/inventory and edition manifest checks.
+- The complete changed advance module passed: 45 tests in 53.224 s, including
+  its inherited fixture/test discovery and all four cache guards.
+- Drift was checked separately and is current through 2026-10-08.
+- The cloud sandbox supports inotify but rejects the repository's fanotify
+  initialization with EPERM; sudo is unavailable. Privileged delivery remains
+  assigned to the existing Linux/Python 3.12 GitHub Actions workflow. No security
+  settings were changed and no privileged full-profile run was attempted here.
+- At this evidence checkpoint, exact-candidate
+  [CI run 36773743448](https://github.com/{owner}/agentic-engineering-playbook/actions/runs/36773743448)
+  has passed edition; delivery is still running. See the draft PR for final
+  published-revision CI status. A pending job is not a passing full-suite verdict.
+
+The complete per-test Linux ranking remains outstanding: existing CI validates
+the suite but does not collect the profiler's per-test timing artifact. The
+partial 290-test local exploratory report and the earlier two-group 89% claim
+remain unsuitable for a complete ranking or suite-wide speedup claim. The three
+next-candidate IDs above were confirmed against the source class/method names;
+none has been reviewed or changed by this continuation. Do not repeat today's
+three reviewed IDs in the next batch.
