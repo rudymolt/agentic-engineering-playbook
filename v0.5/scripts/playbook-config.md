@@ -117,9 +117,48 @@ is never replaced or unlinked based on an earlier equality observation. Both
 current files and captured/attempted bytes remain intact. Successful saves
 retain the captured inode and a local `.playbook-config-*.receipt`: a writer
 with an already-open descriptor cannot lose later writes to an unlinked inode.
-Receipts record the previous and attempted digests; retained inodes are evidence,
-not another preference source. This strategy requires same-directory rename
-and hard-link semantics; failure to support them blocks safely.
+Receipts record the previous, attempted and runtime digests; retained inodes
+are evidence, not another preference source. Attempted bytes are a separate
+snapshot, not the hard-linked publication inode: in-place external writes
+cannot rewrite the reviewed candidate evidence. The publication inode is also
+retained, including for writers holding its open descriptor.
+
+Journal promotion is **not completion**. Protocol-2 receipts remain pending
+until completion certification. After promotion, the helper observes the
+destination, captured inode, runtime and independent evidence again. A new
+empty `.receipt.complete` directory establishes the prospective transaction
+linearization point through its filesystem creation timestamp. Stable
+byte/version observations on both sides of this boundary, followed by directory
+sync and reconciliation, must certify it before Apply reports success. Each
+observation checks inode identity, size, modification time and change time
+around the byte read; changing evidence is not a successful observation.
+Digest differences with change timestamps at or before the boundary, missing
+files, or ambiguous observations require recovery. Timestamp equality is
+conservatively a conflict. Before returning success, a separate disposable
+filesystem probe must observe a timestamp strictly beyond the seal, ensuring
+ordinary writes begun after the completed Apply cannot share its timestamp
+tick. Three non-advancing observations fail closed rather than certifying an
+unsupported clock. Directory sync or certification failures retain a
+`.receipt.conflict` marker as well as the recovery journal and lock.
+
+All preference readers reconcile receipts before and after their configuration
+read, including when the transaction lock/recovery journal is absent. A
+protocol-2 receipt without its completion seal, a conflict marker, changed
+independent reviewed evidence, or a pre-completion byte conflict blocks every
+role with an actionable recovery error. Older receipts have no explicit seal;
+readers use their promotion change timestamp to reject detectable unresolved
+pre-promotion conflicts, rather than assuming that marker disappearance proves
+success. Receipt and seal evidence must remain untouched until reconciliation.
+
+A successful certified operation linearizes at its seal creation, not at its
+return message or later lock cleanup. Changes strictly after that boundary
+are ordinary future project edits, including later writes to a retained open
+inode; they do not retroactively fail a completed operation. Independent
+reviewed snapshots remain immutable. A detected failure stays unresolved even
+if another later write changes the file timestamp: its conflict marker requires
+explicit reconciliation. This protocol requires same-directory rename,
+hard links, durable directory sync and ordered filesystem change timestamps;
+unsupported operations and ambiguous observations block, not waive recovery.
 
 Incomplete transactions retain `.playbook-config.recovery`, local attempted
 bytes, a local
@@ -127,7 +166,10 @@ bytes, a local
 lock. A crash can also leave the lock/backup. Reconcile manually: inspect
 current settings and recorded digests, agree which complete version to keep,
 restore/validate it without overwriting a concurrent choice, then remove only
-reconciled artifacts. Never automatically remove someone else's lock or
+reconciled artifacts, including the affected receipt, completion/conflict
+directories and retained evidence once its open writers have been reconciled.
+Removing the lock/journal alone cannot clear a pending receipt. Never
+automatically remove someone else's lock or
 report an interrupted transaction as applied. Only adopted configuration is
 shareable; transaction artifacts stay local.
 

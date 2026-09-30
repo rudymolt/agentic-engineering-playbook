@@ -16,7 +16,7 @@ Build-all approval on 2026-09-29 supersedes planning snapshots saying build scop
 
 | Slice | Build | Independent verification | Candidate / evidence |
 | --- | --- | --- | --- |
-| S1 | Ordinary repair 1 implemented | Fresh re-verification pending | `9e5ca3e` remains rejected. Repairs add no-clobber publication and recovery evidence, preserve immutable historical escalated-Verify routes, and require request-bound current availability. Repair tests: 26 configuration, 254 main-script and 322 affected delivery tests pass; unskipped canonical gate passes 787 tests across 16 suites. These are builder results, not independent acceptance. |
+| S1 | Ordinary repair 2 implemented | Fresh re-verification pending | `b0fe8be` remains rejected for false completion. Repair adds explicit completion certification and reader reconciliation while preserving external bytes and legitimate future edits. Builder checks: 34 focused tests and 10 completion/history probes on Python 3.11 and 3.12, 262 main-script tests, privacy/manifests and scoped checks pass. One unsuccessful ordinary repair is retained; full independent canonical completion remains pending. |
 | S2 | Not started | Pending | Blocked by S1 acceptance |
 | S3 | Not started | Pending | Blocked by S1 acceptance |
 | S4 | Not started | Pending | Blocked by S3 acceptance |
@@ -31,4 +31,4 @@ Public evidence contains only redacted commands, outcomes, candidate identifiers
 
 The endpoint is a reviewed feature PR to `main`, accurately describing any remaining qualification. Mark it draft when S8, CI or review gates prevent a ready claim. Complete an independent whole-diff specification/test-gap review and prepare the [S8 walkthrough](host-qualification.md). Do not call this feature shipped or mark S8 live qualification complete based on fixtures or the approved mockup.
 
-Exactly one next action: submit the repaired exact S1 candidate to fresh Verify. Do not start S2 before acceptance.
+Exactly one next action: submit the exact S1 repair-2 candidate to fresh Verify. Do not start S2 before acceptance.

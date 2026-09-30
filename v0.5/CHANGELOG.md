@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Separate S1 journal promotion from certified transaction completion, reconcile pending/conflicting receipts in every preference reader, and retain independent reviewed candidate bytes alongside captured and published inodes. Define the completion seal's linearization boundary so ordinary later project edits remain allowed.
+
+*Why — truthful transaction completion:* an external destination or old-open-inode write before receipt promotion must not become a successful Apply merely because recovery markers disappear. Completion-window and marker-loss regressions require actionable reconciliation without deleting external bytes or mutating approved history.
+
 - Repair S1 configuration races with durable capture and no-clobber publication, retain conflict evidence instead of destructive rollback, bind new escalated-Verify policy to immutable approvals while preserving historical routes, and require request-bound current-availability discovery separately from guidance caches.
 
 *Why — confirmed S1 contract gaps:* arbitrary external edits must survive Apply and recovery; approved execution history must remain readable without rerouting; rereading cached guidance cannot establish current access. Regression tests cover both absent and pre-existing files, retained historical bytes, host dispatch, and adapter clocks without paid launches or S8 claims.

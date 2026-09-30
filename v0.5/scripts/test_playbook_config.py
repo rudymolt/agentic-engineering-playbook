@@ -7,7 +7,7 @@ import tempfile
 import unittest
 import subprocess
 import sys
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 from playbook_config import Configuration, ConfigError
 
@@ -355,6 +355,197 @@ class ConfigurationTests(unittest.TestCase):
         self.assertTrue((self.project / latest["captured"]).read_bytes().startswith(b"late external edit"))
         self.assertTrue((self.project / latest["attempted"]).exists())
         self.assertEqual(self.service.resolve("implementation")["choice"]["model_id"], "next-build")
+
+    def test_completion_promotion_conflicts_retain_evidence_and_block_all_readers(self):
+        for adopted, captured_writer in ((False, False), (True, False), (True, True)):
+            with self.subTest(adopted=adopted, captured_writer=captured_writer):
+                self.setUp()
+                if adopted:
+                    self.assertEqual(self.service.apply(self.preview())["state"], "applied")
+                    self.discovery["routes"][0]["model_id"] = "next-build"
+                previous = self.service.path.read_bytes() if adopted else None
+                proposal = self.preview()
+                attempted = json.dumps({"schema_version": 1, "adopted": True, "models": proposal["after"]}, indent=2, sort_keys=True).encode() + b"\n"
+                external = json.loads(previous) if adopted else json.loads(json.dumps({"schema_version": 1, "adopted": True, "models": proposal["before"]}))
+                external["models"]["implementation"]["model_id"] = "external-build"
+                external_bytes = json.dumps(external).encode()
+                writer = self.service.path.open("r+b") if captured_writer else None
+                if writer:
+                    self.addCleanup(writer.close)
+                original_replace = os.replace
+
+                def replace(source, destination):
+                    if source == self.service.recovery:
+                        if writer:
+                            writer.seek(0)
+                            writer.write(external_bytes)
+                            writer.truncate()
+                            writer.flush()
+                            os.fsync(writer.fileno())
+                        else:
+                            self.service.path.write_bytes(external_bytes)
+                    return original_replace(source, destination)
+
+                with patch("playbook_config.os.replace", side_effect=replace):
+                    result = self.service.apply(proposal)
+                self.assertEqual(result["state"], "recovery_required")
+                marker = json.loads(self.service.recovery.read_text())
+                self.assertEqual((self.project / marker["attempted"]).read_bytes(), attempted)
+                if adopted:
+                    self.assertEqual((self.project / marker["previous"]).read_bytes(), previous)
+                    self.assertEqual((self.project / marker["captured"]).read_bytes(), external_bytes if writer else previous)
+                if not writer:
+                    self.assertEqual(self.service.path.read_bytes(), external_bytes)
+                self.service.recovery.unlink()
+                self.service.lock.unlink()
+                self.assertEqual(self.service.read()["state"], "recovery_required")
+                for role in ("planning", "implementation", "verification", "escalated_repair"):
+                    with self.assertRaises(ConfigError):
+                        self.service.resolve(role)
+                fresh = Configuration(self.project, self.discover, self.service.clock)
+                self.assertEqual(fresh.read()["state"], "recovery_required")
+                result = subprocess.run([sys.executable, str(Path(__file__).with_name("configure-playbook.py")), "--project", str(self.project), "resolve"],
+                                        input='{"role":"implementation"}', text=True, capture_output=True)
+                self.assertEqual(result.returncode, 2)
+                self.assertEqual(json.loads(result.stdout)["state"], "recovery_required")
+
+    def test_completion_seal_is_the_boundary_not_journal_promotion(self):
+        for point in ("before_seal", "after_seal"):
+            with self.subTest(point=point):
+                self.setUp()
+                proposal = self.preview()
+                external = json.loads(json.dumps({"schema_version": 1, "adopted": True, "models": proposal["after"]}))
+                external["models"]["implementation"]["model_id"] = "future-build"
+                external_bytes = json.dumps(external).encode()
+                original_mkdir = Path.mkdir
+                original_barrier = self.service._completion_clock_barrier
+
+                def mkdir(path, *args, **kwargs):
+                    if path.name.endswith(".receipt.complete") and point == "before_seal":
+                        self.service.path.write_bytes(external_bytes)
+                    return original_mkdir(path, *args, **kwargs)
+
+                def barrier(seal):
+                    original_barrier(seal)
+                    if point == "after_seal":
+                        self.service.path.write_bytes(external_bytes)
+
+                with patch("playbook_config.Path.mkdir", new=mkdir), patch.object(self.service, "_completion_clock_barrier", side_effect=barrier):
+                    result = self.service.apply(proposal)
+                self.assertEqual(self.service.path.read_bytes(), external_bytes)
+                self.assertEqual(result["state"], "recovery_required" if point == "before_seal" else "applied")
+                if point == "after_seal":
+                    self.assertEqual(self.service.resolve("implementation")["choice"]["model_id"], "future-build")
+                else:
+                    self.service.recovery.unlink()
+                    self.service.lock.unlink()
+                    self.assertEqual(self.service.read()["state"], "recovery_required")
+
+    def test_pending_receipt_without_markers_and_legacy_receipt_conflict_are_actionable(self):
+        for legacy in (False, True):
+            with self.subTest(legacy=legacy):
+                self.setUp()
+                self.assertEqual(self.service.apply(self.preview())["state"], "applied")
+                receipt = next(self.project.glob(".playbook-config-*.receipt"))
+                marker = json.loads(receipt.read_text())
+                receipt.with_name(receipt.name + ".complete").rmdir()
+                if legacy:
+                    self.service.path.write_bytes(b"external before legacy promotion")
+                    marker.pop("completion_protocol")
+                    receipt.write_text(json.dumps(marker))
+                self.assertEqual(self.service.read()["state"], "recovery_required")
+                with self.assertRaises(ConfigError):
+                    self.service.resolve("implementation")
+
+    def test_legitimate_edits_after_completed_apply_do_not_poison_future_reads(self):
+        self.assertEqual(self.service.apply(self.preview())["state"], "applied")
+        edited = json.loads(self.service.path.read_text())
+        edited["models"]["implementation"]["model_id"] = "external-future-build"
+        self.service.path.write_text(json.dumps(edited))
+        self.assertEqual(self.service.resolve("implementation")["choice"]["model_id"], "external-future-build")
+        self.assertEqual(self.service.apply(self.preview())["state"], "applied")
+        self.assertEqual(self.service.resolve("implementation")["choice"]["model_id"], "available-build")
+
+    def test_legacy_completed_receipt_captured_conflict_is_not_ignored(self):
+        self.assertEqual(self.service.apply(self.preview())["state"], "applied")
+        self.discovery["routes"][0]["model_id"] = "next-build"
+        with self.service.path.open("r+b") as writer:
+            self.assertEqual(self.service.apply(self.preview())["state"], "applied")
+            receipt = next(path for path in self.project.glob(".playbook-config-*.receipt") if json.loads(path.read_text())["captured"])
+            marker = json.loads(receipt.read_text())
+            writer.write(b"unresolved legacy captured choice")
+            writer.flush()
+            os.fsync(writer.fileno())
+            marker.pop("completion_protocol")
+            receipt.write_text(json.dumps(marker))
+            receipt.with_name(receipt.name + ".complete").rmdir()
+        self.assertEqual(self.service.read()["state"], "recovery_required")
+        with self.assertRaises(ConfigError):
+            self.service.resolve("implementation")
+
+    def test_directory_sync_failure_after_seal_stays_unresolved_without_lock(self):
+        original_sync = self.service._sync_directory
+
+        def sync():
+            if list(self.project.glob(".playbook-config-*.receipt.complete")):
+                raise OSError("injected completion durability failure")
+            original_sync()
+
+        proposal = self.preview()
+        with patch.object(self.service, "_sync_directory", side_effect=sync):
+            self.assertEqual(self.service.apply(proposal)["state"], "recovery_required")
+        self.service.recovery.unlink()
+        self.service.lock.unlink()
+        self.assertEqual(self.service.read()["state"], "recovery_required")
+        with self.assertRaises(ConfigError):
+            self.service.resolve("implementation")
+
+    def test_nonadvancing_completion_clock_cannot_certify_success(self):
+        original_stage = self.service._stage
+        probe = Mock()
+        probe.stat.return_value.st_ctime_ns = 0
+
+        def stage(contents):
+            return probe if contents == b"" else original_stage(contents)
+
+        proposal = self.preview()
+        with patch.object(self.service, "_stage", side_effect=stage), patch("playbook_config.os.utime"), patch("playbook_config.time.sleep"):
+            self.assertEqual(self.service.apply(proposal)["state"], "recovery_required")
+        self.service.recovery.unlink()
+        self.service.lock.unlink()
+        self.assertEqual(self.service.read()["state"], "recovery_required")
+
+    def test_displaced_publication_open_inode_write_is_also_a_completion_conflict(self):
+        writer = None
+        proposal = self.preview()
+        original_replace = os.replace
+
+        def checkpoint(point):
+            nonlocal writer
+            if point == "committed":
+                writer = self.service.path.open("r+b")
+                self.addCleanup(writer.close)
+
+        def replace(source, destination):
+            if source == self.service.recovery:
+                expected = self.service.path.read_bytes()
+                displaced = self.project / "external-displaced.json"
+                original_replace(self.service.path, displaced)
+                self.service.path.write_bytes(expected)
+                writer.seek(0)
+                writer.write(b"external displaced publication choice")
+                writer.truncate()
+                writer.flush()
+                os.fsync(writer.fileno())
+            return original_replace(source, destination)
+
+        self.service.checkpoint = checkpoint
+        with patch("playbook_config.os.replace", side_effect=replace):
+            self.assertEqual(self.service.apply(proposal)["state"], "recovery_required")
+        marker = json.loads(self.service.recovery.read_text())
+        self.assertEqual((self.project / marker["published"]).read_bytes(), b"external displaced publication choice")
+        self.assertEqual((self.project / marker["attempted"]).read_bytes(), self.service.path.read_bytes())
+        self.assertEqual(self.service.read()["state"], "recovery_required")
 
     def test_readers_reject_the_capture_publication_gap(self):
         self.service.apply(self.preview())

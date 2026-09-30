@@ -9,7 +9,7 @@ from pathlib import Path
 import sys
 import subprocess
 
-from playbook_config import Configuration, ConfigError, strict_json
+from playbook_config import Configuration, ConfigError, RecoveryRequired, strict_json
 
 
 def main():
@@ -45,7 +45,7 @@ def main():
         else:
             result = service.resolve(request["role"], request.get("feature_choice"))
     except (ConfigError, OSError, KeyError, TypeError, AttributeError, UnicodeError) as error:
-        result = {"state": "blocked", "message": str(error), "launched": False}
+        result = {"state": "recovery_required" if isinstance(error, RecoveryRequired) else "blocked", "message": str(error), "launched": False}
     print(json.dumps(result, sort_keys=True, indent=2))
     return 2 if result.get("state") in {"blocked", "recovery_required"} else 0
 

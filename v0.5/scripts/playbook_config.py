@@ -10,6 +10,7 @@ import os
 from pathlib import Path
 import re
 import tempfile
+import time
 import uuid
 from typing import Callable
 
@@ -202,6 +203,7 @@ class Configuration:
     def _snapshot(self):
         if self.lock.exists() or self.recovery.exists():
             raise ConfigError("Configuration transaction/recovery pending; reconcile before reading or writing defaults.")
+        self._reconcile_receipts()
         saved = self._bytes(self.path)
         runtime = self._bytes(self.state_path)
         if saved is not None:
@@ -218,7 +220,76 @@ class Configuration:
             origins = {role: "legacy project" if role in defaults else "edition" for role in ROLES}
         if self.lock.exists() or self.recovery.exists():
             raise ConfigError("Configuration changed during read; wait for the transaction or reconcile recovery.")
+        self._reconcile_receipts()
         return config, origins, {DESTINATION: digest(saved), ".playbook-state.yml": digest(runtime)}
+
+    def _observe(self, path):
+        before = path.stat(follow_symlinks=False) if path.exists() else None
+        contents = self._bytes(path)
+        after = path.stat(follow_symlinks=False) if path.exists() else None
+        version = lambda stat: (stat.st_dev, stat.st_ino, stat.st_size, stat.st_mtime_ns, stat.st_ctime_ns) if stat else None
+        if version(before) != version(after):
+            raise RecoveryRequired("Configuration evidence changed during observation; reconcile retained files.")
+        return digest(contents), after.st_ctime_ns if after else None
+
+    def _receipt_conflicts(self, receipt, marker, completing=False):
+        seal = receipt.with_name(receipt.name + ".complete")
+        if receipt.with_name(receipt.name + ".conflict").exists():
+            raise RecoveryRequired(f"Unresolved configuration completion conflict in {receipt.name}; reconcile retained evidence.")
+        if completing:
+            boundary = None
+        elif marker.get("completion_protocol") == 2:
+            if not seal.is_dir() or seal.is_symlink():
+                raise RecoveryRequired(f"Unfinished configuration receipt {receipt.name}; reconcile retained files before continuing.")
+            boundary = seal.stat().st_mtime_ns
+        else:
+            boundary = receipt.stat().st_ctime_ns
+        if marker.get("completion_protocol") == 2:
+            evidence = [(self.project / marker["attempted"], marker["attempted_digest"])]
+            if marker.get("previous"):
+                evidence.append((self.project / marker["previous"], marker["previous_digest"]))
+            for path, expected in evidence:
+                if self._observe(path)[0] != expected:
+                    raise RecoveryRequired(f"Retained configuration evidence changed in {receipt.name}; reconcile {path.name}.")
+        observations = [(self.path, marker["attempted_digest"])]
+        if marker.get("published"):
+            observations.append((self.project / marker["published"], marker["attempted_digest"]))
+        if marker.get("captured"):
+            observations.append((self.project / marker["captured"], marker["previous_digest"]))
+        if "runtime_digest" in marker:
+            observations.append((self.state_path, marker["runtime_digest"]))
+        for path, expected in observations:
+            actual, changed_at = self._observe(path)
+            if actual != expected and (completing or changed_at is None or changed_at <= boundary):
+                raise RecoveryRequired(f"Configuration completion conflict in {receipt.name} ({path.name}); reconcile reviewed, captured and attempted evidence before continuing.")
+
+    def _reconcile_receipts(self):
+        for receipt in self.project.glob(".playbook-config-*.receipt"):
+            try:
+                marker = strict_json(self._bytes(receipt).decode())
+                if marker.get("destination") != DESTINATION or marker.get("completion_protocol") not in (None, 2):
+                    raise ConfigError("Unsupported configuration receipt; reconcile its completion protocol.")
+                for key in ("captured", "previous", "attempted", "published"):
+                    name = marker.get(key)
+                    if name is not None and (not isinstance(name, str) or Path(name).name != name or not name.startswith(".playbook-config-")):
+                        raise ConfigError("Invalid retained evidence name.")
+                self._receipt_conflicts(receipt, marker)
+            except (ConfigError, OSError, UnicodeError, KeyError, TypeError, AttributeError) as error:
+                raise RecoveryRequired(f"Reconcile configuration receipt {receipt.name}: {error}") from error
+
+    def _completion_clock_barrier(self, seal):
+        probe = self._stage(b"")
+        try:
+            boundary = seal.stat().st_mtime_ns
+            for attempt in range(3):
+                if probe.stat().st_ctime_ns > boundary:
+                    return
+                time.sleep(0.01)
+                os.utime(probe, None)
+            if probe.stat().st_ctime_ns <= boundary:
+                raise RecoveryRequired("Filesystem completion timestamps did not advance; reconcile retained evidence before continuing.")
+        finally:
+            probe.unlink(missing_ok=True)
 
     def resolve(self, role, feature_choice=None):
         if role not in ROLES:
@@ -352,6 +423,7 @@ class Configuration:
         with self.lock.open("x"):
             pass
         staged = None
+        publication = None
         backup = None
         captured_path = None
         committed = False
@@ -370,6 +442,7 @@ class Configuration:
                 backup = self._stage(previous)
                 captured_path = self._stage(b"")
             staged = self._stage(candidate_bytes)
+            publication = self._stage(candidate_bytes)
             self.checkpoint("staged")
             validate_config(strict_json(staged.read_text()))
             self.checkpoint("before_replace")
@@ -380,7 +453,9 @@ class Configuration:
             marker = {"destination": DESTINATION, "previous": backup.name if backup else None,
                       "captured": captured_path.name if captured_path else None,
                       "attempted": staged.name, "attempted_digest": digest(candidate_bytes),
-                      "previous_digest": inputs[DESTINATION]}
+                      "published": publication.name,
+                      "previous_digest": inputs[DESTINATION],
+                      "runtime_digest": inputs[".playbook-state.yml"], "completion_protocol": 2}
             with self.recovery.open("x") as stream:
                 stream.write(encoded(marker).decode())
                 stream.flush()
@@ -395,7 +470,7 @@ class Configuration:
                     raise ConfigError("Concurrent configuration captured intact; reconcile recovery before continuing.")
             self.checkpoint("before_publish")
             try:
-                os.link(staged, self.path)
+                os.link(publication, self.path)
             except FileExistsError as error:
                 raise ConfigError("Destination changed during publication; external file retained, reload or reconcile recovery.") from error
             committed = True
@@ -413,10 +488,24 @@ class Configuration:
             os.replace(self.recovery, receipt)
             journaled = False
             self._sync_directory()
+            self._receipt_conflicts(receipt, marker, completing=True)
+            seal = receipt.with_name(receipt.name + ".complete")
+            seal.mkdir()
+            self._receipt_conflicts(receipt, marker)
+            self._sync_directory()
+            self._receipt_conflicts(receipt, marker)
+            self._completion_clock_barrier(seal)
+            self._receipt_conflicts(receipt, marker)
             completed = True
         except (OSError, ConfigError, UnicodeError) as error:
             if committed or captured:
                 recover = True
+                if receipt is not None and receipt.exists():
+                    try:
+                        receipt.with_name(receipt.name + ".conflict").mkdir(exist_ok=True)
+                        self._sync_directory()
+                    except OSError:
+                        pass
                 if not self.recovery.exists() and receipt is not None:
                     try:
                         os.link(receipt, self.recovery)
@@ -439,6 +528,8 @@ class Configuration:
                 self._sync_directory()
             raise
         finally:
+            if publication is not None and not committed and not recover:
+                publication.unlink(missing_ok=True)
             if staged is not None and not recover and not completed:
                 staged.unlink(missing_ok=True)
             if backup is not None and not captured and not recover:
