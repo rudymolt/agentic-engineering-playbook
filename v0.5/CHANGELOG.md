@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Profile delivery tests with revision-bound repeated timings, retain a reviewed-test ledger, and reuse successful Git ref syntax probes within three selected advance tests. Every record validator, Git checkpoint operation, and existing assertion still runs.
+
+*Why — test runtime:* repeated input-only syntax subprocesses add measurable overhead; a cache confined to each selected test reduces that cost without sharing mutable fixtures or bypassing rejection checks.
+
 - Keep the required `delivery` CI job fast for unrelated changes, while retaining the full delivery suite for runtime changes, delivery contract surfaces, workflow changes, classifier changes, and manual runs.
 
 *Why — proportional verification:* documentation-only pull requests should still pass required public-edition checks without spending more than ten minutes exercising an unaffected delivery runtime.
