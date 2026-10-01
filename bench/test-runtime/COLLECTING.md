@@ -16,6 +16,7 @@ gh run view RUN_ID --log --job DELIVERY_JOB_ID > .context/runtime-logs/delivery.
 python3 bench/collect_ci_runtime.py collect \
   --edition-log .context/runtime-logs/edition.log \
   --delivery-log .context/runtime-logs/delivery.log \
+  --repository OWNER/REPOSITORY \
   --head-sha FULL_HEAD_SHA --run-id RUN_ID \
   --edition-job-id EDITION_JOB_ID --delivery-job-id DELIVERY_JOB_ID \
   --history bench/test-runtime/suite-history.json
@@ -38,8 +39,11 @@ collection is idempotent. Logs with a different format require parser review.
 Keep raw logs in ignored context storage. Commit only sanitized history, the
 rendered summary, and relevant review-ledger updates. Input-log hashes bind the
 extraction; runner image/version, Python/Git versions, commands, counts, head and
-checkout SHAs and source run/job IDs remain in the JSON. Public-repository links
-use the existing `{owner}` placeholder convention; replace it when opening a link.
+checkout SHAs and source run/job IDs remain in the JSON. Supply the actual public
+repository slug for `--repository`. Evidence links are
+concrete GitHub Actions URLs; collection and rendering reject unresolved owner
+placeholders. The public-content check permits this repository's Actions links
+only in the two runtime evidence outputs.
 None of the three initial runs had downloadable timing artifacts, so their
 ordinary job logs are the evidence source.
 

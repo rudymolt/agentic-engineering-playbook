@@ -1,8 +1,13 @@
 """Guards against misleading runtime histories from ordinary CI logs."""
 import copy
 import unittest
+import json
+from pathlib import Path
+from functools import partial
 
-from collect_ci_runtime import COMMANDS, MARKERS, annotate, collect, parse_job, render
+from collect_ci_runtime import COMMANDS, MARKERS, annotate, collect, parse_job, render, run_url
+
+collect = partial(collect, repository="example/playbook")
 
 HEAD = "a" * 40
 MERGE = "b" * 40
@@ -60,7 +65,7 @@ class RuntimeCollectorTests(unittest.TestCase):
     def test_growth_and_regression_are_not_hidden_or_normalized(self):
         first = collect(HEAD, 10, log("edition"), log("delivery"), 1)
         second = copy.deepcopy(first)
-        second.update(run_id=11, executions=5, summed_test_seconds=9)
+        second.update(run_id=11, run_url=run_url("example/playbook", 11), executions=5, summed_test_seconds=9)
         rows = annotate([first, second])
         self.assertEqual(rows[1]["daily_observed_saved_seconds"], -3)
         self.assertEqual(rows[1]["cumulative_observed_reduction_percent"], -50)
@@ -75,6 +80,27 @@ class RuntimeCollectorTests(unittest.TestCase):
         actual = parse_job(prefixed, "edition", HEAD, 1)
         self.assertNotEqual(actual.pop("source_log_sha256"), expected.pop("source_log_sha256"))
         self.assertEqual(actual, expected)
+
+    def test_evidence_urls_are_concrete_and_match_run_ids(self):
+        row = collect(HEAD, 10, log("edition"), log("delivery"), 1)
+        self.assertEqual(row["run_url"], "https://github.com/example/playbook/actions/runs/10")
+        self.assertIn("[run 10](" + row["run_url"] + ")", render([row]))
+        for repository in ("{owner}/playbook", "example/{repository}", "example/playbook?other", ""):
+            with self.subTest(repository=repository), self.assertRaises(ValueError):
+                run_url(repository, 10)
+        for url in ("https://github.com/{owner}/playbook/actions/runs/10",
+                    "https://github.com/example/playbook/actions/runs/11"):
+            with self.subTest(url=url), self.assertRaises(ValueError):
+                render([{**row, "run_url": url}])
+
+    def test_checked_in_history_has_renderable_evidence_links(self):
+        root = Path(__file__).parent / "test-runtime"
+        records = json.loads((root / "suite-history.json").read_text())["records"]
+        report = render(records)
+        self.assertEqual(report, (root / "TOTAL-RUNTIME.md").read_text())
+        self.assertNotIn("{owner}", report)
+        for row in records:
+            self.assertIn(f'[run {row["run_id"]}]({row["run_url"]})', report)
 
     def test_public_metadata_and_source_binding(self):
         job = parse_job(log("edition"), "edition", HEAD, 1)

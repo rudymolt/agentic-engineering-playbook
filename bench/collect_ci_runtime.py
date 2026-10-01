@@ -78,7 +78,22 @@ def parse_job(raw, suite, head_sha, expected_groups):
     }
 
 
-def collect(head_sha, run_id, edition_log, delivery_log, delivery_groups=15):
+def run_url(repository, run_id):
+    if not re.fullmatch(r"[A-Za-z0-9](?:[A-Za-z0-9-]*[A-Za-z0-9])?/[A-Za-z0-9_.-]+", repository):
+        raise ValueError("concrete GitHub owner/repository required; placeholders are not evidence links")
+    if type(run_id) is not int or run_id < 1:
+        raise ValueError("positive integer run ID required")
+    return f"https://github.com/{repository}/actions/runs/{run_id}"
+
+
+def validate_run_url(row):
+    match = re.fullmatch(r"https://github\.com/([^/]+/[^/]+)/actions/runs/([1-9][0-9]*)", row["run_url"])
+    if not match or run_url(match[1], row["run_id"]) != row["run_url"]:
+        raise ValueError("concrete GitHub evidence URL matching run ID required")
+
+
+def collect(head_sha, run_id, edition_log, delivery_log, delivery_groups=15, *, repository):
+    evidence_url = run_url(repository, run_id)
     if not SHA.fullmatch(head_sha) or run_id < 1:
         raise ValueError("full lowercase SHA and positive run ID required")
     jobs = {"edition": parse_job(edition_log, "edition", head_sha, 1),
@@ -95,7 +110,7 @@ def collect(head_sha, run_id, edition_log, delivery_log, delivery_groups=15):
         "parallel_jobs_log_span_seconds": seconds(min(j["first_log_at"] for j in jobs.values()),
                                                    max(j["last_log_at"] for j in jobs.values())),
         "queue_seconds": None, "overall_workflow_wall_seconds": None,
-        "run_url": "https://github.com/{owner}/agentic-engineering-playbook/actions/runs/" + str(run_id),
+        "run_url": evidence_url,
     }
 
 
@@ -130,6 +145,7 @@ def render(records):
         "| Date / revision | Executions | Summed tests | Observed saved vs previous | Observed saved vs original | Parallel jobs log span | Evidence |",
         "| --- | ---: | ---: | ---: | ---: | ---: | --- |"]
     for row in annotate(records):
+        validate_run_url(row)
         def delta(kind):
             value = row[kind + "_observed_saved_seconds"]
             return "—" if value is None else f'{value:+.3f} s ({row[kind + "_observed_reduction_percent"]:+.2f}%)'
@@ -159,6 +175,7 @@ def main():
     add.add_argument("--edition-log", type=Path, required=True)
     add.add_argument("--delivery-log", type=Path, required=True)
     add.add_argument("--head-sha", required=True)
+    add.add_argument("--repository", required=True, help="concrete GitHub owner/repository")
     add.add_argument("--run-id", type=int, required=True)
     add.add_argument("--edition-job-id", type=int, required=True)
     add.add_argument("--delivery-job-id", type=int, required=True)
@@ -173,7 +190,7 @@ def main():
         if history.get("schema_version") != 1:
             raise ValueError("unsupported history schema")
         if args.action == "collect":
-            row = collect(args.head_sha, args.run_id, args.edition_log.read_text(), args.delivery_log.read_text(), args.delivery_groups)
+            row = collect(args.head_sha, args.run_id, args.edition_log.read_text(), args.delivery_log.read_text(), args.delivery_groups, repository=args.repository)
             for suite, job_id in (("edition", args.edition_job_id), ("delivery", args.delivery_job_id)):
                 if job_id < 1:
                     raise ValueError("positive job IDs required")

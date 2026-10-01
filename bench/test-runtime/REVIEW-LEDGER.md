@@ -425,3 +425,18 @@ GitHub CLI job/step-prefixed log format. Fresh independent review reproduced all
 three totals and six input hashes, verified raw/prefixed parity on all historical
 logs, and passed the guards. Public-content, links, conventions, unchanged edition
 manifest and diff whitespace checks passed. Raw logs remain in ignored storage.
+
+### Runtime evidence-link correction
+
+The original collector incorrectly hardcoded an owner placeholder into each
+`run_url`, and the renderer accepted it. Require a concrete repository slug
+when collecting and reject unresolved or run-ID-mismatched evidence links when
+rendering. Correct the three stored URLs and regenerate the report; all other
+history fields, including numerical evidence and input-log hashes, are unchanged.
+
+The public-content gate now permits only this public repository's numeric Actions
+run URLs in `TOTAL-RUNTIME.md` and `suite-history.json`. Other files, repository
+paths, URL suffixes and unrelated private markers remain blocked. Focused guards
+cover both link generation and the scoped privacy boundary. The two added public
+boundary tests affect future canonical test counts, not the historical counts
+recorded here. No new timing samples or delivery-suite runs were requested.

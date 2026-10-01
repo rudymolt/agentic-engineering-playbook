@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+- Generate concrete Actions evidence links for runtime history and allow this public repository's run URLs only in the two runtime evidence outputs.
+
+*Why — usable evidence:* placeholder owner links prevented readers from opening the measured runs; scoped link validation keeps unrelated private markers blocked.
+
 - Profile delivery tests with revision-bound repeated timings, retain a reviewed-test ledger, and reuse successful Git ref syntax probes within three selected advance tests. Every record validator, Git checkpoint operation, and existing assertion still runs.
 
 *Why — test runtime:* repeated input-only syntax subprocesses add measurable overhead; a cache confined to each selected test reduces that cost without sharing mutable fixtures or bypassing rejection checks.

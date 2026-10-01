@@ -122,7 +122,7 @@
       "parallel_jobs_log_span_seconds": 1126.804921,
       "queue_seconds": null,
       "overall_workflow_wall_seconds": null,
-      "run_url": "https://github.com/{owner}/agentic-engineering-playbook/actions/runs/36475493848"
+      "run_url": "https://github.com/rudymolt/agentic-engineering-playbook/actions/runs/36475493848"
     },
     {
       "head_sha": "f5cad4fa0c588fce4906cdde01fb60ba82657e57",
@@ -245,7 +245,7 @@
       "parallel_jobs_log_span_seconds": 971.084792,
       "queue_seconds": null,
       "overall_workflow_wall_seconds": null,
-      "run_url": "https://github.com/{owner}/agentic-engineering-playbook/actions/runs/36779311758"
+      "run_url": "https://github.com/rudymolt/agentic-engineering-playbook/actions/runs/36779311758"
     },
     {
       "head_sha": "bf858067687ffb751e5073c6ccc2287c56468a5a",
@@ -368,7 +368,7 @@
       "parallel_jobs_log_span_seconds": 627.65758,
       "queue_seconds": null,
       "overall_workflow_wall_seconds": null,
-      "run_url": "https://github.com/{owner}/agentic-engineering-playbook/actions/runs/36802981894"
+      "run_url": "https://github.com/rudymolt/agentic-engineering-playbook/actions/runs/36802981894"
     }
   ]
 }
