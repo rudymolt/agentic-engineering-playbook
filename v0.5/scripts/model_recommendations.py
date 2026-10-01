@@ -24,7 +24,8 @@ def ambiguous_task_text(text):
     return bool(re.search(
         r"reasoning[._ ](?:effort|context)|reasoning_effort|all_turns|current_turn|"
         r"\b(?:not|no|never|without|avoid|excluding|except|unless|if|when|whether|"
-        r"may|might|can|cannot|could|would|should|possibly|perhaps|potentially|unknown|unclear|uncertain|unsupported)\b|"
+        r"may|might|can|cannot|could|would|should|possibly|perhaps|potentially|unknown|unclear|uncertain|unsupported|"
+        r"unsuitable|unproven|poor|unverified|ill-suited)\b|"
         r"\bother than\b|n't\b|\?", text, re.I))
 
 
@@ -33,7 +34,11 @@ def explicit_task_fit(text):
         return []
     tasks = []
     for sentence in re.split(r"\.\s+|\n", text):
-        fit = re.search(r"\b(?:for|designed to|built to|optimized to|ideal for|best at)\s+(.{1,400})", sentence, re.I)
+        fit = re.fullmatch(
+            r"\s*(?:is\s+)?(?:suitable for|well[- ]suited for|recommended for|ideal for|best at|"
+            r"(?:designed|built|optimized) (?:for|to)|"
+            r"(?:our |the |a )?(?:most )?(?:capable|advanced|flagship|powerful) "
+            r"(?:cybersecurity )?model for)\s+(.{1,400})", sentence, re.I)
         if not fit:
             continue
         if not re.fullmatch(
@@ -219,8 +224,17 @@ class OfficialSources:
         for href, parts, block_parts in page.links:
             text = " ".join(parts)
             match = re.fullmatch(r"/api/docs/models/([a-z0-9.-]+)", href)
-            tasks = explicit_task_fit(text)
-            if match is None or not tasks or ambiguous_task_text(" ".join(block_parts)):
+            if match is None or ambiguous_task_text(" ".join(block_parts)):
+                continue
+            subject = r"[-.\s]+".join(re.escape(part) for part in re.split(r"[-.]", match[1]))
+            description = re.match(r"\s*" + subject + r"\b\s*[,.:]?\s*(.*)", text, re.I | re.S)
+            if description is None:
+                continue
+            predicate = description[1]
+            if re.match(r"\s*Use\s+" + subject + r"\b", " ".join(block_parts), re.I):
+                predicate = re.sub(r"^for\s+", "recommended for ", predicate, flags=re.I)
+            tasks = explicit_task_fit(predicate)
+            if not tasks:
                 continue
             if re.search(r"audio|voice|speech|transcrib|image generation|embedding", text, re.I):
                 continue
@@ -235,7 +249,7 @@ class OfficialSources:
                 if ambiguous_task_text(text[paragraph_start:match.end()]):
                     continue
                 description = match.group(0)
-                tasks = explicit_task_fit(description)
+                tasks = explicit_task_fit(match[3])
                 if tasks:
                     records.append({"model_id": match[2], "label": match[1], "provider": "anthropic", "tasks": tasks,
                                     "risks": ["ordinary"] + (["high"] if re.search(r"complex|advanced|demanding|long-running", description, re.I) else []),
@@ -271,8 +285,12 @@ class OfficialSources:
         for table in page.tables:
             prefix = table["prefix"]
             rows = table["rows"]
+            context = re.sub(r"[\s\-\u2010-\u2015]+", " ", table["tier_context"] + " " + table["caption"]).strip().lower()
+            caption = re.sub(r"[\s\-\u2010-\u2015]+", " ", table["caption"]).strip().lower()
+            short_label = r"short context(?: only| rates| pricing)?"
             if (url != SOURCES[2] or not re.search(r"per 1M tokens", prefix) or table["tier"] != "standard"
-                    or re.search(r"\b(?:batch|priority|flex|fast|ultrafast|long context)\b", table["tier_context"] + " " + table["caption"], re.I)
+                    or re.search(r"\b(?:batch|priority|flex|fast|ultrafast|long context|extended context|above|over|exceeding)\b|>", context)
+                    or caption and not re.fullmatch(short_label, caption)
                     or not rows):
                 continue
             headers = next((row for row in rows if row and row[0] == "Model"), [])
@@ -280,6 +298,10 @@ class OfficialSources:
                                ["Model", "Input", "Cached input", "Cache writes", "Output", "Input", "Cached input", "Cache writes", "Output"]):
                 continue
             output_index = 3 if len(headers) == 4 else 4
+            if len(headers) == 4 and not (re.fullmatch(short_label, caption) or any(
+                    re.fullmatch(short_label, re.sub(r"[\s\-\u2010-\u2015]+", " ", line).strip().lower())
+                    for line in table["tier_context"].splitlines())):
+                continue
             if len(headers) == 9 and ["", "Short context", "Long context"] not in rows:
                 continue
             for row in rows:
@@ -362,6 +384,9 @@ def cost(choice, context, evidence):
     rate = result["rates"]
     if (rate and workload.get("billing_route") == rate["billing_route"]
             and all(type(workload.get(key)) is int and workload[key] >= 0 for key in ("input_tokens", "output_tokens", "retries"))):
+        if any(workload[key] > 2 ** 53 - 1 for key in ("input_tokens", "output_tokens", "retries")):
+            result["limitations"] += " Workload exceeds numeric bounds (each count must be at most 2^53 - 1); token subtotal unknown."
+            return result
         amount = (workload["input_tokens"] * rate["input"] + workload["output_tokens"] * rate["output"]) / 1_000_000 * (1 + workload["retries"])
         if math.isfinite(amount):
             result["estimate"] = {"amount": amount, "currency": rate["currency"], "label": "Assumed API token subtotal, not a bill or verified outcome",

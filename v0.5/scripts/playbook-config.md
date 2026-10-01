@@ -287,15 +287,20 @@ instructions. There are no static model rankings or prices. General guidance,
 ambiguous tables and unrecognized identities remain incomplete. Exact provider
 IDs must match fresh host discovery, including host-supported reasoning.
 Provider guidance alone proves neither availability nor job suitability.
-Task-fit records require an explicit model/task-use statement, not merely
+Task-fit records require an exact model-associated affirmative suitability
+predicate (such as suitable, recommended, designed or built for the task), not merely
 the words reasoning, intelligence, tool use or a capability/control mention.
 The adapter stops model descriptions at paragraph, card and section boundaries;
-control prose anywhere in the description block and negated, conditional or
+bare `for <task>` suffixes, effort-setting instructions, control prose anywhere
+in the description block and negative, unproven, conditional or
 ambiguous task statements do not establish suitability. This conservative
 recognition can leave valid but unrecognized provider wording unknown.
 Rates require the table's explicit enclosing tier (a heading or provider
 switcher pane), not a nearby Standard label or a generic pricing URL. Batch,
-other nonstandard tiers and ambiguous context cannot supply Standard estimates;
+other nonstandard tiers and ambiguous context cannot supply Standard estimates.
+Single-context Standard tables require explicit short-context evidence; long-context
+restrictions remain incompatible regardless of hyphenation or HTML whitespace;
+unrecognized captions and negated context mentions do not establish provenance;
 grouped short/long-context columns also require explicit context headers.
 Upstream markup or wording changes require new source-shape compatibility
 checks before extending recognition; preserve user choices during any migration.
@@ -337,7 +342,9 @@ Keep the three classes separate:
 - `cost.rates`: published API base rates, model/runner route, billing route,
   currency, unit, source URL, successful check date and exclusions. Estimates
   require `workload.input_tokens`, `output_tokens`, `retries` (nonnegative
-  integers) and the exact `billing_route`. Every retry assumes the same tokens.
+  integers no greater than `2^53 - 1`) and the exact `billing_route`.
+  Larger counts leave the subtotal unknown with an explicit numeric-bound limit,
+  without conversion errors or writes. Every retry assumes the same tokens.
   Show a labelled token subtotal, not a bill or guaranteed verified outcome.
   Missing/mismatched inputs or rates mean unknown. For mixed billing,
   `route_billing["model_id@runner@reasoning"]` (or the runner-wide fallback)

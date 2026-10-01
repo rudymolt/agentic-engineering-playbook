@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- Require affirmative model-associated suitability predicates and explicit
+  Standard short-context provenance; bound workload counts before token arithmetic.
+
+*Why — source meaning and numerical limits are evidence boundaries:* unsuitable,
+unproven and effort-setting statements must not become task-fit claims. Hyphenated
+or HTML-spaced long-context restrictions cannot supply short-context rates, and
+oversized JSON counts leave a labelled unknown subtotal rather than a traceback.
+Preserve source dates, explicit choices, read-only bytes and private billing.
+
 - Bound official task-fit evidence to the exact model description and pricing
   evidence to the exact table tier and token context. Control paragraphs,
   nonaffirmative wording and ambiguous table context remain unknown.

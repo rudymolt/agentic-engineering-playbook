@@ -4,6 +4,8 @@ from copy import deepcopy
 import json
 from pathlib import Path
 import tempfile
+import subprocess
+import sys
 import unittest
 
 from playbook_config import Configuration, ROLES
@@ -126,9 +128,9 @@ class RecommendationTests(unittest.TestCase):
         def fetch(url):
             calls.append(url)
             if url == GUIDANCE:
-                return '<main><a href="/api/docs/models/fixture-code">fixture-code For coding tasks</a></main>'
+                return '<main><a href="/api/docs/models/fixture-code">fixture-code Suitable for coding tasks</a></main>'
             if url == PRICING:
-                return '<main><p>Prices in USD per 1M tokens</p><h2>Standard</h2><table><tr><th>Model</th><th>Input</th><th>Cached input</th><th>Output</th></tr><tr><td>fixture-code</td><td>$2.00</td><td>$0.20</td><td>$6.00</td></tr></table></main>'
+                return '<main><p>Prices in USD per 1M tokens</p><h2>Standard</h2><table><caption>Short context</caption><tr><th>Model</th><th>Input</th><th>Cached input</th><th>Output</th></tr><tr><td>fixture-code</td><td>$2.00</td><td>$0.20</td><td>$6.00</td></tr></table></main>'
             return '<main>General guidance only</main>'
         evidence = OfficialSources(lambda: NOW, fetch=fetch).retrieve()
         self.assertEqual(len(calls), 5)
@@ -371,6 +373,7 @@ class RecommendationTests(unittest.TestCase):
 
     def pricing_sample(self, context):
         return ('<p>Prices in USD per 1M tokens</p>' + context +
+                '<p>Short context</p>' +
                 '<table><tr><th>Model</th><th>Input</th><th>Cached input</th><th>Output</th></tr>'
                 '<tr><td>fixture-code</td><td>$0.75</td><td>$0.05</td><td>$4.50</td></tr></table>')
 
@@ -453,6 +456,126 @@ class RecommendationTests(unittest.TestCase):
                 evidence = OfficialSources(lambda: NOW, fetch=lambda url: sample if url.endswith('choosing-a-model')
                                            else '<p>Unknown</p>').retrieve()
                 self.assertEqual(evidence["guidance"], [])
+
+    def test_nonaffirmative_predicates_and_semantic_controls_remain_unknown(self):
+        for description in ("Unsuitable for coding.", "A poor choice for coding.",
+                            "Unproven for coding.", "Ill-suited for research.",
+                            "Set effort to high for coding.", "Increase deliberation for coding.",
+                            "Select the high setting for research.", "Adjust thinking depth for coding.",
+                            "Enable maximum effort for analysis.", "Intended for coding experiments."):
+            with self.subTest(description=description):
+                self.calls.clear()
+                self.assert_unknown_official_advice(
+                    '<p><a href="/api/docs/models/fixture-code">Fixture Code ' + description + '</a></p>')
+
+    def test_affirmative_predicates_supply_exact_public_task_evidence(self):
+        for description in ("Suitable for coding.", "Is well-suited for complex coding.",
+                            "Recommended for software development.", "Built for coding tasks.",
+                            "Designed for code generation.", "Optimized for programming.",
+                            "Our most advanced cybersecurity model for authorized vulnerability research and security testing."):
+            with self.subTest(description=description):
+                task = "analysis" if "research" in description else "coding"
+                evidence = OfficialSources(lambda: NOW, fetch=lambda url:
+                    '<p><a href="/api/docs/models/fixture-code">Fixture Code ' + description + '</a></p>'
+                    if url == GUIDANCE else '<p>Unknown</p>').retrieve()
+                self.assertEqual(len(evidence["guidance"]), 1)
+                service = self.service({**self.context, "task": task}, sources=lambda: evidence)
+                draft = service.read()
+                original = deepcopy(draft["after"])
+                draft = service.reply(draft, "Recommended")
+                draft = service.reply(draft, "Explain Build")
+                advice = draft["explanation"]["recommendation"]
+                self.assertEqual(advice["choice"]["model_id"], "fixture-code")
+                self.assertEqual(advice["guidance"]["source_url"], GUIDANCE)
+                self.assertEqual(advice["guidance"]["checked_at"], NOW)
+                self.assertEqual(draft["after"], original)
+                self.assertFalse(draft["launched"])
+                self.assertEqual(self.state.read_bytes(), self.original)
+
+    def test_subject_identity_must_match_the_model_link(self):
+        self.assert_unknown_official_advice(
+            '<p><a href="/api/docs/models/fixture-code">Other Model is suitable for coding.</a></p>')
+
+    def test_anthropic_semantic_predicates_require_affirmative_suitability(self):
+        for description in ("is unsuitable for coding.", "is a poor choice for research.",
+                            "is unproven for coding.", "Set effort to high for coding."):
+            with self.subTest(description=description):
+                sample = '<p>Claude Fixture 1.0 (claude-fixture-1-0) ' + description + '</p>'
+                evidence = OfficialSources(lambda: NOW, fetch=lambda url: sample if url.endswith('choosing-a-model')
+                                           else '<p>Unknown</p>').retrieve()
+                self.assertEqual(evidence["guidance"], [])
+
+    def test_long_or_absent_context_cannot_supply_short_context_rates(self):
+        for caption in ("Long-context (>200K tokens)", "Long&nbsp;context only", "Long\u2011context only",
+                        "Extended context only", "Above 200K tokens", "Only for sequences longer than 200K tokens",
+                        "Short context excluded", "Unknown context", ""):
+            with self.subTest(caption=caption):
+                sample = self.pricing_sample('<h2>Standard</h2>').replace(
+                    '<table>', '<table><caption>' + caption + '</caption>')
+                if not caption:
+                    sample = sample.replace('<p>Short context</p>', '')
+                evidence = OfficialSources(lambda: NOW, fetch=lambda url: sample if url == PRICING
+                                           else '<p>Unknown</p>').retrieve()
+                self.assertEqual(evidence["rates"], [])
+                evidence["guidance"] = deepcopy(self.evidence["guidance"])
+                service = self.service({**self.context, "workload": {"input_tokens": 120000,
+                    "output_tokens": 8000, "retries": 2, "billing_route": "standard-short-context-uncached"}},
+                    sources=lambda: evidence)
+                draft = service.read()
+                original = deepcopy(draft["after"])
+                draft = service.reply(draft, "Recommended")
+                draft = service.reply(draft, "Explain Build")
+                advice = draft["explanation"]["recommendation"]
+                self.assertIsNone(advice["cost"]["rates"])
+                self.assertIsNone(advice["cost"]["estimate"])
+                self.assertEqual(draft["after"], original)
+                self.assertFalse(draft["launched"])
+                self.assertEqual(self.state.read_bytes(), self.original)
+
+    def test_negated_short_context_label_is_not_affirmative_provenance(self):
+        sample = self.pricing_sample('<h2>Standard</h2>').replace(
+            '<p>Short context</p>', '<p>Not short context</p>')
+        evidence = OfficialSources(lambda: NOW, fetch=lambda url: sample if url == PRICING
+                                   else '<p>Unknown</p>').retrieve()
+        self.assertEqual(evidence["rates"], [])
+
+    def test_unrepresentable_workload_keeps_library_advice_read_only(self):
+        for field in ("input_tokens", "output_tokens", "retries"):
+            with self.subTest(field=field):
+                workload = {"input_tokens": 3000, "output_tokens": 1000, "retries": 2,
+                            "billing_route": "standard-short-context-uncached", field: 10 ** 400}
+                service = self.service({**self.context, "workload": workload})
+                draft = service.read()
+                original = deepcopy(draft["after"])
+                draft = service.reply(draft, "Recommended")
+                draft = service.reply(draft, "Explain Build")
+                advice = draft["explanation"]["recommendation"]
+                self.assertIsNotNone(advice["choice"])
+                self.assertIsNone(advice["cost"]["estimate"])
+                self.assertIn("numeric bounds", advice["cost"]["limitations"])
+                self.assertEqual(draft["after"], original)
+                self.assertEqual(self.state.read_bytes(), self.original)
+
+    def test_unrepresentable_workload_cli_returns_json_without_traceback(self):
+        adapter = self.project / "discovery.py"
+        adapter.write_text('import json, sys\nrequest=json.load(sys.stdin)\n'
+                           'print(json.dumps(dict(request_id=request["request_id"], '
+                           'checked_at=request["started_at"], revision="fixture", '
+                           'authority="host-reported-selection", routes=' + repr(self.routes) + ')))\n')
+        fixture = self.project / "evidence.json"
+        fixture.write_text(json.dumps(self.evidence))
+        before = {path.name: path.read_bytes() for path in self.project.iterdir()}
+        completed = subprocess.run([sys.executable, str(Path(__file__).with_name("configure-playbook.py")),
+            "read", "--project", str(self.project), "--now", NOW, "--evidence-fixture", str(fixture),
+            "--discovery-command", json.dumps([sys.executable, str(adapter)])],
+            input=json.dumps({"context": {**self.context, "workload": {"input_tokens": 10 ** 400,
+                "output_tokens": 1000, "retries": 2, "billing_route": "standard-short-context-uncached"}}}),
+            text=True, capture_output=True)
+        self.assertEqual(completed.returncode, 0, completed.stderr)
+        self.assertEqual(completed.stderr, "")
+        result = json.loads(completed.stdout)
+        self.assertIsNone(result["recommendations"]["implementation"]["cost"]["estimate"])
+        self.assertEqual({path.name: path.read_bytes() for path in self.project.iterdir()}, before)
 
 
 if __name__ == "__main__":
