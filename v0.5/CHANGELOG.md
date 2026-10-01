@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+- Add read-only role recommendations at Configure and new lane-selection gates,
+  with official-source retrieval, separate task-fit/rate/local-outcome evidence,
+  labelled API assumptions and explicit subscription or incomplete-data unknowns.
+
+*Why — advice must not become authority or a fabricated bill:* filter verified
+routes and existing gate constraints before comparing, retain effective
+preferences and approvals, and keep private billing and outcome evidence local.
+No candidate invocation, automatic switch, paid comparison or savings promise
+is part of discovery; source dates distinguish retrieval from successful checks.
+
 - Isolate paired rollback publication from mutable backup evidence, report the
   exact reviewed local completion destination and preserve unanswered
   Guided/Expert choices while drafting reusable defaults or presets.

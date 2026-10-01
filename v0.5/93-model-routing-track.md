@@ -89,6 +89,16 @@ Pace is orthogonal to lane, model, runner, reasoning, permissions, scope, and ve
 
 At every lane boundary:
 
+Before a new selection, display task-specific advice alongside, not instead
+of, the effective preference using the shared configuration helper's `advise`
+action. The owning lane must first filter role eligibility, authority,
+permissions and Verify independence; missing checks mean no recommendation.
+See [the evidence contract](scripts/playbook-config.md#read-only-recommendation-evidence).
+Suggestions and Explain are read-only. Only the existing feature gate accepts
+an explicit alternative; project/personal defaults, active approvals and
+feature-scoped `openai defaults` retain their authority. No paid comparison
+or candidate invocation is part of recommendation discovery.
+
 1. Name the feature with its human title.
 2. Lead with friendly model label and action; show model ID, runner, reasoning, and exact launch consequence as secondary detail.
 3. Say how long the choice lasts and when the next model question occurs.

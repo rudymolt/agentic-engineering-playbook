@@ -8,8 +8,9 @@ disable-model-invocation: true
 
 Configure edits **Plan, Build, Verify and escalated repair**, plus five
 stage-owned job bindings, including portable custom sources. QA inherits Verify;
-Coordinator is observed display-only. Personal presets,
-recommendations and unavailable-model replacement advice are later slices.
+Coordinator is observed display-only. Personal defaults and named presets are
+local. Evidence-backed recommendations are read-only; unavailable-model
+replacement and refresh policy remain separate work.
 This skill never launches a model or edits runtime state.
 
 ## Procedure
@@ -33,7 +34,7 @@ This skill never launches a model or edits runtime state.
    availability claims are not evidence. Supply an explicit user-local
    `--preferences-dir` outside the project on every conversation request;
    never put a private destination in shared configuration. Pass only known
-   goal and billing facts in `read`'s `context`. Read existing project context
+   goal, task, risk and billing facts in `read`'s `context`. Read existing project context
    instead of asking it again; unknown billing is a valid answer. Run the
    helper's `read` action. On
    blocked/recovery-required, report its corrective action and offer Reload or
@@ -52,7 +53,22 @@ This skill never launches a model or edits runtime state.
    `Edit Repair`, `Apply`, `Explain <role>`, `Not now`. Expert presentation is
    compact, never a different proposal or weaker validation. Label every row
    as a retained edition/project starting choice or an explicit user edit,
-   not a recommendation; suitability and cost evidence are missing until S6.
+   not a recommendation. Display the separate `recommendations` rows for all
+   four roles: exact model, runner, supported reasoning, project/task fit,
+   risk and limitations. No eligible recommendation means unknown, not an
+   invented fallback. The helper retrieves official sources at initial live
+   `read`; `Explain` reuses that proposal without retrieval or invocation.
+   Provider guidance, published API rates and comparable local outcomes are
+   separate claims, each with its own source URL, successful check date and
+   uncertainty. An incomplete check's retrieval time is not a successful
+   evidence date. General reasoning guidance never proves account access.
+   Show API currency, token unit and billing route; show estimates only with
+   labelled input/output/retry assumptions. Subscription/mixed routes show
+   observed usage/limits or unknown, never API prices as a subscription bill.
+   Do not promise savings or a cheapest verified outcome, run candidates,
+   grant approval, or silently rewrite any default. Keep local evidence and
+   billing out of shared config and tracked transcripts. `Task coding` /
+   `Task analysis` and `Risk ordinary` / `Risk high` correct task advice only.
    For an unbootstrapped project, hand the complete role draft to the existing
    bootstrap approval preview. Do not run a second bootstrap or write project
    settings here before that gate; reopen after bootstrap and review again.
@@ -99,8 +115,9 @@ This skill never launches a model or edits runtime state.
    contracts, current upstream exclusions and already eligible project QA proof.
    Configuration does not create or maintain a harness.
    `Presets` shows one Recommended entry plus named user presets. Recommended
-   retains the starting draft until evidence-backed advice is available, not
-   static cost tiers or an availability-as-suitability claim. `Load defaults`
+   retains the starting draft; evidence-backed suggestions are displayed
+   separately and do not select a model. No static cost tiers or
+   availability-as-suitability claim. `Load defaults`
    or `Load preset <name>` changes only the draft, showing model/skill origins,
    before/after changes and destinations. `Save defaults` or `Save preset <name>`
    previews personal reusable data using the same validated model/skill schema.

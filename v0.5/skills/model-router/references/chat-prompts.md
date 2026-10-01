@@ -7,6 +7,17 @@ rendering. Show feature/adopted project/legacy project/edition origin; never
 label a custom choice OpenAI. Current-chat conflicts compare against the
 effective preference. `openai defaults` is a feature-only edition override.
 
+At new Plan/Build/Verify/Repair checkpoints, use the shared helper's read-only
+`advise` result after lane constraints are checked. Add a compact line below
+the preference: `Advice: {model id} · {runner} · {reasoning}; {task/risk reason}`.
+Keep guidance, API rates and local outcomes distinct, with claim-specific
+source URLs, successful dates and uncertainty; disclose missing/incomplete
+evidence and unknown totals. For subscription/mixed billing, show only observed
+usage/limits or unknown. Explain shows the same advice without selecting or
+launching. If no suitable verified route exists, say so; keep the effective
+preference and existing typed choices. Do not add an automatic switch, another
+approval, or alter the feature-scoped `openai defaults` command.
+
 ## Normal lane prompts
 
 ```text

@@ -20,7 +20,8 @@ def main():
     parser.add_argument("--discovery", type=Path)
     parser.add_argument("--discovery-command", help="JSON argv for the current-availability adapter; request JSON is sent on stdin.")
     parser.add_argument("--now", help="Fixture clock only; live use omits this option.")
-    parser.add_argument("action", choices=("read", "reply", "resolve", "job-route"))
+    parser.add_argument("--evidence-fixture", type=Path, help="Controlled official evidence fixture; requires --now, never live proof.")
+    parser.add_argument("action", choices=("read", "reply", "resolve", "advise", "job-route"))
     args = parser.parse_args()
 
     def binding_catalog():
@@ -46,9 +47,15 @@ def main():
         request = strict_json(sys.stdin.read() or "{}")
         if not isinstance(request, dict):
             raise ConfigError("Request must be a JSON object; use the documented helper contract.")
+        from model_recommendations import OfficialSources
+        if args.evidence_fixture and not args.now:
+            raise ConfigError("Evidence fixtures require the controlled fixture clock; never present them as live current facts.")
+        sources = ((lambda: strict_json(args.evidence_fixture.read_text())) if args.evidence_fixture else
+                   (None if args.now else OfficialSources().retrieve))
         try:
             service = Configuration(args.project, discover, clock, preferences_dir=args.preferences_dir,
                                     context=request.get("context"),
+                                    recommendation_sources=sources,
                                     bindings=binding_catalog())
         except ConfigError:
             reply = request.get("reply", "")
@@ -58,6 +65,7 @@ def main():
             if reply not in {"back", "edit", "not now"} and not reply.startswith("edit "):
                 raise
             service = Configuration(args.project, discover, clock, context=request.get("context"),
+                                    recommendation_sources=sources,
                                     bindings=binding_catalog())
         if args.action == "read":
             result = service.read()
@@ -65,6 +73,8 @@ def main():
             result = service.reply(request["proposal"], request["reply"])
         elif args.action == "resolve":
             result = service.resolve(request["role"], request.get("feature_choice"))
+        elif args.action == "advise":
+            result = service.advise(request["role"], request.get("feature_choice"))
         else:
             result = service.dispatch_job(request["job"], request["owner"], approved_binding=request.get("approved_binding"))
     except (ConfigError, OSError, KeyError, TypeError, AttributeError, UnicodeError) as error:

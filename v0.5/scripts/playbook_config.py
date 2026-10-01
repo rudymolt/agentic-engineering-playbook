@@ -217,7 +217,7 @@ def instant(value):
 
 class Configuration:
     def __init__(self, project: Path, discover: Callable, clock: Callable = None, checkpoint: Callable = None,
-                 preferences_dir: Path = None, context: dict = None, bindings=None):
+                 preferences_dir: Path = None, context: dict = None, bindings=None, recommendation_sources=None):
         self.project = Path(project)
         self.discover = discover
         self.clock = clock or (lambda: datetime.now(timezone.utc).isoformat())
@@ -229,6 +229,7 @@ class Configuration:
         self.checkpoint = checkpoint or (lambda point: None)
         self.context = deepcopy(context)
         self.bindings = bindings
+        self.recommendation_sources = recommendation_sources
         self.preferences = None
         self._write_stores = (self,)
         self._directory_fd = None
@@ -424,6 +425,37 @@ class Configuration:
             return {"origin": "feature", "choice": deepcopy(feature_choice)}
         return {"origin": origins[role], "choice": deepcopy(config["models"][role])}
 
+    def _recommend(self, routes, context, evidence, lane=False):
+        from model_recommendations import recommendations
+        runtime = self._bytes(self.state_path)
+        routing = legacy_routing(runtime.decode()) if runtime else {}
+        allowed = routing.get("allowed_runners", ["codex", "claude-code", "cursor", "opencode"])
+        if not isinstance(allowed, list) or any(not isinstance(runner, str) for runner in allowed):
+            raise ConfigError("Allowed runners are invalid; reconcile existing routing policy before advice.")
+        try:
+            return recommendations(routes, context, evidence, allowed, lane=lane)
+        except (ValueError, TypeError, AttributeError) as error:
+            raise ConfigError("Invalid local recommendation context; supply task, risk and structured evidence without changing defaults.") from None
+
+    def _recommendation_evidence(self):
+        try:
+            evidence = self.recommendation_sources() if self.recommendation_sources else {}
+            if not isinstance(evidence, dict):
+                raise ValueError("Invalid source result")
+            encoded(evidence)
+            return deepcopy(evidence)
+        except (OSError, ValueError, UnicodeError, TimeoutError):
+            return {"sources": [{"status": "incomplete", "checked_at": None,
+                                 "uncertainty": "Source retrieval failed; no successful date known, no fresh comparison."}]}
+
+    def advise(self, role, feature_choice=None):
+        effective = self.resolve(role, feature_choice)
+        routes, availability = self._available()
+        context = deepcopy(self.context or {})
+        advice = self._recommend(routes, context, self._recommendation_evidence(), lane=True)[role]
+        return {"effective": effective, "recommendation": advice, "availability": availability,
+                "scope": "feature advice only; existing explicit selection gate owns acceptance", "launched": False}
+
     def _available(self):
         request = {"request_id": uuid.uuid4().hex, "started_at": self.clock(),
                    "roles": list(ROLES), "purpose": "current-availability"}
@@ -472,6 +504,7 @@ class Configuration:
                 "choices": self._proposal_choices(),
                 "message": "Project defaults only. All four roles are retained. No active selection changes; no model launches.",
                 "context": self.context, "personal": self._personal_snapshot(),
+                "recommendation_evidence": self._recommendation_evidence(),
                 "bootstrap": {"required": inputs[".playbook-state.yml"] is None,
                               "action": "Use the existing bootstrap preview/approval gate; configuration never bootstraps."},
             }
@@ -551,7 +584,7 @@ class Configuration:
     def _present(self, proposal):
         context = proposal["context"]
         if context is not None:
-            if not isinstance(context, dict) or set(context) - {"goal", "billing"}:
+            if not isinstance(context, dict) or set(context) - {"goal", "billing", "task", "risk", "constraints", "workload", "route_billing", "observations", "outcomes"}:
                 raise ConfigError("Supply only known goal and billing context; keep private evidence outside project settings.")
             if "goal" in context and (not isinstance(context["goal"], str) or not context["goal"].strip()):
                 raise ConfigError("Known goal must be nonempty text.")
@@ -561,10 +594,17 @@ class Configuration:
         preference = personal["after"] if personal else None
         proposal["presentation"] = preference["presentation"] if preference else "guided"
         proposal["billing"] = preference.get("billing", "unknown") if preference else "unknown"
+        if context and "billing" in context:
+            proposal["billing"] = context["billing"]
         proposal["billing_limitations"] = "Consumption and allowance are unknown unless observed. API token prices are not the subscription bill."
         proposal["presets"] = ["Recommended"] + sorted(preference.get("presets", {})) if preference else ["Recommended"]
         proposal["recommended"] = {"basis": "retained starting configuration", "advice": "unknown until evidence-backed advice is available",
                                     "limitations": "Availability alone is not suitability; no static cost-tier bundle or paid comparison."}
+        advice_context = {**(context or {}), "billing": proposal["billing"]}
+        proposal["recommendations"] = self._recommend(proposal["role_alternatives"], advice_context, proposal.get("recommendation_evidence", {}))
+        if any(advice["choice"] for advice in proposal["recommendations"].values()):
+            proposal["recommended"] = {"basis": "available, task-fit, policy-filtered official evidence", "advice": proposal["recommendations"],
+                                        "limitations": "Read-only suggestions; no selection, automatic default rewrite, paid comparison or execution approval."}
         proposal["destinations"] = [DESTINATION]
         if personal and personal["before"] != personal["after"]:
             proposal["destinations"].append(personal["destination"])
@@ -578,7 +618,8 @@ class Configuration:
         proposal["qa"] = {"inherits": "verification", "choice": deepcopy(proposal["after"]["verification"])}
         proposal["role_proposal"] = [{"role": role, "label": ROLE_LABELS[role], "origin": proposal["origins"][role],
                                       "before": deepcopy(proposal["before"][role]), "after": deepcopy(proposal["after"][role]),
-                                      "reason": "Retained starting choice or explicit edit, not a recommendation. Task-fit and cost evidence unavailable until S6."} for role in ROLES]
+                                      "reason": "Retained starting choice or explicit edit. Recommendation is separate and read-only.",
+                                      "recommendation": deepcopy(proposal["recommendations"][role])} for role in ROLES]
         def labels(job, selection):
             options = proposal["skill_alternatives"][job]
             return [next((option["label"] for option in options if option["binding"] == binding),
@@ -709,7 +750,7 @@ class Configuration:
             draft = self._preview(draft)
             draft.update(step="preference_preview", message="Review reusable local data at the personal destination. Apply preference saves only personal data; Apply explicitly saves this project and personal data with paired recovery. Other projects and active execution remain unchanged.")
             return self._seal(draft)
-        if reply.startswith("goal ") or reply.startswith("billing "):
+        if any(reply.startswith(prefix) for prefix in ("goal ", "billing ", "task ", "risk ")):
             key, _, value = text.strip().partition(" ")
             key = key.lower()
             draft["context"] = draft["context"] or {}
@@ -830,7 +871,8 @@ class Configuration:
             draft["explanation"] = {"role": role, "choice": deepcopy(draft["after"][role]),
                                     "available": {key: value for key, value in draft["after"][role].items() if key in IDENTITY} in draft["role_alternatives"][role],
                                     "authority": draft["discovery"]["authority"], "checked_at": draft["discovery"]["checked_at"],
-                                    "limitations": "Availability is a bounded observation, not live launch proof. Suitability, costs, access consumption and comparison evidence remain unknown. No recommendation or paid benchmark."}
+                                    "recommendation": deepcopy(draft.get("recommendations", {}).get(role)),
+                                    "limitations": "Availability is a bounded observation, not live launch proof. Recommendation is distinct from this saved or edited choice and selects nothing. Unevidenced suitability, consumption and costs remain unknown."}
             draft["message"] = draft["explanation"]["limitations"]
             return self._seal(draft)
         if reply == "apply" and draft.get("step") in {"read", "preview", "preference_preview"}:

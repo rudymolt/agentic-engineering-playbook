@@ -168,8 +168,8 @@
     },
     {
       "path": "93-model-routing-track.md",
-      "sha256": "6e207d0319d13e1d142d1de43595d13a0ab66ddfdb97d385a1be09c1fa5e104f",
-      "size": 18489
+      "sha256": "f094d9fcc4698e148de1e13084e64141d614890949abf0eb754394d853be6079",
+      "size": 19170
     },
     {
       "path": "AGENT-DIGEST.md",
@@ -178,8 +178,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "f995d6babf0bcea289fc7cba6ed4899df00400510254e9955dc6ab42945f4bdc",
-      "size": 13567
+      "sha256": "6607fdec9ab4ce57d67dfe7891f60339c8c594e748cec4b4568fe352ae377e8f",
+      "size": 14204
     },
     {
       "path": "MAINTENANCE.md",
@@ -1073,8 +1073,8 @@
     },
     {
       "path": "scripts/configure-playbook.py",
-      "sha256": "e63dfdf103a4a877b2414f4382f354b6070451a9a3db7d2be3a855ed1643cbb0",
-      "size": 4216
+      "sha256": "f0cc8e0914ce7d4137bd65aa85a36a7e706051f950354f57cb77af5a8af9924a",
+      "size": 5038
     },
     {
       "path": "scripts/convention_checks.py",
@@ -1122,14 +1122,19 @@
       "size": 6002
     },
     {
+      "path": "scripts/model_recommendations.py",
+      "sha256": "f1080c0f8ff4a024107327c47e116dcdd1f90ec7be1c86963ce31a82f6cdcddc",
+      "size": 21472
+    },
+    {
       "path": "scripts/playbook-config.md",
-      "sha256": "3c619a861384b424d26e7d3fd7454d95667d04ae84dfcf07d7bd1569775b1b57",
-      "size": 23232
+      "sha256": "5aa97892044a1d03996b018d6f55680df1f6d28990be4104309db092c38aedaa",
+      "size": 28539
     },
     {
       "path": "scripts/playbook_config.py",
-      "sha256": "41ad727db801ae73147748689edfbf7f6cd1d187836eac82922e4a8db9468511",
-      "size": 79931
+      "sha256": "966dd538e342fd727e25ceb3683d9da6a52cda10a10235d9b23776dcf81c3de8",
+      "size": 83091
     },
     {
       "path": "scripts/playbook_state.py",
@@ -1220,6 +1225,11 @@
       "path": "scripts/test_generate_upstream_inventory.py",
       "sha256": "8bfece3389276b1e6caabfcc7bfdfdd23f3613993b47e37c39aa0f10c2963c74",
       "size": 5058
+    },
+    {
+      "path": "scripts/test_model_recommendations.py",
+      "sha256": "5304551133e0ff7e6810687a2b4a5842d24b84fe13cff23438f17a3a9eae5c8e",
+      "size": 22096
     },
     {
       "path": "scripts/test_personal_presets.py",
@@ -1373,8 +1383,8 @@
     },
     {
       "path": "skills/ai-playbook-configure/SKILL.md",
-      "sha256": "aada11a9eb35e18ab6864487e83de827219100b7a52413e420becee3ca10041f",
-      "size": 10008
+      "sha256": "f01e8c43b184b43cbee1b55568e68857d84be00dbee79bcf3e6006d6d5bd977f",
+      "size": 11260
     },
     {
       "path": "skills/ai-playbook-configure/agents/openai.yaml",
@@ -1468,8 +1478,8 @@
     },
     {
       "path": "skills/model-router/SKILL.md",
-      "sha256": "ee0edf8eb0f5032bfe7654d63e6f93f217c8c5b5fac8d25cce83353f9420368a",
-      "size": 8191
+      "sha256": "4d480210eaa90461bdabd0b9d54190b2e3d34865b6519b2910b5812824a6e45e",
+      "size": 9309
     },
     {
       "path": "skills/model-router/agents/openai.yaml",
@@ -1478,8 +1488,8 @@
     },
     {
       "path": "skills/model-router/references/chat-prompts.md",
-      "sha256": "d9d7e723fd602fa9f56075cc7e7fa580159b23b851ca6769d5d5af6dc2a768f1",
-      "size": 4204
+      "sha256": "46a53a32519e2f0620818a1593e51fc261052910f85800b789b625c91cd771eb",
+      "size": 4971
     },
     {
       "path": "skills/model-router/references/host-adapters.md",
