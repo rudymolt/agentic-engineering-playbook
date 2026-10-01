@@ -3,6 +3,7 @@
 from copy import deepcopy
 import hashlib
 import importlib.util
+import os
 from pathlib import Path, PurePosixPath
 import re
 
@@ -118,6 +119,22 @@ class JobBindings:
             if location.is_relative_to(project):
                 raise ConfigError("Custom binding/audit storage points into the shareable project. "
                                   "Restore an external machine-local store; do not copy, track or publish it.")
+        for name in ("bindings.json", "approvals.json"):
+            path = self.custom_dir / name
+            if path.exists():
+                self._check_single_link(path.stat())
+
+    def _check_single_link(self, metadata):
+        if metadata.st_nlink != 1:
+            raise CustomEvidenceError("separate single-link local inventory, approvals and retained evidence; "
+                                      "remove published aliases and restore independent external files before retrying")
+
+    def _read_custom_file(self, path):
+        if path.resolve().is_relative_to(self.project.resolve()):
+            raise CustomEvidenceError("independently retained evidence outside the shareable project")
+        with path.open("rb") as stream:
+            self._check_single_link(os.fstat(stream.fileno()))
+            return stream.read()
 
     def _installed(self):
         found = {}
@@ -213,19 +230,20 @@ class JobBindings:
                         "Unmet requirement: " + requirement + ". Required: exact-source independent retained audit, job inputs/outputs, "
                         "owner, invocation, form, permitted effects and retained authority; "
                         "restore the local binding and stage-owned evidence or explicitly select " + JOBS[job]["fallback"])
-        except (ConfigError, OSError, UnicodeError, KeyError, TypeError, ValueError, RuntimeError):
-            self._reject("custom:unresolved", "Unmet local binding schema; repair local inventory or explicitly select " + JOBS[job]["fallback"])
+        except (ConfigError, OSError, UnicodeError, KeyError, TypeError, ValueError, RuntimeError) as error:
+            requirement = str(error) if isinstance(error, CustomEvidenceError) else "local binding schema; repair local inventory"
+            self._reject("custom:unresolved", "Unmet " + requirement + "; or explicitly select " + JOBS[job]["fallback"])
         return choices
 
     def _custom_inventory(self, job):
         inventory = self.custom_dir / "bindings.json"
-        local = strict_json(inventory.read_text()) if inventory.exists() else {"version": VERSION, "sources": {}}
+        local = strict_json(self._read_custom_file(inventory).decode()) if inventory.exists() else {"version": VERSION, "sources": {}}
         if (set(local) != {"version", "sources"} or type(local["version"]) is not int
                 or local["version"] != VERSION or not isinstance(local["sources"], dict)):
             raise ConfigError("local binding schema")
         approvals = self.custom_dir / "approvals.json"
         if approvals.exists():
-            approvals = strict_json(approvals.read_text())
+            approvals = strict_json(self._read_custom_file(approvals).decode())
             if (set(approvals) != {"version", "audits"} or type(approvals["version"]) is not int
                     or approvals["version"] != VERSION or not isinstance(approvals["audits"], dict)):
                 raise ConfigError("local approval schema")
@@ -255,7 +273,7 @@ class JobBindings:
         audit = binding["audits"][job]
         if not isinstance(audit, str) or re.fullmatch(r"[a-z0-9_-]+", audit) is None:
             raise CustomEvidenceError("retained audit locator")
-        approvals = strict_json((self.custom_dir / "approvals.json").read_text())
+        approvals = strict_json(self._read_custom_file(self.custom_dir / "approvals.json").decode())
         if (set(approvals) != {"version", "audits"} or type(approvals["version"]) is not int
                 or approvals["version"] != VERSION):
             raise CustomEvidenceError("stage-owned audit inventory")
@@ -271,10 +289,11 @@ class JobBindings:
         proof_path = self.custom_dir / "evidence" / (audit + ".json")
         if proof_path.resolve().is_relative_to(self.project.resolve()):
             raise CustomEvidenceError("independently retained evidence outside the shareable project")
-        proof_sha = fingerprint(proof_path)
+        proof_bytes = self._read_custom_file(proof_path)
+        proof_sha = hashlib.sha256(proof_bytes).hexdigest()
         if approval["evidence_sha256"] != proof_sha:
             raise CustomEvidenceError("retained evidence fingerprint")
-        proof = strict_json(proof_path.read_text())
+        proof = strict_json(proof_bytes.decode())
         invocation = identity + (" --report-only" if job in {"code_review", "application_qa"} else "")
         expected = {"contract_version": VERSION, "source_id": identity, "job": job,
                     "owner": contract["owner"], "source_sha256": fingerprint(source),

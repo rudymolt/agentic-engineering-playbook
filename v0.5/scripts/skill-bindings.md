@@ -136,6 +136,15 @@ not execution or approval. The stage still supplies required inputs, enforces
 effects/permissions and validates outputs.
 
 Discovery, Apply and stage entry reread the local resolution and retained audit.
+Local inventory, approvals and each consumed retained evidence file must have
+exactly one filesystem link, including when read through a symlink. Observable
+hardlink aliases block discovery, Apply and invocation; remove published aliases
+and restore independent external files before retrying. Configure does not repair
+or write the store. This conservative guard also rejects links entirely outside
+the project. It does not protect against an external actor physically relocating
+an already opened directory inode during a read.
+Installed-source read failures report a portable error class and recovery action,
+not an absolute source locator; they do not authorize fallback or invocation.
 Missing binding/evidence, rejected contract, source drift or a new audit revision
 leaves the saved selection unresolved, with unmet requirements and the named
 manual fallback. Recovery restores that machine's binding and authentic stage

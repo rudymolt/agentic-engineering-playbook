@@ -3,6 +3,7 @@
 from copy import deepcopy
 import hashlib
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -75,6 +76,90 @@ class CustomBindingTests(test_playbook_config.ConfigurationTests):
         self.assertEqual(preview["state"], "proposal_ready")
         self.assertEqual(self.service.reply(preview, "Apply")["state"], "applied")
         return preview
+
+    def test_sensitive_hardlinks_block_discovery_apply_and_retained_invocation(self):
+        for artifact in ("bindings.json", "approvals.json", "evidence/fixture-audit.json"):
+            with self.subTest(artifact=artifact):
+                preview = self.pick(self.preview(), "specification", [self.identity])
+                path = self.local / artifact
+                alias = self.project / "private-alias.json"
+                before = path.read_bytes()
+                os.link(path, alias)
+                try:
+                    proposal = self.service.read()
+                    self.assertFalse(any(option["binding"]["source_id"] == self.identity
+                                         for option in proposal["skill_alternatives"]["specification"]))
+                    self.assertIn("single-link", json.dumps(proposal["skill_rejections"]))
+                    self.assertEqual(self.service.reply(preview, "Apply")["state"], "blocked")
+                    code, result = self.stage_entry(approved=preview["skill_after"])
+                    self.assertEqual(code, 2)
+                    with self.assertRaises(ConfigError):
+                        self.bindings.invocation_source(preview["skill_after"], "specification", "03", self.identity)
+                    for public in (proposal, result):
+                        self.assertNotIn(str(self.local), json.dumps(public))
+                        self.assertNotIn(str(self.project), json.dumps(public))
+                    self.assertEqual(path.read_bytes(), before)
+                    self.assertEqual(alias.read_bytes(), before)
+                    self.assertFalse((self.project / ".playbook-config.json").exists())
+                    self.assertEqual(self.state.read_bytes(), self.runtime)
+                finally:
+                    alias.unlink()
+                self.assertTrue(any(option["binding"]["source_id"] == self.identity
+                                    for option in self.service.read()["skill_alternatives"]["specification"]))
+
+    def test_saved_custom_selection_blocks_after_sensitive_hardlink(self):
+        preview = self.save_custom()
+        config = self.project / ".playbook-config.json"
+        before = config.read_bytes()
+        for artifact in ("bindings.json", "approvals.json", "evidence/fixture-audit.json"):
+            with self.subTest(artifact=artifact):
+                alias = self.project / "private-alias.json"
+                os.link(self.local / artifact, alias)
+                try:
+                    self.assertEqual(self.stage_entry()[0], 2)
+                    self.assertEqual(self.stage_entry(approved=preview["skill_after"])[0], 2)
+                    with self.assertRaises(ConfigError):
+                        self.service.dispatch_job("specification", "03")
+                    self.assertEqual(config.read_bytes(), before)
+                finally:
+                    alias.unlink()
+
+    def test_missing_installed_source_has_portable_diagnostic(self):
+        missing = self.machines / "private-install/code-review/SKILL.md"
+        self.service.bindings = JobBindings(self.project, custom_dir=self.local,
+                                           installed={"mattpocock-skills:code-review": [missing]})
+        proposal = self.service.read()
+        self.assertIn("FileNotFoundError", json.dumps(proposal["skill_rejections"]))
+        self.assertNotIn(str(self.machines), json.dumps(proposal))
+
+    def test_cli_nonfile_installed_source_has_portable_diagnostic(self):
+        home = self.machines / "fixture-home"
+        source = home / ".agents/skills/code-review/SKILL.md"
+        source.mkdir(parents=True)
+        adapter = ("import json,sys; request=json.load(sys.stdin); "
+                   "json.dump({'request_id':request['request_id'],'checked_at':request['started_at'],"
+                   "'authority':'host-reported-selection','revision':'fixture-cli',"
+                   "'routes':[{'model_id':'available-build','runner':'codex','reasoning':'medium',"
+                   "'roles':['implementation']}]},sys.stdout)")
+        command = [sys.executable, str(Path(__file__).with_name("configure-playbook.py")),
+                   "--project", str(self.project), "--custom-bindings-dir", str(self.local),
+                   "--discovery-command", json.dumps([sys.executable, "-c", adapter]), "read"]
+        completed = subprocess.run(command, input="{}", text=True, capture_output=True,
+                                   env=dict(os.environ, HOME=str(home)))
+        self.assertEqual(completed.returncode, 0)
+        proposal = json.loads(completed.stdout)
+        self.assertIn("IsADirectoryError", json.dumps(proposal["skill_rejections"]))
+        self.assertNotIn(str(self.machines), completed.stdout)
+        saved = deepcopy(proposal["skill_before"])
+        saved["jobs"]["code_review"] = [{"source_id": "mattpocock-skills:code-review",
+                                         "source_sha256": "0" * 64, "contract_sha256": "0" * 64}]
+        request = {"job": "code_review", "owner": "08", "approved_binding": saved}
+        completed = subprocess.run(command[:-1] + ["job-route"], input=json.dumps(request),
+                                   text=True, capture_output=True, env=dict(os.environ, HOME=str(home)))
+        self.assertEqual(completed.returncode, 2)
+        self.assertEqual(json.loads(completed.stdout)["state"], "blocked")
+        self.assertNotIn(str(home), completed.stdout)
+        self.assertNotIn(str(self.local), completed.stdout)
 
     def test_two_machines_same_configuration_distinct_local_resolution(self):
         preview = self.save_custom()

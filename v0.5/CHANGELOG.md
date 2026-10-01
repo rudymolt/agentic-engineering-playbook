@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- Reject multiple-link local inventory, approvals and retained evidence at
+  discovery, Apply and stage invocation. Redact installed-source read failures
+  to a portable error class and exact-source recovery action.
+
+*Why — local isolation includes inode aliases and diagnostics:* external paths
+alone do not rule out project hardlinks, and raw filesystem errors can publish
+private source locators. These guards block observable aliases and retain
+actionable recovery without changing saved choices or execution authority.
+
 - Add portable custom job identities with separately retained machine-local
   bindings and stage-owned exact-source contract audits. Reject project-local
   audit stores, source/resolution drift, unpinned evidence and custom embedded

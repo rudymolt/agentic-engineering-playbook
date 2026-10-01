@@ -178,8 +178,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "5384fbdae43011767dadd4a08b4520b2fdcf00d09b11f3203a43049e297cb4d5",
-      "size": 9623
+      "sha256": "debb903d3e4ca2478512b100fda8c16be97d73987adc30915e9d3916810a444f",
+      "size": 10150
     },
     {
       "path": "MAINTENANCE.md",
@@ -1053,8 +1053,8 @@
     },
     {
       "path": "scripts/check-upstream-compatibility.py",
-      "sha256": "634b60b7a12c68cfc9cc72b21ac54c4fa241d1d268698c5871719344951fd6b4",
-      "size": 6954
+      "sha256": "e42c6839e00f264da00713e9b28e99ac4ebda1fdca98e9e2083bcd6988839d18",
+      "size": 7063
     },
     {
       "path": "scripts/check-upstream-drift.py",
@@ -1148,13 +1148,13 @@
     },
     {
       "path": "scripts/skill-bindings.md",
-      "sha256": "dca413a23d742810c7a9523c14c642b7b490f7c4ed9cc66242f92340d6173b13",
-      "size": 15757
+      "sha256": "c174cf10ce743681b213f77be9914e9ffc41a92dbbe98dd22531ce5d3c796c59",
+      "size": 16447
     },
     {
       "path": "scripts/skill_bindings.py",
-      "sha256": "84db6a8867dd2abd76031f1d6ca2cee5c15899bf9dc8d51c9b99abfe498f4477",
-      "size": 26849
+      "sha256": "08db9250beff44313a10ba407a6d0e2aab24fe0340d075191419ac429273e0be",
+      "size": 27947
     },
     {
       "path": "scripts/template_base.py",
@@ -1198,8 +1198,8 @@
     },
     {
       "path": "scripts/test_custom_skill_bindings.py",
-      "sha256": "4258a0ceb0dd4f24c3fe4bf0b56c8e632d4a3b4c9159d885835d98f90650bd40",
-      "size": 20037
+      "sha256": "692ad745df1875cd8bf072dbfa2bdf748f670d82493d4de6c3ea740e21e0e6f0",
+      "size": 25554
     },
     {
       "path": "scripts/test_delivery_ci_scope.py",
@@ -1278,8 +1278,8 @@
     },
     {
       "path": "scripts/test_upstream_compatibility.py",
-      "sha256": "da8cd57c3733a3a7373fd02ae812a022ff4ac45597b023c871f5e96a6b5b9ce9",
-      "size": 7532
+      "sha256": "5a4c275d649c28aca158a1d17234ea0b2b61be2c9e1f52c31da45cf576eeeb1a",
+      "size": 8474
     },
     {
       "path": "scripts/test_upstream_drift.py",
