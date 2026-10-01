@@ -158,12 +158,15 @@ def validate_choice(choice, location):
 def validate_config(config):
     if not isinstance(config, dict) or type(config.get("schema_version")) is not int or config["schema_version"] != 1:
         raise ConfigError("Unsupported configuration schema; use a compatible editor or restore schema 1.")
-    if set(config) != {"schema_version", "adopted", "models"} or config["adopted"] is not True:
+    if set(config) not in ({"schema_version", "adopted", "models"}, {"schema_version", "adopted", "models", "skills"}) or config["adopted"] is not True:
         raise ConfigError("Invalid adoption record; reconcile .playbook-config.json before continuing.")
     if not isinstance(config["models"], dict) or set(config["models"]) != set(ROLES):
         raise ConfigError("Configuration must retain all four model roles; correct it and reload.")
     for role, choice in config["models"].items():
         validate_choice(choice, f"models.{role}")
+    if "skills" in config:
+        from skill_bindings import validate_bindings
+        validate_bindings(config["skills"])
     return config
 
 
@@ -187,7 +190,7 @@ def instant(value):
 
 class Configuration:
     def __init__(self, project: Path, discover: Callable, clock: Callable = None, checkpoint: Callable = None,
-                 preferences_dir: Path = None, context: dict = None):
+                 preferences_dir: Path = None, context: dict = None, bindings=None):
         self.project = Path(project)
         self.discover = discover
         self.clock = clock or (lambda: datetime.now(timezone.utc).isoformat())
@@ -198,6 +201,7 @@ class Configuration:
         self.recovery = self.project / ".playbook-config.recovery"
         self.checkpoint = checkpoint or (lambda point: None)
         self.context = deepcopy(context)
+        self.bindings = bindings
         self.preferences = None
         self._write_stores = (self,)
         self._directory_fd = None
@@ -427,6 +431,13 @@ class Configuration:
                 "bootstrap": {"required": inputs[".playbook-state.yml"] is None,
                               "action": "Use the existing bootstrap preview/approval gate; configuration never bootstraps."},
             }
+            bindings = self._bindings()
+            bindings.rejections = []
+            starting = deepcopy(config.get("skills", bindings.defaults()))
+            proposal.update(skill_before=deepcopy(starting), skill_after=deepcopy(starting),
+                            skills_adopted="skills" in config, edited_jobs=[],
+                            skill_alternatives={job: bindings.options(job) for job in starting["jobs"]},
+                            skill_rejections=deepcopy(bindings.rejections))
             if evidence.get("coordinator") is not None:
                 validate_choice(evidence["coordinator"], "coordinator")
                 proposal["coordinator"] = {"observed": True, "choice": deepcopy(evidence["coordinator"]),
@@ -442,7 +453,29 @@ class Configuration:
         return {"state": "recovery_required" if self.recovery.exists() or isinstance(error, RecoveryRequired) else "blocked", "message": str(error), "choices": ["Edit", "Edit Build", "Reload", "Not now"], "launched": False}
 
     def _proposal_choices(self):
-        return ["Apply", "Edit", "Edit Plan", "Edit Build", "Edit Verify", "Edit Repair", "Explain", "Not now"]
+        return ["Apply", "Edit", "Edit Plan", "Edit Build", "Edit Verify", "Edit Repair", "Edit skills", "Explain", "Not now"]
+
+    def _bindings(self):
+        if self.bindings is None:
+            from skill_bindings import JobBindings
+            self.bindings = JobBindings(self.project)
+        return self.bindings
+
+    def dispatch_job(self, job, owner, invoke=None, approved_binding=None):
+        config, _, _ = self._snapshot()
+        if approved_binding is not None:
+            result = self._bindings().dispatch(approved_binding, job, owner, invoke)
+            result["origin"] = "approved execution"
+            return result
+        if "skills" not in config:
+            from skill_bindings import JOBS
+            if job not in JOBS or owner != JOBS[job]["owner"]:
+                raise ConfigError("Only the owning stage may consume this job binding.")
+            return {"configured": False, "job": job, "owner": owner, "launched": False,
+                    "message": "No adopted job binding; retain the existing stage route and compatibility checks."}
+        result = self._bindings().dispatch(config["skills"], job, owner, invoke)
+        result["origin"] = "adopted project"
+        return result
 
     def _personal_snapshot(self):
         if self.preferences is None:
@@ -491,6 +524,16 @@ class Configuration:
         proposal["role_proposal"] = [{"role": role, "label": ROLE_LABELS[role], "origin": proposal["origins"][role],
                                       "before": deepcopy(proposal["before"][role]), "after": deepcopy(proposal["after"][role]),
                                       "reason": "Retained starting choice or explicit edit, not a recommendation. Task-fit and cost evidence unavailable until S6."} for role in ROLES]
+        def labels(job, selection):
+            options = proposal["skill_alternatives"][job]
+            return [next((option["label"] for option in options if option["binding"] == binding),
+                         "Unverified source " + binding["source_id"] + " — blocked; edit to an explicit fallback")
+                    for binding in selection["jobs"][job]]
+        proposal["skill_proposal"] = [{"job": job, "before": labels(job, proposal["skill_before"]),
+                                       "after": labels(job, proposal["skill_after"]),
+                                       "origin": "adopted project" if proposal["skills_adopted"] else "explicit stage fallback preview"}
+                                      for job in proposal["skill_after"]["jobs"]]
+        proposal["skill_changes"] = deepcopy(proposal["skill_proposal"])
         proposal["choices"] = self._proposal_choices() + list(proposal["questions"].values())
         if personal is not None:
             proposal["choices"] += ["Guided", "Expert"]
@@ -584,8 +627,43 @@ class Configuration:
             if draft.get("step") == "preference_preview":
                 draft["personal"]["after"] = deepcopy(draft["personal"]["before"])
             return self._preview(draft)
+        if reply == "edit skills":
+            draft.update(step="skill_job", choices=["Edit skills " + job for job in draft["skill_after"]["jobs"]] + ["Back", "Not now"])
+            return self._seal(draft)
+        if reply.startswith("edit skills "):
+            job = reply[len("edit skills "):].replace(" ", "_")
+            if job not in draft["skill_after"]["jobs"]:
+                raise ConfigError("Choose alignment, specification, implementation, code review or application QA.")
+            draft.update(step="skill", edit_job=job, skill_options=deepcopy(draft["skill_alternatives"][job]),
+                         choices=["Choose " + str(index + 1) for index in range(len(draft["skill_alternatives"][job]))] + ["Back", "Reload", "Not now"],
+                         message="Choose a source-labelled route by number. Alignment permits ordered comma-separated adapter choices. Source labels are attribution, not authority.")
+            return self._seal(draft)
+        if draft.get("step") == "skill" and (reply.startswith("choose ") or reply.isdigit()):
+            raw = reply[len("choose "):] if reply.startswith("choose ") else reply
+            parts = raw.split(",")
+            if any(not part.strip().isdigit() for part in parts):
+                raise ConfigError("Choose displayed numbers separated by commas, in invocation order.")
+            indexes = [int(part.strip()) - 1 for part in parts]
+            if any(not 0 <= index < len(draft["skill_options"]) for index in indexes):
+                raise ConfigError("Choose only a displayed eligible skill or explicit fallback.")
+            job = draft["edit_job"]
+            draft["skill_after"]["jobs"][job] = [deepcopy(draft["skill_options"][index]["binding"]) for index in indexes]
+            self._bindings().resolve(draft["skill_after"], job)
+            if job not in draft["edited_jobs"]:
+                draft["edited_jobs"].append(job)
+            return self._preview(draft)
+        if reply.startswith("explain skills "):
+            from skill_bindings import JOBS
+            job = reply[len("explain skills "):].replace(" ", "_")
+            if job not in JOBS:
+                raise ConfigError("Explain skills requires a named Playbook job.")
+            draft["explanation"] = {"job": job, "contract": deepcopy(JOBS[job]),
+                                    "choices": deepcopy(draft["skill_alternatives"][job]),
+                                    "rejections": deepcopy(draft["skill_rejections"]),
+                                    "limitations": "Exact-source contract evidence, not installation or a warning acknowledgement, establishes eligibility. No candidate executes during configuration."}
+            return self._seal(draft)
         if reply == "edit":
-            draft.update(step="role", choices=[str(index + 1) + " " + ROLE_LABELS[role] for index, role in enumerate(ROLES)] + ["Back", "Not now"])
+            draft.update(step="role", choices=[str(index + 1) + " " + ROLE_LABELS[role] for index, role in enumerate(ROLES)] + ["Edit skills", "Back", "Not now"])
             return self._seal(draft)
         if reply.isdigit() and draft.get("step") == "role":
             index = int(reply) - 1
@@ -705,6 +783,16 @@ class Configuration:
             if inputs != proposal.get("inputs") or config["models"] != proposal.get("before"):
                 raise ConfigError("Inputs changed since preview; reload and review the new proposal.")
             candidate = validate_config({"schema_version": 1, "adopted": True, "models": deepcopy(proposal["after"])})
+            if proposal["skills_adopted"] or proposal["edited_jobs"]:
+                starting = config.get("skills", self._bindings().defaults())
+                if starting != proposal["skill_before"]:
+                    raise ConfigError("Skill inputs changed since preview; reload without replacing intentional choices.")
+                candidate["skills"] = deepcopy(proposal["skill_after"])
+                validate_config(candidate)
+                for job in candidate["skills"]["jobs"]:
+                    self._bindings().resolve(candidate["skills"], job)
+                    if self._bindings().options(job) != proposal["skill_alternatives"][job]:
+                        raise ConfigError("Skill eligibility evidence changed; reload and explicitly review the new routes.")
             constraints = lambda choice: {key: value for key, value in choice.items() if key not in IDENTITY}
             for role in ROLES:
                 choice = candidate["models"][role]

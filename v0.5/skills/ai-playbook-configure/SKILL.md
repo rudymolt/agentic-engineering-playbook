@@ -85,6 +85,18 @@ This skill never launches a model or edits runtime state.
    explain that it remains saved while the project draft is cancelled.
    Completion criterion: reviewed draft
    or cancellation, with nothing saved.
+   Skill editing uses `Edit skills` or `Edit skills <job>` for alignment,
+   specification, implementation, code review or application QA. Show all
+   `skill_proposal` and `skill_changes` before/after rows in the full proposal.
+   Numbered `skill_options` retain the same verified source prefix/provenance.
+   `Choose <number>` edits one job; `Choose <number>,<number>` retains supported
+   alignment context → decisions composition order. `Explain skills <job>`
+   shows inputs, outputs, effects, owner and eligibility without invocation.
+   Unknown, changed, colliding or incompatible sources require an explicit
+   fallback or block, never warning acknowledgement. Read
+   [`../../scripts/skill-bindings.md`](../../scripts/skill-bindings.md) for
+   contracts, current upstream exclusions and already eligible project QA proof.
+   Configuration does not create or maintain a harness.
 4. **Apply the reviewed proposal.** Only after typed `Apply`, repeat genuine
    authoritative discovery through that adapter and pass the same proposal to the helper. Never
    silently create and Apply a refreshed proposal. Changed inputs require

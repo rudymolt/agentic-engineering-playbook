@@ -7,6 +7,15 @@ mockup were read; mockup values are illustrative, not host evidence.
 
 ## Default readers and writers
 
+S3 adds `scripts/skill_bindings.py` and the shared helper's public `job-route`
+entry seam. Stages 01/03/07/08/09 resolve and consume configured primary
+invocations there; confirmation, tests, review/QA evidence, commits, launches
+and permissions remain stage-owned. Proposal, editor and before/after changes
+share verified provenance. QA reads only an already selected, independently
+eligible project route and creates no harness or maintenance selection.
+Embedded checks reuse the exact-installed-source compatibility checker. The
+public job-contract guide lists upstream exclusions and explicit fallbacks.
+
 | Consumer | Ownership and S1 treatment |
 | --- | --- |
 | `v0.5/10-process/README.md`, `v0.5/10-process/prereqs-capability-profiles.md`, `v0.5/templates/CLAUDE.md`, `v0.5/scripts/upgrade-project.py:CLAUDE_ROUTING_RULE` | Stage navigation, capability fallback and installed policy also describe ordinary defaults. Align their labels with the same effective preference; do not let template/upgrade guidance revive a competing edition-only default. |

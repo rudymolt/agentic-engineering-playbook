@@ -19,7 +19,7 @@ def main():
     parser.add_argument("--discovery", type=Path)
     parser.add_argument("--discovery-command", help="JSON argv for the current-availability adapter; request JSON is sent on stdin.")
     parser.add_argument("--now", help="Fixture clock only; live use omits this option.")
-    parser.add_argument("action", choices=("read", "reply", "resolve"))
+    parser.add_argument("action", choices=("read", "reply", "resolve", "job-route"))
     args = parser.parse_args()
 
     def discover(request):
@@ -54,8 +54,10 @@ def main():
             result = service.read()
         elif args.action == "reply":
             result = service.reply(request["proposal"], request["reply"])
-        else:
+        elif args.action == "resolve":
             result = service.resolve(request["role"], request.get("feature_choice"))
+        else:
+            result = service.dispatch_job(request["job"], request["owner"], approved_binding=request.get("approved_binding"))
     except (ConfigError, OSError, KeyError, TypeError, AttributeError, UnicodeError) as error:
         result = {"state": "recovery_required" if isinstance(error, RecoveryRequired) else "blocked", "message": str(error), "launched": False}
         if isinstance(request, dict):

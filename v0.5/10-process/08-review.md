@@ -76,6 +76,23 @@ tests, or fresh-verifier requirements.
 
 ## First pass: standards and spec fidelity
 
+For new choices, resolve the saved binding before this pass's primary invocation.
+Resume with the retained `approved_binding`, not current defaults; older active
+routes without a binding remain unchanged:
+
+```sh
+printf '%s' '{"job":"code_review","owner":"08"}' | python3 {playbook-path}/v0.5/scripts/configure-playbook.py --project . job-route
+```
+
+A configured manual/Playbook adapter performs the standards/spec axes below.
+An eligible upstream source uses only the returned exact-source report-only
+invocation. Re-resolve immediately before invocation if source resolution
+changed. Blocked means stop and explicitly edit/preview a fallback, never
+invoke despite a warning. `configured: false` retains existing source checks.
+Fresh independence, verifier identity, evidence/verdict, mandatory adversarial
+and security axes, permissions and commit/launch boundaries remain stage-owned.
+See the [job contract](../scripts/skill-bindings.md).
+
 Use a direct upstream reviewer only after
 `../scripts/check-upstream-compatibility.py` confirms the resolved installed source has
 report-only compatibility and prints the permitted embedded entry point. The tested Matt

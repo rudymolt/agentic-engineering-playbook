@@ -22,6 +22,21 @@ Before touching code for a non-trivial slice, confirm the work is on a feature b
 
 ## What to run
 
+For new choices, resolve the saved primary binding at this stage-owned invocation
+point. Resume with the retained `approved_binding`, not current defaults; older
+active routes without a binding remain unchanged:
+
+```sh
+printf '%s' '{"job":"implementation","owner":"07"}' | python3 {playbook-path}/v0.5/scripts/configure-playbook.py --project . job-route
+```
+
+A configured manual/Playbook adapter performs this stage's approved-seam
+vertical red→green loop instead of automatically invoking `/tdd` or incompatible
+`/implement`. `configured: false` retains the route below. Blocked means stop
+and explicitly edit/preview a fallback. Approved Build/delivery choices, slice
+confirmation, tests, fresh Verify, commits, launches, permissions and failure/
+stop rules remain stage-owned. See the [job contract](../scripts/skill-bindings.md).
+
 `/tdd` (Matt). Enforces red → green with **vertical slices** — one failing test, one piece of implementation, repeat. As of upstream v1.1.0 the loop is **red → green only**: the refactor step moved out of `/tdd` and into the stage-08 standards/spec pass (compatible `/code-review` or the same manual axes), so refactoring happens under review discipline, not mid-implementation. Tests go only at **pre-agreed seams** — the ones sketched by `/to-spec` at stage 03 and confirmed with the user — never at seams the agent invents mid-slice.
 
 When stages 01–06 have produced an approved delivery envelope and the human

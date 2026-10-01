@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+- Add versioned source-labelled bindings for alignment, specification,
+  implementation, code review and application QA through Configure's existing
+  save boundary. Stage entry resolves saved choices and blocks source/contract
+  drift or collisions; embedded review/QA reuse exact-source report-only checks.
+  QA reads only an already selected eligible project route.
+
+*Why — preferences without transferred authority:* users can choose supported
+routes or honest manual/adapter fallbacks while preserving active approvals,
+history, customisations and stage obligations. Configuration does not execute
+candidate skills, create harnesses or enable maintenance. Live host
+qualification remains separate.
+
 - Bind personal preference previews to the resolved local and project directory identities. Use descriptor-relative personal writes and recovery bookkeeping so retargeted aliases cannot redirect transaction files into the project; preserve drafts and require a new destination preview after a directory change.
 
 *Why — preserve personal storage isolation:* a one-time directory check allowed a long-lived Configure service to publish personal settings inside a project after an alias changed. Rechecking identity and anchoring storage operations closes that alias race while preserving the existing content completion and paired recovery protocol. External relocation of the opened directory itself still requires filesystem coordination.

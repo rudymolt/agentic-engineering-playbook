@@ -113,6 +113,11 @@ Existing model-router resolves new
 choices through `scripts/configure-playbook.py`: feature > adopted project >
 legacy project > edition. Malformed adoption blocks; active/approved records
 remain unchanged. See `scripts/playbook-config.md` for the shared boundary.
+Configure also offers five versioned job bindings with source-labelled typed
+editing. Stages 01/03/07/08/09 consume saved choices through the public `job-route`
+entry seam, retaining stage authority. Exact-source drift or incompatible
+embedded review/QA blocks; manual/adapter fallback must be explicitly selected.
+QA selection never creates or maintains a harness. See `scripts/skill-bindings.md`.
 
 ```
 help{need,open}:

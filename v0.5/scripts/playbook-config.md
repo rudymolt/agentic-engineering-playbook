@@ -261,6 +261,14 @@ shareable; transaction artifacts stay local.
 
 ## Verification scope
 
+Supported skill choices share this service, revision seal and save/recovery
+protocol. See [job contracts and stage entry](skill-bindings.md) for the optional
+versioned `skills` field, source-labelled proposal/editor/change rows, typed
+`Edit skills <job>` / `Choose <number>` / `Explain skills <job>`, exact-source
+eligibility checks and public `job-route` CLI seam. It returns a stage-owned
+invocation descriptor, never a launcher. Active/approved execution remains
+outside preference writes. Model-only adoptions remain valid and unchanged.
+
 `test_playbook_config.py` and `test_playbook_config_roles.py` use temporary projects, fixture discovery and a clock
 at this boundary, including injected storage checkpoints. It proves typed
 read/edit/preview/Apply/cancel, migration, next-lane resolution, revision
