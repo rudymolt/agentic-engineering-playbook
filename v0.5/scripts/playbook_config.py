@@ -695,6 +695,8 @@ class Configuration:
             candidate = {"schema_version": 1, "adopted": True, "models": deepcopy(draft["after"]),
                          "skills": deepcopy(draft["skill_after"])}
             validate_config(candidate)
+            if draft["personal"]["after"] is None:
+                draft["presentation_pending"] = True
             personal = draft["personal"]["after"] or {"schema_version": 1, "presentation": "guided"}
             if reply == "save defaults":
                 personal["defaults"] = candidate
@@ -738,8 +740,8 @@ class Configuration:
                          message="Only local presentation will be saved to the displayed personal destination. Project drafts remain unsaved; no launch.")
             if changed_directory:
                 draft["message"] += " Directory identity changed; review the resolved personal destination before Apply preference."
-            draft["proposal_revision"] = self._revision(draft)
-            return draft
+            self._present(draft)
+            return self._seal(draft)
         if reply == "apply preference" and draft.get("step") == "preference_preview":
             return self._apply_preference(draft)
         if reply == "back":
@@ -943,7 +945,7 @@ class Configuration:
                 if self.preferences is not None:
                     self.preferences._expected_directory = None
             return {"state": "applied", "destination": DESTINATION,
-                    "destinations": [DESTINATION, "preferences.json"] if personal_changed else [DESTINATION],
+                    "destinations": [DESTINATION, proposal["personal"]["destination"]] if personal_changed else [DESTINATION],
                     "paired_completion": paired_completion,
                     "message": "Reviewed destinations saved and validated. Runtime records and other projects unchanged. No build starts.", "launched": False}
         except (ConfigError, OSError, UnicodeError, KeyError, TypeError) as error:
@@ -1003,7 +1005,7 @@ class Configuration:
                         if record[key] is not None:
                             store._unlink(store.project / record[key], missing_ok=True)
                 return {"transaction_id": transaction, "protocol": "paired-1", "validated": True,
-                        "destinations": [store.destination for store in stores], "runtime_unchanged": True}
+                        "destinations": [DESTINATION, personal["destination"]], "runtime_unchanged": True}
             except (ConfigError, OSError, UnicodeError) as error:
                 if not journaled:
                     raise
@@ -1028,10 +1030,12 @@ class Configuration:
                             restored = restored and digest(store._bytes(store.path)) == record["previous_digest"]
                             continue
                         current = store._bytes(store.path)
+                        previous_bytes = store._bytes(store.project / record["previous"]) if record["previous"] is not None else None
                         if (digest(current) != record["attempted_digest"]
-                                or (record["previous"] is not None and digest(store._bytes(store.project / record["previous"])) != record["previous_digest"])):
+                                or digest(previous_bytes) != record["previous_digest"]):
                             restored = False
                             continue
+                        restoration = store._stage(previous_bytes) if previous_bytes is not None else None
                         captured = store._stage(b"")
                         store._replace(store.path, captured)
                         if digest(store._bytes(captured)) != record["attempted_digest"]:
@@ -1041,13 +1045,15 @@ class Configuration:
                                 pass
                             restored = False
                             continue
-                        if record["previous"] is not None:
+                        if restoration is not None:
                             try:
-                                store._link(store.project / record["previous"], store.path)
+                                store._link(restoration, store.path)
                             except FileExistsError:
                                 restored = False
                         store._sync_directory()
                         restored = restored and digest(store._bytes(store.path)) == record["previous_digest"]
+                        if record["previous"] is not None:
+                            restored = restored and digest(store._bytes(store.project / record["previous"])) == record["previous_digest"]
                 except (OSError, ConfigError):
                     restored = False
                 result = "Prior destinations restored" if restored else "Incomplete restoration or concurrent edit preserved"

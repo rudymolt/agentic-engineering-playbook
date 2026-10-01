@@ -65,7 +65,7 @@ class PersonalPresetTests(unittest.TestCase):
         return result, json.loads(result.stdout) if result.stdout.strip() else None
 
     def draft(self, service):
-        proposal = service.read()
+        proposal = service.reply(service.read(), "Guided")
         for label in ("Plan", "Build", "Verify", "Repair"):
             proposal = service.reply(service.reply(proposal, "Edit " + label), "1")
         return proposal
@@ -106,7 +106,8 @@ class PersonalPresetTests(unittest.TestCase):
         proposal = service.reply(proposal, "Goal Fixture project")
         result = service.reply(proposal, "Apply")
         self.assertEqual(result["state"], "applied", result)
-        self.assertEqual(result["destinations"], [".playbook-config.json", "preferences.json"])
+        self.assertEqual(result["destinations"], proposal["destinations"])
+        self.assertEqual(result["paired_completion"]["destinations"], proposal["destinations"])
         self.assertEqual(result["paired_completion"]["protocol"], "paired-1")
         self.assertTrue(result["paired_completion"]["validated"])
         self.assertTrue(result["paired_completion"]["runtime_unchanged"])
@@ -114,6 +115,114 @@ class PersonalPresetTests(unittest.TestCase):
         self.assertEqual(personal["billing"], "mixed")
         self.assertEqual(personal["defaults"]["models"], proposal["after"])
         self.assertEqual(service.read()["state"], "decision_required")
+
+    def test_first_setup_reuse_preserves_unanswered_presentation(self):
+        for reply in ("Save preset Unconfirmed", "Save defaults"):
+            with self.subTest(reply=reply):
+                service = self.service()
+                proposal = service.reply(service.read(), "Goal Fixture project")
+                self.assertEqual(proposal["questions"]["presentation"], "Guided / Expert")
+                proposal = service.reply(proposal, reply)
+                self.assertIn("presentation", proposal["missing_context"])
+                blocked = service.reply(proposal, "Apply preference")
+                self.assertEqual(blocked["state"], "blocked")
+                self.assertFalse((self.local / "preferences.json").exists())
+                proposal = service.reply(proposal, "Expert")
+                self.assertNotIn("presentation", proposal["missing_context"])
+                result = service.reply(proposal, "Apply preference")
+                self.assertEqual(result["state"], "proposal_ready", result)
+                saved = json.loads((self.local / "preferences.json").read_text())
+                self.assertEqual(saved["presentation"], "expert")
+                self.assertIn("presets" if reply.startswith("Save preset") else "defaults", saved)
+                self.assertFalse(service.path.exists())
+                (self.local / "preferences.json").unlink()
+
+    def test_cli_paired_completion_reports_exact_local_destination_privately(self):
+        _, proposal = self.command("read")
+        for label in ("Plan", "Build", "Verify", "Repair"):
+            _, proposal = self.command("reply", proposal, "Edit " + label)
+            _, proposal = self.command("reply", proposal, "1")
+        for reply in ("Expert", "Save defaults", "Billing mixed", "Goal Fixture project"):
+            result, proposal = self.command("reply", proposal, reply)
+            self.assertEqual(result.returncode, 0, result.stderr)
+        result, applied = self.command("reply", proposal, "Apply")
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(applied["destinations"], proposal["destinations"])
+        self.assertEqual(applied["paired_completion"]["destinations"], proposal["destinations"])
+        shared = (self.projects[0] / ".playbook-config.json").read_text()
+        self.assertNotIn(str(self.local), shared)
+        self.assertNotIn("billing", shared)
+        self.assertEqual((self.projects[0] / ".playbook-state.yml").read_bytes(), self.runtime[0])
+
+    def test_rollback_backup_mutation_at_publication_never_becomes_live(self):
+        self.save_preset()
+        service = self.service()
+        self.assertEqual(service.reply(service.reply(service.read(), "Load preset Focus"), "Apply")["state"], "applied")
+        previous = service.path.read_bytes()
+        changed = b'{"changed_backup":"must not publish"}\n'
+        original_link = Configuration._link
+        injected = []
+        rollback_started = []
+
+        def failure(point):
+            if point == "paired_first_written":
+                raise OSError("fixture")
+            if point == "paired_before_rollback":
+                rollback_started.append(True)
+
+        def mutate_backup(store, source, destination):
+            if rollback_started and destination == service.path:
+                record = json.loads(store._bytes(store.pair))
+                with store._open(store.project / record["previous"], "wb") as stream:
+                    stream.write(changed)
+                injected.append(record)
+            return original_link(store, source, destination)
+
+        service = self.service(checkpoint=failure)
+        proposal = service.reply(service.reply(service.read(), "Billing api"), "Goal Fixture project")
+        with patch.object(Configuration, "_link", mutate_backup):
+            result = service.reply(proposal, "Apply")
+        self.assertEqual(len(injected), 1)
+        self.assertEqual(result["state"], "recovery_required")
+        self.assertEqual(service.path.read_bytes(), previous)
+        self.assertEqual((service.project / injected[0]["previous"]).read_bytes(), changed)
+        self.assertTrue(service.pair.exists())
+        self.assertTrue((self.local / ".playbook-config.pair").exists())
+        self.assertNotIn(str(self.local), service.pair.read_text())
+        self.assertNotIn("billing", service.pair.read_text())
+        self.assertNotIn("Prior destinations restored", result["message"])
+
+    def test_rollback_publication_preserves_concurrent_destination(self):
+        self.save_preset()
+        service = self.service()
+        self.assertEqual(service.reply(service.reply(service.read(), "Load preset Focus"), "Apply")["state"], "applied")
+        external = b'{"external":"publication-window"}\n'
+        original_link = Configuration._link
+        rollback_started = []
+        injected = []
+
+        def failure(point):
+            if point == "paired_first_written":
+                raise OSError("fixture")
+            if point == "paired_before_rollback":
+                rollback_started.append(True)
+
+        def race_destination(store, source, destination):
+            if rollback_started and destination == service.path:
+                with store._open(destination, "xb") as stream:
+                    stream.write(external)
+                injected.append(True)
+            return original_link(store, source, destination)
+
+        service = self.service(checkpoint=failure)
+        proposal = service.reply(service.reply(service.read(), "Billing api"), "Goal Fixture project")
+        with patch.object(Configuration, "_link", race_destination):
+            result = service.reply(proposal, "Apply")
+        self.assertEqual(injected, [True])
+        self.assertEqual(result["state"], "recovery_required")
+        self.assertEqual(service.path.read_bytes(), external)
+        self.assertTrue(service.pair.exists())
+        self.assertEqual(self.service().read()["state"], "recovery_required")
 
     def test_first_write_failure_retains_paired_recovery(self):
         def failure(point):
@@ -266,6 +375,7 @@ class PersonalPresetTests(unittest.TestCase):
         for label in ("Plan", "Build", "Verify", "Repair"):
             _, proposal = self.command("reply", proposal, "Edit " + label)
             _, proposal = self.command("reply", proposal, "1")
+        _, proposal = self.command("reply", proposal, "Guided")
         _, proposal = self.command("reply", proposal, "Save defaults")
         result, failed = self.command("reply", proposal, "Apply", fault=True)
         self.assertEqual(result.returncode, 2)

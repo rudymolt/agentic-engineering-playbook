@@ -131,6 +131,9 @@ restoring the local resolution and retained audit or explicitly editing a
 fallback. Project-specific repair constraints remain protected.
 
 `Save defaults` or `Save preset <name>` previews a personal-only write.
+On first setup, saving reusable data preserves the unanswered Guided/Expert
+question. Apply preference blocks until an explicit presentation answer; that
+answer retains the drafted defaults or preset rather than replacing them.
 `Apply preference` saves that reusable data without touching any project or
 active execution; `Apply` explicitly approves the displayed project and personal
 changes together. `Billing <mode>` previews local billing, and presentation
@@ -148,13 +151,19 @@ protocol. Success requires validation of both destinations, runtime digests,
 retained evidence, directory identities and paired journals, followed by durable
 paired completion. The result includes a transaction ID, protocol and validated
 destinations in `paired_completion`; it is not two independent Apply replies
-treated as success.
+treated as success. Both completion destination lists retain the exact reviewed
+personal destination in the local response only, never the shareable project
+configuration or its journal.
 
 Incomplete pairs block project and personal reads/writes, including a different
 project using the same personal store. On failure, only a destination still
 matching this transaction's attempted bytes can be restored. A racing writer is
 captured intact and restored by no-clobber linking when possible, never overwritten;
 any other concurrent bytes and retained capture remain available for recovery.
+Previous evidence is read once and digest-verified into a separate restoration
+snapshot before publication. The no-clobber link publishes that snapshot, not
+the mutable backup inode, so backup edits during publication cannot become live
+configuration. Changed backup evidence remains retained and requires recovery.
 Even exact restoration returns `recovery_required`, not partial success.
 After completion-boundary conflict, retain attempted evidence, concurrent bytes
 and journals rather than undoing a completed write. Human recovery inspects both

@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- Isolate paired rollback publication from mutable backup evidence, report the
+  exact reviewed local completion destination and preserve unanswered
+  Guided/Expert choices while drafting reusable defaults or presets.
+
+*Why — recovery and reuse must preserve reviewed intent:* a late backup edit
+must not become live configuration, completion must identify the actual local
+store without leaking it into project files, and saving reusable data must not
+silently choose a presentation preference.
+
 - Add local reusable defaults, named presets and billing preferences without
   changing active selections, approvals or history. Preset loading previews a
   draft; explicit Apply revalidates model/skill identities. Bootstrap previews
