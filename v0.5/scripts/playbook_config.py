@@ -31,6 +31,14 @@ class RecoveryRequired(ConfigError):
     """A save could not restore prior defaults; retained evidence needs reconciliation."""
 
 
+def public_error_message(error):
+    if isinstance(error, OSError):
+        return ("Cannot access configuration inputs or storage (" + type(error).__name__
+                + "). Restore readable inputs and accessible storage, then reload. Preserve saved "
+                "choices, approvals and history; no fallback or rewrite is automatic.")
+    return str(error)
+
+
 def strict_json(text):
     def pairs(entries):
         result = {}
@@ -381,7 +389,7 @@ class Configuration:
                         raise ConfigError("Invalid retained evidence name.")
                 self._receipt_conflicts(receipt, marker)
             except (ConfigError, OSError, UnicodeError, KeyError, TypeError, AttributeError) as error:
-                raise RecoveryRequired(f"Reconcile configuration receipt {receipt.name}: {error}") from error
+                raise RecoveryRequired(f"Reconcile configuration receipt {receipt.name}: {public_error_message(error)}") from error
 
     def resolve(self, role, feature_choice=None):
         if role not in ROLES:
@@ -462,7 +470,7 @@ class Configuration:
             return self._blocked(error)
 
     def _blocked(self, error):
-        return {"state": "recovery_required" if self.recovery.exists() or isinstance(error, RecoveryRequired) else "blocked", "message": str(error), "choices": ["Edit", "Edit Build", "Reload", "Not now"], "launched": False}
+        return {"state": "recovery_required" if self.recovery.exists() or isinstance(error, RecoveryRequired) else "blocked", "message": public_error_message(error), "choices": ["Edit", "Edit Build", "Reload", "Not now"], "launched": False}
 
     def _proposal_choices(self):
         return ["Apply", "Edit", "Edit Plan", "Edit Build", "Edit Verify", "Edit Repair", "Edit skills", "Explain", "Not now"]
@@ -940,7 +948,7 @@ class Configuration:
                     self._sync_directory()
                 except (OSError, ConfigError):
                     pass
-                raise RecoveryRequired(f"Save incomplete ({error}); no destructive rollback attempted. Reconcile {self.recovery.name} and retained files before continuing.") from error
+                raise RecoveryRequired(f"Save incomplete ({public_error_message(error)}); no destructive rollback attempted. Reconcile {self.recovery.name} and retained files before continuing.") from error
             if journaled:
                 self._unlink(self.recovery)
                 self._sync_directory()

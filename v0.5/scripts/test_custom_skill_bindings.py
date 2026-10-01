@@ -93,16 +93,156 @@ class CustomBindingTests(test_playbook_config.ConfigurationTests):
             command = ["setpriv", "--bounding-set=-all", "--inh-caps=-all", "--ambient-caps=-all"] + command
         result = subprocess.run(command, input=json.dumps(request or {}), text=True, capture_output=True,
                                 env=dict(os.environ, HOME=str(self.machines)))
-        for private in (str(self.project), str(self.machines), "PRIVATE_FIXTURE_MARKER"):
+        for private in (str(self.project), str(self.machines), "PRIVATE_FIXTURE_MARKER", "SYNTHETIC_CREDENTIAL"):
             self.assertNotIn(private, result.stdout + result.stderr)
         self.assertEqual(result.stderr, "")
         public = json.loads(result.stdout)
-        self.assertFalse(public["launched"])
+        self.assertFalse(public.get("launched", False))
         return result.returncode, public
 
     def stored_bytes(self):
         return {path: path.read_bytes() for root in (self.project, self.local)
                 for path in root.rglob("*") if path.is_file()}
+
+    def public_actions(self, preview):
+        return (("read", {}), ("resolve", {"role": "implementation"}),
+                ("job-route", {"job": "specification", "owner": "03"}),
+                ("reply", {"proposal": preview, "reply": "Apply"}))
+
+    def save_public_custom(self):
+        code, proposal = self.privacy_cli()
+        self.assertEqual(code, 0)
+        for reply in ("Edit Build", "1", "Edit skills specification"):
+            code, proposal = self.privacy_cli("reply", {"proposal": proposal, "reply": reply})
+            self.assertEqual(code, 0)
+        number = next(index + 1 for index, row in enumerate(proposal["skill_options"])
+                      if row["binding"]["source_id"] == self.identity)
+        code, preview = self.privacy_cli("reply", {"proposal": proposal, "reply": "Choose " + str(number)})
+        self.assertEqual(code, 0)
+        self.assertEqual(self.privacy_cli("reply", {"proposal": preview, "reply": "Apply"})[1]["state"], "applied")
+        code, retained = self.privacy_cli()
+        self.assertEqual(code, 0)
+        self.assertEqual(self.privacy_cli("reply", {"proposal": retained, "reply": "Apply"})[1]["state"], "unchanged")
+        return retained
+
+    @unittest.skipUnless(sys.platform == "linux" and shutil.which("setpriv"), "requires Linux DAC isolation")
+    def test_cli_denied_store_and_artifacts_preserve_saved_custom_choice(self):
+        preview = self.save_public_custom()
+        (self.project / "customisation.md").write_text("intentional customisation\n")
+        for artifact in (".", "bindings.json", "approvals.json", "evidence", "evidence/fixture-audit.json",
+                         "skills/SKILL.md", "project-configuration"):
+            with self.subTest(artifact=artifact):
+                path = self.project / ".playbook-config.json" if artifact == "project-configuration" else self.local / artifact
+                before = self.stored_bytes()
+                mode = path.stat().st_mode
+                path.chmod(0)
+                try:
+                    probe = path / ("bindings.json" if artifact == "." else "fixture-audit.json") if path.is_dir() else path
+                    denied = subprocess.run(
+                        ["setpriv", "--bounding-set=-all", "--inh-caps=-all", "--ambient-caps=-all",
+                         sys.executable, "-c", "import pathlib,sys\ntry: pathlib.Path(sys.argv[1]).read_bytes()\n"
+                         "except PermissionError: sys.exit(73)\nelse: sys.exit(74)", str(probe)], capture_output=True)
+                    self.assertEqual(denied.returncode, 73, "DAC denial must be observed, not assumed")
+                    for action, request in self.public_actions(preview):
+                        with self.subTest(action=action):
+                            code, public = self.privacy_cli(action, request, deny=True)
+                            if artifact in {".", "project-configuration"} or action in {"job-route", "reply"}:
+                                self.assertEqual((code, public["state"]), (2, "blocked"))
+                                self.assertIn("restore", public["message"].lower())
+                            elif action == "read":
+                                self.assertEqual(code, 0)
+                                self.assertEqual(public["skill_before"]["jobs"]["specification"][0]["source_id"], self.identity)
+                                self.assertFalse(any(row["binding"]["source_id"] == self.identity
+                                                     for row in public["skill_alternatives"]["specification"]))
+                            else:
+                                self.assertEqual(code, 0)
+                                self.assertEqual(public["origin"], "adopted project")
+                finally:
+                    path.chmod(mode)
+                self.assertEqual(self.stored_bytes(), before)
+
+    def test_cli_noncanonical_inventory_keys_all_public_actions(self):
+        preview = self.save_public_custom()
+        inventory = self.local / "bindings.json"
+        approval_file = self.local / "approvals.json"
+        original = json.loads(inventory.read_text())
+        approvals = json.loads(approval_file.read_text())
+        marker = "PRIVATE_FIXTURE_MARKER_SYNTHETIC_CREDENTIAL"
+        for locator in ("./" + marker + "/SKILL.md", "skills/./" + marker + "/SKILL.md",
+                        marker + "/SKILL.md/", marker + "/.", ".", "./", marker + "//SKILL.md",
+                        "skills/../" + marker + "/SKILL.md", "/" + marker + "/SKILL.md",
+                        marker + "\\SKILL.md", marker + "/SKILL.md\n"):
+            for origin in ("inventory", "approvals"):
+                with self.subTest(locator_shape=locator.replace(marker, "marker"), origin=origin):
+                    identity = "project:" + locator
+                    local = deepcopy(original)
+                    audits = deepcopy(approvals)
+                    if origin == "inventory":
+                        local["sources"] = {identity: {"source": locator, "audits": {"specification": "fixture-audit"}}}
+                    else:
+                        local["sources"] = {}
+                        audits["audits"]["fixture-audit"]["source_id"] = identity
+                    inventory.write_text(json.dumps(local))
+                    approval_file.write_text(json.dumps(audits))
+                    before = self.stored_bytes()
+                    for action, request in self.public_actions(preview):
+                        with self.subTest(action=action):
+                            code, public = self.privacy_cli(action, request)
+                            if action == "read":
+                                self.assertEqual(code, 0)
+                                rejections = [row for row in public["skill_rejections"]
+                                              if row["source_id"].startswith(("custom:", "project:"))]
+                                self.assertEqual({row["source_id"] for row in rejections}, {"custom:unresolved"})
+                                self.assertIn("restore the local binding", json.dumps(rejections))
+                                self.assertEqual(public["skill_before"], preview["skill_after"])
+                                self.assertFalse(any(row["binding"]["source_id"] == identity
+                                                     for rows in public["skill_alternatives"].values() for row in rows))
+                            elif action == "resolve":
+                                self.assertEqual(code, 0)
+                                self.assertEqual(public["origin"], "adopted project")
+                            else:
+                                self.assertEqual((code, public["state"]), (2, "blocked"))
+                                self.assertIn("explicitly", public["message"])
+                            self.assertEqual(self.stored_bytes(), before)
+
+    def test_cli_canonical_project_components_remain_eligible(self):
+        for locator in (".agents/skills/team-spec.v1/SKILL.md", "skills/team_spec-1/SKILL.md",
+                        "skills/.hidden/SKILL.md", "skills/team./SKILL.md"):
+            with self.subTest(locator=locator):
+                source = self.project / locator
+                source.parent.mkdir(parents=True, exist_ok=True)
+                source.write_bytes(self.source.read_bytes())
+                identity = "project:" + locator
+                self.prepare_audit("specification", identity=identity, source=source)
+                code, public = self.privacy_cli()
+                self.assertEqual(code, 0)
+                self.assertTrue(any(row["binding"]["source_id"] == identity
+                                    for row in public["skill_alternatives"]["specification"]))
+
+    def test_cli_rejected_custom_aliases_and_unknown_inventory_namespaces(self):
+        preview = self.save_public_custom()
+        inventory = self.local / "bindings.json"
+        original = json.loads(inventory.read_text())
+        for identity in ("custom:./PRIVATE_FIXTURE_MARKER", "custom:team/./PRIVATE_FIXTURE_MARKER",
+                         "custom:PRIVATE_FIXTURE_MARKER/", "unknown:PRIVATE_FIXTURE_MARKER",
+                         "playbook:PRIVATE_FIXTURE_MARKER", "gstack:PRIVATE_FIXTURE_MARKER"):
+            with self.subTest(namespace=identity.split(":", 1)[0]):
+                local = deepcopy(original)
+                local["sources"][identity] = local["sources"].pop(self.identity)
+                inventory.write_text(json.dumps(local))
+                before = self.stored_bytes()
+                for action, request in self.public_actions(preview):
+                    with self.subTest(action=action):
+                        code, public = self.privacy_cli(action, request)
+                        if action == "read":
+                            self.assertEqual(code, 0)
+                            self.assertIn("custom:unresolved", {row["source_id"] for row in public["skill_rejections"]})
+                            self.assertIn("restore the local binding", json.dumps(public["skill_rejections"]))
+                        elif action == "resolve":
+                            self.assertEqual(code, 0)
+                        else:
+                            self.assertEqual((code, public["state"]), (2, "blocked"))
+                        self.assertEqual(self.stored_bytes(), before)
 
     def test_all_identity_publication_uses_the_saved_canonical_predicate(self):
         for identity in ("project:team..private", "custom:team//private", "custom:/private",

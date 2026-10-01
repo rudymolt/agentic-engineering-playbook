@@ -178,8 +178,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "73572a0437d55050c62fae838dc8fe27a92d10abcaaab5eac0d119e8cd044ac0",
-      "size": 11163
+      "sha256": "aa359962b328dc97f4c25655a9536654d9685bc435cb9f7651695f9e215fef6a",
+      "size": 11689
     },
     {
       "path": "MAINTENANCE.md",
@@ -1068,8 +1068,8 @@
     },
     {
       "path": "scripts/configure-playbook.py",
-      "sha256": "7ad302c96325ca9b5e044477731476f105f7d72ae254e3236744cf6ae188ed8a",
-      "size": 4143
+      "sha256": "cdb8562e4dd6d1116e2f833fdd183252cc7f83d5468415736fe90bebb0ec2f5b",
+      "size": 4182
     },
     {
       "path": "scripts/convention_checks.py",
@@ -1123,8 +1123,8 @@
     },
     {
       "path": "scripts/playbook_config.py",
-      "sha256": "4b39615630096b4e97a017c9d3e682b1fb35254d47a1150df8111bf1ddabced5",
-      "size": 61678
+      "sha256": "b7216075343514635188c09c6a43a8d40ff07d3d7924de71f7ef3712704c13fe",
+      "size": 62108
     },
     {
       "path": "scripts/playbook_state.py",
@@ -1148,13 +1148,13 @@
     },
     {
       "path": "scripts/skill-bindings.md",
-      "sha256": "c174cf10ce743681b213f77be9914e9ffc41a92dbbe98dd22531ce5d3c796c59",
-      "size": 16447
+      "sha256": "fccfe43d5de8f6bc8d8e71b263dea4a2a021530665b4ab6e8b8c7c96db4acb25",
+      "size": 17119
     },
     {
       "path": "scripts/skill_bindings.py",
-      "sha256": "4f4f348899047406673318db57c28dfc32c36853f4468ed4bf8057a1be295446",
-      "size": 28977
+      "sha256": "98c64e5f0e23661649377e53ae8d06ed12466d0cb693a6f54d4bea4101028f33",
+      "size": 29616
     },
     {
       "path": "scripts/template_base.py",
@@ -1198,8 +1198,8 @@
     },
     {
       "path": "scripts/test_custom_skill_bindings.py",
-      "sha256": "f4ea0eacac8f846c09d2c4f5114b04929507634d07870d30440fc3631996e55d",
-      "size": 33515
+      "sha256": "f04c9fb9e341a60f4d3c016989d423cc16242c48cb1595ad04c6d8ce5a44a24b",
+      "size": 42960
     },
     {
       "path": "scripts/test_delivery_ci_scope.py",
@@ -1218,8 +1218,8 @@
     },
     {
       "path": "scripts/test_playbook_config.py",
-      "sha256": "3478d2cb572771b81d4882b53832201f87dd4de53b32d778f1569cb25eedd00f",
-      "size": 42709
+      "sha256": "7ec73fb3950d9b85c234ea3e2b2d7c8049fac0e48f01172d2c4f9d750dfad77b",
+      "size": 42907
     },
     {
       "path": "scripts/test_playbook_config_directory.py",

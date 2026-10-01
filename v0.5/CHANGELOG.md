@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- Guard custom binding catalog construction and public filesystem errors with
+  portable recovery diagnostics. Reject dot and empty identity path components
+  before publishing inventory rejections, without normalizing saved sources.
+
+*Why — privacy applies before discovery and on rejection:* denied local stores
+and noncanonical project keys must not disclose private locators. Preserve
+saved choices and external bytes, block unresolved invocation and Apply, and
+require explicit recovery without fallback or execution.
+
 - Redact rejected noncanonical local inventory identities with one shared
   portable-identity predicate. Block early selection-state read and parse
   failures with logical artifact, error class and explicit recovery guidance.

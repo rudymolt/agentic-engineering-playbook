@@ -170,7 +170,7 @@ class ConfigurationTests(unittest.TestCase):
 
                     def checkpoint(point):
                         if point == failure:
-                            raise OSError("injected " + failure)
+                            raise OSError("PRIVATE_FIXTURE_MARKER_SYNTHETIC_CREDENTIAL " + failure)
 
                     service = Configuration(self.project, self.discover, self.service.clock, checkpoint=checkpoint)
                     proposal = service.reply(service.reply(service.read(), "Edit Build"), "1")
@@ -179,7 +179,9 @@ class ConfigurationTests(unittest.TestCase):
                         proposal = service.reply(service.reply(service.read(), "Edit Build"), "2")
                     result = service.apply(proposal)
                     self.assertEqual(result["state"], "recovery_required" if failure == "committed" else "blocked")
-                    self.assertIn("injected", result["message"])
+                    self.assertIn("OSError", result["message"])
+                    self.assertNotIn("PRIVATE_FIXTURE_MARKER", json.dumps(result))
+                    self.assertNotIn("SYNTHETIC_CREDENTIAL", json.dumps(result))
                     if failure != "committed":
                         self.assertEqual(destination.read_bytes() if destination.exists() else None, original)
                     else:

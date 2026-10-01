@@ -75,7 +75,7 @@ def portable_identity(identity):
     return (isinstance(identity, str)
             and re.fullmatch(r"[a-z0-9_-]+:[A-Za-z0-9._/-]+", identity) is not None
             and ".." not in identity and "//" not in identity
-            and not identity.split(":", 1)[1].startswith("/"))
+            and all(part not in {"", "."} for part in identity.split(":", 1)[1].split("/")))
 
 
 def validate_bindings(value):
@@ -103,11 +103,17 @@ class JobBindings:
         self.project = Path(project)
         self.registry = registry or load_registry()
         self.manifest = Path(manifest) if manifest else ROOT / "upstream-integrations.json"
-        self.installed = installed if installed is not None else self._installed()
         self.live_inventory = installed is None
         self.rejections = []
         self.custom_dir = Path(custom_dir) if custom_dir is not None else Path.home() / ".config/ai-playbook/custom-skills"
-        self._check_custom_store()
+        try:
+            self.installed = installed if installed is not None else self._installed()
+            self._check_custom_store()
+        except (OSError, RuntimeError) as error:
+            raise ConfigError("Cannot inspect skill sources or custom binding/audit storage ("
+                              + type(error).__name__ + "). Restore readable sources and an accessible external "
+                              "machine-local store, then reload. Preserve saved choices, approvals and evidence; "
+                              "no fallback or rewrite is automatic.") from None
 
     def _check_custom_store(self):
         try:
@@ -229,7 +235,8 @@ class JobBindings:
                     choices.append(self._custom_candidate(identity, binding, job))
                 except (ConfigError, OSError, UnicodeError, KeyError, TypeError, ValueError, RuntimeError) as error:
                     requirement = str(error) if isinstance(error, CustomEvidenceError) else "readable separate local binding, approval and evidence"
-                    self._reject(identity,
+                    self._reject(identity if isinstance(identity, str) and identity.startswith(("custom:", "project:"))
+                                 else "custom:unresolved",
                         "Unmet requirement: " + requirement + ". Required: exact-source independent retained audit, job inputs/outputs, "
                         "owner, invocation, form, permitted effects and retained authority; "
                         "restore the local binding and stage-owned evidence or explicitly select " + JOBS[job]["fallback"])

@@ -145,6 +145,15 @@ the project. It does not protect against an external actor physically relocating
 an already opened directory inode during a read.
 Installed-source read failures report a portable error class and recovery action,
 not an absolute source locator; they do not authorize fallback or invocation.
+Catalog construction failures, including denied store traversal, block with
+portable recovery guidance before any proposal or route is produced. Custom
+store and source diagnostics never include the exception's locator text.
+Rejected noncanonical inventory keys use `custom:unresolved` in diagnostics.
+Local inventory keys outside the `custom:` and `project:` namespaces use the
+same redacted category rather than borrowing a supported collection's identity.
+Identity path components cannot be empty or a single dot: leading/interior
+`./` and trailing `/` are rejected, never normalized into a different source.
+Canonical dotted names and hidden directories remain valid.
 Missing binding/evidence, rejected contract, source drift or a new audit revision
 leaves the saved selection unresolved, with unmet requirements and the named
 manual fallback. Recovery restores that machine's binding and authentic stage

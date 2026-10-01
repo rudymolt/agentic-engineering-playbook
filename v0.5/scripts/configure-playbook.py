@@ -9,7 +9,7 @@ from pathlib import Path
 import sys
 import subprocess
 
-from playbook_config import Configuration, ConfigError, RecoveryRequired, strict_json
+from playbook_config import Configuration, ConfigError, RecoveryRequired, public_error_message, strict_json
 
 
 def main():
@@ -68,7 +68,7 @@ def main():
         else:
             result = service.dispatch_job(request["job"], request["owner"], approved_binding=request.get("approved_binding"))
     except (ConfigError, OSError, KeyError, TypeError, AttributeError, UnicodeError) as error:
-        result = {"state": "recovery_required" if isinstance(error, RecoveryRequired) else "blocked", "message": str(error), "launched": False}
+        result = {"state": "recovery_required" if isinstance(error, RecoveryRequired) else "blocked", "message": public_error_message(error), "launched": False}
         if isinstance(request, dict):
             result = Configuration.retain_proposal(result, request.get("proposal"))
     print(json.dumps(result, sort_keys=True, indent=2))
