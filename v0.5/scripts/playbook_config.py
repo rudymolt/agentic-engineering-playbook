@@ -31,6 +31,19 @@ class RecoveryRequired(ConfigError):
     """A save could not restore prior defaults; retained evidence needs reconciliation."""
 
 
+def resolve_private_path(path):
+    """Contain pathlib's version-dependent filesystem failures at resolution only."""
+    try:
+        return path.resolve()
+    except (OSError, RuntimeError) as error:
+        # Python 3.11/3.12 use RuntimeError for symlink loops. Neither exception
+        # text nor its chained filesystem error is safe for public diagnostics.
+        raise ConfigError("Cannot resolve filesystem location (" + type(error).__name__
+                          + "). Restore accessible, noncyclic sources and storage, then reload and "
+                          "revalidate the selected route. Preserve saved choices, approvals and history; "
+                          "no fallback or rewrite is automatic.") from None
+
+
 def public_error_message(error):
     if isinstance(error, OSError):
         return ("Cannot access configuration inputs or storage (" + type(error).__name__
@@ -215,7 +228,7 @@ class Configuration:
         self._directory_fd = None
         if preferences_dir is not None:
             local = Path(preferences_dir)
-            if local.resolve().is_relative_to(self.project.resolve()):
+            if resolve_private_path(local).is_relative_to(resolve_private_path(self.project)):
                 raise ConfigError("Personal preferences require a user-local directory outside the project; preview it explicitly.")
             self.preferences = LocalPreferences(local, discover, self.clock, self.checkpoint)
             self.preferences.state_path = self.state_path
@@ -1009,7 +1022,7 @@ class LocalPreferences(Configuration):
         self._expected_directory = None
 
     def _directory_identity(self, path):
-        resolved = path.resolve()
+        resolved = resolve_private_path(path)
         anchor = resolved
         while not anchor.exists():
             anchor = anchor.parent

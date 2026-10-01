@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- Contain filesystem resolution errors at the path boundary, including cyclic
+  QA sources, evidence, installed sources and personal storage. Retain portable
+  rejection and explicit recovery at Configure and stage-owned invocation.
+
+*Why — symlink loops can raise path-bearing runtime errors:* expected resolution
+failures must not escape as private tracebacks. Preserve saved choices, approvals,
+history and local bytes, block affected invocation and Apply, and require explicit
+revalidation without automatic fallback, rewriting or execution.
+
 - Guard custom binding catalog construction and public filesystem errors with
   portable recovery diagnostics. Reject dot and empty identity path components
   before publishing inventory rejections, without normalizing saved sources.

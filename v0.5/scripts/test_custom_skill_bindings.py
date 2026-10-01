@@ -80,7 +80,7 @@ class CustomBindingTests(test_playbook_config.ConfigurationTests):
         self.assertEqual(self.service.reply(preview, "Apply")["state"], "applied")
         return preview
 
-    def privacy_cli(self, action="read", request=None, deny=False):
+    def privacy_cli(self, action="read", request=None, deny=False, extra=()):
         adapter = ("import json,sys; request=json.load(sys.stdin); "
                    "json.dump({'request_id':request['request_id'],'checked_at':request['started_at'],"
                    "'authority':'host-reported-selection','revision':'fixture-cli',"
@@ -88,12 +88,13 @@ class CustomBindingTests(test_playbook_config.ConfigurationTests):
                    "'roles':['implementation']}]},sys.stdout)")
         command = [sys.executable, str(Path(__file__).with_name("configure-playbook.py")),
                    "--project", str(self.project), "--custom-bindings-dir", str(self.local),
-                   "--discovery-command", json.dumps([sys.executable, "-c", adapter]), action]
+                   "--discovery-command", json.dumps([sys.executable, "-c", adapter]), *extra, action]
         if deny:
             command = ["setpriv", "--bounding-set=-all", "--inh-caps=-all", "--ambient-caps=-all"] + command
         result = subprocess.run(command, input=json.dumps(request or {}), text=True, capture_output=True,
                                 env=dict(os.environ, HOME=str(self.machines)))
-        for private in (str(self.project), str(self.machines), "PRIVATE_FIXTURE_MARKER", "SYNTHETIC_CREDENTIAL"):
+        for private in (str(self.project), str(self.machines), "PRIVATE_FIXTURE_MARKER", "SYNTHETIC_CREDENTIAL",
+                        "Traceback", "Symlink loop from"):
             self.assertNotIn(private, result.stdout + result.stderr)
         self.assertEqual(result.stderr, "")
         public = json.loads(result.stdout)
@@ -103,6 +104,164 @@ class CustomBindingTests(test_playbook_config.ConfigurationTests):
     def stored_bytes(self):
         return {path: path.read_bytes() for root in (self.project, self.local)
                 for path in root.rglob("*") if path.is_file()}
+
+    def external_cycle(self, pair=False):
+        target = self.local / "PRIVATE_FIXTURE_MARKER_SYNTHETIC_CREDENTIAL"
+        other = self.local / "cycle-peer"
+        target.symlink_to(other if pair else target)
+        if pair:
+            other.symlink_to(target)
+        self.addCleanup(target.unlink, missing_ok=True)
+        self.addCleanup(other.unlink, missing_ok=True)
+        with self.assertRaises((RuntimeError, OSError)):
+            target.resolve()
+        return target
+
+    def assert_private_denial(self, value):
+        text = json.dumps(value) if isinstance(value, (dict, list)) else str(value)
+        for private in (str(self.project), str(self.machines), "PRIVATE_FIXTURE_MARKER", "SYNTHETIC_CREDENTIAL"):
+            self.assertNotIn(private, text)
+
+    def test_cyclic_qa_artifacts_block_public_and_stage_seams_without_rewrites(self):
+        route, source, record, proof = test_skill_bindings.qualified_qa(self.project)
+        for identity in ("custom:team-qa", "project:" + source.relative_to(self.project).as_posix(),
+                         "project:" + route):
+            with self.subTest(identity=identity):
+                if identity != "project:" + route:
+                    self.prepare_audit("application_qa", identity=identity, source=source)
+                preview = self.save_custom("application_qa", identity)
+                saved = preview["skill_after"]
+                for artifact, pair in ((source, False), (source, True), (source.parent, False),
+                                       (self.project / proof["evidence"], False), (record, False)):
+                    with self.subTest(artifact=artifact.name, pair=pair):
+                        before = self.stored_bytes()
+                        target = self.external_cycle(pair)
+                        backup = artifact.with_name(artifact.name + ".retained")
+                        artifact.rename(backup)
+                        artifact.symlink_to(target)
+                        try:
+                            code, public = self.privacy_cli()
+                            self.assertEqual(code, 0)
+                            self.assertEqual(public["skill_before"], saved)
+                            self.assertEqual(public["skill_after"], saved)
+                            self.assertIn("stage 09", json.dumps(public["skill_rejections"]))
+                            self.assertIn("Restore", json.dumps(public["skill_rejections"]))
+                            self.assertFalse(any(row["binding"] == saved["jobs"]["application_qa"][0]
+                                                 for row in public["skill_alternatives"]["application_qa"]))
+                            for approved in (None, saved):
+                                request = {"job": "application_qa", "owner": "09"}
+                                if approved is not None:
+                                    request["approved_binding"] = approved
+                                code, public = self.privacy_cli("job-route", request)
+                                self.assertEqual((code, public["state"]), (2, "blocked"))
+                                self.assertIn("explicitly", public["message"])
+                                readers = []
+                                with self.assertRaises(ConfigError) as denied:
+                                    self.service.dispatch_job("application_qa", "09", readers.append,
+                                                              approved_binding=approved)
+                                self.assert_private_denial(denied.exception)
+                                self.assertEqual(readers, [])
+                            if identity != "project:" + route:
+                                with self.assertRaises(ConfigError) as denied:
+                                    self.bindings.invocation_source(saved, "application_qa", "09", identity)
+                                self.assert_private_denial(denied.exception)
+                            code, public = self.privacy_cli("reply", {"proposal": preview, "reply": "Apply"})
+                            self.assertEqual((code, public["state"]), (2, "blocked"))
+                            self.assertEqual(self.privacy_cli("resolve", {"role": "verification"})[0], 0)
+                            self.assertEqual(artifact.readlink(), target)
+                        finally:
+                            artifact.unlink()
+                            backup.rename(artifact)
+                            target.unlink()
+                            (self.local / "cycle-peer").unlink(missing_ok=True)
+                        self.assertEqual(self.stored_bytes(), before)
+
+    def test_cyclic_installed_source_after_catalog_construction_is_portable(self):
+        preview = self.save_custom()
+        approved = deepcopy(preview["skill_after"])
+        approved["jobs"]["code_review"] = [{"source_id": "mattpocock-skills:code-review",
+                                             "source_sha256": "0" * 64, "contract_sha256": "0" * 64}]
+        before = self.stored_bytes()
+        target = self.external_cycle()
+        installed = self.project / ".agents/skills/code-review/SKILL.md"
+        installed.parent.mkdir(parents=True)
+        installed.symlink_to(target)
+        try:
+            public = self.service.read()
+            self.assert_private_denial(public)
+            if public["state"] != "blocked":
+                # Python 3.11 glob may omit the cyclic leaf; it must remain ineligible.
+                self.assertFalse(any(row["binding"] == approved["jobs"]["code_review"][0]
+                                     for row in public["skill_alternatives"]["code_review"]))
+            readers = []
+            with self.assertRaises(ConfigError) as denied:
+                self.service.dispatch_job("code_review", "08", readers.append, approved_binding=approved)
+            self.assert_private_denial(denied.exception)
+            self.assertEqual(readers, [])
+            code, public = self.privacy_cli()
+            self.assertIn(code, (0, 2))
+            code, public = self.privacy_cli("job-route", {"job": "code_review", "owner": "08",
+                                                         "approved_binding": approved})
+            self.assertEqual((code, public["state"]), (2, "blocked"))
+        finally:
+            installed.unlink()
+        self.assertEqual(self.stored_bytes(), before)
+
+    def test_cyclic_custom_source_at_final_invocation_resolution_blocks_reader(self):
+        preview = self.save_custom()
+        before = self.stored_bytes()
+        target = self.external_cycle()
+        original = self.source.read_bytes()
+        candidate = self.bindings._custom_candidate
+        checks = []
+        readers = []
+
+        def drift_after_qualification(*args):
+            result = candidate(*args)
+            checks.append(result)
+            if len(checks) == 2:
+                self.source.unlink()
+                self.source.symlink_to(target)
+            return result
+
+        try:
+            with patch.object(self.bindings, "_custom_candidate", side_effect=drift_after_qualification):
+                with self.assertRaises(ConfigError) as denied:
+                    source = self.bindings.invocation_source(preview["skill_after"], "specification", "03", self.identity)
+                    readers.append(source.read_bytes())
+            self.assert_private_denial(denied.exception)
+            self.assertEqual(len(checks), 2)
+            self.assertEqual(readers, [])
+            self.assertEqual(self.source.readlink(), target)
+        finally:
+            self.source.unlink()
+            self.source.write_bytes(original)
+        self.assertEqual(self.stored_bytes(), before)
+
+    def test_cyclic_personal_directory_is_portable_before_and_after_construction(self):
+        preview = self.save_custom()
+        before = self.stored_bytes()
+        target = self.external_cycle()
+        personal = self.local / "personal"
+        service = Configuration(self.project, self.discover, preferences_dir=personal)
+        personal.symlink_to(target)
+        with self.assertRaises(ConfigError) as denied:
+            Configuration(self.project, self.discover, preferences_dir=personal)
+        self.assert_private_denial(denied.exception)
+        public = service.read()
+        self.assertEqual(public["state"], "blocked")
+        self.assert_private_denial(public)
+        self.assertIn("Restore", public["message"])
+        for action, request in self.public_actions(preview):
+            code, public = self.privacy_cli(action, request, extra=("--preferences-dir", str(personal)))
+            self.assertEqual((code, public["state"]), (2, "blocked"))
+        self.assertEqual(personal.readlink(), target)
+        self.assertEqual(self.stored_bytes(), before)
+
+    def test_unrelated_runtime_error_is_not_a_filesystem_denial(self):
+        with patch.object(self.bindings, "_candidate", side_effect=RuntimeError("programmer defect")):
+            with self.assertRaisesRegex(RuntimeError, "programmer defect"):
+                self.service.read()
 
     def public_actions(self, preview):
         return (("read", {}), ("resolve", {"role": "implementation"}),

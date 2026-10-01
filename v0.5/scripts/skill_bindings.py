@@ -7,7 +7,7 @@ import os
 from pathlib import Path, PurePosixPath
 import re
 
-from playbook_config import ConfigError, strict_json
+from playbook_config import ConfigError, resolve_private_path, strict_json
 from playbook_state import parse_top_level_map
 from upstream_registry import load as load_registry
 
@@ -140,7 +140,7 @@ class JobBindings:
                                       "remove published aliases and restore independent external files before retrying")
 
     def _read_custom_file(self, path):
-        if path.resolve().is_relative_to(self.project.resolve()):
+        if resolve_private_path(path).is_relative_to(resolve_private_path(self.project)):
             raise CustomEvidenceError("independently retained evidence outside the shareable project")
         with path.open("rb") as stream:
             self._check_single_link(os.fstat(stream.fileno()))
@@ -159,7 +159,7 @@ class JobBindings:
                     paths.extend(directory.glob(f"{skill.name}/SKILL.md"))
                     paths.extend(directory.glob(f"*/{skill.name}/SKILL.md"))
                     paths.extend(directory.glob(f"gstack-{skill.name}/SKILL.md"))
-            found[f"{skill.package}:{skill.name}"] = sorted(set(path.resolve() for path in paths))
+            found[f"{skill.package}:{skill.name}"] = sorted(set(resolve_private_path(path) for path in paths))
         return found
 
     def _candidate(self, identity, source, form, label, invocation, provenance=None):
@@ -289,7 +289,7 @@ class JobBindings:
             raise CustomEvidenceError("stage-owned audit inventory")
         approval = approvals["audits"][audit]
         contract = JOBS[job]
-        resolution = hashlib.sha256(source.resolve().as_posix().encode()).hexdigest()
+        resolution = hashlib.sha256(resolve_private_path(source).as_posix().encode()).hexdigest()
         if (set(approval) != {"source_id", "job", "owner", "revision", "evidence_sha256", "resolution_sha256"}
                 or approval["source_id"] != identity or approval["job"] != job
                 or approval["owner"] != contract["owner"] or approval["resolution_sha256"] != resolution
@@ -297,7 +297,7 @@ class JobBindings:
                 or re.fullmatch(r"[a-z0-9_-]+", approval["revision"]) is None):
             raise CustomEvidenceError("stage-owned exact-resolution audit approval")
         proof_path = self.custom_dir / "evidence" / (audit + ".json")
-        if proof_path.resolve().is_relative_to(self.project.resolve()):
+        if resolve_private_path(proof_path).is_relative_to(resolve_private_path(self.project)):
             raise CustomEvidenceError("independently retained evidence outside the shareable project")
         proof_bytes = self._read_custom_file(proof_path)
         proof_sha = hashlib.sha256(proof_bytes).hexdigest()
@@ -326,7 +326,7 @@ class JobBindings:
         qa_route = None
         if job == "application_qa":
             qa_route = self._project_qa()
-            if (qa_route is None or source.resolve() != (self.project / qa_route["invocation"]).resolve()):
+            if (qa_route is None or resolve_private_path(source) != resolve_private_path(self.project / qa_route["invocation"])):
                 raise CustomEvidenceError("existing stage-owned QA selection and qualification")
             label = qa_route["label"]
         return self._candidate(identity, source, expected["form"], label, invocation,
@@ -346,7 +346,7 @@ class JobBindings:
         candidate = self._custom_candidate(identity, binding, job)
         if not any(route["binding"] == candidate["binding"] for route in routes):
             raise ConfigError("Custom resolution changed before invocation; requalify and preview explicitly.")
-        return self._owned(binding["source"]) if identity.startswith("project:") else Path(binding["source"]).resolve()
+        return self._owned(binding["source"]) if identity.startswith("project:") else resolve_private_path(Path(binding["source"]))
 
     def _embedded(self, job, skill, source):
         try:
@@ -376,7 +376,7 @@ class JobBindings:
         if relative.is_absolute() or ".." in relative.parts or str(relative) != locator:
             raise ConfigError("QA evidence requires a canonical project-relative locator.")
         source = self.project / locator
-        if not source.resolve().is_relative_to(self.project.resolve()) or not source.is_file():
+        if not resolve_private_path(source).is_relative_to(resolve_private_path(self.project)) or not source.is_file():
             raise ConfigError("QA route or proof is missing or outside this project.")
         return source
 
@@ -384,7 +384,7 @@ class JobBindings:
         record = self.project / ".playbook-qa-eligibility.json"
         artifact = "eligibility record"
         try:
-            if not record.exists():
+            if not record.exists() and not record.is_symlink():
                 return None
             record = self._owned(".playbook-qa-eligibility.json")
             proof = strict_json(record.read_text())
