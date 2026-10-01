@@ -376,3 +376,52 @@ Next unreviewed candidates, using the previous screening order:
 
 Establish new repeated baselines before optimizing these candidates. Their prior
 single-sample ranks are leads, not new measurements or review verdicts.
+
+## 2026-10-01 — total-runtime tracking from ordinary CI
+
+The daily history now uses existing normal feature CI logs as its primary source:
+[observed totals](TOTAL-RUNTIME.md), [structured history](suite-history.json),
+and [reusable collection procedure](COLLECTING.md). No extra full-suite timing
+runs were launched. Partial feature checks and scope-skipped delivery jobs must
+not enter this full-suite history. Targeted repeated benchmarks remain the
+separate evidence for attributing an optimization's effect.
+
+| Revision / batch | Executions | Summed unittest time | Observed saved vs previous | Observed saved vs original |
+| --- | ---: | ---: | ---: | ---: |
+| `a57af6de259d34e9b772105e0ad0610290797cfa` / original | 756 | 1135.863 s | n/a | 0 s |
+| `f5cad4fa0c588fce4906cdde01fb60ba82657e57` / September 30 | 760 | 980.447 s | 155.416 s (13.68%) | 155.416 s (13.68%) |
+| `bf858067687ffb751e5073c6ccc2287c56468a5a` / October 1 | 760 | 647.214 s | 333.233 s (33.99%) | 488.649 s (43.02%) |
+
+These single-run observations are **not a controlled whole-suite speedup**.
+The four added cache guards explain the original/current count increase; no
+coverage was removed or time normalized away. Runner images and unidentified
+hosted hardware differ. The untouched coordinator group's original/current
+runtime changed from 257.258 s to 137.680 s, demonstrating substantial unrelated
+variation. Do not credit the full observed reduction to these two batches.
+
+Canonical commands are the public-edition aggregate with
+`--skip-drift --skip-delivery` and privileged delivery `verify.py --set K4.1`.
+All three runs used Python 3.12.14, Git 2.55.0 and Ubuntu 24.04, with exact image
+versions, head/checkout SHAs, job IDs and input-log hashes retained in JSON.
+The runs had no timing artifacts; their successful ordinary job logs supply the
+module summaries. All 16 groups passed in each row, including privileged watchers.
+
+Summed unittest time includes fixture setup and cleanup, but excludes process
+startup and standalone CLI checks. Parallel-job log spans were 1126.805 s,
+971.085 s and 627.658 s respectively; these are observed elapsed-time proxies,
+not sums of job durations. Exact queue time and overall workflow wall time were
+not available from the retrieved logs and remain null. Command log spans are
+stored separately and include CLI/shell/log overhead.
+
+The collector rejects incomplete, failed, skipped or mismatched-source evidence;
+it never runs the suites. Dedicated collector self-tests are bench maintenance
+checks outside the canonical suite counts. This continuation changes only bench
+code, documentation and evidence; it does not add a workflow, schedule, production
+change or new optimized test designation. The draft PR is stacked on PR 7 and
+records focused review plus exact-head normal CI, including any scope-based skip.
+
+Collector validation: seven dedicated guards passed, including the documented
+GitHub CLI job/step-prefixed log format. Fresh independent review reproduced all
+three totals and six input hashes, verified raw/prefixed parity on all historical
+logs, and passed the guards. Public-content, links, conventions, unchanged edition
+manifest and diff whitespace checks passed. Raw logs remain in ignored storage.
