@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+- Keep project QA read and qualification rejections portable: name the logical
+  artifact and error class, require stage 09 revalidation or an explicitly
+  selected fallback, and never echo filesystem or untrusted parser diagnostics.
+
+*Why — QA diagnostics are public configuration output:* unreadable eligibility,
+retained evidence and skill sources must block without revealing local locators
+or changing saved choices, exact-source checks or stage-owned qualification.
+
 - Reject multiple-link local inventory, approvals and retained evidence at
   discovery, Apply and stage invocation. Redact installed-source read failures
   to a portable error class and exact-source recovery action.

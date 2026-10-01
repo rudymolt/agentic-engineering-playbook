@@ -372,21 +372,28 @@ class JobBindings:
 
     def _project_qa(self):
         record = self.project / ".playbook-qa-eligibility.json"
-        if not record.exists():
-            return None
+        artifact = "eligibility record"
         try:
+            if not record.exists():
+                return None
             record = self._owned(".playbook-qa-eligibility.json")
             proof = strict_json(record.read_text())
+            artifact = "selection state"
             state = (self.project / ".playbook-state.yml").read_text()
             decisions = parse_top_level_map(state, "decisions")
             selected = decisions.get("verification_harness_path")
             if (type(proof["contract_version"]) is not int or proof["contract_version"] != VERSION or proof["owner"] != "09"
                     or proof["route"] != selected or decisions.get("verification_harness_binding") != selected):
                 raise ConfigError("QA route must already have stage-owned selection and eligibility evidence.")
+            artifact = "skill source"
             source = self._owned(selected + "/SKILL.md")
+            source_sha256 = fingerprint(source)
+            artifact = "retained evidence"
             evidence = self._owned(proof["evidence"])
             observed = strict_json(evidence.read_text())
-            if (proof["source_sha256"] != fingerprint(source) or proof["evidence_sha256"] != fingerprint(evidence)
+            evidence_sha256 = fingerprint(evidence)
+            artifact = "skill source"
+            if (proof["source_sha256"] != source_sha256 or proof["evidence_sha256"] != evidence_sha256
                     or observed["source_sha256"] != fingerprint(source)
                     or observed["verdict"] != "pass" or observed["independent"] is not True
                     or observed["lifecycle"] != ["Launch", "Doctor", "Drive", "Evidence", "Cleanup"]
@@ -402,18 +409,28 @@ class JobBindings:
                            if f"{skill.package}:{skill.name}" == embedded and skill.manifest_key == "qa-only"]
                 paths = self.installed.get(embedded, [])
                 if len(matches) == 1 and len(paths) == 1:
+                    artifact = "embedded skill source"
                     embedded_choice = self._embedded("application_qa", matches[0], paths[0])
                 if proof.get("mode") != "embedded-report-only" or not embedded_choice:
                     raise ConfigError("Project QA's embedded source failed exact-source report-only compatibility.")
             elif proof.get("mode") != "project-report-only":
                 raise ConfigError("QA proof must declare a project-report-only route, not an upstream adaptation.")
+            artifact = "eligibility record"
+            eligibility_sha256 = fingerprint(record)
+            artifact = "retained evidence"
+            evidence_sha256 = fingerprint(evidence)
+            artifact = "skill source"
             candidate = self._candidate("project:" + selected, source, "project route",
                                         "(Project route) " + selected, selected + "/SKILL.md",
-                                        {"kind": "project-route", "eligibility_sha256": fingerprint(record),
-                                         "evidence_sha256": fingerprint(evidence), "embedded": embedded_choice})
+                                        {"kind": "project-route", "eligibility_sha256": eligibility_sha256,
+                                         "evidence_sha256": evidence_sha256, "embedded": embedded_choice})
             return candidate
-        except (ConfigError, OSError, KeyError, TypeError) as error:
-            self._reject("project:application_qa", str(error))
+        except (ConfigError, OSError, KeyError, TypeError, UnicodeError) as error:
+            error_class = (type(error).__name__ if isinstance(error, OSError) else "invalid qualification")
+            self._reject("project:application_qa", "QA " + artifact + ": " + error_class + ". "
+                         "Restore readable project-owned QA artifacts and have stage 09 revalidate selection, "
+                         "exact-source lifecycle and retained independent contract evidence; otherwise explicitly "
+                         "select " + JOBS["application_qa"]["fallback"] + ". No automatic fallback or evidence creation.")
             return None
 
     def resolve(self, saved, job):

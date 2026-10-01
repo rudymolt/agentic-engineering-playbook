@@ -178,8 +178,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "debb903d3e4ca2478512b100fda8c16be97d73987adc30915e9d3916810a444f",
-      "size": 10150
+      "sha256": "390510143f1940c5f31c25bd2ffff515bee16c4583fbf72e48bf236d2bf5c131",
+      "size": 10625
     },
     {
       "path": "MAINTENANCE.md",
@@ -1153,8 +1153,8 @@
     },
     {
       "path": "scripts/skill_bindings.py",
-      "sha256": "08db9250beff44313a10ba407a6d0e2aab24fe0340d075191419ac429273e0be",
-      "size": 27947
+      "sha256": "a062404c042c917daa5e6bcf97358bdf0843c69dbe2fbcc01c6ba91184431260",
+      "size": 29027
     },
     {
       "path": "scripts/template_base.py",
@@ -1263,8 +1263,8 @@
     },
     {
       "path": "scripts/test_skill_bindings.py",
-      "sha256": "250929808abfe28bd8d0764122d3cee3a1f90442e45bd8d0b5ebb7a3d387dd66",
-      "size": 21426
+      "sha256": "b355edb22be784d67384c696bf5b633970e39273fc4f85e884e30f95dbb34ec9",
+      "size": 26659
     },
     {
       "path": "scripts/test_skill_metadata.py",

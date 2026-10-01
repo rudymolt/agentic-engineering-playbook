@@ -2,7 +2,10 @@
 
 import hashlib
 import json
+import errno
+import os
 from pathlib import Path
+import shutil
 import tempfile
 import unittest
 import subprocess
@@ -204,6 +207,85 @@ class BindingTests(ConfigurationTests):
         code, new = self.stage_entry("implementation", "07")
         self.assertEqual(new["routes"][0]["form"], "adapter")
         self.assertEqual(self.state.read_bytes(), self.runtime)
+
+    def save_qa_selection(self):
+        route, source, record, proof = qualified_qa(self.project)
+        preview = self.pick(self.preview(), "application_qa", ["project:" + route])
+        self.assertEqual(self.service.reply(preview, "Apply")["state"], "applied")
+        destination = self.project / ".playbook-config.json"
+        return source, record, self.project / proof["evidence"], destination.read_bytes()
+
+    def assert_private_qa_rejection(self, result, saved, artifact, error_class):
+        text = json.dumps(result)
+        self.assertNotIn(str(self.project), text)
+        self.assertNotIn("private-diagnostic-token", text)
+        rejection = next(item for item in result["skill_rejections"]
+                         if item["source_id"] == "project:application_qa")
+        self.assertIn(artifact, rejection["reason"])
+        self.assertIn(error_class, rejection["reason"])
+        self.assertIn("stage 09", rejection["reason"])
+        self.assertIn("explicitly", rejection["reason"])
+        self.assertEqual(result["state"], "decision_required")
+        qa_row = next(row for row in result["skill_proposal"] if row["job"] == "application_qa")
+        self.assertIn("unresolved/blocked", qa_row["after"][0])
+        self.assertFalse(result["launched"])
+        self.assertEqual((self.project / ".playbook-config.json").read_bytes(), saved)
+
+    def test_qa_read_and_fingerprint_errors_are_private_at_configure_seam(self):
+        source, record, evidence, saved = self.save_qa_selection()
+        for target, artifact, seam in ((record, "eligibility record", "read_text"),
+                                       (evidence, "retained evidence", "read_text"),
+                                       (source, "skill source", "read_bytes"),
+                                       (record, "eligibility record", "read_bytes"),
+                                       (evidence, "retained evidence", "read_bytes")):
+            for error_type in (PermissionError, FileNotFoundError, OSError):
+                with self.subTest(artifact=artifact, seam=seam, error=error_type.__name__):
+                    original = getattr(Path, seam)
+
+                    def denied(path, *args, **kwargs):
+                        if path == target:
+                            raise error_type(errno.EIO, "private-diagnostic-token", str(target))
+                        return original(path, *args, **kwargs)
+
+                    with patch.object(Path, seam, denied):
+                        result = self.service.read()
+                        self.assert_private_qa_rejection(result, saved, artifact, error_type.__name__)
+                        with self.assertRaisesRegex(ConfigError, "unresolved"):
+                            self.service.dispatch_job("application_qa", "09")
+                        self.assertEqual(self.service.reply(result, "Apply")["state"], "blocked")
+                    self.assertEqual((self.project / ".playbook-config.json").read_bytes(), saved)
+
+    def test_qa_invalid_record_diagnostics_do_not_echo_untrusted_keys(self):
+        source, record, evidence, saved = self.save_qa_selection()
+        record.write_text(json.dumps({str(self.project): 1})[:-1] + "," +
+                          json.dumps(str(self.project)) + ":2}")
+        self.assert_private_qa_rejection(self.service.read(), saved, "eligibility record", "invalid qualification")
+
+    @unittest.skipUnless(sys.platform == "linux" and shutil.which("setpriv"), "requires Linux DAC isolation")
+    def test_cli_unreadable_qa_artifacts_are_private(self):
+        source, record, evidence, saved = self.save_qa_selection()
+        adapter = ("import json,sys; request=json.load(sys.stdin); "
+                   "json.dump({'request_id':request['request_id'],'checked_at':request['started_at'],"
+                   "'authority':'host-reported-selection','revision':'fixture-1',"
+                   "'routes':[{'model_id':'available-build','runner':'codex','reasoning':'medium',"
+                   "'roles':['implementation']}]},sys.stdout)")
+        command = ["setpriv", "--bounding-set=-all", "--inh-caps=-all", "--ambient-caps=-all",
+                   sys.executable, str(Path(__file__).with_name("configure-playbook.py")),
+                   "--project", str(self.project), "--discovery-command",
+                   json.dumps([sys.executable, "-c", adapter]), "read"]
+        for target, artifact in ((record, "eligibility record"), (evidence, "retained evidence"),
+                                 (source, "skill source")):
+            with self.subTest(artifact=artifact):
+                mode = target.stat().st_mode
+                target.chmod(0)
+                try:
+                    result = subprocess.run(command, input="{}", capture_output=True, text=True,
+                                            env={**os.environ, "PYTHONDONTWRITEBYTECODE": "1"})
+                    self.assertEqual(result.returncode, 0, result.stderr)
+                    self.assertNotIn(str(self.project), result.stderr)
+                    self.assert_private_qa_rejection(json.loads(result.stdout), saved, artifact, "PermissionError")
+                finally:
+                    target.chmod(mode)
 
     def test_upstream_provenance_on_all_surfaces_and_changed_source_blocks_apply(self):
         source = self.project / "review-source.md"
