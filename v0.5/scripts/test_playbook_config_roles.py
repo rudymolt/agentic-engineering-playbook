@@ -249,7 +249,7 @@ class RoleConversationTests(unittest.TestCase):
         local = Path(self.temporary.name) / "personal"
         local.mkdir()
         for value in ('{', '{"schema_version":2,"presentation":"guided"}',
-                      '{"schema_version":1,"presentation":"expert","billing":"unknown"}',
+                      '{"schema_version":1,"presentation":"expert","unexpected":"unknown"}',
                       '{"schema_version":1,"presentation":"guided","presentation":"expert"}'):
             with self.subTest(value=value):
                 (local / "preferences.json").write_text(value)

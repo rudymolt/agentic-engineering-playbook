@@ -15,7 +15,7 @@ from playbook_config import Configuration, ConfigError, RecoveryRequired, public
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--project", type=Path, required=True)
-    parser.add_argument("--preferences-dir", type=Path, help="Explicit user-local directory outside the project for presentation preferences.")
+    parser.add_argument("--preferences-dir", type=Path, help="Explicit user-local directory outside the project for presentation, billing, reusable defaults and named presets.")
     parser.add_argument("--custom-bindings-dir", type=Path, help="Read-only machine-local custom bindings and stage-retained audits; never saved in project configuration.")
     parser.add_argument("--discovery", type=Path)
     parser.add_argument("--discovery-command", help="JSON argv for the current-availability adapter; request JSON is sent on stdin.")

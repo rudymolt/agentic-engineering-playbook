@@ -1,0 +1,496 @@
+"""S5 public Configure and bootstrap reuse boundaries."""
+
+from copy import deepcopy
+import json
+import hashlib
+from pathlib import Path
+import subprocess
+import sys
+import tempfile
+import unittest
+from unittest.mock import patch
+
+from playbook_config import Configuration, ROLES
+from skill_bindings import JobBindings, JOBS, AUTHORITY, fingerprint
+
+
+class PersonalPresetTests(unittest.TestCase):
+    def setUp(self):
+        self.temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temporary.cleanup)
+        self.root = Path(self.temporary.name)
+        self.local = self.root / "personal"
+        self.projects = [self.root / name for name in ("first", "second")]
+        for project in self.projects:
+            project.mkdir()
+            (project / ".playbook-state.yml").write_text(
+                "pending_model_routes: [{status: approved}]\nactive_features: [{routing: retained}]\nhistory: untouched\n")
+        self.runtime = [(project / ".playbook-state.yml").read_bytes() for project in self.projects]
+
+    def discover(self, request):
+        return {"request_id": request["request_id"], "checked_at": request["started_at"],
+                "authority": "host-reported-selection", "revision": "fixture-1",
+                "routes": [{"model_id": "fixture-model", "runner": "codex", "reasoning": "high", "roles": list(ROLES)}]}
+
+    def service(self, index=0, checkpoint=None):
+        return Configuration(self.projects[index], self.discover, lambda: "2026-10-01T12:00:00Z",
+                             preferences_dir=self.local, checkpoint=checkpoint)
+
+    def command(self, action, proposal=None, reply=None, index=0, fault=None):
+        adapter = ("import json,sys; request=json.load(sys.stdin); "
+                   "json.dump({'request_id':request['request_id'],'checked_at':request['started_at'],"
+                   "'authority':'host-reported-selection','revision':'fixture-1',"
+                   "'routes':[{'model_id':'fixture-model','runner':'codex','reasoning':'high',"
+                   "'roles':['planning','implementation','verification','escalated_repair']}]},sys.stdout)")
+        command = [sys.executable, str(Path(__file__).with_name("configure-playbook.py")),
+                   "--project", str(self.projects[index]), "--preferences-dir", str(self.local),
+                   "--discovery-command", json.dumps([sys.executable, "-c", adapter]),
+                   "--now", "2026-10-01T12:00:00Z", action]
+        if fault:
+            wrapper = ("import sys,runpy; from pathlib import Path; "
+                       "sys.path.insert(0,str(Path(sys.argv[1]).parent)); "
+                       "from playbook_config import Configuration; "
+                       "original=Configuration.__init__\n"
+                       "def initialize(self,*args,**kwargs):\n"
+                       " original(self,*args,**kwargs)\n"
+                       " def fail(point):\n"
+                       "  if point == 'paired_first_written': " +
+                       ("__import__('os')._exit(73)\n" if fault == "crash" else "raise OSError('unreviewed credential-bearing text')\n") +
+                       " self.checkpoint=fail\n"
+                       "Configuration.__init__=initialize\n"
+                       "sys.argv=sys.argv[1:]; runpy.run_path(sys.argv[0],run_name='__main__')")
+            command = [sys.executable, "-c", wrapper, *command[1:]]
+        request = {} if proposal is None else {"proposal": proposal, "reply": reply}
+        result = subprocess.run(command, input=json.dumps(request), text=True, capture_output=True)
+        return result, json.loads(result.stdout) if result.stdout.strip() else None
+
+    def draft(self, service):
+        proposal = service.read()
+        for label in ("Plan", "Build", "Verify", "Repair"):
+            proposal = service.reply(service.reply(proposal, "Edit " + label), "1")
+        return proposal
+
+    def save_preset(self):
+        service = self.service()
+        proposal = service.reply(self.draft(service), "Save preset Focus")
+        self.assertEqual(proposal["step"], "preference_preview")
+        result = service.reply(proposal, "Apply preference")
+        self.assertEqual(result["state"], "proposal_ready", result)
+        return service
+
+    def test_save_load_isolation_and_deliberate_apply(self):
+        service = self.save_preset()
+        self.assertFalse((self.projects[0] / ".playbook-config.json").exists())
+        other = self.service(1)
+        proposal = other.read()
+        self.assertEqual(proposal["presets"], ["Recommended", "Focus"])
+        loaded = other.reply(proposal, "Load preset Focus")
+        self.assertEqual(loaded["origins"]["implementation"], "personal preset Focus")
+        self.assertEqual(loaded["origin"], "personal preset Focus")
+        self.assertEqual(loaded["after"]["implementation"]["model_id"], "fixture-model")
+        self.assertFalse((self.projects[1] / ".playbook-config.json").exists())
+        self.assertEqual(other.reply(loaded, "Not now")["state"], "unchanged")
+        self.assertEqual(other.reply(loaded, "Apply")["state"], "applied")
+        saved = (self.projects[1] / ".playbook-config.json").read_text()
+        self.assertNotIn("billing", saved)
+        self.assertNotIn(str(self.local), saved)
+        self.assertFalse((self.projects[0] / ".playbook-config.json").exists())
+        for project, runtime in zip(self.projects, self.runtime):
+            self.assertEqual((project / ".playbook-state.yml").read_bytes(), runtime)
+        self.assertEqual(service.read()["state"], "decision_required")
+
+    def test_combined_apply_has_paired_completion(self):
+        service = self.service()
+        proposal = service.reply(self.draft(service), "Save defaults")
+        proposal = service.reply(proposal, "Billing mixed")
+        proposal = service.reply(proposal, "Goal Fixture project")
+        result = service.reply(proposal, "Apply")
+        self.assertEqual(result["state"], "applied", result)
+        self.assertEqual(result["destinations"], [".playbook-config.json", "preferences.json"])
+        self.assertEqual(result["paired_completion"]["protocol"], "paired-1")
+        self.assertTrue(result["paired_completion"]["validated"])
+        self.assertTrue(result["paired_completion"]["runtime_unchanged"])
+        personal = json.loads((self.local / "preferences.json").read_text())
+        self.assertEqual(personal["billing"], "mixed")
+        self.assertEqual(personal["defaults"]["models"], proposal["after"])
+        self.assertEqual(service.read()["state"], "decision_required")
+
+    def test_first_write_failure_retains_paired_recovery(self):
+        def failure(point):
+            if point == "paired_first_written":
+                raise OSError("injected failure")
+        service = self.service(checkpoint=failure)
+        proposal = service.reply(self.draft(service), "Save defaults")
+        result = service.reply(proposal, "Apply")
+        self.assertEqual(result["state"], "recovery_required", result)
+        self.assertIn("restored", result["message"])
+        self.assertFalse((self.projects[0] / ".playbook-config.json").exists())
+        self.assertFalse((self.local / "preferences.json").exists())
+        self.assertEqual(self.service().read()["state"], "recovery_required")
+        self.assertTrue(list(self.local.glob("*.pair")))
+        self.assertTrue(list(self.projects[0].glob("*.pair")))
+
+    def test_existing_project_restoration_is_exact_and_not_transaction_success(self):
+        self.save_preset()
+        service = self.service()
+        self.assertEqual(service.reply(service.reply(service.read(), "Load preset Focus"), "Apply")["state"], "applied")
+        project_before = service.path.read_bytes()
+        personal_before = (self.local / "preferences.json").read_bytes()
+        def fail(point):
+            if point == "paired_first_written":
+                raise OSError("fixture")
+        service = self.service(checkpoint=fail)
+        proposal = service.reply(service.reply(service.read(), "Billing subscription"), "Goal Known context")
+        result = service.reply(proposal, "Apply")
+        self.assertEqual(result["state"], "recovery_required")
+        self.assertIn("restored", result["message"])
+        self.assertEqual(service.path.read_bytes(), project_before)
+        self.assertEqual((self.local / "preferences.json").read_bytes(), personal_before)
+        self.assertEqual(Configuration(self.projects[0], self.discover).read()["state"], "recovery_required")
+        self.assertEqual(self.service(1).read()["state"], "recovery_required")
+
+    def test_process_interruption_keeps_both_journals_and_blocks_both_project_readers(self):
+        service = self.service()
+        proposal = service.reply(self.draft(service), "Save defaults")
+        result, _ = self.command("reply", proposal, "Apply", fault="crash")
+        self.assertEqual(result.returncode, 73)
+        self.assertTrue(service.path.exists())
+        self.assertFalse((self.local / "preferences.json").exists())
+        self.assertTrue((self.local / ".playbook-config.pair").exists())
+        self.assertTrue((self.projects[0] / ".playbook-config.pair").exists())
+        self.assertEqual(Configuration(self.projects[0], self.discover).read()["state"], "recovery_required")
+        self.assertEqual(self.service(1).read()["state"], "recovery_required")
+        self.assertEqual((self.projects[0] / ".playbook-state.yml").read_bytes(), self.runtime[0])
+
+    def test_paired_content_completion_faults_never_report_partial_success(self):
+        for point in ("paired_before_completion", "paired_completion_sealed"):
+            with self.subTest(point=point), tempfile.TemporaryDirectory() as directory:
+                project = Path(directory) / "project"
+                project.mkdir()
+                state = project / ".playbook-state.yml"
+                state.write_bytes(self.runtime[0])
+                local = Path(directory) / "personal"
+                foreign = b'concurrent bytes after both writes\n'
+                def fail(actual):
+                    if actual == point:
+                        (local / "preferences.json").write_bytes(foreign)
+                service = Configuration(project, self.discover, lambda: "2026-10-01T12:00:00Z",
+                                        preferences_dir=local, checkpoint=fail)
+                proposal = service.reply(self.draft(service), "Save defaults")
+                result = service.reply(proposal, "Apply")
+                self.assertEqual(result["state"], "recovery_required", result)
+                self.assertEqual((local / "preferences.json").read_bytes(), foreign)
+                self.assertTrue((project / ".playbook-config.pair").exists())
+                self.assertTrue((local / ".playbook-config.pair").exists())
+                self.assertEqual(state.read_bytes(), self.runtime[0])
+                reopened = Configuration(project, self.discover, preferences_dir=local)
+                self.assertEqual(reopened.read()["state"], "recovery_required")
+
+    def test_rollback_does_not_restore_changed_previous_evidence(self):
+        self.save_preset()
+        service = self.service()
+        proposal = service.reply(service.read(), "Load preset Focus")
+        self.assertEqual(service.reply(proposal, "Apply")["state"], "applied")
+        previous = service.path.read_bytes()
+        changed = b'changed previous evidence must not become project settings\n'
+        def fail(point):
+            if point == "paired_first_written":
+                journal = json.loads((self.projects[0] / ".playbook-config.pair").read_text())
+                (self.projects[0] / journal["previous"]).write_bytes(changed)
+                raise OSError("fixture")
+        service = self.service(checkpoint=fail)
+        proposal = service.reply(service.reply(service.read(), "Billing api"), "Goal Known context")
+        result = service.reply(proposal, "Apply")
+        self.assertEqual(result["state"], "recovery_required")
+        self.assertNotIn("Prior destinations restored", result["message"])
+        self.assertEqual(service.path.read_bytes(), previous)
+        self.assertTrue(any(path.read_bytes() == changed for path in self.projects[0].glob(".playbook-config-*") if path.is_file()))
+        self.assertTrue((self.projects[0] / ".playbook-config.pair").exists())
+
+    def test_pair_directory_retarget_does_not_write_unreviewed_storage(self):
+        outside = self.root / "reviewed-storage"
+        outside.mkdir()
+        unreviewed = self.projects[1] / "unreviewed-storage"
+        unreviewed.mkdir()
+        alias = self.root / "alias"
+        alias.symlink_to(outside, target_is_directory=True)
+        def retarget(point):
+            if point == "paired_first_written":
+                alias.unlink()
+                alias.symlink_to(unreviewed, target_is_directory=True)
+        service = Configuration(self.projects[0], self.discover, lambda: "2026-10-01T12:00:00Z",
+                                preferences_dir=alias, checkpoint=retarget)
+        result = service.reply(service.reply(self.draft(service), "Save defaults"), "Apply")
+        self.assertEqual(result["state"], "recovery_required", result)
+        self.assertEqual(list(unreviewed.iterdir()), [])
+        self.assertTrue((outside / ".playbook-config.pair").exists())
+        self.assertTrue((self.projects[0] / ".playbook-config.pair").exists())
+        self.assertEqual((self.projects[1] / ".playbook-state.yml").read_bytes(), self.runtime[1])
+
+    def test_concurrent_rollback_edit_survives_and_requires_recovery(self):
+        external = b'{"external":"must survive"}\n'
+        def failure(point):
+            if point == "paired_first_written":
+                raise OSError("injected failure")
+            if point == "paired_before_rollback":
+                (self.projects[0] / ".playbook-config.json").write_bytes(external)
+        service = self.service(checkpoint=failure)
+        result = service.reply(service.reply(self.draft(service), "Save defaults"), "Apply")
+        self.assertEqual(result["state"], "recovery_required", result)
+        self.assertIn("concurrent", result["message"])
+        self.assertEqual((self.projects[0] / ".playbook-config.json").read_bytes(), external)
+        self.assertEqual(self.service().read()["state"], "recovery_required")
+
+    def test_unknown_personal_and_unavailable_preset_require_review(self):
+        self.save_preset()
+        path = self.local / "preferences.json"
+        saved = json.loads(path.read_text())
+        invalid = deepcopy(saved)
+        invalid["presets"]["Focus"]["surprise"] = True
+        path.write_text(json.dumps(invalid))
+        self.assertEqual(self.service().read()["state"], "blocked")
+        self.assertEqual(json.loads(path.read_text()), invalid)
+        saved["presets"]["Focus"]["models"]["implementation"]["model_id"] = "missing-model"
+        path.write_text(json.dumps(saved))
+        service = self.service()
+        loaded = service.reply(service.read(), "Load preset Focus")
+        self.assertEqual(loaded["state"], "proposal_ready", loaded)
+        result = service.reply(loaded, "Apply")
+        self.assertEqual(result["state"], "blocked", result)
+        self.assertIn("unavailable", result["message"])
+        self.assertFalse((self.projects[0] / ".playbook-config.json").exists())
+
+    def test_cli_pair_failure_sanitizes_unreviewed_exception_and_retains_evidence(self):
+        result, proposal = self.command("read")
+        self.assertEqual(result.returncode, 0)
+        for label in ("Plan", "Build", "Verify", "Repair"):
+            _, proposal = self.command("reply", proposal, "Edit " + label)
+            _, proposal = self.command("reply", proposal, "1")
+        _, proposal = self.command("reply", proposal, "Save defaults")
+        result, failed = self.command("reply", proposal, "Apply", fault=True)
+        self.assertEqual(result.returncode, 2)
+        self.assertEqual(failed["state"], "recovery_required")
+        self.assertNotIn("credential-bearing", result.stdout + result.stderr)
+        self.assertEqual(failed["retained_proposal"]["personal"]["resolved_destination"], str(self.local / "preferences.json"))
+        self.assertTrue((self.projects[0] / ".playbook-config.pair").exists())
+        self.assertTrue((self.local / ".playbook-config.pair").exists())
+        self.assertEqual(self.service(1).read()["state"], "recovery_required")
+
+    def test_presentation_edits_preserve_defaults_presets_and_billing(self):
+        service = self.save_preset()
+        for billing in ("subscription", "api", "mixed", "unknown"):
+            proposal = service.reply(service.read(), "Billing " + billing)
+            self.assertEqual(service.reply(proposal, "Apply preference")["state"], "proposal_ready")
+        before = json.loads((self.local / "preferences.json").read_text())
+        proposal = service.reply(service.read(), "Expert")
+        self.assertEqual(service.reply(proposal, "Apply preference")["state"], "proposal_ready")
+        after = json.loads((self.local / "preferences.json").read_text())
+        self.assertEqual(after, {**before, "presentation": "expert"})
+        self.assertIn("unknown", service.read()["billing"])
+
+    def test_malformed_private_fields_are_not_echoed_in_public_cli_errors(self):
+        self.local.mkdir()
+        path = self.local / "preferences.json"
+        private = "unreviewed-private-binding-store-and-credential"
+        for content in (json.dumps({"schema_version": 1, "presentation": "guided", private: "secret"}),
+                        '{"' + private + '":1,"' + private + '":2}', b'\xff' + private.encode()):
+            with self.subTest(content=type(content).__name__):
+                path.write_bytes(content if isinstance(content, bytes) else content.encode())
+                before = path.read_bytes()
+                result, blocked = self.command("read")
+                self.assertEqual(result.returncode, 2)
+                self.assertEqual(blocked["state"], "blocked")
+                self.assertNotIn(private, result.stdout + result.stderr)
+                self.assertEqual(path.read_bytes(), before)
+
+    def test_recommended_is_single_retained_proposal_and_never_a_cost_bundle(self):
+        service = self.save_preset()
+        proposal = service.read()
+        loaded = service.reply(proposal, "Load preset Focus")
+        selected = service.reply(loaded, "Recommended")
+        self.assertEqual(selected["after"], proposal["before"])
+        self.assertEqual(selected["skill_after"], proposal["skill_before"])
+        self.assertEqual(selected["presets"].count("Recommended"), 1)
+        self.assertIn("unknown", selected["recommended"]["advice"])
+        self.assertFalse(service.path.exists())
+
+    def test_pair_restores_existing_bytes_and_retains_captured_concurrent_writer(self):
+        service = self.save_preset()
+        proposal = service.reply(service.read(), "Load preset Focus")
+        self.assertEqual(service.reply(proposal, "Apply")["state"], "applied")
+        previous = (self.projects[0] / ".playbook-config.json").read_bytes()
+        personal = (self.local / "preferences.json").read_bytes()
+        external = b'concurrent writer must remain recoverable\n'
+        def fail(point):
+            if point == "paired_first_written":
+                raise OSError("fixture")
+        service = self.service(checkpoint=fail)
+        proposal = service.reply(service.read(), "Billing api")
+        proposal = service.reply(proposal, "Goal Fixture project")
+        rollback = False
+        def checkpoint(point):
+            nonlocal rollback
+            if point == "paired_before_rollback":
+                rollback = True
+            fail(point)
+        service.checkpoint = checkpoint
+        original_replace = service._replace
+        def concurrent(source, target):
+            if rollback and source == service.path and target.name.startswith(".playbook-config-"):
+                service.path.write_bytes(external)
+            original_replace(source, target)
+        with patch.object(service, "_replace", concurrent):
+            result = service.reply(proposal, "Apply")
+        self.assertEqual(result["state"], "recovery_required", result)
+        self.assertEqual(service.path.read_bytes(), external)
+        self.assertEqual((self.local / "preferences.json").read_bytes(), personal)
+        self.assertTrue(any(path.read_bytes() == previous for path in self.projects[0].glob(".playbook-config-*") if path.is_file()))
+
+    def test_unresolved_custom_preset_is_data_not_eligibility(self):
+        self.save_preset()
+        path = self.local / "preferences.json"
+        preferences = json.loads(path.read_text())
+        preferences["presets"]["Focus"]["skills"]["jobs"]["specification"] = [
+            {"source_id": "custom:missing-spec", "source_sha256": "a" * 64, "contract_sha256": "b" * 64}]
+        path.write_text(json.dumps(preferences))
+        service = self.service(1)
+        proposal = service.reply(service.read(), "Load preset Focus")
+        row = next(row for row in proposal["skill_proposal"] if row["job"] == "specification")
+        self.assertIn("unresolved", row["after"][0])
+        self.assertEqual(row["origin"], "personal preset Focus")
+        self.assertEqual(service.reply(proposal, "Apply")["state"], "blocked")
+        self.assertEqual(json.loads(path.read_text()), preferences)
+        self.assertFalse(service.path.exists())
+
+    def test_custom_preset_keeps_logical_identity_and_requires_same_local_qualification(self):
+        store = self.root / "custom-store"
+        store.mkdir()
+        source = store / "SKILL.md"
+        source.write_text("fixture source, never executed\n")
+        identity = "custom:fixture-spec"
+        job = "specification"
+        contract = JOBS[job]
+        audit = {"contract_version": 1, "source_id": identity, "job": job, "owner": contract["owner"],
+                 "source_sha256": fingerprint(source), "inputs": contract["inputs"], "outputs": contract["outputs"],
+                 "effects": contract["effects"], "prohibited_effects": contract["prohibited_effects"],
+                 "retained_authority": AUTHORITY, "invocation": identity, "form": "single", "report_only": False,
+                 "verdict": "pass", "independent": True}
+        evidence = store / "evidence"
+        evidence.mkdir()
+        proof = evidence / "fixture-audit.json"
+        proof.write_text(json.dumps(audit, sort_keys=True))
+        approval = {"source_id": identity, "job": job, "owner": contract["owner"], "revision": "fixture-1",
+                    "evidence_sha256": fingerprint(proof),
+                    "resolution_sha256": hashlib.sha256(source.resolve().as_posix().encode()).hexdigest()}
+        (store / "approvals.json").write_text(json.dumps({"version": 1, "audits": {"fixture-audit": approval}}))
+        (store / "bindings.json").write_text(json.dumps({"version": 1, "sources": {
+            identity: {"source": str(source), "audits": {job: "fixture-audit"}}}}))
+        originals = {path: path.read_bytes() for path in store.rglob("*") if path.is_file()}
+        bindings = JobBindings(self.projects[0], custom_dir=store)
+        service = Configuration(self.projects[0], self.discover, lambda: "2026-10-01T12:00:00Z",
+                                preferences_dir=self.local, bindings=bindings)
+        proposal = self.draft(service)
+        editor = service.reply(proposal, "Edit skills specification")
+        option = next(index + 1 for index, option in enumerate(editor["skill_options"]) if option["binding"]["source_id"] == identity)
+        proposal = service.reply(editor, "Choose " + str(option))
+        proposal = service.reply(proposal, "Save preset Qualified")
+        self.assertEqual(service.reply(proposal, "Apply preference")["state"], "proposal_ready")
+        missing = self.service(1)
+        draft = missing.reply(missing.read(), "Load preset Qualified")
+        self.assertEqual(missing.reply(draft, "Apply")["state"], "blocked")
+        qualified = Configuration(self.projects[1], self.discover, lambda: "2026-10-01T12:00:00Z",
+                                  preferences_dir=self.local, bindings=JobBindings(self.projects[1], custom_dir=store))
+        draft = qualified.reply(qualified.read(), "Load preset Qualified")
+        self.assertEqual(qualified.reply(draft, "Apply")["state"], "applied")
+        saved = qualified.path.read_text()
+        self.assertIn(identity, saved)
+        self.assertNotIn(str(store), saved)
+        self.assertNotIn(str(self.local), saved)
+        self.assertNotIn("billing", saved)
+        for path, original in originals.items():
+            self.assertEqual(path.read_bytes(), original)
+        source.write_text("changed source invalidates the old preset qualification\n")
+        draft = qualified.reply(qualified.read(), "Load preset Qualified")
+        self.assertEqual(qualified.reply(draft, "Apply")["state"], "blocked")
+        self.assertEqual(qualified.path.read_text(), saved)
+
+    def bootstrap(self, target, *extra):
+        adapter = ("import json,sys; request=json.load(sys.stdin); "
+                   "json.dump({'request_id':request['request_id'],'checked_at':request['started_at'],"
+                   "'authority':'host-reported-selection','revision':'fixture-1',"
+                   "'routes':[{'model_id':'fixture-model','runner':'codex','reasoning':'high',"
+                   "'roles':['planning','implementation','verification','escalated_repair']}]},sys.stdout)")
+        command = [sys.executable, str(Path(__file__).with_name("bootstrap-project.py")), str(target),
+                   "--playbook-path", str(Path(__file__).resolve().parents[2]), "--project-name", "Fixture",
+                   "--ui", "no", "--ci", "copy", "--preferences-dir", str(self.local),
+                   "--discovery-command", json.dumps([sys.executable, "-c", adapter]),
+                   "--now", "2026-10-01T12:00:00Z", *extra]
+        return subprocess.run(command, text=True, capture_output=True)
+
+    def test_bootstrap_preview_seed_approval_and_existing_project_isolation(self):
+        service = self.save_preset()
+        proposal = service.reply(service.reply(service.read(), "Load preset Focus"), "Save defaults")
+        self.assertEqual(service.reply(proposal, "Apply preference")["state"], "proposal_ready")
+        personal = (self.local / "preferences.json").read_bytes()
+        target = self.root / "new-project"
+        plan = self.bootstrap(target)
+        self.assertEqual(plan.returncode, 0, plan.stderr)
+        self.assertIn("create .playbook-config.json", plan.stdout)
+        self.assertIn("personal defaults", plan.stdout)
+        preview = json.loads(plan.stdout[plan.stdout.index('{\n'):])
+        self.assertFalse(target.exists())
+        denied = self.bootstrap(target, "--apply")
+        self.assertEqual(denied.returncode, 2)
+        self.assertFalse(target.exists())
+        applied = self.bootstrap(target, "--apply", "--seed-revision", preview["seed_revision"])
+        self.assertEqual(applied.returncode, 0, applied.stderr)
+        saved = json.loads((target / ".playbook-config.json").read_text())
+        self.assertEqual(saved, preview["after"])
+        self.assertNotIn("billing", json.dumps(saved))
+        self.assertNotIn(str(self.local), json.dumps(saved))
+        self.assertEqual((self.local / "preferences.json").read_bytes(), personal)
+        self.assertEqual(self.bootstrap(target, "--apply", "--seed-revision", preview["seed_revision"]).returncode, 2)
+        for project, runtime in zip(self.projects, self.runtime):
+            self.assertFalse((project / ".playbook-config.json").exists())
+            self.assertEqual((project / ".playbook-state.yml").read_bytes(), runtime)
+
+    def test_bootstrap_changed_defaults_rejects_old_approval_before_any_write(self):
+        self.save_preset()
+        target = self.root / "new-project"
+        plan = self.bootstrap(target, "--preset", "Focus")
+        self.assertEqual(plan.returncode, 0, plan.stderr)
+        preview = json.loads(plan.stdout[plan.stdout.index('{\n'):])
+        path = self.local / "preferences.json"
+        preferences = json.loads(path.read_text())
+        preferences["billing"] = "mixed"
+        path.write_text(json.dumps(preferences))
+        result = self.bootstrap(target, "--preset", "Focus", "--apply", "--seed-revision", preview["seed_revision"])
+        self.assertEqual(result.returncode, 2)
+        self.assertFalse(target.exists())
+
+    def test_bootstrap_unresolved_skill_and_unknown_preset_data_block_before_writes(self):
+        self.save_preset()
+        target = self.root / "new-project"
+        path = self.local / "preferences.json"
+        preferences = json.loads(path.read_text())
+        preferences["presets"]["Focus"]["skills"]["jobs"]["specification"] = [
+            {"source_id": "custom:missing-spec", "source_sha256": "a" * 64, "contract_sha256": "b" * 64}]
+        path.write_text(json.dumps(preferences))
+        before = path.read_bytes()
+        blocked = self.bootstrap(target, "--preset", "Focus")
+        self.assertEqual(blocked.returncode, 2)
+        self.assertIn("local", blocked.stderr)
+        self.assertFalse(target.exists())
+        self.assertEqual(path.read_bytes(), before)
+        preferences["presets"]["Focus"]["private_future_field"] = "unreviewed content"
+        path.write_text(json.dumps(preferences))
+        before = path.read_bytes()
+        blocked = self.bootstrap(target, "--preset", "Focus", "--apply", "--seed-revision", "unapproved")
+        self.assertEqual(blocked.returncode, 2)
+        self.assertNotIn("unreviewed content", blocked.stdout + blocked.stderr)
+        self.assertFalse(target.exists())
+        self.assertEqual(path.read_bytes(), before)
+
+
+if __name__ == "__main__":
+    unittest.main()

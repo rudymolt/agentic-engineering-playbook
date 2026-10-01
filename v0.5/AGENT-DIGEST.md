@@ -107,8 +107,11 @@ Empty-state rule: a `STATUS.md` saying "0 active features" is an answer, not an 
 
 Project model defaults: user-invoked `/ai-playbook-configure` provides guided
 or expert typed read/edit/preview/Apply for all four roles without launching.
-QA inherits Verify; Coordinator is display-only. Presentation saves locally
-with its own destination preview; new projects retain the bootstrap gate.
+QA inherits Verify; Coordinator is display-only. Presentation, billing,
+personal defaults and named presets stay local. Loading edits only a draft;
+Apply preference saves reusable data only, while explicit project Apply uses
+paired recovery when both destinations change. New projects seed only through
+the existing bootstrap preview/approval gate; unresolved sources block.
 Existing model-router resolves new
 choices through `scripts/configure-playbook.py`: feature > adopted project >
 legacy project > edition. Malformed adoption blocks; active/approved records

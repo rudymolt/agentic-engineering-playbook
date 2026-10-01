@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from copy import deepcopy
+from contextlib import contextmanager
 from datetime import datetime, timezone
 import hashlib
 import json
@@ -57,14 +58,14 @@ def strict_json(text):
         result = {}
         for key, value in entries:
             if key in result:
-                raise ConfigError(f"Duplicate key {key}; remove the duplicate and reload.")
+                raise ConfigError("Duplicate JSON key; reconcile the saved fields and reload without discarding data.")
             result[key] = value
         return result
 
     try:
         return json.loads(text, object_pairs_hook=pairs, parse_constant=lambda value: invalid(value))
     except (ValueError, TypeError) as error:
-        raise ConfigError(f"Invalid configuration JSON; correct it and reload: {error}") from error
+        raise ConfigError("Invalid configuration JSON (" + type(error).__name__ + "); reconcile syntax and duplicate fields, then reload without discarding data.") from None
 
 
 def invalid(value):
@@ -199,6 +200,11 @@ def encoded(value):
     return (json.dumps(value, sort_keys=True, indent=2, allow_nan=False) + "\n").encode()
 
 
+def validate_preset_name(name):
+    if not isinstance(name, str) or not re.fullmatch(r"[A-Za-z0-9][A-Za-z0-9 _-]{0,63}", name) or name.lower() == "recommended":
+        raise ConfigError("Use a portable preset name (1–64 letters, digits, spaces, underscores or hyphens); Recommended is reserved.")
+
+
 def instant(value):
     try:
         parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
@@ -226,6 +232,8 @@ class Configuration:
         self.preferences = None
         self._write_stores = (self,)
         self._directory_fd = None
+        self.pair = self.project / ".playbook-config.pair"
+        self._pair_active = False
         if preferences_dir is not None:
             local = Path(preferences_dir)
             if resolve_private_path(local).is_relative_to(resolve_private_path(self.project)):
@@ -239,6 +247,8 @@ class Configuration:
     def _guard_write(self, active=False):
         for store in self._write_stores:
             store._check_directory()
+            if (store._exists(store.pair) or store.pair.is_symlink()) and not store._pair_active:
+                raise RecoveryRequired("Paired personal/project transaction requires recovery; reconcile both retained journals and bytes before continuing.")
             if active and store is self:
                 continue
             if store._exists(store.lock) or store._exists(store.recovery):
@@ -324,6 +334,7 @@ class Configuration:
             return stream.read()
 
     def _snapshot(self):
+        self._guard_write()
         if self.lock.exists() or self.recovery.exists():
             raise ConfigError("Configuration transaction/recovery pending; reconcile before reading or writing defaults.")
         self._reconcile_receipts()
@@ -483,7 +494,8 @@ class Configuration:
             return self._blocked(error)
 
     def _blocked(self, error):
-        return {"state": "recovery_required" if self.recovery.exists() or isinstance(error, RecoveryRequired) else "blocked", "message": public_error_message(error), "choices": ["Edit", "Edit Build", "Reload", "Not now"], "launched": False}
+        paired = any(store.pair.exists() or store.pair.is_symlink() for store in self._write_stores)
+        return {"state": "recovery_required" if paired or self.recovery.exists() or isinstance(error, RecoveryRequired) else "blocked", "message": public_error_message(error), "choices": ["Edit", "Edit Build", "Reload", "Not now"], "launched": False}
 
     def _proposal_choices(self):
         return ["Apply", "Edit", "Edit Plan", "Edit Build", "Edit Verify", "Edit Repair", "Edit skills", "Explain", "Not now"]
@@ -548,8 +560,18 @@ class Configuration:
         personal = proposal["personal"]
         preference = personal["after"] if personal else None
         proposal["presentation"] = preference["presentation"] if preference else "guided"
+        proposal["billing"] = preference.get("billing", "unknown") if preference else "unknown"
+        proposal["billing_limitations"] = "Consumption and allowance are unknown unless observed. API token prices are not the subscription bill."
+        proposal["presets"] = ["Recommended"] + sorted(preference.get("presets", {})) if preference else ["Recommended"]
+        proposal["recommended"] = {"basis": "retained starting configuration", "advice": "unknown until evidence-backed advice is available",
+                                    "limitations": "Availability alone is not suitability; no static cost-tier bundle or paid comparison."}
+        proposal["destinations"] = [DESTINATION]
+        if personal and personal["before"] != personal["after"]:
+            proposal["destinations"].append(personal["destination"])
         missing = [key for key in ("goal", "billing") if context is not None and key not in context]
-        if personal is not None and preference is None:
+        if preference and "billing" in preference and "billing" in missing:
+            missing.remove("billing")
+        if personal is not None and (preference is None or proposal.get("presentation_pending")):
             missing.append("presentation")
         proposal["missing_context"] = missing
         proposal["questions"] = {key: {"goal": "Goal <project context>", "billing": "Billing api / subscription / mixed / unknown", "presentation": "Guided / Expert"}[key] for key in missing}
@@ -566,12 +588,13 @@ class Configuration:
                     for binding in selection["jobs"][job]]
         proposal["skill_proposal"] = [{"job": job, "before": labels(job, proposal["skill_before"]),
                                        "after": labels(job, proposal["skill_after"]),
-                                       "origin": "adopted project" if proposal["skills_adopted"] else "explicit stage fallback preview"}
+                                       "origin": proposal.get("skill_origin", "adopted project" if proposal["skills_adopted"] else "explicit stage fallback preview")}
                                       for job in proposal["skill_after"]["jobs"]]
         proposal["skill_changes"] = deepcopy(proposal["skill_proposal"])
         proposal["choices"] = self._proposal_choices() + list(proposal["questions"].values())
         if personal is not None:
-            proposal["choices"] += ["Guided", "Expert"]
+            proposal["choices"] += ["Guided", "Expert", "Presets", "Recommended", "Load defaults", "Save defaults", "Save preset <name>", "Apply preference"]
+            proposal["choices"] += ["Load preset " + name for name in proposal["presets"] if name != "Recommended"]
         proposal["launched"] = False
 
     @staticmethod
@@ -609,7 +632,7 @@ class Configuration:
             return self._blocked("Reply requires a structured proposal and a typed choice; reload.")
         reply = text.strip().lower()
         if reply == "not now":
-            return {"state": "unchanged", "message": "No pending changes applied. Project defaults, runtime records and presets unchanged; any previously saved local presentation remains saved.", "launched": False}
+            return {"state": "unchanged", "message": "No pending changes applied. Project defaults, runtime records and presets unchanged; previously saved local preferences remain saved.", "launched": False}
         if reply == "reload":
             return self.read()
         if (proposal.get("state") in {"blocked", "recovery_required"} and proposal.get("retained_proposal")
@@ -634,11 +657,69 @@ class Configuration:
         except (ConfigError, KeyError, TypeError) as error:
             return self._blocked(error)
         draft = deepcopy(proposal)
+        if reply in {"recommended", "load preset recommended"}:
+            _, origins, inputs = self._snapshot()
+            if inputs != draft["inputs"]:
+                raise ConfigError("Project changed since preview; reload and review before selecting Recommended.")
+            draft.update(after=deepcopy(draft["before"]), skill_after=deepcopy(draft["skill_before"]),
+                         edited_roles=[], edited_jobs=[], origins=origins, origin=origins["implementation"])
+            draft.pop("skill_origin", None)
+            draft["message"] = "Recommended currently retains the starting configuration, not new suitability or cost advice. Personal drafts remain unsaved."
+            return self._preview(draft)
+        if reply == "presets":
+            draft["message"] = "Recommended retains current defaults until evidence-backed advice is available; availability alone is not suitability. Load defaults or Load preset <name> edits only this draft."
+            return self._seal(draft)
+        if reply.startswith("load preset ") or reply == "load defaults":
+            if draft["personal"] is None:
+                raise ConfigError("Preview an external personal storage directory before loading defaults or presets.")
+            personal = draft["personal"]["after"] or {}
+            name = text.strip()[len("load preset "):].strip() if reply != "load defaults" else None
+            candidate = personal.get("presets", {}).get(name) if name else personal.get("defaults")
+            if candidate is None:
+                raise ConfigError("No saved defaults or named preset found; save one explicitly or reload the displayed names.")
+            validate_config(candidate)
+            origin = "personal preset " + name if name else "personal defaults"
+            draft["after"] = deepcopy(candidate["models"])
+            draft["edited_roles"] = list(ROLES)
+            draft["origins"] = dict.fromkeys(ROLES, origin)
+            draft["origin"] = origin
+            if "skills" in candidate:
+                draft["skill_after"] = deepcopy(candidate["skills"])
+                draft["edited_jobs"] = list(candidate["skills"]["jobs"])
+                draft["skill_origin"] = origin
+            draft["message"] = "Loaded into a draft only; review origins, changes and destinations. Missing dependencies require explicit repair or fallback, not silent substitution."
+            return self._preview(draft)
+        if reply.startswith("save preset ") or reply == "save defaults":
+            if draft["personal"] is None:
+                raise ConfigError("Preview an external personal storage directory before saving reusable defaults.")
+            candidate = {"schema_version": 1, "adopted": True, "models": deepcopy(draft["after"]),
+                         "skills": deepcopy(draft["skill_after"])}
+            validate_config(candidate)
+            personal = draft["personal"]["after"] or {"schema_version": 1, "presentation": "guided"}
+            if reply == "save defaults":
+                personal["defaults"] = candidate
+            else:
+                name = text.strip()[len("save preset "):].strip()
+                validate_preset_name(name)
+                personal.setdefault("presets", {})[name] = candidate
+            draft["personal"]["after"] = personal
+            self.preferences._validate_candidate(personal)
+            draft = self._preview(draft)
+            draft.update(step="preference_preview", message="Review reusable local data at the personal destination. Apply preference saves only personal data; Apply explicitly saves this project and personal data with paired recovery. Other projects and active execution remain unchanged.")
+            return self._seal(draft)
         if reply.startswith("goal ") or reply.startswith("billing "):
             key, _, value = text.strip().partition(" ")
             key = key.lower()
             draft["context"] = draft["context"] or {}
             draft["context"][key] = value.strip() if key == "goal" else value.strip().lower()
+            if key == "billing" and draft["personal"] is not None:
+                if draft["personal"]["after"] is None:
+                    draft["presentation_pending"] = True
+                personal = draft["personal"]["after"] or {"schema_version": 1, "presentation": "guided"}
+                personal["billing"] = value.strip().lower()
+                draft["personal"]["after"] = personal
+                self.preferences._validate_candidate(personal)
+                draft["step"] = "preference_preview"
             try:
                 self._present(draft)
             except ConfigError as error:
@@ -648,7 +729,10 @@ class Configuration:
         if reply in {"guided", "expert"}:
             if draft["personal"] is None:
                 return self._blocked("Supply an explicit user-local preferences directory before changing presentation.")
-            draft["personal"]["after"] = {"schema_version": 1, "presentation": reply}
+            personal = draft["personal"]["after"] or {"schema_version": 1}
+            personal["presentation"] = reply
+            draft["presentation_pending"] = False
+            draft["personal"]["after"] = personal
             changed_directory = self._refresh_personal_destination(draft)
             draft.update(step="preference_preview", choices=["Apply preference", "Back", "Not now"],
                          message="Only local presentation will be saved to the displayed personal destination. Project drafts remain unsaved; no launch.")
@@ -747,7 +831,7 @@ class Configuration:
                                     "limitations": "Availability is a bounded observation, not live launch proof. Suitability, costs, access consumption and comparison evidence remain unknown. No recommendation or paid benchmark."}
             draft["message"] = draft["explanation"]["limitations"]
             return self._seal(draft)
-        if reply == "apply" and draft.get("step") in {"read", "preview"}:
+        if reply == "apply" and draft.get("step") in {"read", "preview", "preference_preview"}:
             return self.apply(draft)
         return self._blocked("Use the typed choices shown; reload if the draft is stale.")
 
@@ -787,6 +871,8 @@ class Configuration:
             self._guard_write()
             if self.preferences is None or draft["personal"]["destination"] != str(self.preferences.path):
                 raise ConfigError("Personal destination changed; reload and preview the local destination.")
+            if draft.get("presentation_pending"):
+                raise ConfigError("Confirm Guided or Expert in the personal preview before saving; no implicit presentation selection.")
             before, inputs = self.preferences.snapshot()
             if before != draft["personal"]["before"] or inputs != draft["personal"]["inputs"]:
                 raise ConfigError("Personal preferences or runtime changed since preview; reload without overwriting them.")
@@ -795,11 +881,11 @@ class Configuration:
                 self.preferences._save(draft["personal"]["after"], inputs, draft["discovery"], create_directory=True)
                 saved = True
             draft["personal"] = self._personal_snapshot()
-            draft["message"] = "Local presentation saved and validated. Project draft remains unsaved; no model launches."
+            draft["message"] = "Local preferences saved and validated. Project draft remains unsaved; other projects and active execution unchanged. No model launches."
             return self._preview(draft)
         except (ConfigError, OSError, UnicodeError, KeyError, TypeError) as error:
             if saved:
-                error = ConfigError(f"Personal save completed at {draft['personal']['resolved_destination']}, but its destination could not be revalidated ({error}). Inspect that location before retrying; the project draft remains unsaved.")
+                error = ConfigError(f"Personal save completed at {draft['personal']['resolved_destination']}, but its destination could not be revalidated ({public_error_message(error)}). Inspect that location before retrying; the project draft remains unsaved.")
             return self._blocked(error)
 
     def apply(self, proposal):
@@ -811,7 +897,10 @@ class Configuration:
                 raise ConfigError("New project setup must use the existing bootstrap approval gate first; no second bootstrap or unspecified writes.")
             if proposal["missing_context"]:
                 raise ConfigError("Answer only the displayed missing context/preferences before project Apply.")
-            if self._personal_snapshot() != proposal["personal"]:
+            current_personal = self._personal_snapshot()
+            if current_personal is not None:
+                current_personal["after"] = deepcopy(proposal["personal"]["after"])
+            if current_personal != proposal["personal"]:
                 raise ConfigError("Personal preferences changed since preview; reload and review them.")
             config, _, inputs = self._snapshot()
             routes, evidence = self._available()
@@ -839,18 +928,165 @@ class Configuration:
                         raise ConfigError(ROLE_LABELS[role] + " choice is unavailable; edit the role and review again. No substitution.")
             if self._discovery_revision(evidence) != self._discovery_revision(proposal["discovery"]):
                 raise ConfigError("Discovery changed since preview; reload and review current available choices.")
-            if not proposal["migration"] and candidate == config:
+            personal_changed = proposal["personal"] is not None and proposal["personal"]["before"] != proposal["personal"]["after"]
+            if not proposal["migration"] and candidate == config and not personal_changed:
                 return {"state": "unchanged", "destination": DESTINATION, "message": "Already adopted; no write needed.", "launched": False}
             if self.preferences is not None:
                 self.preferences._expected_directory = proposal["personal"]["inputs"]["directories"]
             try:
-                self._save(candidate, inputs, evidence)
+                paired_completion = None
+                if personal_changed:
+                    paired_completion = self._save_pair(candidate, inputs, evidence, proposal["personal"])
+                else:
+                    self._save(candidate, inputs, evidence)
             finally:
                 if self.preferences is not None:
                     self.preferences._expected_directory = None
-            return {"state": "applied", "destination": DESTINATION, "message": "Project defaults saved and validated. Runtime records unchanged. No build starts.", "launched": False}
+            return {"state": "applied", "destination": DESTINATION,
+                    "destinations": [DESTINATION, "preferences.json"] if personal_changed else [DESTINATION],
+                    "paired_completion": paired_completion,
+                    "message": "Reviewed destinations saved and validated. Runtime records and other projects unchanged. No build starts.", "launched": False}
         except (ConfigError, OSError, UnicodeError, KeyError, TypeError) as error:
             return self._blocked(error)
+
+    def _save_pair(self, candidate, inputs, evidence, personal):
+        self.preferences._validate_candidate(personal["after"])
+        self._guard_write()
+        with self._paired_storage(personal["inputs"]):
+            stores = (self, self.preferences)
+            candidates = (candidate, personal["after"])
+            observations = (inputs, personal["inputs"])
+            transaction = uuid.uuid4().hex
+            records = []
+            completed = []
+            journaled = False
+            sealed = False
+            try:
+                for store, proposed, observed in zip(stores, candidates, observations):
+                    store._check_inputs(observed)
+                    previous = store._bytes(store.path)
+                    attempted = encoded(proposed)
+                    backup = store._stage(previous) if previous is not None else None
+                    staged = store._stage(attempted)
+                    record = {"transaction": transaction, "destination": store.destination,
+                              "previous": backup.name if backup else None, "previous_digest": digest(previous),
+                              "attempted": staged.name, "attempted_digest": digest(attempted),
+                              "runtime_digest": observed[".playbook-state.yml"], "completion_protocol": "paired-1"}
+                    records.append((store, record))
+                    with store._open(store.pair, "x") as stream:
+                        journaled = True
+                        stream.write(encoded(record).decode())
+                        stream.flush()
+                        os.fsync(stream.fileno())
+                    store._sync_directory()
+                    store._pair_active = True
+                for store, proposed, observed in zip(stores, candidates, observations):
+                    store._save(proposed, observed, evidence)
+                    completed.append(store)
+                    if store is self:
+                        self.checkpoint("paired_first_written")
+                self.checkpoint("paired_before_completion")
+                self._validate_pair(records)
+                seal = self.preferences.pair.with_name(self.preferences.pair.name + ".complete")
+                self.preferences._mkdir(seal)
+                self.preferences._sync_directory()
+                sealed = True
+                self.checkpoint("paired_completion_sealed")
+                self._validate_pair(records)
+                for store, record in records:
+                    store._unlink(store.pair)
+                    store._sync_directory()
+                self.preferences._unlink_directory(seal)
+                self.preferences._sync_directory()
+                for store, record in records:
+                    for key in ("previous", "attempted"):
+                        if record[key] is not None:
+                            store._unlink(store.project / record[key], missing_ok=True)
+                return {"transaction_id": transaction, "protocol": "paired-1", "validated": True,
+                        "destinations": [store.destination for store in stores], "runtime_unchanged": True}
+            except (ConfigError, OSError, UnicodeError) as error:
+                if not journaled:
+                    raise
+                for store, record in records:
+                    if not store._exists(store.pair):
+                        try:
+                            with store._open(store.pair, "x") as stream:
+                                stream.write(encoded(record).decode())
+                                stream.flush()
+                                os.fsync(stream.fileno())
+                            store._sync_directory()
+                        except OSError:
+                            pass
+                restored = True
+                try:
+                    self.checkpoint("paired_before_rollback")
+                    for store, record in reversed(records):
+                        if sealed:
+                            restored = False
+                            continue
+                        if store not in completed:
+                            restored = restored and digest(store._bytes(store.path)) == record["previous_digest"]
+                            continue
+                        current = store._bytes(store.path)
+                        if (digest(current) != record["attempted_digest"]
+                                or (record["previous"] is not None and digest(store._bytes(store.project / record["previous"])) != record["previous_digest"])):
+                            restored = False
+                            continue
+                        captured = store._stage(b"")
+                        store._replace(store.path, captured)
+                        if digest(store._bytes(captured)) != record["attempted_digest"]:
+                            try:
+                                store._link(captured, store.path)
+                            except FileExistsError:
+                                pass
+                            restored = False
+                            continue
+                        if record["previous"] is not None:
+                            try:
+                                store._link(store.project / record["previous"], store.path)
+                            except FileExistsError:
+                                restored = False
+                        store._sync_directory()
+                        restored = restored and digest(store._bytes(store.path)) == record["previous_digest"]
+                except (OSError, ConfigError):
+                    restored = False
+                result = "Prior destinations restored" if restored else "Incomplete restoration or concurrent edit preserved"
+                raise RecoveryRequired(result + "; paired recovery is required. Inspect both journals and retained previous/attempted/captured bytes; no transaction completion is claimed. Failure category: " + type(error).__name__) from None
+            finally:
+                for store in stores:
+                    store._pair_active = False
+
+    def _validate_pair(self, records):
+        self._guard_write()
+        for store, record in records:
+            observations = [(store.path, record["attempted_digest"]),
+                            (store.state_path, record["runtime_digest"]),
+                            (store.project / record["attempted"], record["attempted_digest"])]
+            if record["previous"] is not None:
+                observations.append((store.project / record["previous"], record["previous_digest"]))
+            if (any(digest(store._bytes(path)) != expected for path, expected in observations)
+                    or strict_json(store._bytes(store.pair).decode()) != record):
+                raise RecoveryRequired("Paired completion content changed; preserve both journals and retained evidence for recovery.")
+            store._validate_candidate(strict_json(store._bytes(store.path).decode()))
+        self._guard_write()
+
+    @contextmanager
+    def _paired_storage(self, inputs):
+        project = inputs["directories"]["project"]
+        descriptor = os.open(project["resolved"], os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+        try:
+            info = os.fstat(descriptor)
+            if (info.st_dev, info.st_ino) != (project["device"], project["inode"]):
+                raise ConfigError("Reviewed project directory changed; reload before a paired write.")
+            self._directory_fd = descriptor
+            with self.preferences._storage(inputs):
+                yield
+        finally:
+            self._directory_fd = None
+            os.close(descriptor)
+
+    def _unlink_directory(self, path):
+        os.rmdir(self._filename(path), dir_fd=self._directory_fd)
 
     def _save(self, candidate, inputs, evidence, create_directory=False):
         self._guard_write()
@@ -1043,7 +1279,8 @@ class LocalPreferences(Configuration):
         if self._expected_directory is not None and current != self._expected_directory:
             raise ConfigError("Personal or project directory changed since preview; reload and review the destination.")
 
-    def _save(self, candidate, inputs, evidence, create_directory=False):
+    @contextmanager
+    def _storage(self, inputs):
         self._guard_write()
         expected = inputs.get("directories")
         if self._directory_inputs() != expected:
@@ -1065,30 +1302,51 @@ class LocalPreferences(Configuration):
             self._expected_directory["personal"].update(anchor=local["resolved"], device=info.st_dev, inode=info.st_ino)
             self._directory_fd = descriptor
             self._check_directory()
-            super()._save(candidate, inputs, evidence)
+            yield
         except (ConfigError, OSError) as error:
             error_type = RecoveryRequired if isinstance(error, RecoveryRequired) else ConfigError
-            raise error_type(f"{error} Reviewed personal storage: {local['resolved']}; inspect retained files there before retrying.") from error
+            raise error_type(f"{public_error_message(error)} Reviewed personal storage: {local['resolved']}; inspect retained files there before retrying.") from None
         finally:
             self._directory_fd = None
             self._expected_directory = None
             os.close(descriptor)
 
+    def _save(self, candidate, inputs, evidence, create_directory=False):
+        if self._directory_fd is not None:
+            return super()._save(candidate, inputs, evidence)
+        with self._storage(inputs):
+            return super()._save(candidate, inputs, evidence)
+
     def _validate_candidate(self, candidate):
-        if (not isinstance(candidate, dict) or set(candidate) != {"schema_version", "presentation"}
+        if (not isinstance(candidate, dict) or set(candidate) - {"schema_version", "presentation", "billing", "defaults", "presets"}
+                or not {"schema_version", "presentation"}.issubset(candidate)
                 or type(candidate["schema_version"]) is not int or candidate["schema_version"] != 1
                 or candidate["presentation"] not in {"guided", "expert"}):
             raise ConfigError("Unsupported local presentation preferences; reconcile without dropping other personal settings.")
+        if "billing" in candidate and candidate["billing"] not in {"subscription", "api", "mixed", "unknown"}:
+            raise ConfigError("Local billing must be subscription, api, mixed or unknown; consumption is not inferred.")
+        if "defaults" in candidate:
+            validate_config(candidate["defaults"])
+        presets = candidate.get("presets", {})
+        if not isinstance(presets, dict):
+            raise ConfigError("Named presets must be a mapping; reconcile without discarding saved data.")
+        for name, preset in presets.items():
+            validate_preset_name(name)
+            validate_config(preset)
         return candidate
 
     def snapshot(self):
+        self._guard_write()
         directories = self._directory_inputs()
         if self.lock.exists() or self.recovery.exists():
             raise RecoveryRequired("Local preferences transaction/recovery pending; reconcile its retained evidence.")
         self._reconcile_receipts()
         saved = self._bytes(self.path)
         runtime = self._bytes(self.state_path)
-        candidate = self._validate_candidate(strict_json(saved.decode())) if saved is not None else None
+        try:
+            candidate = self._validate_candidate(strict_json(saved.decode())) if saved is not None else None
+        except UnicodeError:
+            raise ConfigError("Personal preferences must be valid UTF-8 JSON; restore readable bytes and reconcile without dropping saved settings.") from None
         if self.lock.exists() or self.recovery.exists():
             raise RecoveryRequired("Local preferences changed during read; reconcile recovery.")
         self._reconcile_receipts()

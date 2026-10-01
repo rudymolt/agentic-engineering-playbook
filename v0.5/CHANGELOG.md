@@ -2,6 +2,19 @@
 
 ## Unreleased
 
+- Add local reusable defaults, named presets and billing preferences without
+  changing active selections, approvals or history. Preset loading previews a
+  draft; explicit Apply revalidates model/skill identities. Bootstrap previews
+  new-project seeding and requires the exact reviewed seed revision.
+
+*Why — reuse must not become implicit execution or cross-project mutation:*
+keep presentation, billing and local source resolution private, preserve
+existing projects and custom qualification, and reject unknown data without
+lossy fallback. Combined personal/project saves retain paired recovery evidence,
+validate both destinations before completion and preserve concurrent edits
+during rollback. Failure results omit unreviewed exception text while keeping
+the reviewed personal destination available for local recovery.
+
 - Contain filesystem resolution errors at the path boundary, including cyclic
   QA sources, evidence, installed sources and personal storage. Retain portable
   rejection and explicit recovery at Configure and stage-owned invocation.

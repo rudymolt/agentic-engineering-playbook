@@ -41,8 +41,8 @@ This skill never launches a model or edits runtime state.
 2. **Present project defaults.** Ask only the returned `missing_context`
    questions through typed `Goal <context>`, `Billing api`, `Billing subscription`,
    `Billing mixed` or `Billing unknown`, and `Guided` / `Expert`. Goal/billing
-   remain conversation context in S2, not project writes; billing persistence
-   arrives in S5. Known local presentation skips that question on reopening.
+   stay out of project writes; billing saves only after explicit local approval.
+   Known local presentation/billing skips those questions on reopening.
    Show all four model/runner/reasoning choices and effective origins,
    QA inheriting Verify, observed Coordinator authority/date or unknown,
    retained repair constraints, exact destination
@@ -98,6 +98,17 @@ This skill never launches a model or edits runtime state.
    [`../../scripts/skill-bindings.md`](../../scripts/skill-bindings.md) for
    contracts, current upstream exclusions and already eligible project QA proof.
    Configuration does not create or maintain a harness.
+   `Presets` shows one Recommended entry plus named user presets. Recommended
+   retains the starting draft until evidence-backed advice is available, not
+   static cost tiers or an availability-as-suitability claim. `Load defaults`
+   or `Load preset <name>` changes only the draft, showing model/skill origins,
+   before/after changes and destinations. `Save defaults` or `Save preset <name>`
+   previews personal reusable data using the same validated model/skill schema.
+   `Apply preference` saves only that personal data; other projects and active
+   work remain unchanged. `Billing <mode>` previews a local billing preference;
+   unknown consumption remains unknown and API prices are not subscription bills.
+   Presentation edits preserve saved billing, defaults and presets. Missing
+   dependencies or unknown fields require explicit review, not silent omission.
    Custom sources use a canonical project-relative identity or a logical
    identity resolved through an external machine-local binding/audit store.
    Show `(Custom)` unless existing stage evidence verifies a more specific
@@ -114,6 +125,16 @@ This skill never launches a model or edits runtime state.
    pending defaults or presets; distinguish earlier explicitly saved presentation
    and any local read-side discovery refresh. Stop for retained recovery evidence;
    never remove it to make a save appear successful.
+   When the preview includes a personal change, project `Apply` uses paired
+   transaction journals and content completion for both destinations. Report
+   every destination and the true result; independent saves are not paired
+   success. Exact rollback still reports recovery-required, and concurrent
+   edits/captured bytes must never be overwritten. Keep journals and private
+   evidence local; never put billing, binding-store paths or unreviewed exception
+   text in shareable settings/results. The reviewed personal destination remains
+   visible in the local review/recovery flow. New-project seeding belongs to
+   the bootstrap skill's existing preview and exact seed approval, never to an
+   implicit Configure bootstrap or stage/model launch.
    Completion criterion: validated save, no-op, cancellation or named blocker,
    with no model dispatch or build.
 

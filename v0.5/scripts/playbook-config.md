@@ -1,4 +1,4 @@
-# Project configuration boundary — S2
+# Project and personal configuration boundary
 
 `playbook_config.Configuration` owns read, typed edit, explain, validation and
 Apply. `configure-playbook.py` is its JSON helper for chat skills and the
@@ -69,18 +69,25 @@ later acceptance criteria are complete. Availability is not suitability,
 comparative cost or future launch proof. Existing lane gates still require
 fresh identity, independence and approval checks before execution.
 
-## Personal presentation and first setup
+## Personal defaults, presets and first setup
 
 Supply `--preferences-dir {user-local-directory}` on read and every reply.
 The directory must be outside the project; there is no implicit path or host
 setting change. The private destination is `preferences.json` in that directory,
-containing exactly schema_version 1 and presentation `guided` or `expert`.
-It never overlays project defaults. Read takes optional `context` containing
+containing schema_version 1 and presentation `guided` or `expert`, with optional
+`billing`, `defaults` and `presets`. Existing presentation-only records remain
+valid. Billing is `api`, `subscription`, `mixed` or `unknown`; consumption and
+allowance remain unknown without observable evidence, and API token prices are
+not the subscription bill. Defaults and each named preset use the exact adopted
+project model/skill representation, not another binding schema. Unknown fields,
+duplicate keys and unsupported versions block without dropping saved data.
+Personal data never implicitly overlays an existing project. Read takes optional `context` containing
 only known `goal` and `billing` (`api`, `subscription`, `mixed` or `unknown`).
-These facts stay in the private conversation; S2 does not persist billing.
+Goal stays in the private conversation; an explicitly approved local save can
+persist billing, never in shareable project configuration.
 The helper returns only missing questions. Typed `Goal <context>`, `Billing
 <mode>`, `Guided` and `Expert` answer them. Reopening with known context and
-saved presentation skips onboarding questions. Omit context for the ordinary
+saved presentation/billing skips known onboarding questions. Omit context for the ordinary
 preference reader; Configure supplies existing context rather than reasking it.
 
 `Guided` / `Expert` produces a personal before/after preview and exact local
@@ -91,8 +98,9 @@ directory). Apply rejects changed identities even when file bytes match.
 An explicit new preview can refresh a reconciled directory identity while
 retaining role drafts; it displays the changed destination before another Apply.
 `Apply preference` is an explicit **local-only** transaction,
-then returns to the complete unsaved project draft. Project `Apply` is separate;
-there is no multi-destination success claim. Presentation alters rendering only,
+then returns to the complete unsaved project draft. Project `Apply` also supports
+an explicitly previewed personal change through the paired protocol below.
+Presentation alters rendering only,
 not choices, validation or project settings. `Not now` cancels pending changes;
 an earlier explicitly saved presentation remains saved. With no personal
 destination, the default rendering is guided and changing presentation blocks
@@ -104,6 +112,76 @@ content-digest completion and non-destructive recovery. Their lock, recovery
 journal and `.playbook-config-*` evidence live beside the local destination,
 never in shared configuration. Invalid or newer personal schemas block rather
 than dropping unknown fields. Reconciliation remains human-owned.
+
+### Reuse without execution authority
+
+`Presets` offers one `Recommended` entry plus user-saved names. Recommended
+currently retains the starting configuration; evidence-backed advice is a
+separate step, not static cheap/balanced/premium bundles or an assertion that
+availability establishes suitability. `Recommended` restores the starting
+project draft without saving or discarding pending personal changes.
+
+`Load defaults` or `Load preset <name>` edits only the current draft and shows
+model and skill origins, before/after changes and destinations. Named presets
+are case-sensitive; names are 1–64 portable letters, digits, spaces, underscores
+or hyphens, and Recommended is reserved. Models and skill sources must still
+pass current discovery/eligibility at Apply. A custom binding in a preset is
+data, never proof of local qualification. Unresolved identities require
+restoring the local resolution and retained audit or explicitly editing a
+fallback. Project-specific repair constraints remain protected.
+
+`Save defaults` or `Save preset <name>` previews a personal-only write.
+`Apply preference` saves that reusable data without touching any project or
+active execution; `Apply` explicitly approves the displayed project and personal
+changes together. `Billing <mode>` previews local billing, and presentation
+edits retain saved defaults, presets and billing. Saving personal defaults never
+rewrites an existing project. `Not now` cancels pending writes only; earlier
+explicit local saves remain saved.
+
+### Paired recovery
+
+A combined Apply retains a transaction ID and separate `.playbook-config.pair`
+journals beside each destination, plus previous and attempted byte evidence in
+each destination's own directory. Billing and personal bytes never enter the
+project journal. Both writes reuse the staged, validated, no-clobber save
+protocol. Success requires validation of both destinations, runtime digests,
+retained evidence, directory identities and paired journals, followed by durable
+paired completion. The result includes a transaction ID, protocol and validated
+destinations in `paired_completion`; it is not two independent Apply replies
+treated as success.
+
+Incomplete pairs block project and personal reads/writes, including a different
+project using the same personal store. On failure, only a destination still
+matching this transaction's attempted bytes can be restored. A racing writer is
+captured intact and restored by no-clobber linking when possible, never overwritten;
+any other concurrent bytes and retained capture remain available for recovery.
+Even exact restoration returns `recovery_required`, not partial success.
+After completion-boundary conflict, retain attempted evidence, concurrent bytes
+and journals rather than undoing a completed write. Human recovery inspects both
+journals, previous/attempted/captured bytes and runtime state; it reconciles the
+intended result before removing transaction evidence. Do not delete journals
+merely to make a pending pair readable. Results expose a failure category, not
+unreviewed exception text or binding-store paths. The reviewed personal
+destination remains available in the local proposal/recovery flow.
+
+### Bootstrap preview seeding
+
+New projects can use the existing `bootstrap-project.py` read-only plan with
+`--preferences-dir`, the same `--discovery-command` adapter as Configure, and
+optionally `--preset <name>`. Omission of the preset selects saved defaults;
+no saved defaults means ordinary bootstrap without adoption. The plan shows
+creation of `.playbook-config.json`, its complete configuration, origins and a
+`seed_revision`. Seeded `--apply` requires that exact `--seed-revision` along
+with the same options. Changed personal inputs, discovery, eligibility or
+destinations require another preview before any bootstrap write. Missing local
+dependencies block, rather than silently dropping skill bindings.
+
+Bootstrap retains its existing managed-file preview, approval, preservation and
+status flow. Seeding creates configuration only after bootstrap completes
+without manual reviews; partial bootstrap or seed failure is reported honestly.
+It never replaces existing state/configuration. Existing projects use Configure
+and explicit Load/Apply instead. Subsequent ordinary bootstrap checks omit the
+seeding flags. Configure does not invoke bootstrap or launch a model/stage.
 
 Personal saves open and verify the reviewed directory, create missing children
 relative to that descriptor, and keep all transaction writes, cleanup and
