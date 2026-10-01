@@ -20,13 +20,27 @@ SOURCES = (
 LIMITATIONS = "Provider guidance is not account availability or project verification. No benchmark, savings guarantee or cheapest verified outcome claim. Existing authority, permissions, independence, repair ceilings and feature gates still apply."
 
 
+def ambiguous_task_text(text):
+    return bool(re.search(
+        r"reasoning[._ ](?:effort|context)|reasoning_effort|all_turns|current_turn|"
+        r"\b(?:not|no|never|without|avoid|excluding|except|unless|if|when|whether|"
+        r"may|might|can|cannot|could|would|should|possibly|perhaps|potentially|unknown|unclear|uncertain|unsupported)\b|"
+        r"\bother than\b|n't\b|\?", text, re.I))
+
+
 def explicit_task_fit(text):
+    if ambiguous_task_text(text):
+        return []
     tasks = []
     for sentence in re.split(r"\.\s+|\n", text):
-        if re.search(r"reasoning[._ ](?:effort|context)|reasoning_effort|all_turns|current_turn", sentence, re.I):
-            continue
-        fit = re.search(r"\b(?:for|designed to|built to|optimized to|ideal for|best at|with stronger)\s+(.{1,400})", sentence, re.I)
+        fit = re.search(r"\b(?:for|designed to|built to|optimized to|ideal for|best at)\s+(.{1,400})", sentence, re.I)
         if not fit:
+            continue
+        if not re.fullmatch(
+                r"(?:(?:complex|advanced|demanding|long-running|reasoning|data|deep|authorized|"
+                r"vulnerability|scientific|life sciences|agentic|and|or|security testing|tasks|"
+                r"workloads|work|coding|code generation|software development|programming|"
+                r"analysis|research|knowledge work)[,\s]*)+[.!]?", fit[1].strip(), re.I):
             continue
         for task, pattern in (("coding", r"\bcoding\b|code generation|software development|programming"),
                               ("analysis", r"\banalysis\b|\bresearch\b|knowledge work")):
@@ -50,21 +64,49 @@ class Page(HTMLParser):
         self.links = []
         self.link = None
         self.following = None
+        self.block_text = []
         self.tables = []
         self.table = None
         self.row = None
         self.cell = None
+        self.elements = []
+        self.heading = None
+        self.heading_text = ""
+        self.heading_end = 0
+        self.heading_scope = []
+        self.caption = None
 
     def handle_starttag(self, tag, attrs):
         if tag in {"script", "style"}:
             self.skip += 1
         if self.skip:
             return
+        attributes = dict(attrs)
+        if tag not in {"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr"}:
+            self.elements.append((tag, attributes, len(self.text)))
+        if re.fullmatch(r"h[1-6]", tag):
+            self.heading = []
+            self.heading_scope = list(self.elements[:-1])
+        if tag == "caption":
+            self.caption = []
+        if tag in {"p", "div", "section", "article", "li", "ul", "ol", "h1", "h2", "h3", "h4", "h5", "h6", "table"} and self.link is None:
+            self.following = None
+            self.block_text = []
         if tag == "a":
             self.following = None
-            self.link = [dict(attrs).get("href", ""), []]
+            self.link = [dict(attrs).get("href", ""), [], self.block_text]
         if tag == "table":
-            self.table = {"prefix": " ".join(self.text)[-2500:], "rows": []}
+            panes = [(attributes.get("data-value"), start) for _, attributes, start in self.elements
+                     if attributes.get("data-content-switcher-pane") == "true"]
+            tier = panes[-1][0] if panes else self.heading_text.lower()
+            context_start = panes[-1][1] if panes else self.heading_end
+            if not panes and self.elements[:len(self.heading_scope)] != self.heading_scope:
+                tier = "unknown"
+            if panes and self.heading_end > context_start and self.heading_text.lower() not in {"standard", "short context"}:
+                tier = "unknown"
+            self.table = {"prefix": " ".join(self.text)[-2500:], "rows": [],
+                          "tier": tier, "tier_context": " ".join(self.text[context_start:]),
+                          "caption": ""}
         if tag == "tr" and self.table is not None:
             self.row = []
         if tag in {"td", "th"} and self.row is not None:
@@ -78,6 +120,22 @@ class Page(HTMLParser):
             return
         if self.skip:
             return
+        for index in range(len(self.elements) - 1, -1, -1):
+            if self.elements[index][0] == tag:
+                del self.elements[index:]
+                break
+        if re.fullmatch(r"h[1-6]", tag) and self.heading is not None:
+            self.heading_text = re.sub(r"[^a-zA-Z0-9 ]", "", " ".join(self.heading)).strip()
+            self.heading_end = len(self.text)
+            self.heading = None
+        if tag in {"section", "article", "main"}:
+            self.heading_text = ""
+        if tag == "caption" and self.caption is not None and self.table is not None:
+            self.table["caption"] = " ".join(self.caption)
+            self.caption = None
+        if tag in {"p", "div", "section", "article", "li", "ul", "ol", "h1", "h2", "h3", "h4", "h5", "h6", "table"} and self.link is None:
+            self.following = None
+            self.block_text = []
         if tag == "a" and self.link is not None:
             self.links.append(self.link)
             self.following = self.link
@@ -91,10 +149,17 @@ class Page(HTMLParser):
         if tag == "table" and self.table is not None:
             self.tables.append(self.table)
             self.table = None
+        if tag in {"p", "div", "section", "article", "li", "ul", "ol", "h1", "h2", "h3", "h4", "h5", "h6", "table"}:
+            self.text.append("\n")
 
     def handle_data(self, data):
         if not self.skip:
             self.text.append(data)
+            self.block_text.append(data)
+            if self.heading is not None:
+                self.heading.append(data)
+            if self.caption is not None:
+                self.caption.append(data)
             if self.link is not None:
                 self.link[1].append(data)
             elif self.following is not None and sum(len(part) for part in self.following[1]) < 600:
@@ -151,11 +216,11 @@ class OfficialSources:
         records = []
         if url not in {SOURCES[0], SOURCES[3]}:
             return records
-        for href, parts in page.links:
+        for href, parts, block_parts in page.links:
             text = " ".join(parts)
             match = re.fullmatch(r"/api/docs/models/([a-z0-9.-]+)", href)
             tasks = explicit_task_fit(text)
-            if match is None or not tasks:
+            if match is None or not tasks or ambiguous_task_text(" ".join(block_parts)):
                 continue
             if re.search(r"audio|voice|speech|transcrib|image generation|embedding", text, re.I):
                 continue
@@ -166,6 +231,9 @@ class OfficialSources:
         if url == SOURCES[3]:
             text = " ".join(page.text)
             for match in re.finditer(r"(Claude [A-Za-z]+ [0-9.]+)\s*\(\s*(claude-[a-z0-9-]+)\s*\)([^\n]{1,600})", text):
+                paragraph_start = text.rfind("\n", 0, match.start()) + 1
+                if ambiguous_task_text(text[paragraph_start:match.end()]):
+                    continue
                 description = match.group(0)
                 tasks = explicit_task_fit(description)
                 if tasks:
@@ -182,10 +250,13 @@ class OfficialSources:
             names = {record["label"]: record["model_id"] for record in guidance
                      if record.get("provider") == "anthropic" and record.get("label") and valid_claim(record, "guidance")}
             for table in page.tables:
-                if "All prices are in USD" not in table["prefix"] or not any(row == ["Name", "Input", "Output", "5m writes", "1h writes", "Hits and refreshes"] for row in table["rows"]):
+                if (table["tier"] not in {"model pricing", "standard", "base api pricing"}
+                        or re.search(r"\b(?:batch|priority|flex|fast|ultrafast|long context)\b", table["tier_context"] + " " + table["caption"], re.I)
+                        or "All prices are in USD" not in table["prefix"]
+                        or not any(row == ["Name", "Input", "Output", "5m writes", "1h writes", "Hits and refreshes"] for row in table["rows"])):
                     continue
                 for row in table["rows"]:
-                    name = next((label for label in names if row and (row[0] == label or row[0].startswith(label + " "))), None)
+                    name = next((label for label in names if row and (row[0] == label or row[0].startswith(label + " For "))), None)
                     if not name or len(row) != 6:
                         continue
                     prices = [re.fullmatch(r"\$([0-9]+(?:\.[0-9]+)?)\s*/\s*MTok", value) for value in row[1:3]]
@@ -200,7 +271,8 @@ class OfficialSources:
         for table in page.tables:
             prefix = table["prefix"]
             rows = table["rows"]
-            if (url != SOURCES[2] or not re.search(r"per 1M tokens", prefix) or "Standard" not in prefix
+            if (url != SOURCES[2] or not re.search(r"per 1M tokens", prefix) or table["tier"] != "standard"
+                    or re.search(r"\b(?:batch|priority|flex|fast|ultrafast|long context)\b", table["tier_context"] + " " + table["caption"], re.I)
                     or not rows):
                 continue
             headers = next((row for row in rows if row and row[0] == "Model"), [])
@@ -208,6 +280,8 @@ class OfficialSources:
                                ["Model", "Input", "Cached input", "Cache writes", "Output", "Input", "Cached input", "Cache writes", "Output"]):
                 continue
             output_index = 3 if len(headers) == 4 else 4
+            if len(headers) == 9 and ["", "Short context", "Long context"] not in rows:
+                continue
             for row in rows:
                 if len(row) != len(headers) or not re.fullmatch(r"[a-z0-9.-]+", row[0]):
                     continue

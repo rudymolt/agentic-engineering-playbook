@@ -289,6 +289,16 @@ IDs must match fresh host discovery, including host-supported reasoning.
 Provider guidance alone proves neither availability nor job suitability.
 Task-fit records require an explicit model/task-use statement, not merely
 the words reasoning, intelligence, tool use or a capability/control mention.
+The adapter stops model descriptions at paragraph, card and section boundaries;
+control prose anywhere in the description block and negated, conditional or
+ambiguous task statements do not establish suitability. This conservative
+recognition can leave valid but unrecognized provider wording unknown.
+Rates require the table's explicit enclosing tier (a heading or provider
+switcher pane), not a nearby Standard label or a generic pricing URL. Batch,
+other nonstandard tiers and ambiguous context cannot supply Standard estimates;
+grouped short/long-context columns also require explicit context headers.
+Upstream markup or wording changes require new source-shape compatibility
+checks before extending recognition; preserve user choices during any migration.
 The reasoning guide is fetched separately but cannot supply task suitability;
 without independently supported reasoning data, its check remains incomplete
 and reasoning support comes only from authoritative host discovery.

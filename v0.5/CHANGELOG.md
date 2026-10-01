@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- Bound official task-fit evidence to the exact model description and pricing
+  evidence to the exact table tier and token context. Control paragraphs,
+  nonaffirmative wording and ambiguous table context remain unknown.
+
+*Why — nearby text is not evidence:* unrelated catalogue sections and reasoning
+controls must not recommend a model, and Batch rates must not become a Standard
+workload subtotal. Keep claim-specific sources and successful check dates while
+preserving read-only selection and private billing boundaries.
+
 - Add read-only role recommendations at Configure and new lane-selection gates,
   with official-source retrieval, separate task-fit/rate/local-outcome evidence,
   labelled API assumptions and explicit subscription or incomplete-data unknowns.

@@ -178,8 +178,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "6607fdec9ab4ce57d67dfe7891f60339c8c594e748cec4b4568fe352ae377e8f",
-      "size": 14204
+      "sha256": "4331e3fee298a0472a584a306dec68432dc0bfa18e088b0f5f69181418951513",
+      "size": 14732
     },
     {
       "path": "MAINTENANCE.md",
@@ -1123,13 +1123,13 @@
     },
     {
       "path": "scripts/model_recommendations.py",
-      "sha256": "f1080c0f8ff4a024107327c47e116dcdd1f90ec7be1c86963ce31a82f6cdcddc",
-      "size": 21472
+      "sha256": "ebe1cc3c023f5972dab0c0cd7775bc623cfb57bdbcfda59c3ddf022abecd662a",
+      "size": 25809
     },
     {
       "path": "scripts/playbook-config.md",
-      "sha256": "5aa97892044a1d03996b018d6f55680df1f6d28990be4104309db092c38aedaa",
-      "size": 28539
+      "sha256": "b425d8b872baf443c85fb90cf9b0d917ab4d1a433913a6df3d10345516e917e6",
+      "size": 29299
     },
     {
       "path": "scripts/playbook_config.py",
@@ -1228,8 +1228,8 @@
     },
     {
       "path": "scripts/test_model_recommendations.py",
-      "sha256": "5304551133e0ff7e6810687a2b4a5842d24b84fe13cff23438f17a3a9eae5c8e",
-      "size": 22096
+      "sha256": "ce765945dd4ece3175a6b4b4ff2142f813b204a06fde085531ec685478f5b48f",
+      "size": 31670
     },
     {
       "path": "scripts/test_personal_presets.py",

@@ -252,7 +252,7 @@ class RecommendationTests(unittest.TestCase):
             if url.endswith("choosing-a-model"):
                 return '<p>Claude Fixture 1.0 (claude-fixture-1-0) is built for complex coding and research.</p>'
             if url == "https://platform.claude.com/docs/en/about-claude/pricing":
-                return '<p>All prices are in USD.</p><table><tr><th>Name</th><th>Input</th><th>Output</th><th>5m writes</th><th>1h writes</th><th>Hits and refreshes</th></tr><tr><td>Claude Fixture 1.0 For coding</td><td>$3 / MTok</td><td>$8 / MTok</td><td>$4 / MTok</td><td>$6 / MTok</td><td>$1 / MTok</td></tr></table>'
+                return '<p>All prices are in USD.</p><h2>Model pricing</h2><table><tr><th>Name</th><th>Input</th><th>Output</th><th>5m writes</th><th>1h writes</th><th>Hits and refreshes</th></tr><tr><td>Claude Fixture 1.0 For coding</td><td>$3 / MTok</td><td>$8 / MTok</td><td>$4 / MTok</td><td>$6 / MTok</td><td>$1 / MTok</td></tr></table>'
             return '<p>No model-specific records.</p>'
         evidence = OfficialSources(lambda: NOW, fetch=fetch).retrieve()
         self.assertEqual(evidence["rates"][0]["model_id"], "claude-fixture-1-0")
@@ -314,6 +314,145 @@ class RecommendationTests(unittest.TestCase):
         records = {record["model_id"]: record for record in evidence["guidance"]}
         self.assertEqual(records["fixture-code"]["tasks"], ["coding"])
         self.assertEqual(records["fixture-analysis"]["tasks"], ["analysis"])
+
+    def assert_unknown_official_advice(self, sample):
+        evidence = OfficialSources(lambda: NOW, fetch=lambda url: sample if url == GUIDANCE else '<p>Unknown</p>').retrieve()
+        self.assertEqual(evidence["guidance"], [])
+        service = self.service(sources=lambda: evidence)
+        draft = service.read()
+        original = deepcopy(draft["after"])
+        for reply in ("Explain Build", "Recommended", "Explain Verify"):
+            draft = service.reply(draft, reply)
+            for advice in draft["recommendations"].values():
+                self.assertIsNone(advice["choice"])
+                self.assertIsNone(advice["guidance"])
+                self.assertNotIn("supports task fit", advice["rationale"])
+            self.assertEqual(draft["after"], original)
+            self.assertFalse(draft["launched"])
+        self.assertIsNone(draft["explanation"]["recommendation"]["choice"])
+        self.assertEqual(self.state.read_bytes(), self.original)
+        self.assertEqual(self.calls, ["current-availability"])
+
+    def test_control_paragraph_never_supplies_task_suitability(self):
+        self.assert_unknown_official_advice(
+            '<p><a href="/api/docs/models/fixture-code">Fixture Code</a> supports reasoning_effort '
+            'and reasoning.context all_turns. For coding, use high. For research use the high setting.</p>')
+
+    def test_nonaffirmative_task_statements_remain_unknown(self):
+        for description in ("Not intended for coding or research.", "Not ideal for coding.",
+                            "If enabled, ideal for coding.", "May be useful for coding.",
+                            "Possibly best at research.", "Designed to avoid coding.",
+                            "For coding support is unknown.", "Whether it is ideal for coding is unclear.",
+                            "Recommended for tasks other than coding.", "Can be useful for coding.",
+                            "For coding, support is unsupported.", "For comparison with coding models.",
+                            "For coding-adjacent experiments.", "For discussion of research suitability."):
+            with self.subTest(description=description):
+                self.calls.clear()
+                self.assert_unknown_official_advice(
+                    '<p><a href="/api/docs/models/fixture-code">Fixture Code</a> ' + description + '</p>')
+
+    def test_model_description_stops_at_paragraph_and_catalogue_section(self):
+        samples = (
+            '<p><a href="/api/docs/models/fixture-code">Fixture Code</a> General tool use.</p>'
+            '<p>For research and coding, choose a specialist.</p>',
+            '<section><p><a href="/api/docs/models/fixture-code">Fixture Code</a> General tool use.</p>'
+            '</section><section><h2>Research</h2><p>For coding and analysis use specialists.</p></section>',
+            '<div><a href="/api/docs/models/fixture-code"><div><div>Fixture Code</div>'
+            '<div>General-purpose models with safeguards.</div></div></a></div>'
+            '<div class="h-px"></div><div><div id="life-sciences"><div>'
+            '<div>Life sciences</div><div>Models for life sciences research</div></div></div></div>',
+            '<p>Supports reasoning_effort. <a href="/api/docs/models/fixture-code">Fixture Code</a>'
+            ' For coding use high.</p>',
+        )
+        for sample in samples:
+            with self.subTest(sample=sample):
+                self.calls.clear()
+                self.assert_unknown_official_advice(sample)
+
+    def pricing_sample(self, context):
+        return ('<p>Prices in USD per 1M tokens</p>' + context +
+                '<table><tr><th>Model</th><th>Input</th><th>Cached input</th><th>Output</th></tr>'
+                '<tr><td>fixture-code</td><td>$0.75</td><td>$0.05</td><td>$4.50</td></tr></table>')
+
+    def test_nonstandard_tables_cannot_supply_standard_estimates(self):
+        for context in ('<h2>Standard</h2><p>Other routes below.</p><h2>Batch</h2>',
+                        '<h2>Standard</h2><h3>Priority</h3>', '<h2>Standard</h2><p>Batch</p>',
+                        '<h2>Standard</h2><h2>Long context</h2>', '<h2>Pricing</h2>',
+                        '<div><h2>Standard</h2></div><div>',
+                        '<h2>Standard</h2><div data-content-switcher-pane="true" data-value="batch">'):
+            with self.subTest(context=context):
+                evidence = OfficialSources(lambda: NOW, fetch=lambda url: self.pricing_sample(context)
+                                           if url == PRICING else '<p>Unknown</p>').retrieve()
+                self.assertEqual(evidence["rates"], [])
+                evidence["guidance"] = deepcopy(self.evidence["guidance"])
+                service = self.service({**self.context, "workload": {"input_tokens": 3000, "output_tokens": 1000, "retries": 2,
+                                                                   "billing_route": "standard-short-context-uncached"}},
+                                       sources=lambda: evidence)
+                draft = service.reply(service.read(), "Recommended")
+                draft = service.reply(draft, "Explain Build")
+                advice = draft["explanation"]["recommendation"]
+                self.assertIsNotNone(advice["choice"])
+                self.assertIsNone(advice["cost"]["rates"])
+                self.assertIsNone(advice["cost"]["estimate"])
+                self.assertFalse(draft["launched"])
+                self.assertEqual(self.state.read_bytes(), self.original)
+
+    def test_affirmative_sample_and_exact_standard_table_have_public_evidence(self):
+        def fetch(url):
+            if url == GUIDANCE:
+                return '<p>Use <a href="/api/docs/models/fixture-code">Fixture Code</a> for complex coding.</p>'
+            if url == PRICING:
+                return self.pricing_sample('<h2>Standard</h2>')
+            return '<p>Unknown</p>'
+        evidence = OfficialSources(lambda: NOW, fetch=fetch).retrieve()
+        service = self.service({**self.context, "workload": {"input_tokens": 3000, "output_tokens": 1000, "retries": 2,
+                                                           "billing_route": "standard-short-context-uncached"}},
+                               sources=lambda: evidence)
+        draft = service.read()
+        original = deepcopy(draft["after"])
+        draft = service.reply(draft, "Recommended")
+        draft = service.reply(draft, "Explain Build")
+        advice = draft["explanation"]["recommendation"]
+        self.assertEqual(advice["choice"]["model_id"], "fixture-code")
+        self.assertEqual(advice["guidance"]["source_url"], GUIDANCE)
+        self.assertEqual(advice["guidance"]["checked_at"], NOW)
+        self.assertEqual(advice["cost"]["rates"]["source_url"], PRICING)
+        self.assertEqual(advice["cost"]["rates"]["checked_at"], NOW)
+        self.assertEqual(advice["cost"]["rates"]["billing_route"], "standard-short-context-uncached")
+        self.assertAlmostEqual(advice["cost"]["estimate"]["amount"], 0.02025)
+        self.assertEqual(draft["after"], original)
+        self.assertFalse(draft["launched"])
+        self.assertEqual(self.state.read_bytes(), self.original)
+
+    def test_official_switcher_shape_binds_short_context_to_its_own_pane(self):
+        sample = ('<h2>Flagship models</h2><p>Prices per 1M tokens.</p>'
+                  '<button>Standard</button><button>Batch</button><button>Flex</button>'
+                  '<div data-content-switcher-pane="true" data-value="batch"><div>Batch</div>'
+                  '<table><tr><th></th><th>Short context</th><th>Long context</th></tr>'
+                  '<tr><th>Model</th><th>Input</th><th>Cached input</th><th>Cache writes</th><th>Output</th>'
+                  '<th>Input</th><th>Cached input</th><th>Cache writes</th><th>Output</th></tr>'
+                  '<tr><td>fixture-code</td><td>$1</td><td>$0.1</td><td>$2</td><td>$3</td>'
+                  '<td>$4</td><td>$0.4</td><td>$5</td><td>$6</td></tr></table></div>')
+        def retrieve(html):
+            return OfficialSources(lambda: NOW, fetch=lambda url: html if url == PRICING else '<p>Unknown</p>').retrieve()
+        self.assertEqual(retrieve(sample)["rates"], [])
+        standard = sample.replace('data-value="batch"><div>Batch', 'data-value="standard"><div>Standard')
+        rates = retrieve(standard)["rates"]
+        self.assertEqual([(rate["input"], rate["output"], rate["billing_route"]) for rate in rates],
+                         [(1, 3, "standard-short-context-uncached")])
+        self.assertEqual(retrieve(standard.replace('Short context', 'Unknown context'))["rates"], [])
+        self.assertEqual(retrieve(standard.replace('<table>', '<table><caption>Batch rates</caption>'))["rates"], [])
+        for label in ('Batch', 'Long context', 'Unspecified tier'):
+            with self.subTest(label=label):
+                self.assertEqual(retrieve(standard.replace('<table>', '<h3>' + label + '</h3><table>'))["rates"], [])
+
+    def test_anthropic_nonaffirmative_paragraph_prefix_is_not_task_fit(self):
+        for prefix in ('If enabled, ', 'Supports reasoning_effort. ', 'Not recommended: '):
+            with self.subTest(prefix=prefix):
+                sample = '<p>' + prefix + 'Claude Fixture 1.0 (claude-fixture-1-0) is built for coding.</p>'
+                evidence = OfficialSources(lambda: NOW, fetch=lambda url: sample if url.endswith('choosing-a-model')
+                                           else '<p>Unknown</p>').retrieve()
+                self.assertEqual(evidence["guidance"], [])
 
 
 if __name__ == "__main__":
