@@ -711,6 +711,11 @@
       "source": "src/delivery_pilot/workflow.py"
     },
     {
+      "digest": "sha256:a7f9d1878fa7007e7823f401676005a6e497a3dc783f468d3f20f1f6742785f7",
+      "install_path": null,
+      "source": "tests/control_ref_test_support.py"
+    },
+    {
       "digest": "sha256:a3f92339d3f38ea658c3d23326b07275df21a40b8b769fe7e67b9c78ea34e8ea",
       "install_path": null,
       "source": "tests/test_checker_monitor.py"
@@ -736,7 +741,7 @@
       "source": "tests/test_interim.py"
     },
     {
-      "digest": "sha256:aa13c469a81a1e1b49f966da9ee94260f7a84a268f2a42133f0e35f377ed3da2",
+      "digest": "sha256:fb7998f1a115dee1b023d26432395f0c76e5c2ef204054b2327af0e05a0e383e",
       "install_path": null,
       "source": "tests/test_interim_advance.py"
     },
@@ -761,7 +766,7 @@
       "source": "tests/test_interim_monitor.py"
     },
     {
-      "digest": "sha256:01072b3ce7f5dbae5149cb1af298b0e13514954f2faf6ceadb6824ded4200cec",
+      "digest": "sha256:15dfd170f65ba47298b5e617f2446867f13bd7ea873550fd18c5b62943cf80e2",
       "install_path": null,
       "source": "tests/test_interim_recovery.py"
     },
@@ -788,5 +793,5 @@
   ],
   "manifest_schema_version": 1,
   "manifest_self_rule": "pack_digest covers the complete non-manifest source inventory",
-  "pack_digest": "sha256:82fc8ddf734ead4fe60c968a51a9f28586e0cff042f38b22921ffc3e3c49dc7b"
+  "pack_digest": "sha256:deedc04dec62ab7bed9fc97f840f624fd26296d32297614f08dcbe85c2b06aa6"
 }
