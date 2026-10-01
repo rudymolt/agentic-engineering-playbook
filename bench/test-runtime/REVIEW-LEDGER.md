@@ -289,3 +289,90 @@ Remaining hard limit: a complete successful ranking including the four kernel
 watcher tests needs a permitted privileged timing environment. Existing CI has
 no per-test timing artifact, and no workflow was changed to obtain privileges.
 This pass completes the ranking available in the current permitted environment.
+
+## 2026-10-01 — batch 2
+
+Baseline: `f5cad4fa0c588fce4906cdde01fb60ba82657e57` (PR 6 head).
+Measured implementation: `8c02e9cde00789c6c63e90cdf1e5dc264b034158`.
+Branch: `perf/test-runtime-2026-10-01`, targeting `perf/test-runtime-2026-09-30`.
+This draft is stacked on unmerged PR 6. Review this batch against that base;
+merge PR 6 first, then retarget and revalidate this draft before any merge.
+Latest main was `a57af6de259d34e9b772105e0ad0610290797cfa` at inspection and
+pre-publication readback; PR 6 was the only open PR. No private repository was
+accessed. No merge or deployment is part of this batch.
+
+Newly reviewed IDs, both from `test_interim_recovery.RecoveryBoundaryTests`:
+
+- `test_owned_inventory_malformed_matrix`
+- `test_malformed_observation_and_cancellation_matrix`
+
+Diagnosis and change: these large matrices repeatedly validate identical control
+ref strings while exercising real checkpoint transitions. Extract the existing
+PR 6 syntax-probe decorator into `control_ref_test_support.py` without changing
+its executable logic, and apply it to exactly these two new methods. The 297
+owned-inventory and 252 observation/cancellation subcases, fault injection,
+assertions, deep copies, per-case publications and fresh-clone reloads remain
+unchanged. Repository-dependent Git commands, CAS, all validators, and failed
+syntax probes still execute. Only successful exact input-only syntax checks
+are reused inside one test invocation; no mutable snapshot or fixture is shared.
+These tests keep the Git executable and environment fixed. The three previously
+optimized advance tests and all four guards retain their original executable
+bodies and decorator behavior. No production implementation changed.
+
+Both measured checkouts were clean. Linux x86_64, Python 3.12.14, Git 2.52.0,
+non-root, identical canonical Git maintenance settings. Three fresh baseline
+processes were followed by three fresh candidate processes, sequentially, with
+no concurrent workspace test workload. Setup, method and cleanup are included.
+This is a blocked-order comparison, not an alternating/randomized experiment;
+shared cloud host variation cannot be excluded. All 12 executions passed with
+zero failed or skipped measurements. Each before/after range is disjoint.
+
+| Test suffix | Before median (range), s | After median (range), s | Reduction |
+| --- | --- | --- | --- |
+| owned inventory malformed matrix | 252.339 (245.244–261.064) | 231.712 (229.342–231.875) | 8.17% |
+| malformed observation and cancellation matrix | 163.969 (162.664–171.793) | 150.502 (147.760–151.788) | 8.21% |
+
+Evidence: [before](2026-10-01-linux-before.json),
+[after](2026-10-01-linux-after.json), and
+[comparison](2026-10-01-linux-comparison.json). Every report source hash was
+verified against its pinned commit. Final publication removes only a trailing
+blank line in the extracted helper after independent review, with regenerated
+manifests; the measured source hashes intentionally bind the measured checkpoint,
+not the later evidence commit. No executable timing change followed measurement.
+These are selected-test gains, not full-suite reductions, and do not revise the
+prior batch's separate 24–28% controlled Linux results.
+
+Validation and review:
+
+- Fresh-context independent review proved AST equality for the original advance
+  tests and guards, extracted helper logic, and recovery module except the two
+  decorators and import. Independent execution passed all four guards and the
+  three prior optimized advance tests. Review's trailing-blank-line finding was
+  fixed; final focused verification and full diff whitespace check passed.
+- Public-edition release-readiness aggregate with `--skip-delivery` passed all
+  226 tests in 18.084 s, convention/metadata/link/public-content checks, generated inventory
+  and manifests. Upstream drift cadence is current through 2026-10-08.
+- Full changed advance module passed all 45 tests in 47.827 s. Final independent
+  focused verification passed seven tests in 1.934 s. Python compilation and regenerated delivery
+  and edition manifest checks passed. No separate lint/type runner is configured.
+- Privileged fanotify tests were not attempted in this unprivileged cloud profile;
+  only the two selected test IDs were timed. No complete new suite ranking is
+  claimed. The existing Linux/Python 3.12 GitHub Actions workflow provides the
+  authoritative full K4.1 regression result, including the four previously
+  excluded watcher tests. No workflow/security settings or privilege workarounds
+  were introduced. The draft PR records the exact final SHA and terminal CI
+  result; local selected-test success is not a substitute for that result.
+- Noreply author/committer identities and the public content boundary were checked
+  before publication. Browser QA is n/a for this test-only change; existing real
+  Git integration tests and privileged CI cover the applicable runtime boundary.
+
+Both IDs above are now reviewed; do not select them in the next batch. The prior
+three reviewed advance IDs remain preserved and excluded from future selection.
+Next unreviewed candidates, using the previous screening order:
+
+- `test_interim_coordinator.CoordinatorTests.test_worker_acceptance_parity_verify_matrix`
+- `test_interim_recovery.RecoveryBoundaryTests.test_transport_failures_at_every_call_site`
+- `test_interim_coordinator.CoordinatorTests.test_worker_acceptance_parity_build_matrix`
+
+Establish new repeated baselines before optimizing these candidates. Their prior
+single-sample ranks are leads, not new measurements or review verdicts.

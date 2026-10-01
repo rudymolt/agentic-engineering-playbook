@@ -711,7 +711,7 @@
       "source": "src/delivery_pilot/workflow.py"
     },
     {
-      "digest": "sha256:a7f9d1878fa7007e7823f401676005a6e497a3dc783f468d3f20f1f6742785f7",
+      "digest": "sha256:aeccfed7d187d91d59e70d2e83ce229f0da233f7ad4e6f526c7fd37ed7cf050c",
       "install_path": null,
       "source": "tests/control_ref_test_support.py"
     },
@@ -793,5 +793,5 @@
   ],
   "manifest_schema_version": 1,
   "manifest_self_rule": "pack_digest covers the complete non-manifest source inventory",
-  "pack_digest": "sha256:deedc04dec62ab7bed9fc97f840f624fd26296d32297614f08dcbe85c2b06aa6"
+  "pack_digest": "sha256:b043cb5022dc990de56be27396b74efda6c3a41c54c04899535d2a537f202161"
 }

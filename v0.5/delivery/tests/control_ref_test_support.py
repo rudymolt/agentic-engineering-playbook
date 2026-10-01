@@ -41,4 +41,3 @@ def memoized_control_refs(test):
         with mock.patch.object(interim_module, "subprocess", SyntaxProbes()):
             return test(*args, **kwargs)
     return run
-

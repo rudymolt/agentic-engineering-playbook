@@ -208,7 +208,7 @@
     },
     {
       "path": "delivery/MANIFEST.yml",
-      "sha256": "e344b33429393ed4ad2ac58a263f1662f34b589736221ab5278c95794b538818",
+      "sha256": "4cb39f0a1037b6b36e66023587e99d894ee275d99d5ca02c97684f26bcbfa04c",
       "size": 36577
     },
     {
@@ -923,8 +923,8 @@
     },
     {
       "path": "delivery/tests/control_ref_test_support.py",
-      "sha256": "a7f9d1878fa7007e7823f401676005a6e497a3dc783f468d3f20f1f6742785f7",
-      "size": 1924
+      "sha256": "aeccfed7d187d91d59e70d2e83ce229f0da233f7ad4e6f526c7fd37ed7cf050c",
+      "size": 1923
     },
     {
       "path": "delivery/tests/test_checker_monitor.py",
