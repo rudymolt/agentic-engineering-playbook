@@ -4,4 +4,4 @@ active_features: 1
 
 ## Active features
 
-- **Playbook configuration UI** — `building`; build-all S1–S7 approved. S1 is independently accepted; S2 (all model roles through chat) is in the second approved escalated repair cycle after three unsuccessful ordinary repairs and a new storage-isolation finding. S8 live qualification remains human-owned. [Execution status](playbook-config-ui/execution.md), [approved breakdown](playbook-config-ui/slices.md).
+- **Playbook configuration UI** — `building`; build-all S1–S7 approved. S1 and S2 are independently accepted; S3 (supported skill bindings) is next. S8 live qualification remains human-owned. [Execution status](playbook-config-ui/execution.md), [approved breakdown](playbook-config-ui/slices.md).
