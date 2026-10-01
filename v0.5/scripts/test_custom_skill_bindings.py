@@ -5,9 +5,12 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import shutil
 import subprocess
 import sys
 import tempfile
+import unittest
+from unittest.mock import patch
 
 from playbook_config import Configuration, ConfigError
 from skill_bindings import AUTHORITY, JOBS, JobBindings, fingerprint
@@ -76,6 +79,127 @@ class CustomBindingTests(test_playbook_config.ConfigurationTests):
         self.assertEqual(preview["state"], "proposal_ready")
         self.assertEqual(self.service.reply(preview, "Apply")["state"], "applied")
         return preview
+
+    def privacy_cli(self, action="read", request=None, deny=False):
+        adapter = ("import json,sys; request=json.load(sys.stdin); "
+                   "json.dump({'request_id':request['request_id'],'checked_at':request['started_at'],"
+                   "'authority':'host-reported-selection','revision':'fixture-cli',"
+                   "'routes':[{'model_id':'available-build','runner':'codex','reasoning':'medium',"
+                   "'roles':['implementation']}]},sys.stdout)")
+        command = [sys.executable, str(Path(__file__).with_name("configure-playbook.py")),
+                   "--project", str(self.project), "--custom-bindings-dir", str(self.local),
+                   "--discovery-command", json.dumps([sys.executable, "-c", adapter]), action]
+        if deny:
+            command = ["setpriv", "--bounding-set=-all", "--inh-caps=-all", "--ambient-caps=-all"] + command
+        result = subprocess.run(command, input=json.dumps(request or {}), text=True, capture_output=True,
+                                env=dict(os.environ, HOME=str(self.machines)))
+        for private in (str(self.project), str(self.machines), "PRIVATE_FIXTURE_MARKER"):
+            self.assertNotIn(private, result.stdout + result.stderr)
+        self.assertEqual(result.stderr, "")
+        public = json.loads(result.stdout)
+        self.assertFalse(public["launched"])
+        return result.returncode, public
+
+    def stored_bytes(self):
+        return {path: path.read_bytes() for root in (self.project, self.local)
+                for path in root.rglob("*") if path.is_file()}
+
+    def test_all_identity_publication_uses_the_saved_canonical_predicate(self):
+        for identity in ("project:team..private", "custom:team//private", "custom:/private",
+                         "custom:credential@private", None):
+            with self.subTest(identity=identity):
+                self.bindings._reject(identity, "restore local inventory")
+                self.assertEqual(self.bindings.rejections[-1]["source_id"], "custom:unresolved")
+                with self.assertRaises(ConfigError):
+                    self.bindings._candidate(identity, self.source, "single", "fixture", "fixture")
+        for identity in ("custom:team-spec", "project:team/skill.v1/SKILL.md"):
+            self.bindings._reject(identity, "restore exact source")
+            self.assertEqual(self.bindings.rejections[-1]["source_id"], identity)
+            candidate = self.bindings._candidate(identity, self.source, "single", "fixture", "fixture")
+            self.assertEqual(candidate["binding"]["source_id"], identity)
+
+    def test_cli_rejected_inventory_identity_is_canonical_and_private(self):
+        inventory = self.local / "bindings.json"
+        original = json.loads(inventory.read_text())
+        for identity in ("custom:.." + str(self.machines) + "/PRIVATE_FIXTURE_MARKER",
+                         "project:.." + str(self.project) + "/PRIVATE_FIXTURE_MARKER",
+                         "custom:team//PRIVATE_FIXTURE_MARKER", "custom:/PRIVATE_FIXTURE_MARKER",
+                         "custom:token@PRIVATE_FIXTURE_MARKER"):
+            with self.subTest(identity_kind=identity.split(":", 1)[0]):
+                local = deepcopy(original)
+                local["sources"][identity] = local["sources"].pop(self.identity)
+                inventory.write_text(json.dumps(local))
+                before = self.stored_bytes()
+                code, public = self.privacy_cli()
+                self.assertEqual(code, 0)
+                self.assertEqual(public["state"], "decision_required")
+                self.assertTrue(public["skill_rejections"])
+                self.assertEqual({row["source_id"] for row in public["skill_rejections"]
+                                  if row["source_id"].startswith(("custom:", "project:"))},
+                                 {"custom:unresolved"})
+                self.assertIn("restore the local binding", json.dumps(public["skill_rejections"]))
+                self.assertFalse(any(row["binding"]["source_id"] == identity
+                                     for rows in public["skill_alternatives"].values() for row in rows))
+                self.assertEqual(self.stored_bytes(), before)
+
+    @unittest.skipUnless(sys.platform == "linux" and shutil.which("setpriv"), "requires Linux DAC isolation")
+    def test_cli_denied_saved_qa_selection_state_blocks_without_changes(self):
+        _, source, _, _ = test_skill_bindings.qualified_qa(self.project)
+        for identity in ("custom:team-qa", "project:" + source.relative_to(self.project).as_posix()):
+            with self.subTest(identity_kind=identity.split(":", 1)[0]):
+                self.prepare_audit("application_qa", identity=identity, source=source)
+                preview = self.save_custom("application_qa", identity)
+                before = self.stored_bytes()
+                mode = self.state.stat().st_mode
+                self.state.chmod(0)
+                try:
+                    for action, request in (("read", {}), ("resolve", {"role": "verification"}),
+                                            ("job-route", {"job": "application_qa", "owner": "09"}),
+                                            ("reply", {"proposal": preview, "reply": "Apply"})):
+                        code, public = self.privacy_cli(action, request, deny=True)
+                        self.assertEqual(code, 2)
+                        self.assertEqual(public["state"], "blocked")
+                        self.assertIn("PermissionError", public["message"])
+                        self.assertIn("restore", public["message"].lower())
+                        self.assertIn("selection state", public["message"])
+                finally:
+                    self.state.chmod(mode)
+                self.assertEqual(self.stored_bytes(), before)
+
+    def test_snapshot_state_io_and_parser_errors_have_portable_recovery(self):
+        original = self.service._bytes
+        for error in (PermissionError(str(self.project)), OSError(str(self.machines)),
+                      UnicodeError("PRIVATE_FIXTURE_MARKER")):
+            def denied(path):
+                if path == self.state:
+                    raise error
+                return original(path)
+            with self.subTest(error_class=type(error).__name__), patch.object(self.service, "_bytes", denied):
+                public = self.service.read()
+                self.assertEqual(public["state"], "blocked")
+                self.assertNotIn(str(self.project), json.dumps(public))
+                self.assertNotIn(str(self.machines), json.dumps(public))
+                self.assertNotIn("PRIVATE_FIXTURE_MARKER", json.dumps(public))
+                self.assertIn(type(error).__name__, public["message"])
+                self.assertIn("restore", public["message"].lower())
+        with patch("playbook_config.legacy_routing", side_effect=ConfigError("PRIVATE_FIXTURE_MARKER")):
+            public = self.service.read()
+            self.assertEqual(public["state"], "blocked")
+            self.assertNotIn("PRIVATE_FIXTURE_MARKER", json.dumps(public))
+            self.assertIn("restore", public["message"].lower())
+
+    def test_cli_legacy_state_parser_text_and_invalid_encoding_are_private(self):
+        for contents in (b"model_routing:\n  PRIVATE_FIXTURE_MARKER: 1\n  PRIVATE_FIXTURE_MARKER: 2\n",
+                         b"model_routing:\n\xff"):
+            with self.subTest(encoding_valid=contents.isascii()):
+                self.state.write_bytes(contents)
+                before = self.stored_bytes()
+                code, public = self.privacy_cli()
+                self.assertEqual(code, 2)
+                self.assertEqual(public["state"], "blocked")
+                self.assertIn("selection state", public["message"])
+                self.assertIn("restore", public["message"].lower())
+                self.assertEqual(self.stored_bytes(), before)
 
     def test_sensitive_hardlinks_block_discovery_apply_and_retained_invocation(self):
         for artifact in ("bindings.json", "approvals.json", "evidence/fixture-audit.json"):

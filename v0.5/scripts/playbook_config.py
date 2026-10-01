@@ -307,13 +307,19 @@ class Configuration:
             raise ConfigError("Configuration transaction/recovery pending; reconcile before reading or writing defaults.")
         self._reconcile_receipts()
         saved = self._bytes(self.path)
-        runtime = self._bytes(self.state_path)
+        try:
+            runtime = self._bytes(self.state_path)
+        except (OSError, UnicodeError) as error:
+            raise self._selection_state_error(error) from None
         if saved is not None:
             config = validate_config(strict_json(saved.decode()))
             origins = {role: "adopted project" for role in ROLES}
         else:
-            edition = legacy_routing((Path(__file__).parent.parent / "templates/.playbook-state.yml").read_text())["defaults"]
-            routing = legacy_routing(runtime.decode()) if runtime is not None else {}
+            try:
+                edition = legacy_routing((Path(__file__).parent.parent / "templates/.playbook-state.yml").read_text())["defaults"]
+                routing = legacy_routing(runtime.decode()) if runtime is not None else {}
+            except (ConfigError, OSError, UnicodeError) as error:
+                raise self._selection_state_error(error) from None
             defaults = routing.get("defaults", {})
             if not isinstance(defaults, dict) or set(defaults) - set(ROLES):
                 raise ConfigError("Unknown or invalid legacy role preferences; reconcile them before adoption.")
@@ -324,6 +330,12 @@ class Configuration:
             raise ConfigError("Configuration changed during read; wait for the transaction or reconcile recovery.")
         self._reconcile_receipts()
         return config, origins, {DESTINATION: digest(saved), ".playbook-state.yml": digest(runtime)}
+
+    def _selection_state_error(self, error):
+        return ConfigError("Cannot read configuration selection state (.playbook-state.yml): "
+                           + type(error).__name__ + ". Preserve saved choices, approvals and history; "
+                           "restore readable, valid state and reload. Revalidate QA through stage 09 "
+                           "before retrying; no fallback or state rewrite is automatic.")
 
     def _receipt_conflicts(self, receipt, marker, completing=False):
         seal = receipt.with_name(receipt.name + ".complete")

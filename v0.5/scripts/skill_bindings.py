@@ -71,6 +71,13 @@ class CustomEvidenceError(ConfigError):
     pass
 
 
+def portable_identity(identity):
+    return (isinstance(identity, str)
+            and re.fullmatch(r"[a-z0-9_-]+:[A-Za-z0-9._/-]+", identity) is not None
+            and ".." not in identity and "//" not in identity
+            and not identity.split(":", 1)[1].startswith("/"))
+
+
 def validate_bindings(value):
     if (not isinstance(value, dict) or set(value) != {"contract_version", "jobs"}
             or type(value["contract_version"]) is not int or value["contract_version"] != VERSION
@@ -82,10 +89,7 @@ def validate_bindings(value):
         seen = set()
         for binding in bindings:
             if (not isinstance(binding, dict) or set(binding) != {"source_id", "source_sha256", "contract_sha256"}
-                    or not isinstance(binding["source_id"], str)
-                    or re.fullmatch(r"[a-z0-9_-]+:[A-Za-z0-9._/-]+", binding["source_id"]) is None
-                    or ".." in binding["source_id"] or "//" in binding["source_id"]
-                    or binding["source_id"].split(":", 1)[1].startswith("/")
+                    or not portable_identity(binding["source_id"])
                     or re.fullmatch(r"[0-9a-f]{64}", str(binding["source_sha256"])) is None
                     or re.fullmatch(r"[0-9a-f]{64}", str(binding["contract_sha256"])) is None
                     or binding["source_id"] in seen):
@@ -154,6 +158,9 @@ class JobBindings:
 
     def _candidate(self, identity, source, form, label, invocation, provenance=None):
         from playbook_config import encoded
+        if not portable_identity(identity):
+            raise ConfigError("Canonical portable source identity required; repair the local inventory "
+                              "or stage-owned selection and reload without rewriting saved choices.")
         provenance = provenance or {"kind": "playbook-" + form, "source": "Playbook stage"}
         evidence = {"version": VERSION, "jobs": JOBS, "authority": AUTHORITY,
                     "provenance": provenance, "invocation": invocation}
@@ -166,7 +173,7 @@ class JobBindings:
             job: [self.options(job)[0]["binding"]] for job in JOBS}}
 
     def _reject(self, identity, reason):
-        rejection = {"source_id": identity, "reason": reason}
+        rejection = {"source_id": identity if portable_identity(identity) else "custom:unresolved", "reason": reason}
         if rejection not in self.rejections:
             self.rejections.append(rejection)
 
@@ -212,10 +219,8 @@ class JobBindings:
             local = self._custom_inventory(job)
             for identity, binding in local["sources"].items():
                 try:
-                    if (not isinstance(identity, str)
-                            or re.fullmatch(r"(?:custom|project):[A-Za-z0-9._/-]+", identity) is None
-                            or ".." in identity or "//" in identity
-                            or identity.split(":", 1)[1].startswith("/")
+                    if (not portable_identity(identity)
+                            or identity.split(":", 1)[0] not in {"custom", "project"}
                             or not isinstance(binding, dict) or set(binding) != {"source", "audits"}
                             or not isinstance(binding["audits"], dict)):
                         raise ConfigError("canonical portable identity and local binding")
@@ -224,9 +229,7 @@ class JobBindings:
                     choices.append(self._custom_candidate(identity, binding, job))
                 except (ConfigError, OSError, UnicodeError, KeyError, TypeError, ValueError, RuntimeError) as error:
                     requirement = str(error) if isinstance(error, CustomEvidenceError) else "readable separate local binding, approval and evidence"
-                    self._reject("custom:unresolved" if not isinstance(identity, str) or re.fullmatch(
-                        r"(?:custom|project):[A-Za-z0-9._/-]+", identity) is None
-                        or identity.split(":", 1)[1].startswith("/") else identity,
+                    self._reject(identity,
                         "Unmet requirement: " + requirement + ". Required: exact-source independent retained audit, job inputs/outputs, "
                         "owner, invocation, form, permitted effects and retained authority; "
                         "restore the local binding and stage-owned evidence or explicitly select " + JOBS[job]["fallback"])

@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- Redact rejected noncanonical local inventory identities with one shared
+  portable-identity predicate. Block early selection-state read and parse
+  failures with logical artifact, error class and explicit recovery guidance.
+
+*Why — rejection and snapshot failures are public output:* rejecting an unsafe
+identity or unreadable state must not disclose its private locator or parser
+text. Preserve exact-source choices, saved QA qualification and stored bytes;
+require deliberate recovery rather than fallback, execution or rewriting.
+
 - Keep project QA read and qualification rejections portable: name the logical
   artifact and error class, require stage 09 revalidation or an explicitly
   selected fallback, and never echo filesystem or untrusted parser diagnostics.
