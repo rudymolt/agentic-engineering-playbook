@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+- Add portable custom job identities with separately retained machine-local
+  bindings and stage-owned exact-source contract audits. Reject project-local
+  audit stores, source/resolution drift, unpinned evidence and custom embedded
+  upstream claims; preserve stage QA selection and existing execution approvals.
+
+*Why — portable choices without portable private paths:* collaborators can
+retain byte-identical project settings while resolving their own qualified
+sources, or recover an unresolved choice explicitly. Local audit assertions
+do not authenticate independent execution or approval; those gates remain
+stage-owned, with no experimental candidate execution or authority expansion.
+
 - Add versioned source-labelled bindings for alignment, specification,
   implementation, code review and application QA through Configure's existing
   save boundary. Stage entry resolves saved choices and blocks source/contract

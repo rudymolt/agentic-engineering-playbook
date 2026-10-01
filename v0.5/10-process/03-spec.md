@@ -27,6 +27,17 @@ explicitly edit/preview a fallback. Alignment, human acceptance, tracker
 permissions and state updates remain stage-owned. See the
 [job contract](../scripts/skill-bindings.md).
 
+For a custom-retained-audit route, immediately before invoking call
+`catalog.invocation_source(saved, "specification", "03", route["source_id"])`
+on this stage's local catalog, then load the returned private `SKILL.md` through
+the host's skill reader. A portable identity alone is not a path. Retain the
+same saved selection or authenticated approved execution and external store
+used by `job-route`; follow the
+[custom invocation recipe](../scripts/skill-bindings.md#stage-owned-custom-invocation).
+Resolution failure blocks, with explicit recovery. The owning stage still
+checks real independent qualification, required inputs, permissions and human
+acceptance; local JSON and source resolution do not authenticate approval.
+
 Optionally first: `/plan-eng-review` (gstack) if not already run during alignment. Locks data flow, diagrams, edge cases, and tests.
 
 Then: `/to-spec` (Matt; formerly `/to-prd` — renamed in upstream v1.1.0). Produces the spec, sketches the **seams** the feature will be tested at — preferring existing seams, the fewer the better — and confirms them with the user. It publishes to whatever tracker `/setup-matt-pocock-skills` configured — GitHub, Linear, or local files.

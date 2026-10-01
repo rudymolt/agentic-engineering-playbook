@@ -16,11 +16,18 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--project", type=Path, required=True)
     parser.add_argument("--preferences-dir", type=Path, help="Explicit user-local directory outside the project for presentation preferences.")
+    parser.add_argument("--custom-bindings-dir", type=Path, help="Read-only machine-local custom bindings and stage-retained audits; never saved in project configuration.")
     parser.add_argument("--discovery", type=Path)
     parser.add_argument("--discovery-command", help="JSON argv for the current-availability adapter; request JSON is sent on stdin.")
     parser.add_argument("--now", help="Fixture clock only; live use omits this option.")
     parser.add_argument("action", choices=("read", "reply", "resolve", "job-route"))
     args = parser.parse_args()
+
+    def binding_catalog():
+        if args.custom_bindings_dir is None:
+            return None
+        from skill_bindings import JobBindings
+        return JobBindings(args.project, custom_dir=args.custom_bindings_dir)
 
     def discover(request):
         if args.discovery_command is None:
@@ -41,7 +48,8 @@ def main():
             raise ConfigError("Request must be a JSON object; use the documented helper contract.")
         try:
             service = Configuration(args.project, discover, clock, preferences_dir=args.preferences_dir,
-                                    context=request.get("context"))
+                                    context=request.get("context"),
+                                    bindings=binding_catalog())
         except ConfigError:
             reply = request.get("reply", "")
             if args.action != "reply" or not isinstance(reply, str):
@@ -49,7 +57,8 @@ def main():
             reply = reply.strip().lower()
             if reply not in {"back", "edit", "not now"} and not reply.startswith("edit "):
                 raise
-            service = Configuration(args.project, discover, clock, context=request.get("context"))
+            service = Configuration(args.project, discover, clock, context=request.get("context"),
+                                    bindings=binding_catalog())
         if args.action == "read":
             result = service.read()
         elif args.action == "reply":

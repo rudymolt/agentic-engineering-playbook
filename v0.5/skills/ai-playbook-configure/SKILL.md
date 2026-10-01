@@ -6,8 +6,9 @@ disable-model-invocation: true
 
 # /ai-playbook-configure
 
-S2 edits **Plan, Build, Verify and escalated repair**. QA inherits Verify;
-Coordinator is observed display-only. Personal presets, skill bindings,
+Configure edits **Plan, Build, Verify and escalated repair**, plus five
+stage-owned job bindings, including portable custom sources. QA inherits Verify;
+Coordinator is observed display-only. Personal presets,
 recommendations and unavailable-model replacement advice are later slices.
 This skill never launches a model or edits runtime state.
 
@@ -97,6 +98,13 @@ This skill never launches a model or edits runtime state.
    [`../../scripts/skill-bindings.md`](../../scripts/skill-bindings.md) for
    contracts, current upstream exclusions and already eligible project QA proof.
    Configuration does not create or maintain a harness.
+   Custom sources use a canonical project-relative identity or a logical
+   identity resolved through an external machine-local binding/audit store.
+   Show `(Custom)` unless existing stage evidence verifies a more specific
+   source label. Missing local resolution/evidence requires explicit recovery,
+   never a source rewrite or automatic fallback. Local JSON assertions are not
+   real independent execution proof; the owning stage authenticates retained
+   qualification at its existing gate. Never generate that proof by invocation.
 4. **Apply the reviewed proposal.** Only after typed `Apply`, repeat genuine
    authoritative discovery through that adapter and pass the same proposal to the helper. Never
    silently create and Apply a refreshed proposal. Changed inputs require

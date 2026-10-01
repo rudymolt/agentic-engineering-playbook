@@ -93,6 +93,18 @@ Fresh independence, verifier identity, evidence/verdict, mandatory adversarial
 and security axes, permissions and commit/launch boundaries remain stage-owned.
 See the [job contract](../scripts/skill-bindings.md).
 
+For a custom-retained-audit route, immediately before invoking call
+`catalog.invocation_source(saved, "code_review", "08", route["source_id"])`
+on this stage's local catalog, then load the returned private `SKILL.md` through
+the host's skill reader in the retained report-only mode. Use the same saved
+selection or authenticated retained review execution and external store as
+`job-route`; follow the
+[custom invocation recipe](../scripts/skill-bindings.md#stage-owned-custom-invocation).
+A portable identity is not a path; unresolved means block. Custom embedded
+upstream forms are excluded. The resolver does not authenticate approval or
+independence; real qualification, fresh verifier identity and effects enforcement
+remain owned here.
+
 Use a direct upstream reviewer only after
 `../scripts/check-upstream-compatibility.py` confirms the resolved installed source has
 report-only compatibility and prints the permitted embedded entry point. The tested Matt

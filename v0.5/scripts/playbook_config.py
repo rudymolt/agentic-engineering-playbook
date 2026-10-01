@@ -527,6 +527,8 @@ class Configuration:
         def labels(job, selection):
             options = proposal["skill_alternatives"][job]
             return [next((option["label"] for option in options if option["binding"] == binding),
+                         "(Custom) " + binding["source_id"] + " — unresolved/blocked; restore local binding and retained audit or edit to an explicit fallback"
+                         if binding["source_id"].startswith(("custom:", "project:")) else
                          "Unverified source " + binding["source_id"] + " — blocked; edit to an explicit fallback")
                     for binding in selection["jobs"][job]]
         proposal["skill_proposal"] = [{"job": job, "before": labels(job, proposal["skill_before"]),

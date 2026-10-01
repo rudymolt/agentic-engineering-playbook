@@ -66,6 +66,10 @@ def fingerprint(source):
     return hashlib.sha256(Path(source).read_bytes()).hexdigest()
 
 
+class CustomEvidenceError(ConfigError):
+    pass
+
+
 def validate_bindings(value):
     if (not isinstance(value, dict) or set(value) != {"contract_version", "jobs"}
             or type(value["contract_version"]) is not int or value["contract_version"] != VERSION
@@ -78,8 +82,9 @@ def validate_bindings(value):
         for binding in bindings:
             if (not isinstance(binding, dict) or set(binding) != {"source_id", "source_sha256", "contract_sha256"}
                     or not isinstance(binding["source_id"], str)
-                    or re.fullmatch(r"[a-z0-9_-]+:[a-z0-9._/-]+", binding["source_id"]) is None
+                    or re.fullmatch(r"[a-z0-9_-]+:[A-Za-z0-9._/-]+", binding["source_id"]) is None
                     or ".." in binding["source_id"] or "//" in binding["source_id"]
+                    or binding["source_id"].split(":", 1)[1].startswith("/")
                     or re.fullmatch(r"[0-9a-f]{64}", str(binding["source_sha256"])) is None
                     or re.fullmatch(r"[0-9a-f]{64}", str(binding["contract_sha256"])) is None
                     or binding["source_id"] in seen):
@@ -89,13 +94,30 @@ def validate_bindings(value):
 
 
 class JobBindings:
-    def __init__(self, project, *, installed=None, manifest=None, registry=None):
+    def __init__(self, project, *, installed=None, manifest=None, registry=None, custom_dir=None):
         self.project = Path(project)
         self.registry = registry or load_registry()
         self.manifest = Path(manifest) if manifest else ROOT / "upstream-integrations.json"
         self.installed = installed if installed is not None else self._installed()
         self.live_inventory = installed is None
         self.rejections = []
+        self.custom_dir = Path(custom_dir) if custom_dir is not None else Path.home() / ".config/ai-playbook/custom-skills"
+        self._check_custom_store()
+
+    def _check_custom_store(self):
+        try:
+            locations = [self.custom_dir.resolve()] + [(self.custom_dir / name).resolve()
+                         for name in ("bindings.json", "approvals.json", "evidence")]
+            project = self.project.resolve()
+        except (OSError, RuntimeError):
+            raise ConfigError("Custom binding/audit storage cannot be resolved. Restore an external machine-local store.") from None
+        if locations[0].is_relative_to(project):
+            raise ConfigError("Custom bindings and retained audits require a machine-local directory outside the shareable project. "
+                              "Choose an external --custom-bindings-dir; do not copy, track or publish that store.")
+        for location in locations[1:]:
+            if location.is_relative_to(project):
+                raise ConfigError("Custom binding/audit storage points into the shareable project. "
+                                  "Restore an external machine-local store; do not copy, track or publish it.")
 
     def _installed(self):
         found = {}
@@ -163,7 +185,139 @@ class JobBindings:
             candidate = self._project_qa()
             if candidate:
                 choices.append(candidate)
+        choices.extend(self._custom_options(job))
         return choices
+
+    def _custom_options(self, job):
+        choices = []
+        try:
+            self._check_custom_store()
+            local = self._custom_inventory(job)
+            for identity, binding in local["sources"].items():
+                try:
+                    if (not isinstance(identity, str)
+                            or re.fullmatch(r"(?:custom|project):[A-Za-z0-9._/-]+", identity) is None
+                            or ".." in identity or "//" in identity
+                            or identity.split(":", 1)[1].startswith("/")
+                            or not isinstance(binding, dict) or set(binding) != {"source", "audits"}
+                            or not isinstance(binding["audits"], dict)):
+                        raise ConfigError("canonical portable identity and local binding")
+                    if job not in binding["audits"]:
+                        continue
+                    choices.append(self._custom_candidate(identity, binding, job))
+                except (ConfigError, OSError, UnicodeError, KeyError, TypeError, ValueError, RuntimeError) as error:
+                    requirement = str(error) if isinstance(error, CustomEvidenceError) else "readable separate local binding, approval and evidence"
+                    self._reject("custom:unresolved" if not isinstance(identity, str) or re.fullmatch(
+                        r"(?:custom|project):[A-Za-z0-9._/-]+", identity) is None
+                        or identity.split(":", 1)[1].startswith("/") else identity,
+                        "Unmet requirement: " + requirement + ". Required: exact-source independent retained audit, job inputs/outputs, "
+                        "owner, invocation, form, permitted effects and retained authority; "
+                        "restore the local binding and stage-owned evidence or explicitly select " + JOBS[job]["fallback"])
+        except (ConfigError, OSError, UnicodeError, KeyError, TypeError, ValueError, RuntimeError):
+            self._reject("custom:unresolved", "Unmet local binding schema; repair local inventory or explicitly select " + JOBS[job]["fallback"])
+        return choices
+
+    def _custom_inventory(self, job):
+        inventory = self.custom_dir / "bindings.json"
+        local = strict_json(inventory.read_text()) if inventory.exists() else {"version": VERSION, "sources": {}}
+        if (set(local) != {"version", "sources"} or type(local["version"]) is not int
+                or local["version"] != VERSION or not isinstance(local["sources"], dict)):
+            raise ConfigError("local binding schema")
+        approvals = self.custom_dir / "approvals.json"
+        if approvals.exists():
+            approvals = strict_json(approvals.read_text())
+            if (set(approvals) != {"version", "audits"} or type(approvals["version"]) is not int
+                    or approvals["version"] != VERSION or not isinstance(approvals["audits"], dict)):
+                raise ConfigError("local approval schema")
+            canonical = {}
+            for audit, approval in approvals["audits"].items():
+                identity = approval.get("source_id") if isinstance(approval, dict) else None
+                if isinstance(identity, str) and identity.startswith("project:") and approval.get("job") == job:
+                    if identity in canonical:
+                        raise ConfigError("project audit collision")
+                    canonical[identity] = {"source": identity.split(":", 1)[1], "audits": {job: audit}}
+            for identity, binding in canonical.items():
+                local["sources"].setdefault(identity, binding)
+        return local
+
+    def _custom_candidate(self, identity, binding, job):
+        locator = binding["source"]
+        if not isinstance(locator, str) or not locator:
+            raise CustomEvidenceError("source locator")
+        if identity.startswith("project:"):
+            if locator != identity.split(":", 1)[1]:
+                raise CustomEvidenceError("canonical project source")
+            source = self._owned(locator)
+        else:
+            source = Path(locator)
+            if not source.is_absolute() or not source.is_file():
+                raise CustomEvidenceError("local source resolution")
+        audit = binding["audits"][job]
+        if not isinstance(audit, str) or re.fullmatch(r"[a-z0-9_-]+", audit) is None:
+            raise CustomEvidenceError("retained audit locator")
+        approvals = strict_json((self.custom_dir / "approvals.json").read_text())
+        if (set(approvals) != {"version", "audits"} or type(approvals["version"]) is not int
+                or approvals["version"] != VERSION):
+            raise CustomEvidenceError("stage-owned audit inventory")
+        approval = approvals["audits"][audit]
+        contract = JOBS[job]
+        resolution = hashlib.sha256(source.resolve().as_posix().encode()).hexdigest()
+        if (set(approval) != {"source_id", "job", "owner", "revision", "evidence_sha256", "resolution_sha256"}
+                or approval["source_id"] != identity or approval["job"] != job
+                or approval["owner"] != contract["owner"] or approval["resolution_sha256"] != resolution
+                or not isinstance(approval["revision"], str)
+                or re.fullmatch(r"[a-z0-9_-]+", approval["revision"]) is None):
+            raise CustomEvidenceError("stage-owned exact-resolution audit approval")
+        proof_path = self.custom_dir / "evidence" / (audit + ".json")
+        if proof_path.resolve().is_relative_to(self.project.resolve()):
+            raise CustomEvidenceError("independently retained evidence outside the shareable project")
+        proof_sha = fingerprint(proof_path)
+        if approval["evidence_sha256"] != proof_sha:
+            raise CustomEvidenceError("retained evidence fingerprint")
+        proof = strict_json(proof_path.read_text())
+        invocation = identity + (" --report-only" if job in {"code_review", "application_qa"} else "")
+        expected = {"contract_version": VERSION, "source_id": identity, "job": job,
+                    "owner": contract["owner"], "source_sha256": fingerprint(source),
+                    "inputs": contract["inputs"], "outputs": contract["outputs"],
+                    "prohibited_effects": contract["prohibited_effects"], "retained_authority": AUTHORITY,
+                    "invocation": invocation, "form": "project route" if job == "application_qa" else "single",
+                    "report_only": job in {"code_review", "application_qa"}, "verdict": "pass", "independent": True}
+        if set(proof) not in (set(expected) | {"effects"}, set(expected) | {"effects", "embedded_source_id"}):
+            raise CustomEvidenceError("complete exact job contract fields")
+        for key, value in expected.items():
+            if type(proof[key]) is not type(value) or proof[key] != value:
+                raise CustomEvidenceError("exact job contract field " + key)
+        if (not isinstance(proof["effects"], list) or not proof["effects"]
+                or any(not isinstance(effect, str) for effect in proof["effects"])
+                or not set(proof["effects"]) <= set(contract["effects"])):
+            raise CustomEvidenceError("permitted job effects")
+        label = "(Custom) " + identity.split(":", 1)[1]
+        if "embedded_source_id" in proof:
+            raise CustomEvidenceError("custom embedded forms are unsupported; select the existing uniquely installed S3 source binding")
+        qa_route = None
+        if job == "application_qa":
+            qa_route = self._project_qa()
+            if (qa_route is None or source.resolve() != (self.project / qa_route["invocation"]).resolve()):
+                raise CustomEvidenceError("existing stage-owned QA selection and qualification")
+            label = qa_route["label"]
+        return self._candidate(identity, source, expected["form"], label, invocation,
+                               {"kind": "custom-retained-audit", "evidence_sha256": proof_sha,
+                                "audit_id": audit, "audit_revision": approval["revision"],
+                                "qa_route": qa_route})
+
+    def invocation_source(self, saved, job, owner, identity):
+        if job not in JOBS or owner != JOBS[job]["owner"]:
+            raise ConfigError("Only the owning stage may resolve a custom invocation source.")
+        routes = self.resolve(saved, job)
+        if not any(route["binding"]["source_id"] == identity
+                   and route["provenance"]["kind"] == "custom-retained-audit" for route in routes):
+            raise ConfigError("Custom invocation requires the exact eligible saved binding.")
+        local = self._custom_inventory(job)
+        binding = local["sources"][identity]
+        candidate = self._custom_candidate(identity, binding, job)
+        if not any(route["binding"] == candidate["binding"] for route in routes):
+            raise ConfigError("Custom resolution changed before invocation; requalify and preview explicitly.")
+        return self._owned(binding["source"]) if identity.startswith("project:") else Path(binding["source"]).resolve()
 
     def _embedded(self, job, skill, source):
         try:
@@ -250,6 +404,10 @@ class JobBindings:
         for binding in saved["jobs"][job]:
             matches = [option for option in options if option["binding"] == binding]
             if len(matches) != 1:
+                if binding["source_id"].startswith(("custom:", "project:")):
+                    raise ConfigError("Saved selection unresolved: local binding or exact-source contract evidence is missing, changed or rejected. "
+                                      "Restore its own local binding and independently retained stage audit; otherwise explicitly select "
+                                      + JOBS[job]["fallback"] + ". No source rewrite or automatic fallback.")
                 raise ConfigError("Selected skill is unknown, changed, colliding or incompatible; explicitly edit to the declared manual/adapter fallback or block. A warning is not approval.")
             routes.append({**deepcopy(matches[0]), "source_id": binding["source_id"]})
         if len(routes) > 1 and [route["source_id"] for route in routes] != ["playbook:alignment-context", "playbook:alignment-decisions"]:

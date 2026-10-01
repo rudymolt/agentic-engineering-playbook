@@ -37,6 +37,16 @@ and explicitly edit/preview a fallback. Approved Build/delivery choices, slice
 confirmation, tests, fresh Verify, commits, launches, permissions and failure/
 stop rules remain stage-owned. See the [job contract](../scripts/skill-bindings.md).
 
+For a custom-retained-audit route, immediately before invoking call
+`catalog.invocation_source(saved, "implementation", "07", route["source_id"])`
+on this stage's local catalog and load the returned private `SKILL.md` through
+the host's skill reader. Use the same saved selection or authenticated retained
+Build execution and external local store as `job-route`; follow the
+[custom invocation recipe](../scripts/skill-bindings.md#stage-owned-custom-invocation).
+A portable identity is not a path; resolution failure blocks rather than
+falling back. Real independent qualification, approved inputs and all Build
+authority remain stage-owned, not conferred by local JSON or the resolver.
+
 `/tdd` (Matt). Enforces red → green with **vertical slices** — one failing test, one piece of implementation, repeat. As of upstream v1.1.0 the loop is **red → green only**: the refactor step moved out of `/tdd` and into the stage-08 standards/spec pass (compatible `/code-review` or the same manual axes), so refactoring happens under review discipline, not mid-implementation. Tests go only at **pre-agreed seams** — the ones sketched by `/to-spec` at stage 03 and confirmed with the user — never at seams the agent invents mid-slice.
 
 When stages 01–06 have produced an approved delivery envelope and the human

@@ -56,6 +56,122 @@ colliding or incompatible saved source blocks invocation and Apply until the
 user explicitly previews a fallback. Reload never substitutes a saved choice.
 Compatibility evidence/invocation changes also invalidate the contract digest.
 
+## Portable custom sources
+
+S4 adds `custom:<logical-identity>` and canonical
+`project:<relative-path-to-SKILL.md>` identities without changing the shared
+binding schema. A custom source is labelled `(Custom)`, not by its display name
+or claimed author. An already qualified QA route keeps its verified
+`(Project route)` label. Custom embedded upstream forms are excluded: copied
+content, a matching hash, or a claimed `embedded_source_id` cannot obtain an
+upstream label or bypass S3's uniquely installed-source and collision checks.
+Select the existing supported upstream binding when those checks pass.
+
+The read-only machine-local store defaults to
+`~/.config/ai-playbook/custom-skills`; `--custom-bindings-dir` selects another
+local store for both Configure and `job-route`. The store must be outside the
+shareable project, including resolved directory aliases. Its bindings,
+approvals, evidence directory and individual evidence files must not point
+back into the project. Invalid locations block with explicit recovery and
+create nothing. Discovery checks aliases again; a retargeted store cannot
+make a pending proposal eligible. Never track, copy into a project, or publish
+the store. Configure does not create it, install anything, or write audits.
+
+The store has three separately retained inputs:
+
+- `bindings.json`: `{version: 1, sources: {identity: {source, audits}}}`.
+  `source` is the local absolute locator for a `custom:` identity; `audits`
+  maps a job to a retained audit ID. For `project:` sources, the canonical
+  identity is the locator, so no machine source binding is required; the
+  stage-retained approvals discover that exact project identity. An explicit
+  project binding, if supplied, must repeat the same canonical locator.
+- `approvals.json`: `{version: 1, audits: {audit_id: approval}}`. Each
+  stage-owned approval contains `source_id`, `job`, `owner`, `revision`,
+  `evidence_sha256` and `resolution_sha256`. The last value is the SHA-256 of
+  the resolved source's POSIX locator encoded as UTF-8. This machine-local
+  pin prevents a same-content replacement or retargeted alias from borrowing
+  its predecessor's local qualification. After local resolution changes,
+  the owning stage must independently requalify and issue a new audit revision,
+  followed by a new Configure preview/Apply; never edit the pin to keep an old
+  approval alive.
+- `evidence/<audit_id>.json`: the independently retained exact-source contract
+  audit. It contains `contract_version`, `source_id`, `job`, `owner`,
+  `source_sha256`, `inputs`, `outputs`, `effects`, `prohibited_effects`,
+  `retained_authority`, `invocation`, `form`, `report_only`, `verdict` and
+  `independent`. Inputs, outputs, prohibitions and retained authority match
+  the exact S3 contract; effects are a nonempty subset of its permitted
+  effects. The verdict is `pass`, independence is true, and the approval
+  pins this separate audit's bytes. The form is `single`, except QA's
+  `project route`. Invocation is the exact portable identity, with
+  ` --report-only` for review/QA; it is not arbitrary shell text.
+
+**Trust boundary:** these are retained inputs from the owning stage's existing
+qualification gate, not a way to manufacture proof. A self-authored local JSON
+assertion, a boolean `independent`, or a second self-authored approval file is
+not proof of real independent execution or authenticated approval. Configure
+checks structure and exact pins; it cannot authenticate who wrote local files
+or establish that execution happened. The owning stage must check the real
+independent execution artifacts and authoritative verifier provenance before
+recording a qualifying audit and again at its existing invocation/advancement
+gate. Missing authentic evidence blocks that gate even if the local summaries
+match. The synthetic test audits exercise those input contracts only; they
+are never live qualification. This does not expand S3's project-QA summary or
+caller-provided `approved_binding` trust claims.
+
+QA additionally passes the unchanged S3 project-route gate and must resolve
+to that already selected route. A custom audit cannot create, select or
+maintain a QA harness. Embedded QA remains inside the project's existing
+exact-source report-only check, not custom upstream attribution.
+
+Only portable identity and source/contract digests enter the project file.
+Public proposals and stage JSON expose neither local locators nor local store
+contents. Contract digests bind audit identity, revision, evidence bytes and
+invocation, never the machine locator pin: two machines can share byte-identical
+configuration and retain their own resolution pins for the same audited source.
+An owner integrating programmatically can use
+`JobBindings.invocation_source(saved, job, owner, identity)` immediately before
+reading/invoking the source; it repeats eligibility and returns the private
+locator only to that owner, not in the public result. This is source resolution,
+not execution or approval. The stage still supplies required inputs, enforces
+effects/permissions and validates outputs.
+
+Discovery, Apply and stage entry reread the local resolution and retained audit.
+Missing binding/evidence, rejected contract, source drift or a new audit revision
+leaves the saved selection unresolved, with unmet requirements and the named
+manual fallback. Recovery restores that machine's binding and authentic stage
+evidence or explicitly previews a fallback; it never rewrites the source,
+acknowledges a warning as approval, or executes a candidate experimentally.
+Reopening Configure retains custom selections and approved execution records.
+Source/software updates require stage-owned compatibility requalification at
+discovery and invocation, not a background updater or checks on unrelated turns.
+
+## Stage-owned custom invocation
+
+The five owning stages explicitly call the private source resolver immediately
+before using a custom source. `job-route` remains a report-only descriptor seam,
+not a launcher. When using a non-default external store, pass the same
+`--custom-bindings-dir` to that helper and `custom_dir` to the stage's local
+`JobBindings` catalog. Never interpret the portable invocation string as a
+filesystem path or arbitrary shell command.
+
+The programmatic entry is `Configuration.dispatch_job(job, owner, invoke=...)`.
+Inside the owning stage's invocation callback, use the same `saved` skills
+selection to call `catalog.invocation_source(saved, job, owner, route["source_id"])`
+when `route["provenance"]["kind"] == "custom-retained-audit"`. It revalidates
+the source and audit before returning the private path. Load that exact
+`SKILL.md` through the host's existing skill reader, enforcing the descriptor's
+report-only mode for review/QA. Standard S3 routes keep their existing handling.
+Missing or changed local data raises a blocker before the skill reader is called.
+
+For adopted defaults, `saved` is the skills snapshot used by that stage entry.
+For a resumed execution, it is the retained approved snapshot already
+authenticated by that stage, not new defaults or unauthenticated caller JSON.
+Neither this callback nor source resolution generates qualification evidence:
+the stage must establish real independent qualification, inputs, permissions
+and invocation authority first and validate outputs before advancing. Private
+paths stay within the stage's reader; never insert them in shareable settings
+or public descriptor/proposal output.
+
 ## Already eligible project QA
 
 Stage 09 may record `.playbook-qa-eligibility.json` only after its existing
