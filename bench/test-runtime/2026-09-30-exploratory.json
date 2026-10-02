@@ -1,0 +1,1245 @@
+{
+  "revision": "a57af6de259d34e9b772105e0ad0610290797cfa",
+  "date": "2026-09-30",
+  "platform": "Darwin",
+  "python": "3.14.3",
+  "complete": false,
+  "reason": "local exploratory run interrupted for authorized cloud handoff",
+  "completed_tests": 290,
+  "completed_test_seconds": 572.763028,
+  "groups_seconds": {
+    "test_checker_monitor": 1.337058,
+    "test_cloud": 3.6434599999999993,
+    "test_continuation": 0.30196600000000007,
+    "test_core": 1.8134190000000006,
+    "test_interim": 8.237345000000001,
+    "test_interim_advance": 481.036951,
+    "test_interim_conductor_host": 13.024402,
+    "test_interim_coordinator": 63.36842700000001
+  },
+  "slowest_completed": [
+    {
+      "id": "test_interim_advance.AdvanceTests.test_escalated_candidate_recovers_same_sha_verify_without_new_slot",
+      "seconds": 28.243493
+    },
+    {
+      "id": "test_interim_advance.AdvanceTests.test_failed_diagnosis_is_reconciled_then_retried_with_new_identity",
+      "seconds": 27.773947
+    },
+    {
+      "id": "test_interim_advance.AdvanceTests.test_two_slice_first_pr_continues_to_one_next_build",
+      "seconds": 27.462827
+    },
+    {
+      "id": "test_interim_advance.AdvanceTests.test_failed_repair_worker_is_reconciled_before_next_cycle",
+      "seconds": 27.45467
+    },
+    {
+      "id": "test_interim_advance.AdvanceTests.test_complete_failing_verify_enters_repair_without_erasing_its_verdict",
+      "seconds": 23.319412
+    },
+    {
+      "id": "test_interim_advance.AdvanceTests.test_exact_worker_error_reconciles_before_diagnosis_without_second_build",
+      "seconds": 21.396986
+    },
+    {
+      "id": "test_interim_advance.AdvanceTests.test_legacy_failed_build_natural_wake_makes_one_durable_authority_decision",
+      "seconds": 21.270656
+    },
+    {
+      "id": "test_interim_advance.AdvanceTests.test_failed_worker_unknown_effect_uses_wakes_without_replacement",
+      "seconds": 18.625162
+    },
+    {
+      "id": "test_interim_advance.AdvanceTests.test_real_host_adapter_advances_queued_build_and_verify_by_exact_ids",
+      "seconds": 17.077884
+    },
+    {
+      "id": "test_interim_advance.AdvanceTests.test_crashed_wake_receipt_settles_same_id_before_successor",
+      "seconds": 16.873645
+    },
+    {
+      "id": "test_interim_advance.AdvanceTests.test_lost_pr_create_response_reuses_exact_open_pr",
+      "seconds": 14.106537
+    },
+    {
+      "id": "test_interim_advance.AdvanceTests.test_final_open_pr_retires_monitoring_and_survives_clean_reload",
+      "seconds": 13.817165
+    },
+    {
+      "id": "test_interim_advance.AdvanceTests.test_intermediate_pr_ready_advances_next_approved_slice",
+      "seconds": 13.759426
+    },
+    {
+      "id": "test_interim_advance.AdvanceTests.test_stop_during_final_pr_readback_cannot_publish_review_ready",
+      "seconds": 13.091303
+    },
+    {
+      "id": "test_interim_advance.AdvanceTests.test_stop_winning_pr_admission_cas_refuses_create",
+      "seconds": 12.151575
+    }
+  ],
+  "interrupted_test": "test_interim_coordinator.CoordinatorTests.test_handoff_acceptance_parity_matrix",
+  "tests": [
+    {
+      "id": "test_checker_monitor.CheckerMonitorTests.test_direct_python_invocation_is_rejected",
+      "seconds": 0.381516
+    },
+    {
+      "id": "test_checker_monitor.CheckerMonitorTests.test_evidence_directory_must_be_outside_repository",
+      "seconds": 0.263261
+    },
+    {
+      "id": "test_checker_monitor.CheckerMonitorTests.test_fanotify_overflow_fails_closed",
+      "seconds": 0.143505
+    },
+    {
+      "id": "test_checker_monitor.CheckerMonitorTests.test_git_index_lock_records_kernel_writer_attribution",
+      "seconds": 2e-05
+    },
+    {
+      "id": "test_checker_monitor.CheckerMonitorTests.test_malformed_event_buffer_fails_closed",
+      "seconds": 0.131948
+    },
+    {
+      "id": "test_checker_monitor.CheckerMonitorTests.test_monitor_owned_writer_identity_is_explicit_and_redacted",
+      "seconds": 0.12844
+    },
+    {
+      "id": "test_checker_monitor.CheckerMonitorTests.test_non_executable_helper_starts_only_after_first_probe_and_stops_cleanly",
+      "seconds": 2.7e-05
+    },
+    {
+      "id": "test_checker_monitor.CheckerMonitorTests.test_overflow_and_lost_watch_events_invalidate",
+      "seconds": 0.134232
+    },
+    {
+      "id": "test_checker_monitor.CheckerMonitorTests.test_sub_interval_create_remove_is_event_detected",
+      "seconds": 2.3e-05
+    },
+    {
+      "id": "test_checker_monitor.CheckerMonitorTests.test_transient_write_invalidates_even_when_removed_before_stop",
+      "seconds": 1.2e-05
+    },
+    {
+      "id": "test_checker_monitor.CheckerMonitorTests.test_unsupported_platform_is_rejected",
+      "seconds": 0.154074
+    },
+    {
+      "id": "test_cloud.ApiTests.test_ambiguous_launch_exhausts_the_shared_session_message_read_budget",
+      "seconds": 0.000399
+    },
+    {
+      "id": "test_cloud.ApiTests.test_ambiguous_launch_reconciles_only_exact_workspace_route_and_prompt",
+      "seconds": 9e-05
+    },
+    {
+      "id": "test_cloud.ApiTests.test_ambiguous_launch_refuses_conflicting_candidates_and_malformed_unmatched_records",
+      "seconds": 0.000211
+    },
+    {
+      "id": "test_cloud.ApiTests.test_ambiguous_launch_refuses_listed_workspace_mismatch_before_transcript_access",
+      "seconds": 8.2e-05
+    },
+    {
+      "id": "test_cloud.ApiTests.test_ambiguous_launch_refuses_observable_agent_or_workspace_contradictions",
+      "seconds": 0.000186
+    },
+    {
+      "id": "test_cloud.ApiTests.test_ambiguous_launch_refuses_route_mismatch_and_exhausted_pagination",
+      "seconds": 0.00014
+    },
+    {
+      "id": "test_cloud.ApiTests.test_ambiguous_launch_selects_exact_message_candidate_before_validating_its_route",
+      "seconds": 6.4e-05
+    },
+    {
+      "id": "test_cloud.ApiTests.test_ambiguous_send_recovers_transcript_id_but_preserves_logical_id",
+      "seconds": 4.7e-05
+    },
+    {
+      "id": "test_cloud.ApiTests.test_ambiguous_send_rejects_wrong_session_payload_and_pagination_cycles",
+      "seconds": 0.00016
+    },
+    {
+      "id": "test_cloud.ApiTests.test_cli_boundary_does_not_report_cancelled_command_as_complete",
+      "seconds": 0.000805
+    },
+    {
+      "id": "test_cloud.ApiTests.test_cli_refuses_current_content_identities_that_conflict_with_raw_evidence",
+      "seconds": 0.34613
+    },
+    {
+      "id": "test_cloud.ApiTests.test_cli_reports_first_turn_complete_and_malformed_facts_as_contract_errors",
+      "seconds": 3.067861
+    },
+    {
+      "id": "test_cloud.ApiTests.test_client_error_does_not_trigger_ambiguous_reconciliation",
+      "seconds": 0.000358
+    },
+    {
+      "id": "test_cloud.ApiTests.test_credential_precedence",
+      "seconds": 0.001267
+    },
+    {
+      "id": "test_cloud.ApiTests.test_error_is_adapter_failure_and_initial_idle_is_not_completion",
+      "seconds": 0.000255
+    },
+    {
+      "id": "test_cloud.ApiTests.test_message_pagination_rejects_empty_progress_and_cursor_cycles",
+      "seconds": 0.000107
+    },
+    {
+      "id": "test_cloud.ApiTests.test_message_pagination_uses_after_cursor",
+      "seconds": 5.8e-05
+    },
+    {
+      "id": "test_cloud.ApiTests.test_raw_completion_accepts_retained_final_message_lifecycle",
+      "seconds": 0.000111
+    },
+    {
+      "id": "test_cloud.ApiTests.test_raw_completion_accepts_same_thread_started_preamble",
+      "seconds": 5.9e-05
+    },
+    {
+      "id": "test_cloud.ApiTests.test_raw_completion_allows_no_extra_failure_or_tool_event",
+      "seconds": 0.000176
+    },
+    {
+      "id": "test_cloud.ApiTests.test_raw_completion_refuses_later_turn_cancellation_or_user_boundary",
+      "seconds": 0.00015
+    },
+    {
+      "id": "test_cloud.ApiTests.test_raw_completion_refuses_mismatched_or_cancelled_thread_started_preamble",
+      "seconds": 0.000132
+    },
+    {
+      "id": "test_cloud.ApiTests.test_raw_completion_requires_current_reply_and_completed_turn",
+      "seconds": 0.000137
+    },
+    {
+      "id": "test_cloud.ApiTests.test_runtime_review_binds_workspace_session_and_route",
+      "seconds": 3.5e-05
+    },
+    {
+      "id": "test_cloud.ApiTests.test_sleep_archived_is_not_success",
+      "seconds": 7e-05
+    },
+    {
+      "id": "test_cloud.ApiTests.test_successful_launch_requires_a_session_id_and_rejects_supplied_identity_mismatches",
+      "seconds": 0.000266
+    },
+    {
+      "id": "test_cloud.ApiTests.test_url_normalization_avoids_double_v0",
+      "seconds": 4.6e-05
+    },
+    {
+      "id": "test_cloud.ApiTests.test_well_formed_incomplete_raw_evidence_stays_pending",
+      "seconds": 5e-05
+    },
+    {
+      "id": "test_cloud.ProfileTests.test_cr1_validates_exact_profile_and_references",
+      "seconds": 0.004869
+    },
+    {
+      "id": "test_cloud.ProfileTests.test_profile_digest_mismatch_blocks",
+      "seconds": 0.00306
+    },
+    {
+      "id": "test_cloud.ProfileTests.test_profile_rejects_changed_bound_file",
+      "seconds": 0.003418
+    },
+    {
+      "id": "test_cloud.ProfileTests.test_profile_rejects_human_only_or_incomplete_browser_evidence",
+      "seconds": 0.002753
+    },
+    {
+      "id": "test_cloud.ProfileTests.test_profile_rejects_secret_value",
+      "seconds": 0.003178
+    },
+    {
+      "id": "test_cloud.ReceiptTests.test_admission_cr1_to_cr10_pass",
+      "seconds": 0.003157
+    },
+    {
+      "id": "test_cloud.ReceiptTests.test_admission_reuse_requires_epochs_profile_env_and_ttl",
+      "seconds": 0.003175
+    },
+    {
+      "id": "test_cloud.ReceiptTests.test_candidate_binds_exact_tuple_and_selected_conditions",
+      "seconds": 0.004947
+    },
+    {
+      "id": "test_cloud.ReceiptTests.test_candidate_invalidation_matrix_unions_conditions",
+      "seconds": 0.003873
+    },
+    {
+      "id": "test_cloud.ReceiptTests.test_environment_values_are_never_allowed",
+      "seconds": 0.004746
+    },
+    {
+      "id": "test_cloud.ReceiptTests.test_epoch_and_candidate_mismatch_block",
+      "seconds": 0.003878
+    },
+    {
+      "id": "test_cloud.ReceiptTests.test_failed_required_condition_blocks",
+      "seconds": 0.003709
+    },
+    {
+      "id": "test_cloud.ReceiptTests.test_missing_raw_evidence_blocks",
+      "seconds": 0.005632
+    },
+    {
+      "id": "test_cloud.ReceiptTests.test_tier_b_rejects_process_attestation",
+      "seconds": 0.004167
+    },
+    {
+      "id": "test_cloud.ReceiptTests.test_ttl_longer_than_thirty_days_blocks",
+      "seconds": 0.003934
+    },
+    {
+      "id": "test_cloud.RunnerTests.test_distinct_readiness_ids_are_disjoint_and_reuse_fails_closed",
+      "seconds": 0.005884
+    },
+    {
+      "id": "test_cloud.RunnerTests.test_environment_presence_is_independent_of_tool_results",
+      "seconds": 0.003421
+    },
+    {
+      "id": "test_cloud.RunnerTests.test_exact_inventory_rejects_missing_extra_nested_and_symlink_entries",
+      "seconds": 0.004969
+    },
+    {
+      "id": "test_cloud.RunnerTests.test_exact_inventory_rejects_special_files",
+      "seconds": 0.003615
+    },
+    {
+      "id": "test_cloud.RunnerTests.test_external_locators_include_the_isolated_run_directory",
+      "seconds": 0.004263
+    },
+    {
+      "id": "test_cloud.RunnerTests.test_fresh_cloud_runner_executes_cr1_to_cr10",
+      "seconds": 0.099744
+    },
+    {
+      "id": "test_cloud.RunnerTests.test_inventory_rejects_directory_entry_replacement_during_read",
+      "seconds": 0.005523
+    },
+    {
+      "id": "test_cloud.RunnerTests.test_inventory_rejects_external_content_overwrite",
+      "seconds": 0.004135
+    },
+    {
+      "id": "test_cloud.RunnerTests.test_inventory_rejects_previously_checked_entry_replaced_during_later_read",
+      "seconds": 0.004547
+    },
+    {
+      "id": "test_cloud.RunnerTests.test_inventory_rejects_replaced_evidence_root",
+      "seconds": 0.005364
+    },
+    {
+      "id": "test_cloud.RunnerTests.test_inventory_rejects_replaced_run_directory",
+      "seconds": 0.00429
+    },
+    {
+      "id": "test_cloud.RunnerTests.test_readiness_id_must_be_a_safe_single_component",
+      "seconds": 0.003945
+    },
+    {
+      "id": "test_cloud.RunnerTests.test_record_never_overwrites_existing_current_run_entry",
+      "seconds": 0.003697
+    },
+    {
+      "id": "test_cloud.RunnerTests.test_run_evidence_is_isolated_and_preserved_siblings_are_ignored",
+      "seconds": 0.005189
+    },
+    {
+      "id": "test_cloud.RunnerTests.test_version_probe_accepts_node_v_prefix",
+      "seconds": 0.003571
+    },
+    {
+      "id": "test_cloud.RunnerTests.test_version_probe_ignores_wrapper_diagnostic_numbers",
+      "seconds": 0.003258
+    },
+    {
+      "id": "test_cloud.RuntimeTests.test_ambiguous_health_blocks",
+      "seconds": 4.3e-05
+    },
+    {
+      "id": "test_cloud.RuntimeTests.test_healthy_runtime_reestablishes_cr7_cr8",
+      "seconds": 2.8e-05
+    },
+    {
+      "id": "test_cloud.RuntimeTests.test_process_loss_requires_resume_and_health",
+      "seconds": 2.6e-05
+    },
+    {
+      "id": "test_continuation.ContinuationReducerTests.test_admission_is_bound_and_requires_observer_first",
+      "seconds": 0.002529
+    },
+    {
+      "id": "test_continuation.ContinuationReducerTests.test_backward_interval_stop_refuses_without_losing_the_open_interval",
+      "seconds": 0.003585
+    },
+    {
+      "id": "test_continuation.ContinuationReducerTests.test_blocked_complete_or_verified_checkpoint_refuses_admission_and_dispatch",
+      "seconds": 0.012167
+    },
+    {
+      "id": "test_continuation.ContinuationReducerTests.test_ceiling_charge_persists_and_stopping_can_close_existing_interval",
+      "seconds": 0.002781
+    },
+    {
+      "id": "test_continuation.ContinuationReducerTests.test_checkpoint_is_durable_and_next_action_stays_conservative",
+      "seconds": 0.004131
+    },
+    {
+      "id": "test_continuation.ContinuationReducerTests.test_counter_replay_and_four_part_result_evidence_are_non_resettable",
+      "seconds": 0.002624
+    },
+    {
+      "id": "test_continuation.ContinuationReducerTests.test_deadline_handback_records_exhaustion_without_discarding_closure_evidence",
+      "seconds": 0.003751
+    },
+    {
+      "id": "test_continuation.ContinuationReducerTests.test_deadline_interval_closure_records_exhaustion_in_active_and_stopping_states",
+      "seconds": 0.003804
+    },
+    {
+      "id": "test_continuation.ContinuationReducerTests.test_deadline_non_success_outcome_matrix_round_trips_with_exhaustion",
+      "seconds": 0.009676
+    },
+    {
+      "id": "test_continuation.ContinuationReducerTests.test_deadline_result_persists_expiry_while_retaining_post_stop_closure",
+      "seconds": 0.00595
+    },
+    {
+      "id": "test_continuation.ContinuationReducerTests.test_discard_and_fence_require_stop_bound_operation_evidence",
+      "seconds": 0.019894
+    },
+    {
+      "id": "test_continuation.ContinuationReducerTests.test_durable_budget_replay_cannot_reset_or_extend",
+      "seconds": 0.001973
+    },
+    {
+      "id": "test_continuation.ContinuationReducerTests.test_durable_integer_fields_reject_bool_without_rejecting_zero_or_positive_ints",
+      "seconds": 0.000471
+    },
+    {
+      "id": "test_continuation.ContinuationReducerTests.test_every_ceiling_has_a_durable_four_part_handback",
+      "seconds": 0.019167
+    },
+    {
+      "id": "test_continuation.ContinuationReducerTests.test_exhausted_success_claims_reload_only_with_current_matching_evidence",
+      "seconds": 0.006796
+    },
+    {
+      "id": "test_continuation.ContinuationReducerTests.test_explicit_ceiling_record_persists_without_mutating_next_action_input",
+      "seconds": 0.001541
+    },
+    {
+      "id": "test_continuation.ContinuationReducerTests.test_explicit_outcome_evidence_records_truthful_refusal",
+      "seconds": 0.00171
+    },
+    {
+      "id": "test_continuation.ContinuationReducerTests.test_frozen_sender_and_operation_sets_require_unique_exact_identifiers",
+      "seconds": 0.004263
+    },
+    {
+      "id": "test_continuation.ContinuationReducerTests.test_generation_recovery_reuses_immutable_intent_and_receipt",
+      "seconds": 0.002941
+    },
+    {
+      "id": "test_continuation.ContinuationReducerTests.test_inflight_survives_stop_but_ambiguous_never_resumes",
+      "seconds": 0.003108
+    },
+    {
+      "id": "test_continuation.ContinuationReducerTests.test_interval_close_refuses_unknown_id_but_replays_charged_idempotently",
+      "seconds": 0.001618
+    },
+    {
+      "id": "test_continuation.ContinuationReducerTests.test_ledger_limit_exactly_matches_immutable_envelope_on_reload",
+      "seconds": 0.000396
+    },
+    {
+      "id": "test_continuation.ContinuationReducerTests.test_malformed_unbound_and_revoked_public_inputs_fail_closed",
+      "seconds": 0.001462
+    },
+    {
+      "id": "test_continuation.ContinuationReducerTests.test_maximum_action_and_explicit_afk_slice_membership_are_bound",
+      "seconds": 0.000843
+    },
+    {
+      "id": "test_continuation.ContinuationReducerTests.test_native_cancellation_keeps_terminal_evidence_monotone",
+      "seconds": 0.004196
+    },
+    {
+      "id": "test_continuation.ContinuationReducerTests.test_observation_result_fields_and_history_progress_coherently",
+      "seconds": 0.004938
+    },
+    {
+      "id": "test_continuation.ContinuationReducerTests.test_observed_active_time_overrun_round_trips_without_widening_its_limit",
+      "seconds": 0.003871
+    },
+    {
+      "id": "test_continuation.ContinuationReducerTests.test_open_intervals_must_close_before_terminal_handback_but_can_close_in_refusal_states",
+      "seconds": 0.034993
+    },
+    {
+      "id": "test_continuation.ContinuationReducerTests.test_operation_map_key_must_match_immutable_operation_identity",
+      "seconds": 0.003045
+    },
+    {
+      "id": "test_continuation.ContinuationReducerTests.test_optional_tool_and_token_counters_need_null_reasons_or_monotonic_evidence",
+      "seconds": 0.001619
+    },
+    {
+      "id": "test_continuation.ContinuationReducerTests.test_public_state_event_matrix_returns_only_replayable_states_or_refusals",
+      "seconds": 0.009673
+    },
+    {
+      "id": "test_continuation.ContinuationReducerTests.test_receipt_cannot_dispatch_or_start_use_at_deadline",
+      "seconds": 0.001468
+    },
+    {
+      "id": "test_continuation.ContinuationReducerTests.test_receipt_cannot_extend_a_later_retry_or_unknown_interval_limit",
+      "seconds": 0.002659
+    },
+    {
+      "id": "test_continuation.ContinuationReducerTests.test_recovery_refuses_deadline_exhaustion_and_revoked_state",
+      "seconds": 0.003429
+    },
+    {
+      "id": "test_continuation.ContinuationReducerTests.test_reloaded_cross_record_builder_contradictions_fail_closed",
+      "seconds": 0.001913
+    },
+    {
+      "id": "test_continuation.ContinuationReducerTests.test_reloaded_state_refuses_epoch_status_closure_and_receipt_contradictions",
+      "seconds": 0.002065
+    },
+    {
+      "id": "test_continuation.ContinuationReducerTests.test_repeated_stop_receipts_preserve_replay_and_confirmed_monotonicity",
+      "seconds": 0.003854
+    },
+    {
+      "id": "test_continuation.ContinuationReducerTests.test_result_history_rejects_duplicates_and_observation_preserves_new_evidence",
+      "seconds": 0.00725
+    },
+    {
+      "id": "test_continuation.ContinuationReducerTests.test_state_and_envelope_schema_versions_require_integer_one",
+      "seconds": 0.001058
+    },
+    {
+      "id": "test_continuation.ContinuationReducerTests.test_stop_bound_fenced_result_history_rejects_duplicate_evidence",
+      "seconds": 0.006489
+    },
+    {
+      "id": "test_continuation.ContinuationReducerTests.test_stop_discard_remains_bound_through_post_stop_refusal_and_overrun_closure",
+      "seconds": 0.020501
+    },
+    {
+      "id": "test_continuation.ContinuationReducerTests.test_stop_discards_unsent_operation_with_terminal_no_effects",
+      "seconds": 0.004949
+    },
+    {
+      "id": "test_continuation.ContinuationReducerTests.test_stop_lifecycle_reload_binds_receipt_and_contiguous_transition_chain",
+      "seconds": 0.004396
+    },
+    {
+      "id": "test_continuation.ContinuationReducerTests.test_stop_not_confirmed_and_current_turn_stop_are_distinct",
+      "seconds": 0.001053
+    },
+    {
+      "id": "test_continuation.ContinuationReducerTests.test_stop_preserves_admitted_operations_with_observed_transport_progress",
+      "seconds": 0.009226
+    },
+    {
+      "id": "test_continuation.ContinuationReducerTests.test_stop_receipt_implies_matching_closed_state_and_transition_evidence",
+      "seconds": 0.003791
+    },
+    {
+      "id": "test_continuation.ContinuationReducerTests.test_stop_receipt_native_fact_and_terminal_observation_are_truthful",
+      "seconds": 0.003704
+    },
+    {
+      "id": "test_continuation.ContinuationReducerTests.test_stop_requires_persistence_and_explicit_sender_fencing_evidence",
+      "seconds": 0.002759
+    },
+    {
+      "id": "test_continuation.ContinuationReducerTests.test_stop_serializes_with_admission_and_freezes_unsent",
+      "seconds": 0.001744
+    },
+    {
+      "id": "test_continuation.ContinuationReducerTests.test_stopped_is_monotone_across_ceiling_accounting_and_result_events",
+      "seconds": 0.003462
+    },
+    {
+      "id": "test_continuation.ContinuationReducerTests.test_stopped_round_trip_requires_explicit_native_fact_and_never_downgrades",
+      "seconds": 0.00348
+    },
+    {
+      "id": "test_continuation.ContinuationReducerTests.test_terminal_operation_statuses_require_coherent_terminal_evidence",
+      "seconds": 0.016627
+    },
+    {
+      "id": "test_continuation.ContinuationReducerTests.test_terminal_outcomes_require_matching_concrete_result_and_checkpoint",
+      "seconds": 0.00744
+    },
+    {
+      "id": "test_continuation.ContinuationReducerTests.test_terminal_stop_requires_all_senders_operations_and_effects_fenced",
+      "seconds": 0.00536
+    },
+    {
+      "id": "test_continuation.ContinuationReducerTests.test_terminal_success_requires_quiescent_current_operations_and_senders",
+      "seconds": 0.003773
+    },
+    {
+      "id": "test_core.AuthorityTests.test_approval_binds_exact_envelope_and_actor",
+      "seconds": 0.000604
+    },
+    {
+      "id": "test_core.AuthorityTests.test_taste_patch_is_path_limited_and_digest_bound",
+      "seconds": 0.002439
+    },
+    {
+      "id": "test_core.AuthorityTests.test_venue_requires_displayed_complete_digest",
+      "seconds": 0.000983
+    },
+    {
+      "id": "test_core.BudgetTests.test_backward_stop_keeps_the_interval_open_for_a_valid_later_close",
+      "seconds": 5.3e-05
+    },
+    {
+      "id": "test_core.BudgetTests.test_concurrent_intervals_charge_independently_and_once",
+      "seconds": 2.5e-05
+    },
+    {
+      "id": "test_core.BudgetTests.test_phase_split_and_authorized_extension_preserve_charged_time",
+      "seconds": 2.9e-05
+    },
+    {
+      "id": "test_core.BudgetTests.test_unknown_end_and_ttl_fail_closed",
+      "seconds": 3e-05
+    },
+    {
+      "id": "test_core.CanonicalTests.test_canonical_fixture_and_digest_are_stable",
+      "seconds": 8.1e-05
+    },
+    {
+      "id": "test_core.CanonicalTests.test_rfc8785_ecmascript_number_boundaries",
+      "seconds": 6.1e-05
+    },
+    {
+      "id": "test_core.CanonicalTests.test_strict_parser_rejects_duplicate_nonfinite_and_traversal",
+      "seconds": 8.9e-05
+    },
+    {
+      "id": "test_core.CanonicalTests.test_strict_yaml_supports_block_and_flow_forms",
+      "seconds": 0.000398
+    },
+    {
+      "id": "test_core.CheckerAndGateTests.test_capacity_ladder_prefers_cross_family_and_never_builder_context",
+      "seconds": 5.8e-05
+    },
+    {
+      "id": "test_core.CheckerAndGateTests.test_checker_lifecycle_requires_commands_and_monitor_to_finish_before_turn_end",
+      "seconds": 0.003168
+    },
+    {
+      "id": "test_core.CheckerAndGateTests.test_each_gate_has_machine_reason_and_g9_never_dispatches",
+      "seconds": 3.8e-05
+    },
+    {
+      "id": "test_core.CheckerAndGateTests.test_every_gate_failure_is_named",
+      "seconds": 4.8e-05
+    },
+    {
+      "id": "test_core.CheckerAndGateTests.test_launcher_rejects_fork_dirty_or_identity_mismatch",
+      "seconds": 0.000134
+    },
+    {
+      "id": "test_core.CheckerAndGateTests.test_launcher_v3_binds_exact_fsevents_allowlist_and_profile",
+      "seconds": 0.000322
+    },
+    {
+      "id": "test_core.CheckerAndGateTests.test_launcher_v3_executor_applies_profile_and_preserves_failure",
+      "seconds": 0.918985
+    },
+    {
+      "id": "test_core.CheckerAndGateTests.test_launcher_v3_profile_builder_applies_only_the_exact_delta",
+      "seconds": 0.002993
+    },
+    {
+      "id": "test_core.CheckerAndGateTests.test_launcher_v4_binds_only_conductor_turn_checkpoints",
+      "seconds": 0.003257
+    },
+    {
+      "id": "test_core.DiscoveryAndCompletionTests.test_attempt_registration_binds_envelope_and_observation_contract",
+      "seconds": 0.020905
+    },
+    {
+      "id": "test_core.DiscoveryAndCompletionTests.test_attempt_registration_metrics_and_handback",
+      "seconds": 0.00024
+    },
+    {
+      "id": "test_core.DiscoveryAndCompletionTests.test_discovery_order_and_mirror_conflict_fail_closed",
+      "seconds": 5.5e-05
+    },
+    {
+      "id": "test_core.DiscoveryAndCompletionTests.test_each_discovery_fallback_is_reachable",
+      "seconds": 4.6e-05
+    },
+    {
+      "id": "test_core.DiscoveryAndCompletionTests.test_observation_receipt_binds_declared_contract_attempt_and_window",
+      "seconds": 0.022046
+    },
+    {
+      "id": "test_core.GenerationTests.test_checker_lifecycle_generated_schema_carries_completion_controls",
+      "seconds": 0.000572
+    },
+    {
+      "id": "test_core.GenerationTests.test_generated_contracts_and_manifest_are_current",
+      "seconds": 0.135952
+    },
+    {
+      "id": "test_core.GenerationTests.test_k41_generated_schemas_split_scope_approval_from_candidate_binding",
+      "seconds": 0.000943
+    },
+    {
+      "id": "test_core.GenerationTests.test_launcher_v3_generated_schema_carries_exact_policy",
+      "seconds": 0.0001
+    },
+    {
+      "id": "test_core.GenerationTests.test_launcher_v4_generated_schema_carries_exact_checkpoint_policy",
+      "seconds": 0.000123
+    },
+    {
+      "id": "test_core.GenerationTests.test_mission_generated_schema_encodes_terminal_state_semantics",
+      "seconds": 0.000191
+    },
+    {
+      "id": "test_core.GenerationTests.test_required_k41_digests_are_non_nullable_in_public_schemas",
+      "seconds": 0.000286
+    },
+    {
+      "id": "test_core.K41MergeBridgeTests.test_allow_decision_binds_fresh_session_exact_tuple_and_policy",
+      "seconds": 0.007789
+    },
+    {
+      "id": "test_core.K41MergeBridgeTests.test_bridge_authority_does_not_widen_builder_or_tier_b",
+      "seconds": 0.007412
+    },
+    {
+      "id": "test_core.K41MergeBridgeTests.test_builder_self_merge_is_denied_and_cannot_dispatch",
+      "seconds": 0.009109
+    },
+    {
+      "id": "test_core.K41MergeBridgeTests.test_decision_attestation_requires_exact_durable_readback_and_session",
+      "seconds": 0.008337
+    },
+    {
+      "id": "test_core.K41MergeBridgeTests.test_decision_denies_malformed_or_duplicate_host_paths",
+      "seconds": 0.033041
+    },
+    {
+      "id": "test_core.K41MergeBridgeTests.test_decision_enforces_approved_scope_after_pr_exists",
+      "seconds": 0.011512
+    },
+    {
+      "id": "test_core.K41MergeBridgeTests.test_envelope_binds_scope_upfront_and_defers_candidate_and_pr",
+      "seconds": 0.004368
+    },
+    {
+      "id": "test_core.K41MergeBridgeTests.test_expected_head_dispatch_and_observe_before_retry",
+      "seconds": 0.026547
+    },
+    {
+      "id": "test_core.K41MergeBridgeTests.test_full_frozen_candidate_tuple_binds_launcher_host_and_decision",
+      "seconds": 0.008176
+    },
+    {
+      "id": "test_core.K41MergeBridgeTests.test_github_adapter_uses_expected_head_and_reads_review_threads",
+      "seconds": 0.050144
+    },
+    {
+      "id": "test_core.K41MergeBridgeTests.test_github_decision_store_posts_and_rereads_exact_canonical_body",
+      "seconds": 0.007566
+    },
+    {
+      "id": "test_core.K41MergeBridgeTests.test_github_operation_claim_is_durable_and_one_shot",
+      "seconds": 0.005414
+    },
+    {
+      "id": "test_core.K41MergeBridgeTests.test_head_base_method_open_work_and_missing_evidence_fail_closed",
+      "seconds": 0.020265
+    },
+    {
+      "id": "test_core.K41MergeBridgeTests.test_protected_paths_and_unknown_risk_require_human_merge",
+      "seconds": 0.004804
+    },
+    {
+      "id": "test_core.K41MergeBridgeTests.test_public_contracts_reject_partial_bridge_authority",
+      "seconds": 0.004439
+    },
+    {
+      "id": "test_core.K41MergeBridgeTests.test_public_decision_command_uses_live_host_observation",
+      "seconds": 0.011309
+    },
+    {
+      "id": "test_core.K41MergeBridgeTests.test_public_decision_uses_host_paths_and_controller_identity",
+      "seconds": 0.010917
+    },
+    {
+      "id": "test_core.K41MergeBridgeTests.test_semantic_approval_exact_target_role_and_chronology_fail_closed",
+      "seconds": 0.005982
+    },
+    {
+      "id": "test_core.OperationTests.test_ambiguous_result_parks",
+      "seconds": 0.000124
+    },
+    {
+      "id": "test_core.OperationTests.test_frozen_public_interfaces_emit_typed_operation_receipts",
+      "seconds": 0.000481
+    },
+    {
+      "id": "test_core.OperationTests.test_intent_is_persisted_before_dispatch_and_lost_reply_reconciles",
+      "seconds": 0.002949
+    },
+    {
+      "id": "test_core.OperationTests.test_lost_reply_matrix_reconciles_each_tier_a_operation_once",
+      "seconds": 0.013402
+    },
+    {
+      "id": "test_core.OperationTests.test_query_before_create_and_resume_do_not_duplicate",
+      "seconds": 0.00013
+    },
+    {
+      "id": "test_core.RegistryTests.test_every_enum_and_conditional_field_fails_closed",
+      "seconds": 0.002986
+    },
+    {
+      "id": "test_core.RegistryTests.test_examples_validate_and_unknown_values_fail_closed",
+      "seconds": 0.002409
+    },
+    {
+      "id": "test_core.RegistryTests.test_mission_rejects_widened_authority_and_fabricated_closures",
+      "seconds": 0.001608
+    },
+    {
+      "id": "test_core.RegistryTests.test_observation_contracts_reject_empty_or_unbound_planning_provenance",
+      "seconds": 0.001422
+    },
+    {
+      "id": "test_core.RegistryTests.test_registry_owns_every_required_record",
+      "seconds": 0.001051
+    },
+    {
+      "id": "test_core.StateTests.test_candidate_readiness_transitions_and_wake_guards",
+      "seconds": 0.000317
+    },
+    {
+      "id": "test_core.StateTests.test_cas_and_generation_claim",
+      "seconds": 0.002982
+    },
+    {
+      "id": "test_core.StateTests.test_every_parked_status_requires_its_typed_wake_guard",
+      "seconds": 0.000365
+    },
+    {
+      "id": "test_core.StateTests.test_every_phase_round_trips_without_chat_and_can_be_claimed",
+      "seconds": 0.046488
+    },
+    {
+      "id": "test_core.StateTests.test_every_restricted_status_rejects_the_wrong_phase",
+      "seconds": 9.1e-05
+    },
+    {
+      "id": "test_core.StateTests.test_git_control_ref_create_and_cas_write",
+      "seconds": 0.378977
+    },
+    {
+      "id": "test_core.StateTests.test_mission_rejects_two_mutable_slices_and_ambiguous_cancel",
+      "seconds": 0.000111
+    },
+    {
+      "id": "test_core.StateTests.test_terminal_cancellation_accepts_only_terminal_operations",
+      "seconds": 0.000192
+    },
+    {
+      "id": "test_core.StateTests.test_terminal_cancellation_rejects_unresolved_operations",
+      "seconds": 0.000212
+    },
+    {
+      "id": "test_core.StateTests.test_terminal_cancellation_requires_explicit_two_step_transition",
+      "seconds": 0.00015
+    },
+    {
+      "id": "test_core.StateTests.test_terminal_transition_requires_recognized_matching_outcome",
+      "seconds": 0.000143
+    },
+    {
+      "id": "test_core.StateTests.test_transition_table_is_exhaustive_and_unknown_edges_fail",
+      "seconds": 0.004208
+    },
+    {
+      "id": "test_core.VerificationTests.test_freeze_binds_tuple_and_changes_invalidate_to_owning_phase",
+      "seconds": 8.2e-05
+    },
+    {
+      "id": "test_core.VerificationTests.test_readiness_matrix_selects_minimum_union",
+      "seconds": 7.4e-05
+    },
+    {
+      "id": "test_core.VerificationTests.test_risk_todos_threads_interrupts_and_actions_block",
+      "seconds": 8e-05
+    },
+    {
+      "id": "test_interim.InterimApprovalTests.test_approval_rejects_cycles_duplicate_requests_bad_timestamps_refs_and_overlapping_workspaces",
+      "seconds": 0.195437
+    },
+    {
+      "id": "test_interim.InterimApprovalTests.test_explicit_escalation_policy_is_immutable_and_legacy_has_no_authority",
+      "seconds": 0.1248
+    },
+    {
+      "id": "test_interim.InterimApprovalTests.test_interim_record_is_not_a_protected_envelope",
+      "seconds": 0.040236
+    },
+    {
+      "id": "test_interim.InterimApprovalTests.test_none_is_explicit_and_human_selected_limits_are_not_forecasts",
+      "seconds": 0.088653
+    },
+    {
+      "id": "test_interim.InterimApprovalTests.test_optional_limit_exception_is_scoped_in_each_required_process_surface",
+      "seconds": 0.001057
+    },
+    {
+      "id": "test_interim.InterimApprovalTests.test_preflight_binds_complete_immutable_approval_without_dispatch",
+      "seconds": 0.081429
+    },
+    {
+      "id": "test_interim.InterimApprovalTests.test_preflight_refuses_unapproved_hitl_scope_and_changed_paths",
+      "seconds": 0.178024
+    },
+    {
+      "id": "test_interim.InterimCheckpointTests.test_adapter_refuses_a_remote_not_bound_by_approval",
+      "seconds": 0.348206
+    },
+    {
+      "id": "test_interim.InterimCheckpointTests.test_ambiguous_publish_reads_back_intended_remote_commit",
+      "seconds": 0.719502
+    },
+    {
+      "id": "test_interim.InterimCheckpointTests.test_documented_cli_validates_preflights_publishes_reloads_and_refuses_readably",
+      "seconds": 1.929054
+    },
+    {
+      "id": "test_interim.InterimCheckpointTests.test_publish_then_reload_from_clean_clone",
+      "seconds": 1.007906
+    },
+    {
+      "id": "test_interim.InterimCheckpointTests.test_repository_url_change_and_approval_amendment_are_refused",
+      "seconds": 1.039075
+    },
+    {
+      "id": "test_interim.InterimCheckpointTests.test_second_pushurl_is_refused_before_either_remote_receives_checkpoint",
+      "seconds": 0.513322
+    },
+    {
+      "id": "test_interim.InterimCheckpointTests.test_stale_writer_is_refused_without_remote_overwrite",
+      "seconds": 1.970644
+    },
+    {
+      "id": "test_interim_advance.AdvanceTests.test_actual_cli_completed_malformed_build_enters_reconciled_repair",
+      "seconds": 11.864113
+    },
+    {
+      "id": "test_interim_advance.AdvanceTests.test_advance_cli_does_not_echo_untrusted_payload",
+      "seconds": 0.509603
+    },
+    {
+      "id": "test_interim_advance.AdvanceTests.test_advance_selected_dispatch_limit_retires_with_decision_notice",
+      "seconds": 3.486249
+    },
+    {
+      "id": "test_interim_advance.AdvanceTests.test_ambiguous_send_reconciles_exact_id_after_restart",
+      "seconds": 11.677414
+    },
+    {
+      "id": "test_interim_advance.AdvanceTests.test_bound_candidate_symlink_cannot_escape_shared_workspace_root",
+      "seconds": 9.075892
+    },
+    {
+      "id": "test_interim_advance.AdvanceTests.test_bound_host_brief_names_candidate_checkout_and_implementation_paths",
+      "seconds": 6.916734
+    },
+    {
+      "id": "test_interim_advance.AdvanceTests.test_bound_verify_send_includes_pr_helper_before_worker_done",
+      "seconds": 9.986449
+    },
+    {
+      "id": "test_interim_advance.AdvanceTests.test_complete_failing_verify_enters_repair_without_erasing_its_verdict",
+      "seconds": 23.319412
+    },
+    {
+      "id": "test_interim_advance.AdvanceTests.test_concurrent_advance_has_one_dispatch_and_charge",
+      "seconds": 6.422368
+    },
+    {
+      "id": "test_interim_advance.AdvanceTests.test_crashed_wake_receipt_settles_same_id_before_successor",
+      "seconds": 16.873645
+    },
+    {
+      "id": "test_interim_advance.AdvanceTests.test_escalated_candidate_recovers_same_sha_verify_without_new_slot",
+      "seconds": 28.243493
+    },
+    {
+      "id": "test_interim_advance.AdvanceTests.test_exact_worker_error_reconciles_before_diagnosis_without_second_build",
+      "seconds": 21.396986
+    },
+    {
+      "id": "test_interim_advance.AdvanceTests.test_exception_then_exact_unknown_preserves_three_cycle_guard_and_retry_after",
+      "seconds": 12.031596
+    },
+    {
+      "id": "test_interim_advance.AdvanceTests.test_failed_diagnosis_is_reconciled_then_retried_with_new_identity",
+      "seconds": 27.773947
+    },
+    {
+      "id": "test_interim_advance.AdvanceTests.test_failed_effect_readback_crossing_deadline_settles_without_repair",
+      "seconds": 8.195032
+    },
+    {
+      "id": "test_interim_advance.AdvanceTests.test_failed_repair_worker_is_reconciled_before_next_cycle",
+      "seconds": 27.45467
+    },
+    {
+      "id": "test_interim_advance.AdvanceTests.test_failed_worker_unknown_effect_uses_wakes_without_replacement",
+      "seconds": 18.625162
+    },
+    {
+      "id": "test_interim_advance.AdvanceTests.test_final_open_pr_retires_monitoring_and_survives_clean_reload",
+      "seconds": 13.817165
+    },
+    {
+      "id": "test_interim_advance.AdvanceTests.test_final_selected_wake_settles_failure_without_replacement",
+      "seconds": 10.621569
+    },
+    {
+      "id": "test_interim_advance.AdvanceTests.test_github_readback_requires_actual_repo_open_base_and_head",
+      "seconds": 0.300021
+    },
+    {
+      "id": "test_interim_advance.AdvanceTests.test_host_binding_crossing_deadline_cannot_admit_worker_send",
+      "seconds": 4.257748
+    },
+    {
+      "id": "test_interim_advance.AdvanceTests.test_intermediate_pr_ready_advances_next_approved_slice",
+      "seconds": 13.759426
+    },
+    {
+      "id": "test_interim_advance.AdvanceTests.test_legacy_failed_build_natural_wake_makes_one_durable_authority_decision",
+      "seconds": 21.270656
+    },
+    {
+      "id": "test_interim_advance.AdvanceTests.test_lost_pr_create_response_reuses_exact_open_pr",
+      "seconds": 14.106537
+    },
+    {
+      "id": "test_interim_advance.AdvanceTests.test_malformed_terminal_build_is_one_retained_failed_attempt",
+      "seconds": 6.695646
+    },
+    {
+      "id": "test_interim_advance.AdvanceTests.test_one_step_sync_build_then_verify_then_pr_readback",
+      "seconds": 10.362419
+    },
+    {
+      "id": "test_interim_advance.AdvanceTests.test_process_exit_after_host_acceptance_before_receipt_uses_same_id",
+      "seconds": 6.206861
+    },
+    {
+      "id": "test_interim_advance.AdvanceTests.test_real_host_adapter_advances_queued_build_and_verify_by_exact_ids",
+      "seconds": 17.077884
+    },
+    {
+      "id": "test_interim_advance.AdvanceTests.test_reconciled_legacy_failure_after_crash_gets_same_authority_decision",
+      "seconds": 8.9911
+    },
+    {
+      "id": "test_interim_advance.AdvanceTests.test_resumed_terminal_readback_crossing_deadline_cannot_send_verify",
+      "seconds": 8.314358
+    },
+    {
+      "id": "test_interim_advance.AdvanceTests.test_status_reads_durable_decision_without_host_connection",
+      "seconds": 2.233708
+    },
+    {
+      "id": "test_interim_advance.AdvanceTests.test_stop_after_durable_send_admission_retains_one_in_flight_effect",
+      "seconds": 7.706174
+    },
+    {
+      "id": "test_interim_advance.AdvanceTests.test_stop_after_intent_before_send_refuses_worker_effect",
+      "seconds": 5.495236
+    },
+    {
+      "id": "test_interim_advance.AdvanceTests.test_stop_during_failure_effect_readback_cannot_open_repair",
+      "seconds": 10.687864
+    },
+    {
+      "id": "test_interim_advance.AdvanceTests.test_stop_during_final_pr_readback_cannot_publish_review_ready",
+      "seconds": 13.091303
+    },
+    {
+      "id": "test_interim_advance.AdvanceTests.test_stop_during_slow_binding_precedes_send_admission",
+      "seconds": 4.921934
+    },
+    {
+      "id": "test_interim_advance.AdvanceTests.test_stop_refuses_new_effect",
+      "seconds": 1.855651
+    },
+    {
+      "id": "test_interim_advance.AdvanceTests.test_stop_winning_final_admission_cas_refuses_send",
+      "seconds": 5.134814
+    },
+    {
+      "id": "test_interim_advance.AdvanceTests.test_stop_winning_pr_admission_cas_refuses_create",
+      "seconds": 12.151575
+    },
+    {
+      "id": "test_interim_advance.AdvanceTests.test_transient_observation_counts_backup_cycles_and_not_duplicate_ticks",
+      "seconds": 10.66171
+    },
+    {
+      "id": "test_interim_advance.AdvanceTests.test_two_slice_first_pr_continues_to_one_next_build",
+      "seconds": 27.462827
+    },
+    {
+      "id": "test_interim_conductor_host.HostAdapterTests.test_active_coordinator_observation_does_not_require_an_unsent_message",
+      "seconds": 0.001109
+    },
+    {
+      "id": "test_interim_conductor_host.HostAdapterTests.test_cancel_accepts_exact_worker_session_in_verifier_workspace",
+      "seconds": 0.00033
+    },
+    {
+      "id": "test_interim_conductor_host.HostAdapterTests.test_cancelled_worker_is_terminal_without_fabricating_task_success",
+      "seconds": 9.7e-05
+    },
+    {
+      "id": "test_interim_conductor_host.HostAdapterTests.test_completed_malformed_or_conflicting_final_is_unusable_in_every_worker_phase",
+      "seconds": 0.001329
+    },
+    {
+      "id": "test_interim_conductor_host.HostAdapterTests.test_escalated_preflight_refuses_missing_resolved_model_and_prior_turn",
+      "seconds": 0.000717
+    },
+    {
+      "id": "test_interim_conductor_host.HostAdapterTests.test_escalated_route_prepares_idle_exact_session_and_reads_host_identity",
+      "seconds": 0.000176
+    },
+    {
+      "id": "test_interim_conductor_host.HostAdapterTests.test_escalated_verify_cli_brief_has_candidate_evidence_without_astra_reasoning",
+      "seconds": 0.0001
+    },
+    {
+      "id": "test_interim_conductor_host.HostAdapterTests.test_failed_worker_retains_scoped_dirty_candidate_and_detects_changed_work",
+      "seconds": 1.690082
+    },
+    {
+      "id": "test_interim_conductor_host.HostAdapterTests.test_message_create_maps_actual_envelope_to_queued_and_persists_uuid",
+      "seconds": 0.000327
+    },
+    {
+      "id": "test_interim_conductor_host.HostAdapterTests.test_owned_workers_uses_status_only_across_worker_workspaces",
+      "seconds": 0.000102
+    },
+    {
+      "id": "test_interim_conductor_host.HostAdapterTests.test_queued_build_and_verify_reconcile_same_ids_before_pr_ready",
+      "seconds": 11.328495
+    },
+    {
+      "id": "test_interim_conductor_host.HostAdapterTests.test_remove_watchdog_prefix_renames_and_confirms_readback",
+      "seconds": 0.000231
+    },
+    {
+      "id": "test_interim_conductor_host.HostAdapterTests.test_routine_workspaces_are_part_of_the_approved_envelope",
+      "seconds": 0.000715
+    },
+    {
+      "id": "test_interim_conductor_host.HostAdapterTests.test_session_create_supplies_exact_approved_route_and_uuid_ids",
+      "seconds": 0.000211
+    },
+    {
+      "id": "test_interim_conductor_host.HostAdapterTests.test_terminal_event_extracts_only_its_exact_structured_result_contract",
+      "seconds": 0.000184
+    },
+    {
+      "id": "test_interim_conductor_host.HostAdapterTests.test_transcript_paginates_and_only_terminal_agent_event_can_settle",
+      "seconds": 8.1e-05
+    },
+    {
+      "id": "test_interim_conductor_host.HostAdapterTests.test_transcript_refuses_turn_id_that_is_not_the_durable_message_uuid",
+      "seconds": 0.000116
+    },
+    {
+      "id": "test_interim_coordinator.CoordinatorTests.test_acceptance_parity_positive_at_task_bounds_retains_findings",
+      "seconds": 6.648444
+    },
+    {
+      "id": "test_interim_coordinator.CoordinatorTests.test_adapter_refuses_a_remote_not_bound_by_approval",
+      "seconds": 0.401224
+    },
+    {
+      "id": "test_interim_coordinator.CoordinatorTests.test_ambiguous_publish_reads_back_intended_remote_commit",
+      "seconds": 0.758356
+    },
+    {
+      "id": "test_interim_coordinator.CoordinatorTests.test_bad_reconciled_receipt_preserves_durable_incomplete_handback",
+      "seconds": 6.590249
+    },
+    {
+      "id": "test_interim_coordinator.CoordinatorTests.test_checkpointed_fixture_requires_fresh_verify_and_never_merges",
+      "seconds": 5.273384
+    },
+    {
+      "id": "test_interim_coordinator.CoordinatorTests.test_corrupt_remote_reload_and_public_entry_refuse_without_sends",
+      "seconds": 6.860172
+    },
+    {
+      "id": "test_interim_coordinator.CoordinatorTests.test_corrupted_s2_ledger_and_unbound_task_refuse_before_dispatch",
+      "seconds": 0.983847
+    },
+    {
+      "id": "test_interim_coordinator.CoordinatorTests.test_deadline_ambiguous_cancellation_state_persists_uncertain_handback",
+      "seconds": 4.480871
+    },
+    {
+      "id": "test_interim_coordinator.CoordinatorTests.test_deadline_cancel_transport_failure_persists_uncertain_handback",
+      "seconds": 5.723698
+    },
+    {
+      "id": "test_interim_coordinator.CoordinatorTests.test_deadline_crossing_cancels_a_nonterminal_modeled_operation",
+      "seconds": 4.821744
+    },
+    {
+      "id": "test_interim_coordinator.CoordinatorTests.test_deadline_missing_cancellation_receipt_persists_uncertain_handback",
+      "seconds": 4.40633
+    },
+    {
+      "id": "test_interim_coordinator.CoordinatorTests.test_deadline_wrong_cancellation_receipt_persists_uncertain_handback",
+      "seconds": 4.333415
+    },
+    {
+      "id": "test_interim_coordinator.CoordinatorTests.test_documented_cli_validates_preflights_publishes_reloads_and_refuses_readably",
+      "seconds": 1.922547
+    },
+    {
+      "id": "test_interim_coordinator.CoordinatorTests.test_every_approved_qa_ci_command_requires_one_bound_result",
+      "seconds": 5.6978
+    },
+    {
+      "id": "test_interim_coordinator.CoordinatorTests.test_forged_evidence_and_wrong_coordinator_observation_hand_back_before_build",
+      "seconds": 4.466346
+    }
+  ]
+}

@@ -178,8 +178,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "b3009ecf8fb11af1a16d1bd24a54138be5834150008109f6a31378141e575027",
-      "size": 2393
+      "sha256": "b0b31dc1438eab09e5a826df8d4d192d99eea4b553dc7815b2b6a14edea09b6d",
+      "size": 2864
     },
     {
       "path": "MAINTENANCE.md",
@@ -208,7 +208,7 @@
     },
     {
       "path": "delivery/MANIFEST.yml",
-      "sha256": "d6f23c6a1675af71fedd2ef0d27f0bff4ab199113629f2ab167d2b06de6c2736",
+      "sha256": "6120edcb5c40c172ba6c2fbd45b719c8c3dd589f554d749b9703ed05f76851f6",
       "size": 36393
     },
     {
@@ -948,8 +948,8 @@
     },
     {
       "path": "delivery/tests/test_interim_advance.py",
-      "sha256": "cad8a2aa16d39f5995781e90520af4965b1b09864278220c214bdd7593981eb4",
-      "size": 88231
+      "sha256": "aa13c469a81a1e1b49f966da9ee94260f7a84a268f2a42133f0e35f377ed3da2",
+      "size": 93350
     },
     {
       "path": "delivery/tests/test_interim_conductor_host.py",

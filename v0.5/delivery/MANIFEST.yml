@@ -736,7 +736,7 @@
       "source": "tests/test_interim.py"
     },
     {
-      "digest": "sha256:cad8a2aa16d39f5995781e90520af4965b1b09864278220c214bdd7593981eb4",
+      "digest": "sha256:aa13c469a81a1e1b49f966da9ee94260f7a84a268f2a42133f0e35f377ed3da2",
       "install_path": null,
       "source": "tests/test_interim_advance.py"
     },
@@ -788,5 +788,5 @@
   ],
   "manifest_schema_version": 1,
   "manifest_self_rule": "pack_digest covers the complete non-manifest source inventory",
-  "pack_digest": "sha256:f6074ab716f6f801c825a63f4ee60768dacf9f7c8112717478d19d5d58cf1307"
+  "pack_digest": "sha256:82fc8ddf734ead4fe60c968a51a9f28586e0cff042f38b22921ffc3e3c49dc7b"
 }
