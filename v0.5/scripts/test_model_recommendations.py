@@ -9,7 +9,7 @@ import sys
 import unittest
 
 from playbook_config import Configuration, ROLES
-from model_recommendations import OfficialSources
+from model_recommendations import OfficialSources, cost
 
 
 NOW = "2026-10-01T12:00:00Z"
@@ -262,6 +262,100 @@ class RecommendationTests(unittest.TestCase):
         self.assertEqual(evidence["rates"][0]["source_url"], "https://platform.claude.com/docs/en/about-claude/pricing")
         broken = OfficialSources(lambda: NOW, fetch=lambda url: fetch(url).replace("<th>Input</th>", "<th>Unknown</th>")).retrieve()
         self.assertEqual(broken["rates"], [])
+
+    def test_anthropic_base_context_is_required_for_table_and_each_row(self):
+        pricing = 'https://platform.claude.com/docs/en/about-claude/pricing'
+        model = 'Claude Fixture 1.0'
+        sample = ('<p>All prices are in USD.</p><h2>Model pricing</h2>{context}'
+                  '<table>{caption}<tr><th>Name</th><th>Input</th><th>Output</th>'
+                  '<th>5m writes</th><th>1h writes</th><th>Hits and refreshes</th></tr>'
+                  '<tr><td>' + model + '{suffix}</td><td>$3 / MTok</td><td>$8 / MTok</td>'
+                  '<td>$4 / MTok</td><td>$6 / MTok</td><td>$1 / MTok</td></tr></table>')
+        variants = ('For requests above 200K tokens', 'Input &gt; 200K tokens',
+                    'For input &gt; 200K tokens', 'For coding with extended context',
+                    'Extended context pricing', 'Long-context pricing',
+                    'Long\u2011context pricing', 'Long&nbsp;context pricing',
+                    'For requests over 200,000 tokens', 'Only for larger inputs',
+                    'Priority pricing', 'Batch pricing', 'For unspecified workloads')
+        for location in ('context', 'caption', 'suffix', 'cache_cell'):
+            for restriction in ('', *variants):
+                with self.subTest(location=location, restriction=restriction):
+                    values = dict(context='', caption='', suffix='')
+                    if restriction:
+                        values[location if location != 'cache_cell' else 'suffix'] = ('<p>' + restriction + '</p>' if location == 'context'
+                                            else '<caption>' + restriction + '</caption>' if location == 'caption'
+                                            else ' ' + restriction if location == 'suffix' else '')
+                    html = sample.format(**values)
+                    if restriction and location == 'cache_cell':
+                        html = html.replace('$4 / MTok', '$4 / MTok ' + restriction)
+                    evidence = OfficialSources(lambda: NOW, fetch=lambda url: html if url == pricing else
+                        '<p>Claude Fixture 1.0 (claude-fixture-1-0) is built for complex coding.</p>').retrieve()
+                    self.assertTrue(evidence['guidance'])
+                    advice = cost(dict(model_id='claude-fixture-1-0', provider='anthropic', runner='codex',
+                        reasoning='high'), {**self.context, 'workload': dict(input_tokens=4000,
+                        output_tokens=2000, retries=1, billing_route='standard-base-uncached')}, evidence)
+                    if restriction:
+                        self.assertEqual(evidence['rates'], [])
+                        self.assertIsNone(advice['estimate'])
+                        source = next(record for record in evidence['sources'] if record['source_url'] == pricing)
+                        self.assertIsNone(source['checked_at'])
+                    else:
+                        self.assertEqual(advice['rates']['source_url'], pricing)
+                        self.assertEqual(advice['estimate']['checked_at'], NOW)
+                        self.assertAlmostEqual(advice['estimate']['amount'], .056)
+
+    def test_invalid_rate_numbers_fail_closed(self):
+        for field in ('input', 'output'):
+            for value in (10 ** 500, 1e308, float('inf'), float('nan'), -1, True, '3', None):
+                with self.subTest(field=field, value=value):
+                    evidence = deepcopy(self.evidence)
+                    evidence['rates'][0][field] = value
+                    direct = cost(self.routes[0], self.context, evidence)
+                    self.assertIsNone(direct['rates'])
+                    self.assertIsNone(direct['estimate'])
+                    draft = self.service({**self.context, 'workload': dict(input_tokens=4000,
+                        output_tokens=2000, retries=1, billing_route='standard-short-context-uncached')},
+                        sources=lambda: evidence).read()
+                    advice = draft['recommendations']['implementation']
+                    if value != value or value == float('inf'):
+                        self.assertIsNone(advice['choice'])
+                        self.assertIsNone(advice['cost'])
+                    else:
+                        self.assertIsNotNone(advice['choice'])
+                        self.assertIsNone(advice['cost']['rates'])
+                        self.assertIsNone(advice['cost']['estimate'])
+                    self.assertEqual(self.state.read_bytes(), self.original)
+
+    def test_oversized_rates_cli_remains_read_only_json(self):
+        adapter = self.project / 'discovery.py'
+        adapter.write_text('import json, sys\nrequest=json.load(sys.stdin)\n'
+                           'print(json.dumps(dict(request_id=request["request_id"], '
+                           'checked_at=request["started_at"], revision="fixture", '
+                           'authority="host-reported-selection", routes=' + repr(self.routes) + ')))\n')
+        fixture = self.project / 'evidence.json'
+        for field in ('input', 'output'):
+            for value in (10 ** 500, 1e308, 2 ** 53, 2 ** 53 - 1, 0):
+                with self.subTest(field=field, value=value):
+                    evidence = deepcopy(self.evidence)
+                    evidence['rates'][0][field] = value
+                    fixture.write_text(json.dumps(evidence))
+                    before = {path.name: path.read_bytes() for path in self.project.iterdir()}
+                    completed = subprocess.run([sys.executable, str(Path(__file__).with_name('configure-playbook.py')),
+                        'read', '--project', str(self.project), '--now', NOW, '--evidence-fixture', str(fixture),
+                        '--discovery-command', json.dumps([sys.executable, str(adapter)])],
+                        input=json.dumps({'context': {**self.context, 'workload': dict(input_tokens=2 ** 53 - 1,
+                            output_tokens=2 ** 53 - 1, retries=2 ** 53 - 1,
+                            billing_route='standard-short-context-uncached')}}), text=True, capture_output=True)
+                    self.assertEqual(completed.returncode, 0, completed.stderr)
+                    self.assertEqual(completed.stderr, '')
+                    advice = json.loads(completed.stdout)['recommendations']['implementation']
+                    self.assertIsNotNone(advice['choice'])
+                    if value > 2 ** 53 - 1:
+                        self.assertIsNone(advice['cost']['rates'])
+                        self.assertIsNone(advice['cost']['estimate'])
+                    else:
+                        self.assertIsNotNone(advice['cost']['estimate'])
+                    self.assertEqual({path.name: path.read_bytes() for path in self.project.iterdir()}, before)
 
     def test_initial_retrieval_only_and_explicit_task_edits_are_read_only(self):
         calls = []

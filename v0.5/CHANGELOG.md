@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+- Require exact Anthropic base-context eligibility at table and model-row
+  boundaries, and bound numeric rates before validating or estimating costs.
+
+*Why — applicability and arithmetic must both be proven:* extended/long-context
+and ambiguous `For ...` qualifications cannot support base workload prices.
+Oversized structured integers must remain unknown without conversion overflow,
+CLI tracebacks or writes; preserve positive exact rates and task guidance.
+
 - Require affirmative model-associated suitability predicates and explicit
   Standard short-context provenance; bound workload counts before token arithmetic.
 

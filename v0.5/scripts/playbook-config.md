@@ -302,6 +302,11 @@ Single-context Standard tables require explicit short-context evidence; long-con
 restrictions remain incompatible regardless of hyphenation or HTML whitespace;
 unrecognized captions and negated context mentions do not establish provenance;
 grouped short/long-context columns also require explicit context headers.
+Anthropic base tables accept only recognized base/short-context labels in their
+enclosing context and captions. Each model row must be exact or carry the
+recognized `For coding` task suffix; any other `For ...` qualification is
+ambiguous, not evidence of base applicability. Extended or long-context tables
+and rows cannot provide `standard-base-uncached` rates or base subtotals.
 Upstream markup or wording changes require new source-shape compatibility
 checks before extending recognition; preserve user choices during any migration.
 The reasoning guide is fetched separately but cannot supply task suitability;
@@ -345,6 +350,11 @@ Keep the three classes separate:
   integers no greater than `2^53 - 1`) and the exact `billing_route`.
   Larger counts leave the subtotal unknown with an explicit numeric-bound limit,
   without conversion errors or writes. Every retry assumes the same tokens.
+  Rates must be numeric integers or floats (not booleans), finite, nonnegative
+  and no greater than `2^53 - 1` per 1M tokens. Invalid or oversized structured
+  rates remain unknown; these rate and count bounds keep subtotal arithmetic
+  finite before serialization. Nonfinite fixture JSON leaves source evidence
+  incomplete under the existing retrieval boundary.
   Show a labelled token subtotal, not a bill or guaranteed verified outcome.
   Missing/mismatched inputs or rates mean unknown. For mixed billing,
   `route_billing["model_id@runner@reasoning"]` (or the runner-wide fallback)

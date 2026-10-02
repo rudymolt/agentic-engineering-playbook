@@ -61,6 +61,16 @@ class OfficialRedirect(HTTPRedirectHandler):
         return super().redirect_request(request, response, code, message, headers, newurl)
 
 
+def valid_rate_number(value):
+    return type(value) in (int, float) and 0 <= value <= 2 ** 53 - 1 and math.isfinite(value)
+
+
+def base_pricing_context(text):
+    normalized = re.sub(r"[\s\-\u2010-\u2015]+", " ", text).strip().lower()
+    return normalized in {"", "model pricing", "standard", "base api pricing", "standard base pricing",
+                          "short context", "short context only", "short context rates", "short context pricing"}
+
+
 class Page(HTMLParser):
     def __init__(self):
         super().__init__()
@@ -265,19 +275,26 @@ class OfficialSources:
                      if record.get("provider") == "anthropic" and record.get("label") and valid_claim(record, "guidance")}
             for table in page.tables:
                 if (table["tier"] not in {"model pricing", "standard", "base api pricing"}
-                        or re.search(r"\b(?:batch|priority|flex|fast|ultrafast|long context)\b", table["tier_context"] + " " + table["caption"], re.I)
+                        or not base_pricing_context(table["tier_context"])
+                        or not base_pricing_context(table["caption"])
                         or "All prices are in USD" not in table["prefix"]
                         or not any(row == ["Name", "Input", "Output", "5m writes", "1h writes", "Hits and refreshes"] for row in table["rows"])):
                     continue
                 for row in table["rows"]:
-                    name = next((label for label in names if row and (row[0] == label or row[0].startswith(label + " For "))), None)
+                    name = next((label for label in names if row and row[0] in {label, label + " For coding"}), None)
                     if not name or len(row) != 6:
+                        continue
+                    if not all(value == "-" or re.fullmatch(r"\$[0-9]+(?:\.[0-9]+)?\s*/\s*MTok", value)
+                               for value in row[3:]):
                         continue
                     prices = [re.fullmatch(r"\$([0-9]+(?:\.[0-9]+)?)\s*/\s*MTok", value) for value in row[1:3]]
                     if not all(prices):
                         continue
+                    amounts = [float(price[1]) for price in prices]
+                    if not all(valid_rate_number(amount) for amount in amounts):
+                        continue
                     records.append({"model_id": names[name], "provider": "anthropic", "currency": "USD", "unit": "1M tokens",
-                                    "input": float(prices[0][1]), "output": float(prices[1][1]),
+                                    "input": amounts[0], "output": amounts[1],
                                     "billing_route": "standard-base-uncached", "source_url": url, "checked_at": checked,
                                     "uncertainty": "Published API base rates, not subscription billing; excludes caching, tools, regional charges, taxes and negotiated billing."})
                 break
@@ -310,8 +327,11 @@ class OfficialSources:
                 prices = [row[1], row[output_index]]
                 if not all(re.fullmatch(r"\$[0-9]+(?:\.[0-9]+)?", value) for value in prices):
                     continue
+                amounts = [float(price[1:]) for price in prices]
+                if not all(valid_rate_number(amount) for amount in amounts):
+                    continue
                 records.append({"model_id": row[0], "provider": "openai", "currency": "USD", "unit": "1M tokens",
-                                "input": float(prices[0][1:]), "output": float(prices[1][1:]),
+                                "input": amounts[0], "output": amounts[1],
                                 "billing_route": "standard-short-context-uncached", "source_url": url, "checked_at": checked,
                                 "uncertainty": "Published API base rates only; excludes cache writes, tools, long context, regional uplifts, taxes and negotiated billing."})
             break
@@ -374,7 +394,7 @@ def cost(choice, context, evidence):
              and record.get("model_id") == choice["model_id"] and record.get("provider") == choice.get("provider")
              and record.get("currency") == "USD" and record.get("unit") == "1M tokens"
              and isinstance(record.get("billing_route"), str)
-             and all(type(record.get(key)) in (int, float) and math.isfinite(record[key]) and record[key] >= 0 for key in ("input", "output"))]
+             and all(valid_rate_number(record.get(key)) for key in ("input", "output"))]
     workload = context.get("workload", {})
     selected = [record for record in rates if record["billing_route"] == workload.get("billing_route")]
     if len(selected) == 1:
