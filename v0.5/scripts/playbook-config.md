@@ -286,6 +286,15 @@ can be reused independently when another source is incomplete. Explain, edits,
 resolution and unrelated turns do not retrieve sources. No watcher, package
 installation, preset rewrite or stage launch is introduced.
 
+Delayed Explain and display replies locally recheck each original selected
+guidance/rate claim at the current clock. Exactly 24 hours remains usable.
+Expired, future, missing or malformed dates and unsuccessful statuses withhold
+the affected suitability, rates and subtotals; `withheld_evidence` retains the
+original date and labels the limitation. Fresh siblings and source envelopes
+cannot extend a claim. Repeat Explain and retained-draft recovery use the same
+projection, offering explicit Refresh or ordinary role editing without fetching,
+ranking a substitute, changing choices or writing the advisory cache.
+
 The live CLI uses a private external user cache; `--evidence-dir` explicitly
 selects an external directory on every request. Library callers can supply
 `evidence_dir`; omission keeps evidence only in the service instance. Cache

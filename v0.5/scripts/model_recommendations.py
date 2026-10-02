@@ -372,6 +372,58 @@ def valid_claim(record, kind, now=None, allow_unusable=False):
                                   now if now is not None else datetime.now(timezone.utc)) == "retrieved"
 
 
+def project_advice(advice, now):
+    """Recheck only original selected claims; never retrieve or rank a substitute."""
+    result = deepcopy(advice) if isinstance(advice, dict) else {}
+    result.setdefault("choice", None)
+    result.setdefault("guidance", None)
+    result.setdefault("cost", None)
+    result.setdefault("limitations", LIMITATIONS)
+    retained = result.get("withheld_evidence", {})
+    withheld = deepcopy(retained) if isinstance(retained, dict) else {"guidance": retained}
+    guidance = result.get("guidance")
+    billing = result.get("cost")
+    if billing is not None and not isinstance(billing, dict):
+        withheld["rates"] = billing
+        result["cost"] = {"rates": None, "estimate": None}
+    pricing = (result.get("cost") or {}).get("rates")
+    if guidance is None and result.get("choice") is not None:
+        withheld["guidance"] = {"checked_at": None, "status": "incomplete"}
+    if result.get("cost") and pricing is None:
+        result["cost"]["estimate"] = None
+    for kind, claim in (("guidance", guidance), ("rates", pricing)):
+        try:
+            usable = (isinstance(claim, dict) and claim.get("status") in (None, "retrieved")
+                      and valid_claim(claim, kind, now=now))
+        except (TypeError, ValueError, AttributeError):
+            usable = False
+        if claim is not None and not usable:
+            withheld[kind] = deepcopy(claim)
+    if not isinstance(advice, dict):
+        withheld["guidance"] = advice
+    if "guidance" in withheld:
+        result.update(choice=None, guidance=None, cost=None, local_outcomes=None,
+                      rationale="Original task-fit evidence is inadequate; suitability unknown. Retain the saved or edited choice.")
+    elif "rates" in withheld and result.get("cost"):
+        result["cost"].update(rates=None, estimate=None)
+        result["cost"]["limitations"] = "Original pricing evidence is inadequate; rates and token subtotal unknown."
+    if withheld:
+        for kind, claim in list(withheld.items()):
+            if not isinstance(claim, dict):
+                claim = {"original": claim, "checked_at": None}
+                withheld[kind] = claim
+            status = successful_date_status(claim.get("checked_at"), now)
+            if status != "retrieved":
+                claim["status"] = status
+            elif claim.get("status") not in ("stale", "incomplete", "failed"):
+                claim["status"] = "incomplete"
+        result["withheld_evidence"] = withheld
+        result["limitations"] = (LIMITATIONS + " Original successful dates retained in withheld evidence; "
+                                 "stale or incomplete claims cannot support advice or costs. "
+                                 "Use explicit Refresh or the ordinary role editor to recover.")
+    return result
+
+
 def local_outcome(choice, context):
     workload = context.get("workload")
     if not isinstance(workload, dict) or not workload:

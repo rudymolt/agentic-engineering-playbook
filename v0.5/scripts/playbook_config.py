@@ -536,8 +536,7 @@ class Configuration:
                                            "message": "Current chat observed during this discovery; display-only, not launch proof."}
             self._present(proposal)
             self._replacement(proposal)
-            proposal["proposal_revision"] = self._revision(proposal)
-            return proposal
+            return self._seal(proposal)
         except (ConfigError, OSError, UnicodeError, TypeError) as error:
             return self._blocked(error)
 
@@ -675,8 +674,51 @@ class Configuration:
         return digest(encoded({key: value for key, value in proposal.items() if key != "proposal_revision"}))
 
     def _seal(self, proposal):
+        if self._has_advice_claims(proposal):
+            self._project_advice(proposal, self.clock())
         proposal["proposal_revision"] = self._revision(proposal)
         return proposal
+
+    @staticmethod
+    def _has_advice_claims(proposal):
+        if not isinstance(proposal, dict):
+            return False
+        advice = proposal.get("recommendations", {})
+        if not isinstance(advice, dict):
+            return bool(advice)
+        return any(not isinstance(record, dict) or record.get("choice") is not None or record.get("guidance") is not None
+                   or record.get("withheld_evidence")
+                   or (record.get("cost") is not None and
+                       (not isinstance(record["cost"], dict) or record["cost"].get("rates") is not None))
+                   for record in advice.values())
+
+    @staticmethod
+    def _project_advice(proposal, now):
+        from model_recommendations import project_advice
+        records = proposal.get("recommendations", {})
+        if not isinstance(records, dict):
+            proposal["recommendations"] = {}
+            return
+        advice = {role: project_advice(record, now)
+                  for role, record in records.items()}
+        if not advice:
+            return
+        proposal["recommendations"] = advice
+        rows = proposal.get("role_proposal", [])
+        for row in rows if isinstance(rows, list) else []:
+            if isinstance(row, dict) and isinstance(row.get("role"), str) and row["role"] in advice:
+                row["recommendation"] = deepcopy(advice[row["role"]])
+        recommended = proposal.get("recommended")
+        if isinstance(recommended, dict) and isinstance(recommended.get("advice"), dict):
+            recommended["advice"] = deepcopy(advice)
+        explanation = proposal.get("explanation", {})
+        if isinstance(explanation, dict) and isinstance(explanation.get("role"), str) and explanation["role"] in advice:
+            explanation["recommendation"] = deepcopy(advice[explanation["role"]])
+        replacement = proposal.get("replacement", {})
+        if isinstance(replacement, dict) and isinstance(replacement.get("role"), str) and replacement["role"] in advice:
+            replacement["advice"] = deepcopy(advice[replacement["role"]])
+            if replacement["advice"]["choice"] is None and isinstance(proposal.get("choices"), list):
+                proposal["choices"] = [choice for choice in proposal["choices"] if choice != "Accept replacement"]
 
     def _discovery_revision(self, evidence):
         return digest(encoded({key: value for key, value in evidence.items() if key not in {"checked_at", "request_id", "coordinator"}}))
@@ -686,10 +728,12 @@ class Configuration:
             result = self._reply(proposal, text)
         except (ConfigError, OSError, UnicodeError, KeyError, TypeError, AttributeError) as error:
             result = self._blocked(error)
-        return self.retain_proposal(result, proposal)
+        retained = proposal.get("retained_proposal", proposal) if isinstance(proposal, dict) else None
+        now = self.clock() if result.get("state") in {"blocked", "recovery_required"} and self._has_advice_claims(retained) else None
+        return self.retain_proposal(result, proposal, now=now)
 
     @staticmethod
-    def retain_proposal(result, proposal):
+    def retain_proposal(result, proposal, now=None):
         retained = proposal
         if isinstance(proposal, dict) and proposal.get("state") in {"blocked", "recovery_required"}:
             retained = proposal.get("retained_proposal")
@@ -697,6 +741,10 @@ class Configuration:
                 and retained.get("state") in {"decision_required", "proposal_ready"}
                 and retained.get("proposal_revision") == Configuration._revision(retained)):
             result["retained_proposal"] = deepcopy(retained)
+            if Configuration._has_advice_claims(retained):
+                Configuration._project_advice(result["retained_proposal"],
+                                             now if now is not None else datetime.now(timezone.utc))
+                result["retained_proposal"]["proposal_revision"] = Configuration._revision(result["retained_proposal"])
             result.setdefault("choices", ["Reload", "Not now"]).append("Back")
         return result
 
@@ -836,8 +884,7 @@ class Configuration:
                 self._present(draft)
             except ConfigError as error:
                 return self._blocked(error)
-            draft["proposal_revision"] = self._revision(draft)
-            return draft
+            return self._seal(draft)
         if reply in {"guided", "expert"}:
             if draft["personal"] is None:
                 return self._blocked("Supply an explicit user-local preferences directory before changing presentation.")
@@ -976,8 +1023,7 @@ class Configuration:
         draft.pop('replacement', None)
         if changed_directory:
             draft["message"] = "Directory identity changed; review the resolved personal destination. Role drafts are retained."
-        draft["proposal_revision"] = self._revision(draft)
-        return draft
+        return self._seal(draft)
 
     def _apply_preference(self, draft):
         saved = False

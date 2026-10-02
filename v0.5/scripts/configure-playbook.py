@@ -83,7 +83,7 @@ def main():
     except (ConfigError, OSError, KeyError, TypeError, AttributeError, UnicodeError) as error:
         result = {"state": "recovery_required" if isinstance(error, RecoveryRequired) else "blocked", "message": public_error_message(error), "launched": False}
         if isinstance(request, dict):
-            result = Configuration.retain_proposal(result, request.get("proposal"))
+            result = Configuration.retain_proposal(result, request.get("proposal"), now=args.now)
     print(json.dumps(result, sort_keys=True, indent=2))
     return 2 if result.get("state") in {"blocked", "recovery_required"} else 0
 

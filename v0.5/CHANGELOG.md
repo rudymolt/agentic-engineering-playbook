@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+- Recheck original recommendation claims when rendering delayed Explain,
+  display replies and retained drafts, preserving dated limitations and recovery.
+
+*Why — evidence can expire while a sealed proposal waits:* a fresh read does
+not extend an individual claim beyond the inclusive 24-hour boundary. Withhold
+inadequate suitability, rates and subtotals without substituting a candidate,
+fetching on an unrelated reply, writing the cache or changing user choices.
+
 - Revalidate the exact proposed replacement and its original guidance at
   acceptance time, retaining the draft when evidence expires or discovery changes.
 
