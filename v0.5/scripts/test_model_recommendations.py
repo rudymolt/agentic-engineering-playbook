@@ -293,7 +293,7 @@ class RecommendationTests(unittest.TestCase):
                     self.assertTrue(evidence['guidance'])
                     advice = cost(dict(model_id='claude-fixture-1-0', provider='anthropic', runner='codex',
                         reasoning='high'), {**self.context, 'workload': dict(input_tokens=4000,
-                        output_tokens=2000, retries=1, billing_route='standard-base-uncached')}, evidence)
+                        output_tokens=2000, retries=1, billing_route='standard-base-uncached')}, evidence, now=NOW)
                     if restriction:
                         self.assertEqual(evidence['rates'], [])
                         self.assertIsNone(advice['estimate'])
@@ -310,7 +310,7 @@ class RecommendationTests(unittest.TestCase):
                 with self.subTest(field=field, value=value):
                     evidence = deepcopy(self.evidence)
                     evidence['rates'][0][field] = value
-                    direct = cost(self.routes[0], self.context, evidence)
+                    direct = cost(self.routes[0], self.context, evidence, now=NOW)
                     self.assertIsNone(direct['rates'])
                     self.assertIsNone(direct['estimate'])
                     draft = self.service({**self.context, 'workload': dict(input_tokens=4000,

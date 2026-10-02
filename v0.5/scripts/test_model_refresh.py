@@ -2,6 +2,7 @@
 
 from copy import deepcopy
 from datetime import datetime, timedelta
+from itertools import product
 import unittest
 import tempfile
 from pathlib import Path
@@ -11,7 +12,8 @@ import sys
 
 import test_model_recommendations as fixtures
 from playbook_config import Configuration
-from model_recommendations import OfficialSources, SOURCES
+from model_recommendations import OfficialSources, SOURCES, cost, valid_claim, recommendations
+from model_evidence_cache import EvidenceCache
 
 NOW = fixtures.NOW
 
@@ -191,6 +193,184 @@ class RefreshTests(unittest.TestCase):
             self.assertFalse(refreshed['recommendation_evidence']['cache_persisted'])
             self.assertIn('persistence refused', refreshed['recommendation_evidence']['cache_limitations'])
             self.assertEqual(sorted(path.name for path in self.project.iterdir()), ['.playbook-state.yml'])
+
+
+class ClaimFreshnessTests(unittest.TestCase):
+    setUp = fixtures.RecommendationTests.setUp
+    discover = fixtures.RecommendationTests.discover
+    clock = '2026-10-02T12:00:00+00:00'
+
+    def dated_evidence(self, date, envelope=True):
+        evidence = deepcopy(self.evidence)
+        for kind in ('guidance', 'rates'):
+            for record in evidence[kind]:
+                record['checked_at'] = date
+        if envelope:
+            evidence['sources'] = [dict(source_url=url, checked_at=self.clock, status='retrieved')
+                                   for url in (fixtures.GUIDANCE, fixtures.PRICING)]
+        return evidence
+
+    def test_cache_each_claim_date_is_independent_of_envelope_or_fresh_sibling(self):
+        for date, status in (('2026-09-01T12:00:00+00:00', 'stale'),
+                             ('2027-10-02T12:00:00+00:00', 'incomplete')):
+            for envelope in (True, False):
+                with self.subTest(date=date, envelope=envelope):
+                    evidence = self.dated_evidence(date, envelope)
+                    for kind in ('guidance', 'rates'):
+                        evidence[kind].insert(0, {**evidence[kind][0], 'model_id': 'fresh-sibling',
+                                                 'checked_at': self.clock})
+                    cache = EvidenceCache(lambda: self.clock)
+                    result = cache.retrieve(lambda: evidence, {'routes': self.routes, 'revision': 'fixture'})
+                    for kind in ('guidance', 'rates'):
+                        rejected = next(item for item in result[kind] if item['model_id'] == 'fixture-code')
+                        self.assertEqual(rejected['checked_at'], date)
+                        self.assertEqual(rejected.get('status'), status)
+                        fresh = next(item for item in result[kind] if item['model_id'] == 'fresh-sibling')
+                        self.assertNotIn(fresh.get('status'), ('stale', 'incomplete'))
+                        self.assertFalse(valid_claim(rejected, kind))
+
+    def test_cache_reuse_checks_claim_age_even_when_source_is_younger(self):
+        now = [self.clock]
+        evidence = self.dated_evidence('2026-10-01T12:00:00+00:00')
+        calls = []
+        def source():
+            calls.append(1)
+            if len(calls) > 1:
+                raise OSError('outage')
+            return evidence
+        cache = EvidenceCache(lambda: now[0])
+        discovery = {'routes': self.routes, 'revision': 'fixture'}
+        first = cache.retrieve(source, discovery)
+        self.assertNotIn(first['guidance'][0].get('status'), ('stale', 'incomplete'))
+        now[0] = '2026-10-02T12:00:01+00:00'
+        second = cache.retrieve(source, discovery)
+        self.assertEqual(len(calls), 2)
+        self.assertEqual(second['guidance'][0]['checked_at'], '2026-10-01T12:00:00+00:00')
+        self.assertEqual(second['guidance'][0]['status'], 'stale')
+        self.assertEqual(second['sources'][0]['checked_at'], self.clock)
+        self.assertIsNone(cost(self.routes[0], self.context, second)['rates'])
+
+    def test_official_retrieval_evaluates_dates_after_fetch_completes(self):
+        now = [self.clock]
+        def fetch(url):
+            now[0] = '2026-10-02T12:00:01+00:00'
+            if url == SOURCES[0]:
+                return '<p><a href="/api/docs/models/fixture-code">fixture-code</a> Recommended for coding.</p>'
+            return '<p>General official guidance</p>'
+        cache = EvidenceCache(lambda: now[0])
+        result = cache.retrieve(OfficialSources(lambda: now[0], fetch=fetch).retrieve,
+                                {'routes': self.routes, 'revision': 'fixture'})
+        self.assertEqual(result['guidance'][0]['checked_at'], now[0])
+        self.assertNotIn(result['guidance'][0].get('status'), ('stale', 'incomplete'))
+        self.assertEqual(result['sources'][0]['checked_at'], now[0])
+
+    def test_persisted_claims_expire_independently_and_missing_dates_stay_visible(self):
+        with tempfile.TemporaryDirectory() as private:
+            path = Path(private) / 'cache.json'
+            now = [self.clock]
+            evidence = self.dated_evidence('2026-10-01T12:00:00+00:00')
+            evidence['guidance'].append({**evidence['guidance'][0], 'model_id': 'missing-date',
+                                         'checked_at': None})
+            discovery = {'routes': self.routes, 'revision': 'fixture'}
+            first = EvidenceCache(lambda: now[0], path, self.project).retrieve(lambda: evidence, discovery)
+            missing = next(item for item in first['guidance'] if item['model_id'] == 'missing-date')
+            self.assertIsNone(missing['checked_at'])
+            self.assertEqual(missing['status'], 'incomplete')
+            now[0] = '2026-10-02T12:00:01+00:00'
+            def outage():
+                raise OSError('outage')
+            reused = EvidenceCache(lambda: now[0], path, self.project).retrieve(outage, discovery)
+            for kind in ('guidance', 'rates'):
+                claim = next(item for item in reused[kind] if item['model_id'] == 'fixture-code')
+                self.assertEqual(claim['checked_at'], '2026-10-01T12:00:00+00:00')
+                self.assertEqual(claim['status'], 'stale')
+            self.assertEqual(reused['sources'][0]['checked_at'], self.clock)
+            self.assertEqual(path.stat().st_mode & 0o777, 0o600)
+
+    def test_raw_advice_library_uses_clock_not_supplied_evaluation_metadata(self):
+        for date in ('2026-09-01T12:00:00+00:00', '2027-10-02T12:00:00+00:00'):
+            with self.subTest(date=date):
+                evidence = self.dated_evidence(date)
+                evidence['evaluated_at'] = date
+                self.assertIsNone(cost(self.routes[0], self.context, evidence, now=self.clock)['rates'])
+                advice = recommendations({'implementation': self.routes}, self.context, evidence,
+                                         ['codex'], now=self.clock)
+                self.assertIsNone(advice['implementation']['choice'])
+
+    def test_claim_boundaries_and_exact_positive_date(self):
+        for age, usable in ((1, True), (86399, True), (86400, True), (86401, False), (-1, False)):
+            with self.subTest(age=age):
+                date = (datetime.fromisoformat(self.clock) - timedelta(seconds=age)).isoformat()
+                result = EvidenceCache(lambda: self.clock).retrieve(lambda: self.dated_evidence(date),
+                          {'routes': self.routes, 'revision': 'fixture'})
+                for kind in ('guidance', 'rates'):
+                    self.assertEqual(result[kind][0]['checked_at'], date)
+                    self.assertEqual(result[kind][0].get('status') not in ('stale', 'incomplete'), usable)
+                if usable:
+                    self.assertEqual(result['sources'][0]['checked_at'], self.clock)
+
+    def cli_read(self, fixture, cache, now, context):
+        adapter = "import json,sys; r=json.load(sys.stdin); json.dump(dict(request_id=r['request_id'],checked_at=r['started_at'],authority='host-reported-selection',revision='new-model',routes=" + repr(self.routes) + "),sys.stdout)"
+        command = [sys.executable, str(Path(__file__).with_name('configure-playbook.py')), 'read',
+                   '--project', str(self.project), '--now', now, '--evidence-dir', str(cache),
+                   '--evidence-fixture', str(fixture),
+                   '--discovery-command', json.dumps([sys.executable, '-c', adapter])]
+        process = subprocess.run(command, input=json.dumps({'context': context}), text=True, capture_output=True)
+        self.assertEqual(process.returncode, 0, process.stderr)
+        self.assertNotIn('Traceback', process.stdout + process.stderr)
+        self.assertEqual(self.state.read_bytes(), self.original)
+        self.assertEqual(sorted(path.name for path in self.project.iterdir()), ['.playbook-state.yml'])
+        return json.loads(process.stdout)
+
+    def test_cli_invalid_guidance_withholds_replacement_and_invalid_rates_leave_cost_unknown(self):
+        context = {**self.context, 'workload': dict(input_tokens=1000, output_tokens=500,
+                    retries=2, billing_route='standard-short-context-uncached')}
+        cases = (('2026-09-01T12:00:00+00:00', False), ('2027-10-02T12:00:00+00:00', False),
+                 ('2026-10-02T11:59:59+00:00', True), ('2026-10-01T12:00:01+00:00', True),
+                 ('2026-10-01T12:00:00+00:00', True), ('2026-10-01T11:59:59+00:00', False))
+        for kind, (date, usable), envelope in product(('guidance', 'rates'), cases, (True, False)):
+            with self.subTest(kind=kind, date=date, envelope=envelope), tempfile.TemporaryDirectory() as private:
+                evidence = self.dated_evidence(self.clock, envelope)
+                for record in evidence[kind]:
+                    record['checked_at'] = date
+                if not envelope:
+                    # A current sibling establishes only its own successful date.
+                    for category in ('guidance', 'rates'):
+                        evidence[category].insert(0, {**evidence[category][0], 'model_id': 'undiscovered-sibling',
+                                                     'checked_at': self.clock})
+                fixture = Path(private) / 'source.json'
+                fixture.write_text(json.dumps(evidence))
+                result = self.cli_read(fixture, Path(private) / 'cache', self.clock, context)
+                original = next(item for item in result['recommendation_evidence'][kind]
+                                if item['model_id'] == 'fixture-code')
+                self.assertEqual(original['checked_at'], date)
+                advice = result['recommendations']['implementation']
+                if kind == 'guidance' and not usable:
+                    self.assertIsNone(advice['choice'])
+                    self.assertIsNone(result['replacement']['advice']['choice'])
+                    self.assertNotIn('Accept replacement', result['choices'])
+                    self.assertIsNone(advice['cost'])
+                else:
+                    self.assertEqual(advice['choice']['model_id'], 'fixture-code')
+                    usable_price = kind == 'guidance' or usable
+                    self.assertEqual(advice['cost']['rates'] is not None, usable_price)
+                    self.assertEqual(advice['cost']['estimate'] is not None, usable_price)
+
+    def test_cli_persisted_claim_expires_under_still_fresh_source(self):
+        with tempfile.TemporaryDirectory() as private:
+            fixture = Path(private) / 'source.json'
+            fixture.write_text(json.dumps(self.dated_evidence('2026-10-01T12:00:00+00:00')))
+            cache = Path(private) / 'cache'
+            first = self.cli_read(fixture, cache, self.clock, self.context)
+            self.assertEqual(first['recommendations']['implementation']['choice']['model_id'], 'fixture-code')
+            fixture.unlink()
+            second = self.cli_read(fixture, cache, '2026-10-02T12:00:01+00:00', self.context)
+            self.assertIsNone(second['recommendations']['implementation']['choice'])
+            self.assertNotIn('Accept replacement', second['choices'])
+            self.assertEqual(second['recommendation_evidence']['guidance'][0]['checked_at'],
+                             '2026-10-01T12:00:00+00:00')
+            self.assertEqual(second['recommendation_evidence']['guidance'][0]['status'], 'stale')
+            self.assertEqual(second['recommendation_evidence']['sources'][0]['checked_at'], self.clock)
 
 
 if __name__ == '__main__':

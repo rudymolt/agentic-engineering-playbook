@@ -8,7 +8,7 @@ import os
 from pathlib import Path
 import tempfile
 
-from model_recommendations import SOURCES, OfficialSources, valid_claim
+from model_recommendations import SOURCES, OfficialSources, valid_claim, successful_date_status
 
 
 def fingerprint(value):
@@ -75,7 +75,9 @@ class EvidenceCache:
             entry = entries.get(url, {})
             try:
                 age = (now - instant(entry['source']['checked_at'])).total_seconds()
-                fresh = 0 <= age <= 86400 and entry['source']['status'] == 'retrieved'
+                fresh = (0 <= age <= 86400 and entry['source']['status'] == 'retrieved'
+                         and all(valid_claim(record, kind, now=now)
+                                 for kind in ('guidance', 'rates') for record in entry.get(kind, [])))
             except (KeyError, ValueError, TypeError, AttributeError):
                 fresh = False
             if force or new or not fresh:
@@ -97,6 +99,9 @@ class EvidenceCache:
                     raise ValueError('Invalid evidence lists')
             except (OSError, ValueError, UnicodeError, TimeoutError, TypeError):
                 fetched = {}
+        # Live fetches stamp claims after the request starts; evaluate against
+        # the actual post-fetch clock, never the earlier scheduling instant.
+        now = instant(self.clock())
         changes = []
         refreshed = False
         result = {'guidance': [], 'rates': [], 'sources': [], 'changes': changes}
@@ -107,14 +112,16 @@ class EvidenceCache:
             current = deepcopy(old)
             if url in due:
                 claims = {kind: [deepcopy(record) for record in fetched.get(kind, [])[:256]
-                                 if valid_claim(record, kind) and record.get('source_url') == url]
+                                 if valid_claim(record, kind, allow_unusable=True) and record.get('source_url') == url]
                           for kind in ('guidance', 'rates')}
                 metadata = next((deepcopy(item) for item in fetched.get('sources', [])
                                  if isinstance(item, dict) and item.get('source_url') == url), {})
                 metadata = {key: value for key, value in metadata.items() if key in {
                     'source_url', 'checked_at', 'retrieved_at', 'status', 'uncertainty', 'content_fingerprint', 'source_revision'}}
-                if metadata.get('status') != 'retrieved' and any(claims.values()):
-                    metadata = {'source_url': url, 'checked_at': claims['guidance'][0]['checked_at'] if claims['guidance'] else claims['rates'][0]['checked_at'],
+                usable = [record for kind, records in claims.items() for record in records
+                          if valid_claim(record, kind, now=now)]
+                if metadata.get('status') != 'retrieved' and usable:
+                    metadata = {'source_url': url, 'checked_at': usable[0]['checked_at'],
                                 'status': 'retrieved', 'uncertainty': 'Controlled structured evidence; no source revision available.'}
                 try:
                     success = metadata.get('status') == 'retrieved' and 0 <= (now - instant(metadata['checked_at'])).total_seconds() <= 86400
@@ -136,7 +143,8 @@ class EvidenceCache:
                     refreshed = True
                 else:
                     prior = old.get('source', {})
-                    current = {**old, 'source': {**metadata, **prior, 'source_url': url, 'checked_at': prior.get('checked_at'),
+                    current = {**{kind: claims[kind] or old.get(kind, []) for kind in ('guidance', 'rates')},
+                               'source': {**metadata, **prior, 'source_url': url, 'checked_at': prior.get('checked_at'),
                                                'status': 'stale' if prior.get('checked_at') else 'incomplete',
                                                'uncertainty': 'Refresh incomplete; previous successful date retained. No fresh comparison.'}}
             if not current or (not official and not old and not any(claims.values()) and not metadata):
@@ -145,10 +153,13 @@ class EvidenceCache:
             result['sources'].append(deepcopy(current['source']))
             for kind in ('guidance', 'rates'):
                 for record in current.get(kind, [])[:256]:
-                    if valid_claim(record, kind):
+                    if valid_claim(record, kind, allow_unusable=True):
                         item = deepcopy(record)
-                        if current['source']['status'] != 'retrieved':
-                            item['status'] = 'stale'
+                        status = successful_date_status(item.get('checked_at'), now)
+                        if status != 'retrieved':
+                            item['status'] = status
+                        elif current['source']['status'] != 'retrieved':
+                            item['status'] = current['source']['status']
                         result[kind].append(item)
         self.saved = {'schema_version': 1, 'entries': entries, 'discovery_fingerprint': discovered}
         result['cache_refreshed'] = refreshed

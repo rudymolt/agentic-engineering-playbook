@@ -442,7 +442,7 @@ class Configuration:
         if not isinstance(allowed, list) or any(not isinstance(runner, str) for runner in allowed):
             raise ConfigError("Allowed runners are invalid; reconcile existing routing policy before advice.")
         try:
-            return recommendations(routes, context, evidence, allowed, lane=lane)
+            return recommendations(routes, context, evidence, allowed, lane=lane, now=self.clock() if evidence else None)
         except (ValueError, TypeError, AttributeError) as error:
             raise ConfigError("Invalid local recommendation context; supply task, risk and structured evidence without changing defaults.") from None
 

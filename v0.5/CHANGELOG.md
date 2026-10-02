@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+- Validate each guidance and pricing claim's original successful date on retrieval
+  and reuse, independently of source metadata and sibling claims.
+
+*Why — aggregate freshness cannot establish individual evidence:* expired claims
+remain visibly stale, and future or missing dates remain incomplete. Withhold
+unsupported suitability, replacement, rates and subtotals while preserving exact
+successful dates, explicit Apply and intentional configuration choices.
+
 - Reuse bounded local official recommendation evidence for at most 24 hours at
   discovery, checking immediately on first use, explicit Refresh or a changed
   model/version fingerprint. Offer draft-only recovery for unavailable models.

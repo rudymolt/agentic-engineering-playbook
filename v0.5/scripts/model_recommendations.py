@@ -275,7 +275,7 @@ class OfficialSources:
         records = []
         if url == SOURCES[4]:
             names = {record["label"]: record["model_id"] for record in guidance
-                     if record.get("provider") == "anthropic" and record.get("label") and valid_claim(record, "guidance")}
+                     if record.get("provider") == "anthropic" and record.get("label") and valid_claim(record, "guidance", now=checked)}
             for table in page.tables:
                 if (table["tier"] not in {"model pricing", "standard", "base api pricing"}
                         or not base_pricing_context(table["tier_context"])
@@ -341,17 +341,35 @@ class OfficialSources:
         return records
 
 
-def valid_claim(record, kind):
+def successful_date_status(checked_at, now):
+    """Classify the original successful date against the evaluation clock."""
+    try:
+        checked = datetime.fromisoformat(checked_at.replace("Z", "+00:00"))
+        current = datetime.fromisoformat(now.replace("Z", "+00:00")) if isinstance(now, str) else now
+        if checked.tzinfo is None or current.tzinfo is None:
+            return "incomplete"
+        age = (current - checked).total_seconds()
+        if age < 0:
+            return "incomplete"
+        return "retrieved" if age <= 86400 else "stale"
+    except (ValueError, TypeError, AttributeError):
+        return "incomplete"
+
+
+def valid_claim(record, kind, now=None, allow_unusable=False):
     if not isinstance(record, dict) or not isinstance(record.get("uncertainty"), str) or not record["uncertainty"]:
         return False
     url = record.get("source_url")
     allowed = {SOURCES[0], SOURCES[3]} if kind == "guidance" else {SOURCES[2], SOURCES[4]}
-    if url not in allowed or record.get("status") in {"stale", "incomplete", "failed"}:
+    if url not in allowed:
         return False
-    try:
-        return datetime.fromisoformat(record["checked_at"].replace("Z", "+00:00")).tzinfo is not None
-    except (KeyError, ValueError, TypeError, AttributeError):
+    # Cache assembly retains inadequate records for dated, honest display only.
+    if allow_unusable:
+        return True
+    if record.get("status") in {"stale", "incomplete", "failed"}:
         return False
+    return successful_date_status(record.get("checked_at"),
+                                  now if now is not None else datetime.now(timezone.utc)) == "retrieved"
 
 
 def local_outcome(choice, context):
@@ -377,7 +395,8 @@ def local_outcome(choice, context):
     return None
 
 
-def cost(choice, context, evidence):
+def cost(choice, context, evidence, now=None):
+    now = now if now is not None else datetime.now(timezone.utc)
     route_key = "@".join(choice[key] for key in ("model_id", "runner", "reasoning"))
     billing = context.get("route_billing", {}).get(route_key, context.get("route_billing", {}).get(choice["runner"], context.get("billing", "unknown")))
     result = {"billing": billing, "route": deepcopy(choice), "rates": None, "estimate": None, "observable": None,
@@ -393,7 +412,7 @@ def cost(choice, context, evidence):
             except (ValueError, TypeError, AttributeError):
                 pass
         return result
-    rates = [record for record in evidence.get("rates", []) if valid_claim(record, "rates")
+    rates = [record for record in evidence.get("rates", []) if valid_claim(record, "rates", now=now)
              and record.get("model_id") == choice["model_id"] and record.get("provider") == choice.get("provider")
              and record.get("currency") == "USD" and record.get("unit") == "1M tokens"
              and isinstance(record.get("billing_route"), str)
@@ -418,7 +437,8 @@ def cost(choice, context, evidence):
     return result
 
 
-def recommendations(routes, context, evidence, allowed_runners, lane=False):
+def recommendations(routes, context, evidence, allowed_runners, lane=False, now=None):
+    now = now if now is not None else datetime.now(timezone.utc)
     inferred = context is None or "task" not in context or "risk" not in context
     context = deepcopy(context or {})
     for key in ("constraints", "workload", "route_billing", "observations"):
@@ -457,7 +477,7 @@ def recommendations(routes, context, evidence, allowed_runners, lane=False):
                     or constraints.get("allowed_reasoning") is not None and choice["reasoning"] not in constraints["allowed_reasoning"]):
                 continue
             for record in evidence.get("guidance", []):
-                if (valid_claim(record, "guidance") and record.get("model_id") == choice["model_id"]
+                if (valid_claim(record, "guidance", now=now) and record.get("model_id") == choice["model_id"]
                         and record.get("provider") == choice.get("provider") and task in record.get("tasks", [])
                         and risk in record.get("risks", []) and record.get("text")
                         and choice["reasoning"] in record.get("reasoning", [choice["reasoning"]])):
@@ -468,7 +488,7 @@ def recommendations(routes, context, evidence, allowed_runners, lane=False):
                   "limitations": LIMITATIONS, "sources": deepcopy(evidence.get("sources", []))}
         if eligible:
             choice, guidance = eligible[0]
-            advice.update(choice=deepcopy(choice), guidance=deepcopy(guidance), cost=cost(choice, context, evidence), local_outcomes=local_outcome(choice, context),
+            advice.update(choice=deepcopy(choice), guidance=deepcopy(guidance), cost=cost(choice, context, evidence, now=now), local_outcomes=local_outcome(choice, context),
                           rationale=f"For {context.get('goal', 'the current task')}: {task}, {risk} risk; provider guidance supports task fit. {role} uses host-supported {choice['reasoning']} reasoning on {choice['runner']}. First eligible route in discovery order, not a price or performance ranking. Local comparative outcomes unknown.")
             if advice["local_outcomes"]:
                 advice["rationale"] = advice["rationale"].replace("Local comparative outcomes unknown.", "Comparable local observation attached separately; no cross-model cheapest-outcome claim.")
