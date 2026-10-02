@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+- Retain selected advice through previews and rejected acceptance, and withhold
+  nested advice when a persisted or caller-supplied proposal is malformed.
+
+*Why — display recovery must not select new evidence:* Back and rejected Accept
+must preserve the original claim and successful date instead of silently ranking
+a younger sibling. Every public advice copy needs projection; a content checksum
+cannot authorize malformed advice. Refresh and ordinary editing remain explicit.
+
 - Recheck original recommendation claims when rendering delayed Explain,
   display replies and retained drafts, preserving dated limitations and recovery.
 

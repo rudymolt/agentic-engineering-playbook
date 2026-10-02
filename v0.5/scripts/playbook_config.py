@@ -534,7 +534,7 @@ class Configuration:
                 proposal["coordinator"] = {"observed": True, "choice": deepcopy(evidence["coordinator"]),
                                            "authority": evidence["authority"], "checked_at": evidence["checked_at"],
                                            "message": "Current chat observed during this discovery; display-only, not launch proof."}
-            self._present(proposal)
+            self._present(proposal, rerank=True)
             self._replacement(proposal)
             return self._seal(proposal)
         except (ConfigError, OSError, UnicodeError, TypeError) as error:
@@ -612,7 +612,7 @@ class Configuration:
             return True
         return False
 
-    def _present(self, proposal):
+    def _present(self, proposal, rerank=False):
         context = proposal["context"]
         if context is not None:
             if not isinstance(context, dict) or set(context) - {"goal", "billing", "task", "risk", "constraints", "workload", "route_billing", "observations", "outcomes"}:
@@ -632,7 +632,11 @@ class Configuration:
         proposal["recommended"] = {"basis": "retained starting configuration", "advice": "unknown until evidence-backed advice is available",
                                     "limitations": "Availability alone is not suitability; no static cost-tier bundle or paid comparison."}
         advice_context = {**(context or {}), "billing": proposal["billing"]}
-        proposal["recommendations"] = self._recommend(proposal["role_alternatives"], advice_context, proposal.get("recommendation_evidence", {}))
+        # A preview owns the selected claims, not merely the source collection.
+        # Display and failed actions must not select a younger sibling on reuse.
+        if rerank:
+            proposal.pop("advice_recovery_required", None)
+            proposal["recommendations"] = self._recommend(proposal["role_alternatives"], advice_context, proposal.get("recommendation_evidence", {}))
         if any(advice["choice"] for advice in proposal["recommendations"].values()):
             proposal["recommended"] = {"basis": "available, task-fit, policy-filtered official evidence", "advice": proposal["recommendations"],
                                         "limitations": "Read-only suggestions; no selection, automatic default rewrite, paid comparison or execution approval."}
@@ -680,45 +684,92 @@ class Configuration:
         return proposal
 
     @staticmethod
+    def _advice_mapping_valid(proposal):
+        records = proposal.get("recommendations")
+        return (isinstance(records, dict) and set(records) == set(ROLES)
+                and all(isinstance(record, dict) and {"choice", "guidance", "cost"} <= set(record)
+                        for record in records.values()))
+
+    @staticmethod
+    def _advice_copies(proposal):
+        """Locate each public advice copy independently of the root mapping."""
+        copies = []
+        records = proposal.get("recommendations")
+        if isinstance(records, dict):
+            copies.extend((role, records, role) for role in records)
+        rows = proposal.get("role_proposal", [])
+        for row in rows if isinstance(rows, list) else []:
+            if isinstance(row, dict) and "recommendation" in row:
+                copies.append((row.get("role"), row, "recommendation"))
+        for owner, key in (("replacement", "advice"), ("explanation", "recommendation")):
+            value = proposal.get(owner)
+            if isinstance(value, dict) and key in value:
+                copies.append((value.get("role"), value, key))
+        recommended = proposal.get("recommended")
+        if isinstance(recommended, dict) and isinstance(recommended.get("advice"), dict):
+            copies.extend((role, recommended["advice"], role) for role in recommended["advice"])
+        return copies
+
+    @staticmethod
     def _has_advice_claims(proposal):
         if not isinstance(proposal, dict):
             return False
-        advice = proposal.get("recommendations", {})
-        if not isinstance(advice, dict):
-            return bool(advice)
+        if "recommendations" in proposal and not Configuration._advice_mapping_valid(proposal):
+            return True
+        records = [owner[key] for _, owner, key in Configuration._advice_copies(proposal)]
         return any(not isinstance(record, dict) or record.get("choice") is not None or record.get("guidance") is not None
                    or record.get("withheld_evidence")
                    or (record.get("cost") is not None and
                        (not isinstance(record["cost"], dict) or record["cost"].get("rates") is not None))
-                   for record in advice.values())
+                   for record in records) or Configuration._has_advice_claims(proposal.get("retained_proposal"))
 
     @staticmethod
     def _project_advice(proposal, now):
         from model_recommendations import project_advice
-        records = proposal.get("recommendations", {})
-        if not isinstance(records, dict):
-            proposal["recommendations"] = {}
-            return
-        advice = {role: project_advice(record, now)
-                  for role, record in records.items()}
-        if not advice:
-            return
+        copies = Configuration._advice_copies(proposal)
+        invalid = proposal.get("advice_recovery_required") or not Configuration._advice_mapping_valid(proposal)
+        if invalid:
+            # A content revision cannot establish which malformed copy was selected.
+            # Keep original dates as limitations, never reconstruct acceptance from it.
+            proposal["advice_recovery_required"] = True
+            proposal["message"] = "Original advice is malformed; use explicit Refresh or the ordinary role editor. Draft retained."
+
+        def project(record):
+            if invalid and isinstance(record, dict):
+                record = deepcopy(record)
+                withheld = record.get("withheld_evidence")
+                if not isinstance(withheld, dict):
+                    withheld = {}
+                withheld.setdefault("guidance", deepcopy(record.get("guidance")) or
+                                    {"checked_at": None, "status": "incomplete"})
+                record["withheld_evidence"] = withheld
+            return project_advice(record, now)
+
+        records = proposal.get("recommendations")
+        records = records if isinstance(records, dict) else {}
+        advice = {}
+        for role in ROLES:
+            record = records.get(role)
+            if not isinstance(record, dict) or not {"choice", "guidance", "cost"} <= set(record):
+                record = next((owner[key] for copied_role, owner, key in copies
+                               if copied_role == role and isinstance(owner[key], dict)
+                               and {"choice", "guidance", "cost"} <= set(owner[key])), record)
+            advice[role] = project(record)
+        for role, owner, key in copies:
+            owner[key] = deepcopy(advice[role]) if isinstance(role, str) and role in advice else project(owner[key])
         proposal["recommendations"] = advice
-        rows = proposal.get("role_proposal", [])
-        for row in rows if isinstance(rows, list) else []:
-            if isinstance(row, dict) and isinstance(row.get("role"), str) and row["role"] in advice:
-                row["recommendation"] = deepcopy(advice[row["role"]])
         recommended = proposal.get("recommended")
         if isinstance(recommended, dict) and isinstance(recommended.get("advice"), dict):
             recommended["advice"] = deepcopy(advice)
-        explanation = proposal.get("explanation", {})
-        if isinstance(explanation, dict) and isinstance(explanation.get("role"), str) and explanation["role"] in advice:
-            explanation["recommendation"] = deepcopy(advice[explanation["role"]])
-        replacement = proposal.get("replacement", {})
-        if isinstance(replacement, dict) and isinstance(replacement.get("role"), str) and replacement["role"] in advice:
-            replacement["advice"] = deepcopy(advice[replacement["role"]])
-            if replacement["advice"]["choice"] is None and isinstance(proposal.get("choices"), list):
+        replacement = proposal.get("replacement")
+        if (invalid or not isinstance(replacement, dict) or not isinstance(replacement.get("advice"), dict)
+                or replacement["advice"].get("choice") is None):
+            if isinstance(proposal.get("choices"), list):
                 proposal["choices"] = [choice for choice in proposal["choices"] if choice != "Accept replacement"]
+        retained = proposal.get("retained_proposal")
+        if isinstance(retained, dict):
+            Configuration._project_advice(retained, now)
+            retained["proposal_revision"] = Configuration._revision(retained)
 
     def _discovery_revision(self, evidence):
         return digest(encoded({key: value for key, value in evidence.items() if key not in {"checked_at", "request_id", "coordinator"}}))
@@ -780,6 +831,8 @@ class Configuration:
         except (ConfigError, KeyError, TypeError) as error:
             return self._blocked(error)
         draft = deepcopy(proposal)
+        if not self._advice_mapping_valid(draft) or draft.get("advice_recovery_required"):
+            self._project_advice(draft, self.clock())
         if reply in {'accept replacement', 'choose another model'} and draft.get('step') == 'replacement':
             role = draft['replacement']['role']
             if reply == 'choose another model':
@@ -793,12 +846,15 @@ class Configuration:
             original_guidance = draft['replacement']['advice'].get('guidance')
             suitability = self._recommend(proposed_routes, draft['context'],
                                           {'guidance': [original_guidance]})[role]
-            if changed or choice is None or suitability['choice'] != choice:
+            same_original = draft['replacement']['advice'] == draft['recommendations'][role]
+            if changed or not same_original or choice is None or suitability['choice'] != choice:
                 draft.update(role_alternatives=routes, discovery=availability)
-                if changed:
-                    for claim in draft.get('recommendation_evidence', {}).get('guidance', []):
-                        claim['status'] = 'incomplete'
-                        claim['uncertainty'] = 'Current discovery changed; explicitly Refresh official evidence before replacement acceptance.'
+                # Retain the exact rejected claim, including its successful date.
+                # A failed acceptance is not permission to rank another claim.
+                draft['recommendations'][role] = deepcopy(draft['replacement']['advice'])
+                for affected, advice in draft['recommendations'].items():
+                    if (changed or affected == role) and isinstance(advice.get('guidance'), dict):
+                        advice['guidance']['status'] = 'incomplete'
                 self._preview(draft)
                 self._replacement(draft)
                 draft['message'] = ('Replacement guidance is no longer valid for this task/risk, or current discovery changed. '
@@ -812,7 +868,7 @@ class Configuration:
             routes, availability = self._available()
             draft.update(role_alternatives=routes, discovery=availability,
                          recommendation_evidence=self._recommendation_evidence(availability, force=True))
-            self._preview(draft)
+            self._preview(draft, rerank=True)
             self._replacement(draft)
             return self._seal(draft)
         if reply in {"recommended", "load preset recommended"}:
@@ -881,7 +937,7 @@ class Configuration:
                 self.preferences._validate_candidate(personal)
                 draft["step"] = "preference_preview"
             try:
-                self._present(draft)
+                self._present(draft, rerank=True)
             except ConfigError as error:
                 return self._blocked(error)
             return self._seal(draft)
@@ -1016,10 +1072,10 @@ class Configuration:
             draft["edited_roles"].append(role)
         return self._preview(draft)
 
-    def _preview(self, draft):
+    def _preview(self, draft, rerank=False):
         changed_directory = self._refresh_personal_destination(draft)
         draft.update(step="preview", state="proposal_ready")
-        self._present(draft)
+        self._present(draft, rerank=rerank)
         draft.pop('replacement', None)
         if changed_directory:
             draft["message"] = "Directory identity changed; review the resolved personal destination. Role drafts are retained."
@@ -1071,7 +1127,7 @@ class Configuration:
                 refreshed = deepcopy(proposal)
                 refreshed.update(role_alternatives=routes, discovery=evidence,
                                  recommendation_evidence=self._recommendation_evidence(evidence))
-                self._present(refreshed)
+                self._present(refreshed, rerank=True)
                 self._replacement(refreshed)
                 return self._seal(refreshed)
             if proposal["skills_adopted"] or proposal["edited_jobs"]:

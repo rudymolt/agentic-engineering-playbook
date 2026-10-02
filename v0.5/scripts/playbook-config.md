@@ -271,7 +271,7 @@ The helper requires that observation to fall between its request and response
 clock readings. Echoing a nonce or redating cached bytes without observing
 access violates the adapter contract. Static `--discovery` files are rejected;
 use an explicit adapter even in clock-controlled tests. No age-based availability
-policy is defined. The future S7 24-hour guidance/pricing cache is separate
+policy is defined. The 24-hour guidance/pricing cache is separate
 from availability and launch identity. Execution still requires independent
 live admission. `--now` is a fixture clock only. Suitability/cost claims remain
 separate from availability and execution authority.
@@ -294,6 +294,11 @@ original date and labels the limitation. Fresh siblings and source envelopes
 cannot extend a claim. Repeat Explain and retained-draft recovery use the same
 projection, offering explicit Refresh or ordinary role editing without fetching,
 ranking a substitute, changing choices or writing the advisory cache.
+Back, preference/preset previews and rejected replacement acceptance retain
+the selected original claims too; a rejected Accept never creates a newly
+acceptable proposal from a younger sibling. Malformed advice mappings withhold
+all nested advice copies while retaining available original dates and recovery
+instructions. A content revision establishes integrity, not evidence authority.
 
 The live CLI uses a private external user cache; `--evidence-dir` explicitly
 selects an external directory on every request. Library callers can supply
@@ -430,8 +435,9 @@ initial use. Unwired callers report unknown rather than silently contacting
 providers. Controlled CLI tests use `--evidence-fixture` with `--now`; fixture
 values are synthetic, not current facts. The initial proposal retains evidence
 through edits and Explain; neither operation reretrieves or invokes candidates.
-No 24-hour cache, automatic change watcher or replacement acceptance is added
-here: S7 owns those. Failed/incomplete checks retain only an actual previous
+The bounded 24-hour cache and draft-only replacement acceptance follow the
+freshness and recovery rules above; no automatic change watcher runs.
+Failed/incomplete checks retain only an actual previous
 successful date supplied to the adapter; otherwise `checked_at` is null.
 `retrieved_at` records a page fetch, not a successful claim check. Never redate
 old claims, manufacture a new-model comparison or automatically change defaults.

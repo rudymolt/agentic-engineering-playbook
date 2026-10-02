@@ -71,8 +71,11 @@ class AdviceProjectionTests(unittest.TestCase):
                            'read' if proposal is None else 'reply']
                 request = {'context': self.context} if proposal is None else {'proposal': proposal, 'reply': reply}
                 process = subprocess.run(command, input=json.dumps(request), text=True, capture_output=True)
-                self.assertEqual(process.returncode, 0, process.stderr + process.stdout)
-                return json.loads(process.stdout)
+                result = json.loads(process.stdout)
+                self.assertEqual(process.returncode, 2 if result['state'] in {'blocked', 'recovery_required'} else 0,
+                                 process.stderr + process.stdout)
+                self.assertEqual(process.stderr, '')
+                return result
         original = invoke()
         if surface == 'cli':
             source.unlink()
@@ -103,7 +106,9 @@ class AdviceProjectionTests(unittest.TestCase):
         if not usable:
             self.assertIn('Refresh', advice['limitations'])
             self.assertIn('stale', json.dumps(advice))
-            self.assertIn(fixtures.NOW, json.dumps(advice))
+            self.assertEqual(advice['withheld_evidence'][kind]['checked_at'], fixtures.NOW)
+            self.assertEqual(advice['withheld_evidence'][kind]['uncertainty'],
+                             'Synthetic controlled evidence, not current rates.')
         if 'explanation' in result:
             self.assertEqual(result['explanation']['recommendation'], advice)
         self.assertEqual(next(row for row in result['role_proposal'] if row['role'] == 'implementation')['recommendation'], advice)
@@ -139,6 +144,122 @@ class AdviceProjectionTests(unittest.TestCase):
                     result = invoke(original, 'Presets')
                     self.assert_advice(result, kind, False)
                     self.assertEqual(result['after'], original['after'])
+                    unchanged()
+
+    def test_preview_and_rejected_accept_own_the_selected_claim(self):
+        for surface in ('library', 'cli'):
+            for kind in ('guidance', 'rates'):
+                with self.subTest(surface=surface, kind=kind):
+                    invoke, now, original, unchanged = self.conversation(surface, kind)
+                    role = original['replacement']['role']
+                    for age in (86399, 86400, 86401):
+                        now[0] = (datetime.fromisoformat(fixtures.NOW.replace('Z', '+00:00'))
+                                  + timedelta(seconds=age)).isoformat()
+                        with self.subTest(age=age):
+                            for reply in ('Back', 'Recommended', 'Save defaults', 'Expert'):
+                                result = invoke(original, reply)
+                                self.assert_advice(result, kind, age <= 86400)
+                                self.assertEqual(result['after'], original['after'])
+                            accepted = invoke(original, 'Accept replacement')
+                            self.assert_advice(accepted, kind, age <= 86400)
+                            if kind == 'guidance' and age > 86400:
+                                self.assertEqual(accepted['after'], original['after'])
+                                self.assertNotIn('Accept replacement', accepted['choices'])
+                                repeated = invoke(accepted, 'Accept replacement')
+                                self.assertEqual(repeated['after'], original['after'])
+                                self.assert_advice(repeated, kind, False)
+                            else:
+                                self.assertEqual(accepted['after'][role]['model_id'], 'fixture-code')
+                            unchanged()
+
+    def test_malformed_advice_root_cannot_authorize_nested_recovery(self):
+        for surface in ('library', 'cli'):
+            invoke, now, original, unchanged = self.conversation(surface, 'guidance')
+            for root in (None, {}, [], 'invalid', {'implementation': None}):
+                for age in (86399, 86401):
+                    now[0] = (datetime.fromisoformat(fixtures.NOW.replace('Z', '+00:00'))
+                              + timedelta(seconds=age)).isoformat()
+                    for reply in (['invalid typed reply'], 'unknown', 'Back', 'Explain Build', 'Accept replacement'):
+                        with self.subTest(surface=surface, root=root, age=age, reply=reply):
+                            draft = deepcopy(original)
+                            draft['recommendations'] = root
+                            draft['proposal_revision'] = Configuration._revision(draft)
+                            result = invoke(draft, reply)
+                            retained = result.get('retained_proposal', result)
+                            self.assertEqual(retained['after'], original['after'])
+                            self.assertNotIn('Accept replacement', retained.get('choices', []))
+                            copies = [row['recommendation'] for row in retained.get('role_proposal', [])]
+                            for owner, key in (('replacement', 'advice'), ('explanation', 'recommendation')):
+                                if owner in retained:
+                                    copies.append(retained[owner][key])
+                            if isinstance(retained.get('recommended', {}).get('advice'), dict):
+                                copies.extend(retained['recommended']['advice'].values())
+                            self.assertTrue(copies)
+                            for advice in copies:
+                                self.assertIsNone(advice['choice'])
+                                self.assertIsNone(advice['cost'])
+                                self.assertIn('Refresh', advice['limitations'])
+                            self.assertIn(fixtures.NOW, json.dumps(copies))
+                            repeated = invoke(retained, 'Accept replacement')
+                            self.assertEqual(repeated.get('retained_proposal', repeated)['after'], original['after'])
+                            unchanged()
+
+    def test_invalid_reply_retains_fresh_positive_advice(self):
+        for surface in ('library', 'cli'):
+            invoke, now, original, unchanged = self.conversation(surface, 'guidance')
+            result = invoke(original, ['invalid typed reply'])
+            self.assertEqual(result['state'], 'blocked')
+            self.assert_advice(result['retained_proposal'], 'guidance', True)
+            self.assertIn('Accept replacement', result['retained_proposal']['choices'])
+            unchanged()
+
+    def test_accept_requires_the_same_original_claim_in_both_copies(self):
+        for surface in ('library', 'cli'):
+            invoke, now, original, unchanged = self.conversation(surface, 'guidance')
+            role = original['replacement']['role']
+            for mutation in ('missing root claim', 'malformed root claim', 'different nested claim'):
+                with self.subTest(surface=surface, mutation=mutation):
+                    draft = deepcopy(original)
+                    if mutation == 'different nested claim':
+                        draft['replacement']['advice']['guidance']['checked_at'] = now[0]
+                    else:
+                        draft['recommendations'][role]['guidance'] = None if mutation == 'missing root claim' else []
+                    draft['proposal_revision'] = Configuration._revision(draft)
+                    rejected = invoke(draft, 'Accept replacement')
+                    self.assertEqual(rejected['after'], original['after'])
+                    self.assertNotIn('Accept replacement', rejected['choices'])
+                    self.assertIn('Refresh', rejected['choices'])
+                    repeated = invoke(rejected, 'Accept replacement')
+                    self.assertEqual(repeated['after'], original['after'])
+                    unchanged()
+
+    def test_each_nested_copy_is_checked_without_a_root_or_role_label(self):
+        for surface in ('library', 'cli'):
+            invoke, now, original, unchanged = self.conversation(surface, 'guidance')
+            now[0] = '2026-10-02T12:00:01Z'
+            selected = deepcopy(original['recommendations']['implementation'])
+            for owner in ('replacement', 'role_proposal', 'recommended', 'explanation'):
+                with self.subTest(surface=surface, owner=owner):
+                    draft = deepcopy(original)
+                    draft.pop('recommendations')
+                    for key in ('replacement', 'role_proposal', 'recommended', 'explanation'):
+                        draft.pop(key, None)
+                    # Labels are not evidence either: an orphan copy still needs projection.
+                    draft[owner] = {'advice': selected} if owner == 'replacement' else (
+                        [{'recommendation': selected}] if owner == 'role_proposal' else (
+                            {'advice': {'implementation': selected}} if owner == 'recommended' else
+                            {'recommendation': selected}))
+                    draft['proposal_revision'] = Configuration._revision(draft)
+                    result = invoke(draft, ['invalid typed reply'])['retained_proposal']
+                    advice = (result[owner]['advice'] if owner == 'replacement' else
+                              result[owner][0]['recommendation'] if owner == 'role_proposal' else
+                              result[owner]['advice']['implementation'] if owner == 'recommended' else
+                              result[owner]['recommendation'])
+                    self.assertIsNone(advice['choice'])
+                    self.assertIsNone(advice['cost'])
+                    self.assertEqual(advice['withheld_evidence']['guidance']['checked_at'], fixtures.NOW)
+                    self.assertIn('Refresh', advice['limitations'])
+                    self.assertNotIn('Accept replacement', result['choices'])
                     unchanged()
 
     def test_inadequate_previous_success_and_missing_pricing(self):
