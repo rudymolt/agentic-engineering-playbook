@@ -751,7 +751,7 @@
       "source": "tests/test_interim_conductor_host.py"
     },
     {
-      "digest": "sha256:b9cf86bdd4626a806c9194d7fe92b2a1fe677e5381d88f801cb249c20951d49a",
+      "digest": "sha256:0679abf3ed4a0f092f818bc959580416c5d62deb0265d66235f0394a57dda2ef",
       "install_path": null,
       "source": "tests/test_interim_coordinator.py"
     },
@@ -793,5 +793,5 @@
   ],
   "manifest_schema_version": 1,
   "manifest_self_rule": "pack_digest covers the complete non-manifest source inventory",
-  "pack_digest": "sha256:b043cb5022dc990de56be27396b74efda6c3a41c54c04899535d2a537f202161"
+  "pack_digest": "sha256:2c65fed350e3f3ba8078e29ea517020c47ed47f4a2cb75a8cfc582dad66d081f"
 }
