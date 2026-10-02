@@ -466,7 +466,10 @@ class Configuration:
         context = deepcopy(self.context or {})
         evidence = self._recommendation_evidence(availability)
         advice = self._recommend(routes, context, evidence, lane=True)[role]
+        advice['limitations'] += (' Inadequate individual claims remain dated in recommendation evidence. '
+                                  'Use explicit Refresh or the ordinary role editor to recover.')
         return {"effective": effective, "recommendation": advice, "availability": availability,
+                "recommendation_evidence": evidence,
                 "evidence_changes": evidence.get('changes', []),
                 "scope": "feature advice only; existing explicit selection gate owns acceptance", "launched": False}
 

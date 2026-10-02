@@ -1123,13 +1123,13 @@
     },
     {
       "path": "scripts/model_evidence_cache.py",
-      "sha256": "d03d0d92041d72eabb6831b5cc7a2ca0935c1054fbed715db040fc415b28d9d4",
-      "size": 10588
+      "sha256": "34116d61e58b7973078ff48a432be46f3d61a4a4de0a188e5219137256c0ec5a",
+      "size": 10967
     },
     {
       "path": "scripts/model_recommendations.py",
-      "sha256": "3b80a16c6b3e2758cb56f99af731841cddbc3d3708b4a49d15d364ffb3f2e157",
-      "size": 32672
+      "sha256": "6a05e87f9e97ac983b1b31362a054325bd880222dfd3dd28be43d899bdb5d707",
+      "size": 32973
     },
     {
       "path": "scripts/playbook-config.md",
@@ -1138,8 +1138,8 @@
     },
     {
       "path": "scripts/playbook_config.py",
-      "sha256": "c5bdc2fc64b52ac1cf037e1e8b66d3bbdc7aef92a0119815f553b7f7b68babbd",
-      "size": 95195
+      "sha256": "fc9bfc56cbcf5400e59cfaf8668c63cbcfc895e435ab2a4b0b748975c6b1ce91",
+      "size": 95454
     },
     {
       "path": "scripts/playbook_state.py",
@@ -1235,6 +1235,11 @@
       "path": "scripts/test_model_advice_projection.py",
       "sha256": "cbd08e1ff1dc092c0641d92e95e745a05bbd1c012001aa267ae8b2ec81d591c2",
       "size": 32544
+    },
+    {
+      "path": "scripts/test_model_claim_status.py",
+      "sha256": "553b628e87ce5f465fc62cc9e288ee400bd3517cd6e4ae7f0f6d21abdf57b9e7",
+      "size": 14101
     },
     {
       "path": "scripts/test_model_recommendations.py",

@@ -361,12 +361,16 @@ def valid_claim(record, kind, now=None, allow_unusable=False):
         return False
     url = record.get("source_url")
     allowed = {SOURCES[0], SOURCES[3]} if kind == "guidance" else {SOURCES[2], SOURCES[4]}
-    if url not in allowed:
+    if not isinstance(url, str) or url not in allowed:
         return False
     # Cache assembly retains inadequate records for dated, honest display only.
     if allow_unusable:
         return True
-    if record.get("status") in {"stale", "incomplete", "failed"}:
+    status = record.get("status")
+    # An absent status is the official adapter's successful-claim format.
+    # Every explicit status must affirm success; untrusted containers must
+    # never reach hash-based membership or become evidence authority.
+    if status is not None and (not isinstance(status, str) or status != "retrieved"):
         return False
     return successful_date_status(record.get("checked_at"),
                                   now if now is not None else datetime.now(timezone.utc)) == "retrieved"

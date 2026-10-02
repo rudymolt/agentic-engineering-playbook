@@ -160,6 +160,11 @@ class EvidenceCache:
                             item['status'] = status
                         elif current['source']['status'] != 'retrieved':
                             item['status'] = current['source']['status']
+                        elif not valid_claim(item, kind, now=now):
+                            # Keep the individual text/date for recovery, but a
+                            # successful source or sibling cannot certify it.
+                            if item.get('status') not in ('stale', 'incomplete', 'failed'):
+                                item['status'] = 'incomplete'
                         result[kind].append(item)
         self.saved = {'schema_version': 1, 'entries': entries, 'discovery_fingerprint': discovered}
         result['cache_refreshed'] = refreshed
