@@ -18,6 +18,13 @@ PRIVATE_MARKERS = re.compile(
 EMAIL = re.compile(r"(?<![\w.+-])([A-Za-z0-9._%+-]+)@([A-Za-z0-9.-]+\.[A-Za-z]{2,})")
 # The maintainer-approved public guide link is allowed only in the root README.
 PUBLIC_GUIDE_LINK = "[interactive guides](https://" + "rudy" + "molt.github.io/agent-engineering-playbook)"
+# User-approved public Actions evidence links, confined to these two outputs.
+PUBLIC_RUNTIME_FILES = {Path("bench/test-runtime/TOTAL-RUNTIME.md"),
+                        Path("bench/test-runtime/suite-history.json")}
+PUBLIC_RUNTIME_RUN_URL = re.compile(
+    r'(?<=[(" ])https://github\.com/' + "rudy" + "molt"
+    + r'/agentic-engineering-playbook/actions/runs/[1-9][0-9]*(?=[)"])'
+)
 ALLOWED_EMAILS = {"git@github.com"}
 ALLOWED_DOMAINS = {"example.com", "example.invalid", "users.noreply.github.com"}
 
@@ -48,6 +55,8 @@ def problems(root: Path) -> list[str]:
             continue
         for number, line in enumerate(content.splitlines(), 1):
             marker_text = line.replace(PUBLIC_GUIDE_LINK, "") if relative == Path("README.md") else line
+            if relative in PUBLIC_RUNTIME_FILES:
+                marker_text = PUBLIC_RUNTIME_RUN_URL.sub("", marker_text)
             if PRIVATE_MARKERS.search(marker_text):
                 found.append(f"{relative}:{number}: private marker or personal path")
             for match in EMAIL.finditer(line):
