@@ -750,7 +750,9 @@ class Configuration:
         advice = {}
         for role in ROLES:
             record = records.get(role)
-            if not isinstance(record, dict) or not {"choice", "guidance", "cost"} <= set(record):
+            # A partial root still owns its retained claims. A more complete
+            # display copy cannot replace them merely because a field is missing.
+            if not isinstance(record, dict):
                 record = next((owner[key] for copied_role, owner, key in copies
                                if copied_role == role and isinstance(owner[key], dict)
                                and {"choice", "guidance", "cost"} <= set(owner[key])), record)
@@ -837,21 +839,22 @@ class Configuration:
             role = draft['replacement']['role']
             if reply == 'choose another model':
                 return self._reply(proposal, 'Edit ' + role)
-            choice = draft['replacement']['advice']['choice']
+            selected = draft['recommendations'][role]
+            choice = selected.get('choice')
             routes, availability = self._available()
             changed = self._discovery_revision(availability) != self._discovery_revision(draft['discovery'])
             # Validate the exact proposed route and its original suitability claim.
             # Do not retrieve sources or replace it with a newly ranked candidate.
             proposed_routes = {role: [choice] if choice in routes[role] else []}
-            original_guidance = draft['replacement']['advice'].get('guidance')
+            original_guidance = selected.get('guidance')
+            same_original = draft['replacement'].get('advice') == selected
             suitability = self._recommend(proposed_routes, draft['context'],
-                                          {'guidance': [original_guidance]})[role]
-            same_original = draft['replacement']['advice'] == draft['recommendations'][role]
+                                          {'guidance': [original_guidance] if same_original and isinstance(original_guidance, dict) else []})[role]
             if changed or not same_original or choice is None or suitability['choice'] != choice:
                 draft.update(role_alternatives=routes, discovery=availability)
-                # Retain the exact rejected claim, including its successful date.
-                # A failed acceptance is not permission to rank another claim.
-                draft['recommendations'][role] = deepcopy(draft['replacement']['advice'])
+                # The selected root owns evidence, even when the rejected
+                # display copy is newer, older, missing or malformed.
+                # Neither a failed action nor its checksum transfers ownership.
                 for affected, advice in draft['recommendations'].items():
                     if (changed or affected == role) and isinstance(advice.get('guidance'), dict):
                         advice['guidance']['status'] = 'incomplete'

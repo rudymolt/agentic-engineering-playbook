@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+- Preserve root-selected guidance and independently dated pricing when rejecting
+  a divergent or malformed replacement advice copy.
+
+*Why — rejected copies cannot become original evidence:* failed Accept must not
+replace the selected claim's text or date with a younger or older nested claim.
+Partial roots retain their own evidence, and subsequent Explain and Back keep
+it withheld with explicit Refresh/editor recovery instead of re-ranking.
+
 - Retain selected advice through previews and rejected acceptance, and withhold
   nested advice when a persisted or caller-supplied proposal is malformed.
 

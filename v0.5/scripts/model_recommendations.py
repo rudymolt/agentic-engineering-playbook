@@ -402,6 +402,10 @@ def project_advice(advice, now):
     if not isinstance(advice, dict):
         withheld["guidance"] = advice
     if "guidance" in withheld:
+        # Withholding suitability also hides cost. Retain its independently
+        # dated selected claim before dropping the public cost projection.
+        if pricing is not None:
+            withheld.setdefault("rates", deepcopy(pricing))
         result.update(choice=None, guidance=None, cost=None, local_outcomes=None,
                       rationale="Original task-fit evidence is inadequate; suitability unknown. Retain the saved or edited choice.")
     elif "rates" in withheld and result.get("cost"):

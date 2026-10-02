@@ -18,7 +18,7 @@ class AdviceProjectionTests(unittest.TestCase):
     setUp = fixtures.RecommendationTests.setUp
     discover = fixtures.RecommendationTests.discover
 
-    def conversation(self, surface, kind):
+    def conversation(self, surface, kind, keep_source=False):
         private = tempfile.TemporaryDirectory()
         self.addCleanup(private.cleanup)
         root = Path(private.name)
@@ -77,7 +77,7 @@ class AdviceProjectionTests(unittest.TestCase):
                 self.assertEqual(process.stderr, '')
                 return result
         original = invoke()
-        if surface == 'cli':
+        if surface == 'cli' and not keep_source:
             source.unlink()
         before = {str(p): p.read_bytes() for folder in (self.project, cache, personal)
                   for p in folder.rglob('*') if p.is_file()}
@@ -176,7 +176,7 @@ class AdviceProjectionTests(unittest.TestCase):
         for surface in ('library', 'cli'):
             invoke, now, original, unchanged = self.conversation(surface, 'guidance')
             for root in (None, {}, [], 'invalid', {'implementation': None}):
-                for age in (86399, 86401):
+                for age in (86399, 86400, 86401):
                     now[0] = (datetime.fromisoformat(fixtures.NOW.replace('Z', '+00:00'))
                               + timedelta(seconds=age)).isoformat()
                     for reply in (['invalid typed reply'], 'unknown', 'Back', 'Explain Build', 'Accept replacement'):
@@ -343,6 +343,136 @@ class AdviceProjectionTests(unittest.TestCase):
         self.assertIsNone(displayed['recommendations']['implementation']['choice'])
         self.assertEqual(displayed['after'], original['after'])
         self.assertEqual(self.state.read_bytes(), self.original)
+
+    def assert_rejected_claim_owner(self, result, original, selected):
+        retained = result.get('retained_proposal', result)
+        role = original['replacement']['role']
+        self.assertEqual(retained['after'], original['after'])
+        self.assertEqual(retained['before'], original['before'])
+        self.assertNotIn('Accept replacement', retained['choices'])
+        advice = retained['recommendations'][role]
+        self.assertIsNone(advice['choice'])
+        self.assertIsNone(advice['guidance'])
+        self.assertIsNone(advice['cost'])
+        for kind, claim in (('guidance', selected['guidance']), ('rates', selected['cost']['rates'])):
+            # Status may change; original claim content and successful date may not.
+            actual = advice['withheld_evidence'][kind]
+            self.assertEqual({key: value for key, value in actual.items() if key != 'status'},
+                             {key: value for key, value in claim.items() if key != 'status'})
+        self.assertIn('Refresh', advice['limitations'])
+        self.assertIn('editor', advice['limitations'])
+        copies = [row['recommendation'] for row in retained['role_proposal'] if row['role'] == role]
+        for owner, key in (('replacement', 'advice'), ('explanation', 'recommendation')):
+            if retained.get(owner, {}).get('role') == role:
+                copies.append(retained[owner][key])
+        if isinstance(retained['recommended']['advice'], dict):
+            copies.append(retained['recommended']['advice'][role])
+        for copied in copies:
+            self.assertEqual(copied, advice)
+        return retained
+
+    def test_rejected_divergent_copies_preserve_root_guidance_and_independent_price(self):
+        for surface in ('library', 'cli'):
+            for kind in ('guidance', 'rates'):
+                invoke, now, original, unchanged = self.conversation(surface, kind)
+                role = original['replacement']['role']
+                selected = deepcopy(original['recommendations'][role])
+                for age in (86399, 86400, 86401):
+                    now[0] = (datetime.fromisoformat(fixtures.NOW.replace('Z', '+00:00'))
+                              + timedelta(seconds=age)).isoformat()
+                    for offset in (-1000, 1000):
+                        with self.subTest(surface=surface, kind=kind, age=age, offset=offset):
+                            draft = deepcopy(original)
+                            nested = draft['replacement']['advice']
+                            claim = nested['guidance'] if kind == 'guidance' else nested['cost']['rates']
+                            claim['checked_at'] = (datetime.fromisoformat(claim['checked_at'].replace('Z', '+00:00'))
+                                                   + timedelta(seconds=offset)).isoformat()
+                            if kind == 'guidance':
+                                claim['text'] = 'Different same-model task evidence'
+                            else:
+                                claim['input'] = 7
+                            # Even a claim present in the source collection is not the selection.
+                            draft['recommendation_evidence'][kind].append(deepcopy(claim))
+                            draft['proposal_revision'] = Configuration._revision(draft)
+                            untouched = deepcopy(draft)
+                            rejected = invoke(draft, 'Accept replacement')
+                            retained = self.assert_rejected_claim_owner(rejected, original, selected)
+                            self.assertIn('Refresh', retained['choices'])
+                            self.assertIn('Choose another model', retained['choices'])
+                            for action in ('Accept replacement', 'Explain ' + role, 'Back', 'Explain ' + role):
+                                retained = self.assert_rejected_claim_owner(invoke(retained, action), original, selected)
+                            self.assertEqual(draft, untouched)
+                            unchanged()
+
+    def test_malformed_replacement_copy_never_overwrites_selected_root(self):
+        for surface in ('library', 'cli'):
+            invoke, now, original, unchanged = self.conversation(surface, 'guidance')
+            role = original['replacement']['role']
+            selected = deepcopy(original['recommendations'][role])
+            for age in (86399, 86400, 86401):
+                now[0] = (datetime.fromisoformat(fixtures.NOW.replace('Z', '+00:00'))
+                          + timedelta(seconds=age)).isoformat()
+                for malformed in (None, [], {}, {'choice': selected['choice']},
+                                  {**selected, 'guidance': []}, {**selected, 'cost': []}):
+                    with self.subTest(surface=surface, age=age, malformed=malformed):
+                        draft = deepcopy(original)
+                        draft['replacement']['advice'] = deepcopy(malformed)
+                        draft['proposal_revision'] = Configuration._revision(draft)
+                        result = self.assert_rejected_claim_owner(invoke(draft, 'Accept replacement'), original, selected)
+                        result = self.assert_rejected_claim_owner(invoke(result, 'Accept replacement'), original, selected)
+                        self.assert_rejected_claim_owner(invoke(result, 'Explain ' + role), original, selected)
+                        unchanged()
+
+    def test_partial_root_retains_its_claims_without_borrowing_nested_selection(self):
+        for surface in ('library', 'cli'):
+            invoke, now, original, unchanged = self.conversation(surface, 'guidance')
+            role = original['replacement']['role']
+            for missing in ('choice', 'limitations'):
+                for action in ('Accept replacement', 'Back', ['invalid reply']):
+                    with self.subTest(surface=surface, missing=missing, action=action):
+                        draft = deepcopy(original)
+                        selected = draft['recommendations'][role]
+                        selected['guidance']['text'] = 'Root-owned original text'
+                        selected.pop(missing)
+                        expected = deepcopy(selected)
+                        draft['proposal_revision'] = Configuration._revision(draft)
+                        result = invoke(draft, action)
+                        if missing == 'limitations' and action != 'Accept replacement':
+                            # A nonessential display field does not invalidate fresh suitability.
+                            retained = result.get('retained_proposal', result)
+                            self.assertEqual(retained['recommendations'][role]['guidance']['text'],
+                                             'Root-owned original text')
+                        else:
+                            self.assert_rejected_claim_owner(result, original, expected)
+                        unchanged()
+
+    def test_rejected_copy_recovers_only_through_explicit_editor_or_refresh(self):
+        for surface in ('library', 'cli'):
+            with self.subTest(surface=surface):
+                invoke, now, original, unchanged = self.conversation(surface, 'guidance', keep_source=True)
+                role = original['replacement']['role']
+                selected = deepcopy(original['recommendations'][role])
+                draft = deepcopy(original)
+                draft['replacement']['advice']['guidance']['text'] = 'Divergent display copy'
+                draft['proposal_revision'] = Configuration._revision(draft)
+                now[0] = '2026-10-02T12:00:01Z'
+                rejected = self.assert_rejected_claim_owner(invoke(draft, 'Accept replacement'), original, selected)
+                editor = invoke(rejected, 'Choose another model')
+                self.assertEqual(editor['step'], 'edit')
+                self.assertEqual(editor['edit_role'], role)
+                chosen = invoke(editor, '1')
+                self.assertEqual(chosen['after'][role]['model_id'], 'fixture-code')
+                self.assertIsNone(chosen['recommendations'][role]['choice'])
+                unchanged()
+                refreshed = invoke(rejected, 'Refresh')
+                self.assertEqual(refreshed['after'], original['after'])
+                self.assertIn('Accept replacement', refreshed['choices'])
+                self.assertEqual(refreshed['recommendations'][role]['guidance']['text'], 'Younger sibling guidance')
+                self.assertEqual(refreshed['personal'], original['personal'])
+                accepted = invoke(refreshed, 'Accept replacement')
+                self.assertEqual(accepted['after'][role]['model_id'], 'fixture-code')
+                self.assertEqual(self.state.read_bytes(), self.original)
+                self.assertFalse((self.project / '.playbook-config.json').exists())
 
     def test_cli_exception_recovery_is_total_for_malformed_nested_advice(self):
         invoke, now, original, unchanged = self.conversation('library', 'guidance')

@@ -299,6 +299,12 @@ the selected original claims too; a rejected Accept never creates a newly
 acceptable proposal from a younger sibling. Malformed advice mappings withhold
 all nested advice copies while retaining available original dates and recovery
 instructions. A content revision establishes integrity, not evidence authority.
+The selected `recommendations[role]` owns the claim text and successful dates;
+a divergent, missing or malformed `replacement.advice` cannot replace it during
+rejected Accept. Even a partial root retains its own claims. When suitability
+is withheld, its independently dated price is retained as withheld evidence too,
+not displayed as a supported cost. Subsequent Explain and Back project that same
+root; only explicit Refresh may select new official evidence.
 
 The live CLI uses a private external user cache; `--evidence-dir` explicitly
 selects an external directory on every request. Library callers can supply
