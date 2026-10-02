@@ -440,3 +440,122 @@ paths, URL suffixes and unrelated private markers remain blocked. Focused guards
 cover both link generation and the scoped privacy boundary. The two added public
 boundary tests affect future canonical test counts, not the historical counts
 recorded here. No new timing samples or delivery-suite runs were requested.
+
+## 2026-10-02 — batch 3 (Asia/Qatar)
+
+Live state was checked before selecting the base: main remains at
+`a57af6de259d34e9b772105e0ad0610290797cfa`; PRs 6, 7 and 8 are open drafts.
+This batch uses fresh branch `perf/test-runtime-2026-10-02`, targeting PR 8's
+`bench/runtime-totals-2026-10-01` at
+`186e26050134b20f5236cf32c8a344205ba4beff`. PR 9 remains stacked: land its
+prerequisites first, then retarget and revalidate before any human merge.
+No merge, deployment, production, security or workflow change was made.
+
+Measured implementation: `b17ee92fcf8d2fc43338e0252ce0bc10f2126883`.
+New reviewed IDs, all in `test_interim_coordinator.CoordinatorTests`:
+
+- `test_worker_acceptance_parity_verify_matrix`
+- `test_worker_acceptance_parity_build_matrix`
+- `test_handoff_acceptance_parity_matrix`
+
+These matrices repeatedly validate the same control ref. Apply the existing
+invocation-scoped successful exact Git syntax cache only to these three methods.
+The Git executable and process environment stay fixed within each invocation;
+these tests do not exercise syntax-process failure injection or call counts.
+Every validator still executes. All method bodies, mutations and assertions
+are unchanged; fresh mutable copies, per-test temporary remotes, distinct
+no-local clones, real publication/CAS/persistence/reload and sends remain intact.
+No cache/helper behavior or previously reviewed test was changed.
+
+Independent fresh-context static review verified whole-module AST equality after
+removing only the import and decorators. All 126 build, 138 verify and 72 handoff
+mutations remain across five boundaries, totaling 1,680 subcases. The four cache
+guards cover distinct refs, failures, options, uncached other commands, reset
+and exception restoration. Execution verification is recorded below.
+
+Three alternating baseline/candidate pairs used fresh processes and clean pinned
+checkouts, Linux x86_64, Python 3.12.14, Git 2.52.0, non-root, and identical
+canonical Git maintenance settings. No other workspace test workload ran during
+measurement. Setup, test method and cleanup are included. Shared cloud host
+variation remains possible; these are selected-test comparisons, not a causal
+full-suite speedup. All 18 test executions passed without failures or skips.
+
+| Test suffix | Before median (range), s | After median (range), s | Reduction |
+| --- | --- | --- | --- |
+| `test_worker_acceptance_parity_verify_matrix` | 75.081 (74.307–75.489) | 62.201 (61.995–64.592) | 17.16% |
+| `test_worker_acceptance_parity_build_matrix` | 52.341 (51.951–52.405) | 45.403 (43.692–45.434) | 13.26% |
+| `test_handoff_acceptance_parity_matrix` | 39.171 (39.152–40.646) | 33.680 (33.453–33.805) | 14.02% |
+
+All three before/after ranges are disjoint. Evidence: [before](2026-10-02-linux-before.json),
+[after](2026-10-02-linux-after.json), and [comparison](2026-10-02-linux-comparison.json).
+Every source hash was checked against its exact measured revision. These three
+IDs are now reviewed; do not select them again. Prior batch IDs remain reviewed.
+The final evidence commit does not change executable test sources.
+
+Next unreviewed candidates, preserving the prior successful screening order:
+
+- `test_interim_recovery.RecoveryBoundaryTests.test_transport_failures_at_every_call_site`
+- `test_interim_recovery.RecoveryBoundaryTests.test_provider_programmer_and_storage_exceptions_are_not_conflated`
+- `test_interim_recovery.RecoveryBoundaryTests.test_coordinator_and_prefix_malformed_matrix`
+
+These are screening leads, not measured improvements. In particular, review the
+transport exception boundaries before applying any cache: a Git-subprocess fault
+must not be hidden by caching. The four fanotify-dependent checker-monitor IDs
+still have no successful local per-test timings. Existing privileged CI remains
+their correctness route; no privilege bypass was attempted.
+
+Validation: independent execution passed all four cache guards plus diagnosed
+receipt parity and operation-binding parity (6 tests, 10.927 s). The reviewer
+independently verified all 16 source hashes per revision, clean sample flags,
+18 successful executions, and recalculated samples/medians/ranges/pairwise gains.
+The local public-edition aggregate `verify-playbook.py --skip-delivery` passed
+228 tests (16.119 s), conventions, metadata, links, public-content boundaries,
+status/inventory/manifests, and drift cadence (current through 2026-10-08).
+Nine collector guards passed. No separate lint/type runner is configured;
+repository conventions and Python compilation cover the applicable lanes.
+Full delivery correctness is assigned to normal privileged PR CI, including
+all coordinator tests and the four watcher tests unavailable in this sandbox.
+
+Normal implementation CI run 36953393473 passed edition and privileged delivery
+for `b17ee92fcf8d2fc43338e0252ce0bc10f2126883` (synthetic checkout
+`f4ed54eba0eb19f3e33eb5117ddc723ab3512e9c`). Metadata confirms edition job
+110671004803 and delivery job 110671005025 belong to that run and both passed;
+the full delivery step ran, while only its alternative skip-report step skipped.
+All 16 unittest groups passed: 228 edition plus 534 delivery = 762 executions,
+including the complete 40-test coordinator group and privileged watcher tests.
+
+The existing collector accepted these complete normal feature logs with the
+concrete repository slug and verified evidence link; no full-suite timing-only
+run was added. [Total history](TOTAL-RUNTIME.md) and [JSON](suite-history.json)
+retain the exact run/job/head/checkout identities and log hashes. This row records
+the final executable implementation checkpoint before this evidence-only commit.
+The evidence commit remains local because the cloud Git connection lost
+authentication after the implementation push. Draft PR 9 records the full
+results and publication blocker. The latest published head is the measured
+implementation above, whose CI succeeded; no evidence-head CI is claimed.
+
+Summed unittest runtime is **955.365 s (15m 55.4s)**, versus 647.214 s previously:
+**308.151 s slower (47.61%)**. Against the original 1135.863 s, the observed saving
+is **180.498 s (15.89%)**, replacing the earlier 43.02% observation as the current
+checkpoint trend. This is not a causal optimization estimate. Counts grew by
+two since the prior row and six since the original: PR 8's two public-content
+regressions plus the earlier four cache guards; no coverage was removed.
+
+The edition/delivery command log spans are 25.439479/935.443676 s; the parallel
+jobs' overall log span is 939.278583 s (15m 39.3s), not their sum. Setup/queue and
+exact workflow wall time remain distinct: the span includes logged setup and
+cleanup but excludes queue and pre-log setup; unknown exact values stay null.
+Both jobs used Python 3.12.14, Git 2.55.0, Ubuntu 24.04 image 20260927.320.1;
+actual hosted hardware is unidentified. The unchanged recovery group took
+539.139 s versus 351.755 s previously,
+so the CI increase cannot be attributed to today's coordinator-only test edit.
+The repeated same-host targeted comparisons remain the narrower gain evidence.
+
+Publication checks: public-safe evidence only, no raw fixture diagnostics or
+personal paths/addresses; both author and committer use a GitHub noreply identity.
+Published implementation-head CI reached terminal success. Publication of this
+evidence-only commit and its exact-head CI remain blocked: three authorized Git
+push attempts failed authentication, including the existing credential helper
+and the permitted external Git route. The connected commit API cannot explicitly
+set author/committer identity, so it cannot guarantee the required noreply
+identity. No account/security setting was changed to bypass this blocker.
