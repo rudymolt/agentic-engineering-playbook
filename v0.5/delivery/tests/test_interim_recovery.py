@@ -16,6 +16,7 @@ from delivery_pilot.interim import InterimCheckpointError, initial_record, valid
 from delivery_pilot.interim_recovery import InterimRecoveryCoordinator  # noqa: E402
 from delivery_pilot.interim_coordinator import InterimDispatchError  # noqa: E402
 import test_interim_repair as repair_tests  # noqa: E402
+from control_ref_test_support import memoized_control_refs  # noqa: E402
 
 
 class RecoveryFixture:
@@ -501,6 +502,7 @@ class RecoveryBoundaryTests(unittest.TestCase):
             ("invalid-unicode", self.change("extra", "\ud800")),
         ]
 
+    @memoized_control_refs
     def test_malformed_observation_and_cancellation_matrix(self):
         for path, boundary, occurrence, options in self.sites():
             if boundary not in {"observe", "cancel"}:
@@ -531,6 +533,7 @@ class RecoveryBoundaryTests(unittest.TestCase):
                 with self.subTest(path=path, boundary=boundary, occurrence=occurrence, fault=label):
                     self.check_fault(path, boundary, fault, occurrence, **options)
 
+    @memoized_control_refs
     def test_owned_inventory_malformed_matrix(self):
         def item_change(key, value):
             def mutate(items):
