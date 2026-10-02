@@ -1,0 +1,95 @@
+{
+  "baseline_revision": "186e26050134b20f5236cf32c8a344205ba4beff",
+  "candidate_revision": "b17ee92fcf8d2fc43338e0252ce0bc10f2126883",
+  "protocol": "Three alternating before/after pairs, fresh processes, no concurrent workspace tests",
+  "tests": [
+    {
+      "id": "test_interim_coordinator.CoordinatorTests.test_worker_acceptance_parity_verify_matrix",
+      "before": {
+        "samples_seconds": [
+          75.08114546299998,
+          74.30740956,
+          75.48923220699999
+        ],
+        "median_seconds": 75.08114546299998,
+        "min_seconds": 74.30740956,
+        "max_seconds": 75.48923220699999
+      },
+      "after": {
+        "samples_seconds": [
+          61.995325777999994,
+          62.20088777199999,
+          64.591720216
+        ],
+        "median_seconds": 62.20088777199999,
+        "min_seconds": 61.995325777999994,
+        "max_seconds": 64.591720216
+      },
+      "median_reduction_percent": 17.155116123457915,
+      "paired_reduction_percent": [
+        17.428902561760573,
+        16.29248262008719,
+        14.435849554169234
+      ]
+    },
+    {
+      "id": "test_interim_coordinator.CoordinatorTests.test_worker_acceptance_parity_build_matrix",
+      "before": {
+        "samples_seconds": [
+          51.95135324500001,
+          52.40489220400002,
+          52.34123992599996
+        ],
+        "median_seconds": 52.34123992599996,
+        "min_seconds": 51.95135324500001,
+        "max_seconds": 52.40489220400002
+      },
+      "after": {
+        "samples_seconds": [
+          43.69201015699997,
+          45.40322637599991,
+          45.433877929999994
+        ],
+        "median_seconds": 45.40322637599991,
+        "min_seconds": 43.69201015699997,
+        "max_seconds": 45.433877929999994
+      },
+      "median_reduction_percent": 13.255348096088316,
+      "paired_reduction_percent": [
+        15.898225112730724,
+        13.36071029541338,
+        13.196787095157836
+      ]
+    },
+    {
+      "id": "test_interim_coordinator.CoordinatorTests.test_handoff_acceptance_parity_matrix",
+      "before": {
+        "samples_seconds": [
+          39.17107916400002,
+          39.15242951899995,
+          40.64607690499997
+        ],
+        "median_seconds": 39.17107916400002,
+        "min_seconds": 39.15242951899995,
+        "max_seconds": 40.64607690499997
+      },
+      "after": {
+        "samples_seconds": [
+          33.804997961000026,
+          33.45289088800007,
+          33.68015091699999
+        ],
+        "median_seconds": 33.68015091699999,
+        "min_seconds": 33.45289088800007,
+        "max_seconds": 33.804997961000026
+      },
+      "median_reduction_percent": 14.017812029152466,
+      "paired_reduction_percent": [
+        13.699089526059483,
+        14.557305130283172,
+        17.138003267279867
+      ]
+    }
+  ],
+  "limits": "Selected tests only; shared cloud hardware variation remains possible; no full-suite causal claim."
+}
