@@ -722,8 +722,9 @@ class Configuration:
         records = [owner[key] for _, owner, key in Configuration._advice_copies(proposal)]
         return any(not isinstance(record, dict) or record.get("choice") is not None or record.get("guidance") is not None
                    or record.get("withheld_evidence")
-                   or (record.get("cost") is not None and
-                       (not isinstance(record["cost"], dict) or record["cost"].get("rates") is not None))
+                   # Cost can contain an unsupported subtotal without any rate.
+                   # A caller's content checksum is not pricing authority.
+                   or record.get("cost") is not None
                    for record in records) or Configuration._has_advice_claims(proposal.get("retained_proposal"))
 
     @staticmethod

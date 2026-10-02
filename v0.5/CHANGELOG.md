@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- Project every advice cost payload, including estimate-only caller drafts, and
+  require an adequate original selected rate before displaying a token subtotal.
+
+*Why — integrity does not establish cost evidence:* a resealed malformed draft
+could retain an unsupported estimate through Explain, Back, Presets and error
+recovery. Missing, invalid or expired pricing now withholds the subtotal without
+fetching, saving or substituting advice; explicit Refresh and editing remain
+the recovery routes.
+
 - Preserve root-selected guidance and independently dated pricing when rejecting
   a divergent or malformed replacement advice copy.
 

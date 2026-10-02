@@ -299,6 +299,11 @@ the selected original claims too; a rejected Accept never creates a newly
 acceptable proposal from a younger sibling. Malformed advice mappings withhold
 all nested advice copies while retaining available original dates and recovery
 instructions. A content revision establishes integrity, not evidence authority.
+Every cost payload requires projection, including an estimate with no choice,
+guidance or rate. A token subtotal requires an adequate original rate for the
+selected model/provider and API route, with supported currency, units and
+numeric amounts; source/date metadata alone cannot support it. Missing or
+invalid pricing leaves valid suitability available with cost unknown.
 The selected `recommendations[role]` owns the claim text and successful dates;
 a divergent, missing or malformed `replacement.advice` cannot replace it during
 rejected Accept. Even a partial root retains its own claims. When suitability

@@ -399,6 +399,15 @@ def project_advice(advice, now):
         try:
             usable = (isinstance(claim, dict) and claim.get("status") in (None, "retrieved")
                       and valid_claim(claim, kind, now=now))
+            if usable and kind == "rates":
+                choice = result.get("choice")
+                usable = (isinstance(choice, dict) and billing.get("billing") == "api"
+                          and billing.get("route") == choice
+                          and all(isinstance(choice.get(key), str) and choice[key]
+                                  and claim.get(key) == choice[key] for key in ("model_id", "provider"))
+                          and claim.get("currency") == "USD" and claim.get("unit") == "1M tokens"
+                          and isinstance(claim.get("billing_route"), str) and bool(claim["billing_route"])
+                          and all(valid_rate_number(claim.get(key)) for key in ("input", "output")))
         except (TypeError, ValueError, AttributeError):
             usable = False
         if claim is not None and not usable:
