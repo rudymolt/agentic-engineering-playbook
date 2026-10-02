@@ -737,8 +737,26 @@ class Configuration:
             if reply == 'choose another model':
                 return self._reply(proposal, 'Edit ' + role)
             choice = draft['replacement']['advice']['choice']
-            if choice is None:
-                raise ConfigError('No verified suitable replacement; restore access or choose another model.')
+            routes, availability = self._available()
+            changed = self._discovery_revision(availability) != self._discovery_revision(draft['discovery'])
+            # Validate the exact proposed route and its original suitability claim.
+            # Do not retrieve sources or replace it with a newly ranked candidate.
+            proposed_routes = {role: [choice] if choice in routes[role] else []}
+            original_guidance = draft['replacement']['advice'].get('guidance')
+            suitability = self._recommend(proposed_routes, draft['context'],
+                                          {'guidance': [original_guidance]})[role]
+            if changed or choice is None or suitability['choice'] != choice:
+                draft.update(role_alternatives=routes, discovery=availability)
+                if changed:
+                    for claim in draft.get('recommendation_evidence', {}).get('guidance', []):
+                        claim['status'] = 'incomplete'
+                        claim['uncertainty'] = 'Current discovery changed; explicitly Refresh official evidence before replacement acceptance.'
+                self._preview(draft)
+                self._replacement(draft)
+                draft['message'] = ('Replacement guidance is no longer valid for this task/risk, or current discovery changed. '
+                                    'Draft retained; use Refresh to check official evidence and review a new proposal, '
+                                    'or Choose another model for ordinary role editing. Nothing saved or launched.')
+                return self._seal(draft)
             draft['edit_role'] = role
             draft.pop('replacement', None)
             return self._select(draft, choice)

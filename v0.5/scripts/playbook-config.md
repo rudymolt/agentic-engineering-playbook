@@ -300,6 +300,16 @@ and dates, reassessing existing models. Unchanged source content yields no
 change notice. Missing pricing remains unknown; new models need adequate
 task-fit evidence and live host-supported capability/reasoning.
 
+Before accepting a replacement, recheck current authoritative discovery and the
+specific proposed route's role/task/risk suitability against its original guidance
+date at the current clock. Exactly 24 hours is valid; one second later, future,
+missing or malformed dates cannot edit the draft. Retain the unavailable saved
+value and other edits, and offer explicit `Refresh` or ordinary role editing.
+Changed discovery/version invalidates cached suitability until explicit Refresh;
+acceptance never fetches official sources or substitutes another route. Missing
+pricing alone does not invalidate suitable guidance. Apply still performs its
+independent availability, identity, file-revision and skill-eligibility checks.
+
 Unavailable selected or saved routes remain visible in the `replacement` step.
 It offers one suitable verified alternative for the affected role, with
 runner/reasoning, fit, cost limits and evidence. `Accept replacement` edits

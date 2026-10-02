@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- Revalidate the exact proposed replacement and its original guidance at
+  acceptance time, retaining the draft when evidence expires or discovery changes.
+
+*Why — a valid read can expire before acceptance:* the inclusive 24-hour boundary
+must hold before editing the draft. Current role/task/risk and route checks keep
+cached advice from granting selection; changed discovery requires explicit Refresh
+or ordinary role editing. Missing pricing alone does not block suitability, and
+Apply retains its independent availability, identity, revision and skill checks.
+
 - Validate each guidance and pricing claim's original successful date on retrieval
   and reuse, independently of source metadata and sibling claims.
 
