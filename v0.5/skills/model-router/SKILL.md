@@ -41,7 +41,13 @@ Completion criterion: every displayed route is live and has one exact launch con
 
 Before a new choice, obtain read-only task advice through the shared helper's
 `advise` action with the same current discovery adapter, `role`, effective
-`feature_choice` when present, and known goal/task/risk/billing context. Admit
+`feature_choice` when present, and known goal/task/risk/billing context. Reuse
+successful official evidence for up to 24 hours only at this discovery checkpoint;
+first use, an observed model/version change and explicit Configure Refresh
+check immediately. Display material claim changes with URLs and dates, or
+stale/incomplete with the previous successful date after failure. A private
+cache never proves current access or launch identity. Perform no unrelated-turn
+or background source checks. Admit
 only routes that already passed this lane's authority and permission checks;
 Verify also requires fresh-context independence and its existing read-only
 permission boundary. Pass owning-gate `context.constraints[role]` with

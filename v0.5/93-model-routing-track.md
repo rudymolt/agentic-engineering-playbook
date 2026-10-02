@@ -98,6 +98,16 @@ Suggestions and Explain are read-only. Only the existing feature gate accepts
 an explicit alternative; project/personal defaults, active approvals and
 feature-scoped `openai defaults` retain their authority. No paid comparison
 or candidate invocation is part of recommendation discovery.
+Successful official guidance, capability/reasoning and pricing evidence can
+be reused for at most 24 hours at these discovery checkpoints. First use,
+explicit Configure Refresh and a newly observed model/version check immediately;
+there is no network check on unrelated turns. Failed checks retain the last
+successful date and label stale/incomplete. Material changed claims carry their
+URLs and dates; advice never rewrites defaults or approved feature routes.
+The private bounded cache is advisory: each launch still checks live route
+availability and authoritative identity separately. For unavailable project
+defaults, Configure offers one verified replacement or explicit editor/access
+recovery. Acceptance changes a draft and still requires preview and Apply.
 
 1. Name the feature with its human title.
 2. Lead with friendly model label and action; show model ID, runner, reasoning, and exact launch consequence as secondary detail.

@@ -365,7 +365,7 @@ class PersonalPresetTests(unittest.TestCase):
         loaded = service.reply(service.read(), "Load preset Focus")
         self.assertEqual(loaded["state"], "proposal_ready", loaded)
         result = service.reply(loaded, "Apply")
-        self.assertEqual(result["state"], "blocked", result)
+        self.assertEqual(result["state"], "decision_required", result)
         self.assertIn("unavailable", result["message"])
         self.assertFalse((self.projects[0] / ".playbook-config.json").exists())
 

@@ -4,6 +4,7 @@ from copy import deepcopy
 from datetime import datetime, timezone
 from html.parser import HTMLParser
 import math
+import hashlib
 import re
 from urllib.parse import urlparse
 from urllib.error import URLError
@@ -200,12 +201,13 @@ class OfficialSources:
                 raise ValueError("Source exceeds bounded retrieval")
             return content.decode("utf-8")
 
-    def retrieve(self):
+    def retrieve(self, urls=None, retained_guidance=()):
         evidence = {"guidance": [], "rates": [], "sources": []}
-        for url in SOURCES:
+        for url in SOURCES if urls is None else urls:
             try:
                 page = Page()
-                page.feed(self.fetch(url))
+                content = self.fetch(url)
+                page.feed(content)
                 checked = self.clock()
                 source = {"source_url": url, "checked_at": self.previous.get(url, {}).get("checked_at"), "retrieved_at": checked, "status": "incomplete",
                           "uncertainty": "Retrieved official page; only unambiguous model-specific records are usable. Other data remains unknown."}
@@ -213,9 +215,10 @@ class OfficialSources:
                     source["uncertainty"] = "Reasoning/control guidance retrieved separately. Task suitability is unknown from this source; supported reasoning still requires host evidence."
                 if not any(part.strip() for part in page.text):
                     raise ValueError("Empty source")
-                records = self._rates(page, url, checked, evidence["guidance"]) if url.endswith("pricing") else self._guidance(page, url, checked)
+                source['content_fingerprint'] = hashlib.sha256(content.encode()).hexdigest()
+                records = self._rates(page, url, checked, [*retained_guidance, *evidence["guidance"]]) if url.endswith("pricing") else self._guidance(page, url, checked)
                 evidence["rates" if url.endswith("pricing") else "guidance"].extend(records)
-                if records:
+                if records or url == SOURCES[1]:
                     source["status"] = "retrieved"
                     source["checked_at"] = checked
             except (OSError, ValueError, UnicodeError, TimeoutError):

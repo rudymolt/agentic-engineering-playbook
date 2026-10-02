@@ -21,6 +21,7 @@ def main():
     parser.add_argument("--discovery-command", help="JSON argv for the current-availability adapter; request JSON is sent on stdin.")
     parser.add_argument("--now", help="Fixture clock only; live use omits this option.")
     parser.add_argument("--evidence-fixture", type=Path, help="Controlled official evidence fixture; requires --now, never live proof.")
+    parser.add_argument('--evidence-dir', type=Path, help='External private advisory cache directory; never launch authority.')
     parser.add_argument("action", choices=("read", "reply", "resolve", "advise", "job-route"))
     args = parser.parse_args()
 
@@ -56,6 +57,7 @@ def main():
             service = Configuration(args.project, discover, clock, preferences_dir=args.preferences_dir,
                                     context=request.get("context"),
                                     recommendation_sources=sources,
+                                    evidence_dir=args.evidence_dir or (None if args.now else Path.home() / '.cache' / 'ai-playbook-evidence'),
                                     bindings=binding_catalog())
         except ConfigError:
             reply = request.get("reply", "")
@@ -66,6 +68,7 @@ def main():
                 raise
             service = Configuration(args.project, discover, clock, context=request.get("context"),
                                     recommendation_sources=sources,
+                                    evidence_dir=args.evidence_dir or (None if args.now else Path.home() / '.cache' / 'ai-playbook-evidence'),
                                     bindings=binding_catalog())
         if args.action == "read":
             result = service.read()

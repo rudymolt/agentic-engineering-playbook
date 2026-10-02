@@ -37,7 +37,12 @@ class ConfigurationTests(unittest.TestCase):
             "revision": "fixture-1",
             "checked_at": "2026-09-29T12:00:00Z",
             "authority": "host-reported-selection",
-            "routes": [{"model_id": "available-build", "runner": "codex", "reasoning": "medium", "roles": ["implementation"]}],
+            "routes": [{"model_id": "available-build", "runner": "codex", "reasoning": "medium", "roles": ["implementation"]},
+                       {'model_id': 'custom-plan', 'runner': 'cursor', 'reasoning': 'max', 'roles': ['planning']},
+                       {'model_id': 'custom-verify', 'runner': 'claude-code', 'reasoning': 'high', 'roles': ['verification']},
+                       {'model_id': 'custom-repair', 'runner': 'codex', 'reasoning': 'xhigh', 'roles': ['escalated_repair']},
+                       {'model_id': 'gpt-6.1-sol', 'runner': 'codex', 'reasoning': 'high', 'roles': ['planning', 'verification']},
+                       {'model_id': 'gpt-6-astra', 'runner': 'codex', 'reasoning': 'high', 'roles': ['escalated_repair']}],
         }
         self.service = Configuration(self.project, self.discover, lambda: "2026-09-29T12:00:00Z")
 
@@ -109,9 +114,9 @@ class ConfigurationTests(unittest.TestCase):
         proposal = self.preview()
         self.discovery["routes"] = []
         result = self.service.reply(proposal, "Apply")
-        self.assertEqual(result["state"], "blocked")
-        self.assertIn("unavailable", result["message"])
-        self.assertIn("Edit Build", result["choices"])
+        self.assertEqual(result["state"], "decision_required")
+        self.assertEqual(result['step'], 'replacement')
+        self.assertIn('Choose another model', result['choices'])
         self.assertFalse((self.project / ".playbook-config.json").exists())
         self.assertEqual(self.state.read_bytes(), self.runtime)
 

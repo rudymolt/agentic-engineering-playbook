@@ -278,6 +278,42 @@ separate from availability and execution authority.
 
 ## Read-only recommendation evidence
 
+Successful official evidence is reused for at most 24 hours only at Configure
+and existing lane-discovery checkpoints. First use, explicit typed `Refresh`,
+and a changed discovered model/version fingerprint check immediately. Each
+official URL is fetched at most once in a discovery pass; successful sources
+can be reused independently when another source is incomplete. Explain, edits,
+resolution and unrelated turns do not retrieve sources. No watcher, package
+installation, preset rewrite or stage launch is introduced.
+
+The live CLI uses a private external user cache; `--evidence-dir` explicitly
+selects an external directory on every request. Library callers can supply
+`evidence_dir`; omission keeps evidence only in the service instance. Cache
+schema 1 holds bounded official claims, successful source dates and revision
+metadata when supplied by a trustworthy adapter, otherwise SHA-256 content
+fingerprints. Retrieval failures preserve successful dates and mark claims
+stale/incomplete. A discovery fingerprint detects changed model/version
+identities without saving a route catalogue. The cache is at most 256 KiB,
+with at most 256 records per kind; it is advisory and never launch authority.
+Changed material claims return source-specific `changes` with old/new evidence
+and dates, reassessing existing models. Unchanged source content yields no
+change notice. Missing pricing remains unknown; new models need adequate
+task-fit evidence and live host-supported capability/reasoning.
+
+Unavailable selected or saved routes remain visible in the `replacement` step.
+It offers one suitable verified alternative for the affected role, with
+runner/reasoning, fit, cost limits and evidence. `Accept replacement` edits
+only that draft role and returns the full before/after preview. `Choose another
+model` opens its ordinary editor; `Not now` saves no pending preferences or
+presets and reports any local advisory cache refresh. With no eligible
+alternative, restore access, refresh evidence or choose explicitly; no route
+is invented. Apply checks all selected roles with fresh host evidence. A route
+disappearing after preview returns recovery without saving; acceptance still
+requires another explicit Apply. File/skill drift invalidates the proposal at
+the existing gates. Presets, billing, repair constraints, active/approved
+feature choices and history remain untouched. Every launch independently
+checks current availability and authoritative identity through model-router.
+
 Live helper `read` and `advise` initially retrieve five fixed official model,
 reasoning and pricing pages through `model_recommendations.OfficialSources`.
 Only HTTPS GETs are used: no credentials, provider model execution, benchmark,

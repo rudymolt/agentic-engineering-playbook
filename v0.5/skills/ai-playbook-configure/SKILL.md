@@ -10,7 +10,7 @@ Configure edits **Plan, Build, Verify and escalated repair**, plus five
 stage-owned job bindings, including portable custom sources. QA inherits Verify;
 Coordinator is observed display-only. Personal defaults and named presets are
 local. Evidence-backed recommendations are read-only; unavailable-model
-replacement and refresh policy remain separate work.
+replacements edit only the draft and still require explicit Apply.
 This skill never launches a model or edits runtime state.
 
 ## Procedure
@@ -39,6 +39,16 @@ This skill never launches a model or edits runtime state.
    helper's `read` action. On
    blocked/recovery-required, report its corrective action and offer Reload or
    Not now. Completion criterion: current values, origins and verified routes.
+   Official evidence uses a bounded external local cache, optionally selected
+   with `--evidence-dir` on every helper request. The live helper defaults to a
+   private user cache; never copy it into project settings or shared evidence.
+   Reuse successful guidance, reasoning/capability and pricing checks for at
+   most 24 hours only at Configure or existing lane-discovery checkpoints.
+   First use, newly observed model/version and typed `Refresh` check immediately.
+   Display claim-specific successful dates, fingerprints and material `changes`.
+   Unchanged content produces no invented notice. A failed check retains its
+   successful date and labels stale/incomplete; new-model advice needs adequate
+   evidence. No background watcher, unrelated-turn check or package installation.
 2. **Present project defaults.** Ask only the returned `missing_context`
    questions through typed `Goal <context>`, `Billing api`, `Billing subscription`,
    `Billing mixed` or `Billing unknown`, and `Guided` / `Expert`. Goal/billing
@@ -74,6 +84,16 @@ This skill never launches a model or edits runtime state.
    settings here before that gate; reopen after bootstrap and review again.
    Completion criterion: the user sees scope, origins, migration and destination.
 3. **Edit and preview.** Pass replies through the helper's `reply` action with
+   the previous proposal. When its step is `replacement`, show the unavailable
+   saved value and exactly one verified suitable alternative, including role,
+   runner/reasoning, task fit, costs and evidence limits. Offer typed `Accept
+   replacement`, `Choose another model` or `Not now`. Acceptance edits only the
+   affected role and returns to the complete before/after preview. Choosing
+   another opens that role's ordinary editor. With no suitable alternative,
+   show the limitation and restore-access/Refresh/explicit-editor recovery path;
+   do not offer acceptance. Multiple unavailable roles are handled in role order
+   on subsequent discovery/Apply checks, retaining all unrelated drafts.
+   Pass ordinary editing replies with
    the previous proposal. `Edit` offers numbered roles. `Edit <role>` displays
    verified complete alternatives numbered from 1, showing model, runner and
    reasoning. `Pick model` offers numbered model, then supported runner, then
@@ -136,8 +156,10 @@ This skill never launches a model or edits runtime state.
 4. **Apply the reviewed proposal.** Only after typed `Apply`, repeat genuine
    authoritative discovery through that adapter and pass the same proposal to the helper. Never
    silently create and Apply a refreshed proposal. Changed inputs require
-   Reload and another preview/Apply. Unavailability requires editing the affected role; no
-   automatic substitution. Report applied/unchanged/blocked/recovery-required
+   Reload and another preview/Apply. Unavailability returns the replacement
+   conversation with the draft retained. Acceptance requires a refreshed preview
+   and another explicit Apply; never substitute or save the old proposal.
+   Report applied/unchanged/blocked/recovery-required
    exactly with destination and corrective message. `Not now` writes no
    pending defaults or presets; distinguish earlier explicitly saved presentation
    and any local read-side discovery refresh. Stop for retained recovery evidence;

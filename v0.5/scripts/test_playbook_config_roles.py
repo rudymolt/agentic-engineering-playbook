@@ -35,6 +35,9 @@ class RoleConversationTests(unittest.TestCase):
             {"model_id": "fixture-model", "runner": "codex", "reasoning": "high", "roles": list(ROLES)},
             {"model_id": "fixture-model", "runner": "conductor", "reasoning": "high", "roles": list(ROLES)},
             {"model_id": "fixture-other", "runner": "codex", "reasoning": "high", "roles": ["planning"]},
+            {'model_id': 'gpt-6.1-sol', 'runner': 'codex', 'reasoning': 'high', 'roles': ['planning', 'verification']},
+            {'model_id': 'gpt-6.1-sol', 'runner': 'codex', 'reasoning': 'medium', 'roles': ['implementation']},
+            {'model_id': 'custom-repair', 'runner': 'codex', 'reasoning': 'high', 'roles': ['escalated_repair']},
         ]
         self.coordinator = None
         self.service = Configuration(self.project, self.discover, lambda: "2026-09-30T12:00:00Z")
@@ -179,8 +182,8 @@ class RoleConversationTests(unittest.TestCase):
                 original_routes = deepcopy(self.routes)
                 self.routes[0]["roles"].remove(role)
                 result = self.service.reply(draft, "Apply")
-                self.assertEqual(result["state"], "blocked")
-                self.assertIn("unavailable", result["message"])
+                self.assertEqual(result["state"], "decision_required")
+                self.assertEqual(result['step'], 'replacement')
                 self.assertFalse((self.project / ".playbook-config.json").exists())
                 self.routes = original_routes
         draft = self.service.reply(self.service.reply(self.service.read(), "Edit Repair"), "1")

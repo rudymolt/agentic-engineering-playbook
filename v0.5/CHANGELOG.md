@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+- Reuse bounded local official recommendation evidence for at most 24 hours at
+  discovery, checking immediately on first use, explicit Refresh or a changed
+  model/version fingerprint. Offer draft-only recovery for unavailable models.
+
+*Why — current advice must preserve intentional choices:* source changes can
+affect existing models and costs without granting selection or launch authority.
+Retain successful dates on failed refresh, explain material claim changes, and
+require a refreshed preview and explicit Apply after replacement acceptance.
+Preserve active approvals, personal presets, billing and repair constraints.
+
 - Require exact Anthropic base-context eligibility at table and model-row
   boundaries, and bound numeric rates before validating or estimating costs.
 

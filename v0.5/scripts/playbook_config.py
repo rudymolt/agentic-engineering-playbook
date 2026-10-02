@@ -217,7 +217,7 @@ def instant(value):
 
 class Configuration:
     def __init__(self, project: Path, discover: Callable, clock: Callable = None, checkpoint: Callable = None,
-                 preferences_dir: Path = None, context: dict = None, bindings=None, recommendation_sources=None):
+                 preferences_dir: Path = None, context: dict = None, bindings=None, recommendation_sources=None, evidence_dir=None):
         self.project = Path(project)
         self.discover = discover
         self.clock = clock or (lambda: datetime.now(timezone.utc).isoformat())
@@ -230,6 +230,15 @@ class Configuration:
         self.context = deepcopy(context)
         self.bindings = bindings
         self.recommendation_sources = recommendation_sources
+        from model_evidence_cache import EvidenceCache
+        if evidence_dir is not None:
+            local_evidence = resolve_private_path(Path(evidence_dir))
+            if local_evidence.is_relative_to(resolve_private_path(self.project)):
+                raise ConfigError('Evidence requires an external local directory; never publish advisory caches.')
+            evidence_path = local_evidence / (digest(str(resolve_private_path(self.project)).encode()) + '.json')
+        else:
+            evidence_path = None
+        self.evidence_cache = EvidenceCache(self.clock, evidence_path, self.project)
         self.preferences = None
         self._write_stores = (self,)
         self._directory_fd = None
@@ -437,9 +446,12 @@ class Configuration:
         except (ValueError, TypeError, AttributeError) as error:
             raise ConfigError("Invalid local recommendation context; supply task, risk and structured evidence without changing defaults.") from None
 
-    def _recommendation_evidence(self):
+    def _recommendation_evidence(self, discovery, force=False):
+        if self.recommendation_sources is None:
+            return {}
         try:
-            evidence = self.recommendation_sources() if self.recommendation_sources else {}
+            self.evidence_cache.clock = self.clock
+            evidence = self.evidence_cache.retrieve(self.recommendation_sources, discovery, force)
             if not isinstance(evidence, dict):
                 raise ValueError("Invalid source result")
             encoded(evidence)
@@ -452,8 +464,10 @@ class Configuration:
         effective = self.resolve(role, feature_choice)
         routes, availability = self._available()
         context = deepcopy(self.context or {})
-        advice = self._recommend(routes, context, self._recommendation_evidence(), lane=True)[role]
+        evidence = self._recommendation_evidence(availability)
+        advice = self._recommend(routes, context, evidence, lane=True)[role]
         return {"effective": effective, "recommendation": advice, "availability": availability,
+                "evidence_changes": evidence.get('changes', []),
                 "scope": "feature advice only; existing explicit selection gate owns acceptance", "launched": False}
 
     def _available(self):
@@ -504,7 +518,7 @@ class Configuration:
                 "choices": self._proposal_choices(),
                 "message": "Project defaults only. All four roles are retained. No active selection changes; no model launches.",
                 "context": self.context, "personal": self._personal_snapshot(),
-                "recommendation_evidence": self._recommendation_evidence(),
+                "recommendation_evidence": self._recommendation_evidence(evidence),
                 "bootstrap": {"required": inputs[".playbook-state.yml"] is None,
                               "action": "Use the existing bootstrap preview/approval gate; configuration never bootstraps."},
             }
@@ -521,6 +535,7 @@ class Configuration:
                                            "authority": evidence["authority"], "checked_at": evidence["checked_at"],
                                            "message": "Current chat observed during this discovery; display-only, not launch proof."}
             self._present(proposal)
+            self._replacement(proposal)
             proposal["proposal_revision"] = self._revision(proposal)
             return proposal
         except (ConfigError, OSError, UnicodeError, TypeError) as error:
@@ -531,7 +546,24 @@ class Configuration:
         return {"state": "recovery_required" if paired or self.recovery.exists() or isinstance(error, RecoveryRequired) else "blocked", "message": public_error_message(error), "choices": ["Edit", "Edit Build", "Reload", "Not now"], "launched": False}
 
     def _proposal_choices(self):
-        return ["Apply", "Edit", "Edit Plan", "Edit Build", "Edit Verify", "Edit Repair", "Edit skills", "Explain", "Not now"]
+        return ["Apply", "Edit", "Edit Plan", "Edit Build", "Edit Verify", "Edit Repair", "Edit skills", "Explain", "Refresh", "Not now"]
+
+    def _replacement(self, draft):
+        unavailable = [role for role in ROLES if {key: value for key, value in draft['after'][role].items() if key in IDENTITY}
+                       not in draft['role_alternatives'][role]]
+        draft['unavailable_roles'] = unavailable
+        draft.pop('replacement', None)
+        if unavailable:
+            role = unavailable[0]
+            draft.update(step='replacement', state='decision_required',
+                         replacement={'role': role, 'saved': deepcopy(draft['before'][role]),
+                                      'unavailable': deepcopy(draft['after'][role]),
+                                      'advice': deepcopy(draft['recommendations'][role])})
+            draft['choices'] = (['Accept replacement'] if draft['recommendations'][role]['choice'] else []) + ['Choose another model', 'Not now', 'Refresh', 'Edit', 'Explain ' + ROLE_LABELS[role]]
+            draft['message'] = ('Saved choice remains visible. Replacement acceptance edits only this draft; review the preview and explicitly Apply.'
+                                if draft['recommendations'][role]['choice'] else
+                                'Saved choice is unavailable. No verified suitable alternative with adequate task/risk evidence. Restore access or refresh official evidence, or choose another model explicitly; no replacement invented.')
+        return draft
 
     def _bindings(self):
         if self.bindings is None:
@@ -673,7 +705,9 @@ class Configuration:
             return self._blocked("Reply requires a structured proposal and a typed choice; reload.")
         reply = text.strip().lower()
         if reply == "not now":
-            return {"state": "unchanged", "message": "No pending changes applied. Project defaults, runtime records and presets unchanged; previously saved local preferences remain saved.", "launched": False}
+            evidence = proposal.get('recommendation_evidence', proposal.get('retained_proposal', {}).get('recommendation_evidence', {}))
+            return {"state": "unchanged", "message": "No pending changes applied. Project defaults, runtime records and presets unchanged; previously saved local preferences remain saved." +
+                    (' Local advisory cache refreshed; no configuration saved.' if evidence.get('cache_persisted') else ''), "launched": False}
         if reply == "reload":
             return self.read()
         if (proposal.get("state") in {"blocked", "recovery_required"} and proposal.get("retained_proposal")
@@ -698,6 +732,23 @@ class Configuration:
         except (ConfigError, KeyError, TypeError) as error:
             return self._blocked(error)
         draft = deepcopy(proposal)
+        if reply in {'accept replacement', 'choose another model'} and draft.get('step') == 'replacement':
+            role = draft['replacement']['role']
+            if reply == 'choose another model':
+                return self._reply(proposal, 'Edit ' + role)
+            choice = draft['replacement']['advice']['choice']
+            if choice is None:
+                raise ConfigError('No verified suitable replacement; restore access or choose another model.')
+            draft['edit_role'] = role
+            draft.pop('replacement', None)
+            return self._select(draft, choice)
+        if reply == 'refresh':
+            routes, availability = self._available()
+            draft.update(role_alternatives=routes, discovery=availability,
+                         recommendation_evidence=self._recommendation_evidence(availability, force=True))
+            self._preview(draft)
+            self._replacement(draft)
+            return self._seal(draft)
         if reply in {"recommended", "load preset recommended"}:
             _, origins, inputs = self._snapshot()
             if inputs != draft["inputs"]:
@@ -904,6 +955,7 @@ class Configuration:
         changed_directory = self._refresh_personal_destination(draft)
         draft.update(step="preview", state="proposal_ready")
         self._present(draft)
+        draft.pop('replacement', None)
         if changed_directory:
             draft["message"] = "Directory identity changed; review the resolved personal destination. Role drafts are retained."
         draft["proposal_revision"] = self._revision(draft)
@@ -951,6 +1003,13 @@ class Configuration:
             if inputs != proposal.get("inputs") or config["models"] != proposal.get("before"):
                 raise ConfigError("Inputs changed since preview; reload and review the new proposal.")
             candidate = validate_config({"schema_version": 1, "adopted": True, "models": deepcopy(proposal["after"])})
+            if any({key: value for key, value in candidate['models'][role].items() if key in IDENTITY} not in routes[role] for role in ROLES):
+                refreshed = deepcopy(proposal)
+                refreshed.update(role_alternatives=routes, discovery=evidence,
+                                 recommendation_evidence=self._recommendation_evidence(evidence))
+                self._present(refreshed)
+                self._replacement(refreshed)
+                return self._seal(refreshed)
             if proposal["skills_adopted"] or proposal["edited_jobs"]:
                 starting = config.get("skills", self._bindings().defaults())
                 if starting != proposal["skill_before"]:

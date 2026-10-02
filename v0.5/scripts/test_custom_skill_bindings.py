@@ -84,8 +84,7 @@ class CustomBindingTests(test_playbook_config.ConfigurationTests):
         adapter = ("import json,sys; request=json.load(sys.stdin); "
                    "json.dump({'request_id':request['request_id'],'checked_at':request['started_at'],"
                    "'authority':'host-reported-selection','revision':'fixture-cli',"
-                   "'routes':[{'model_id':'available-build','runner':'codex','reasoning':'medium',"
-                   "'roles':['implementation']}]},sys.stdout)")
+                   "'routes':" + repr(self.discovery['routes']) + "},sys.stdout)")
         command = [sys.executable, str(Path(__file__).with_name("configure-playbook.py")),
                    "--project", str(self.project), "--custom-bindings-dir", str(self.local),
                    "--discovery-command", json.dumps([sys.executable, "-c", adapter]), *extra, action]
