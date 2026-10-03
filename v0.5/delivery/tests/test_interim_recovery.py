@@ -464,6 +464,7 @@ class RecoveryBoundaryTests(unittest.TestCase):
             ("resume", "observe", 1, {"owned": owned}), ("resume", "observe", 2, {"owned": owned}),
         ]
 
+    @memoized_control_refs
     def test_transport_failures_at_every_call_site(self):
         for path, boundary, occurrence, options in self.sites():
             for error in (OSError, TimeoutError, ConnectionError, InterimDispatchError):
@@ -516,6 +517,7 @@ class RecoveryBoundaryTests(unittest.TestCase):
                         self.assertEqual(latest["state"], "uncertain")
                         self.assertEqual(latest["receipt"]["state"], "uncertain")
 
+    @memoized_control_refs
     def test_coordinator_and_prefix_malformed_matrix(self):
         coordinator_faults = [
             ("not-list", lambda _: None), ("non-object-item", lambda _: [None]),
@@ -661,6 +663,7 @@ class RecoveryBoundaryTests(unittest.TestCase):
                 self.preserved(snapshot.value, refused.value, "resume")
                 self.reload(refused)
 
+    @memoized_control_refs
     def test_provider_programmer_and_storage_exceptions_are_not_conflated(self):
         for path, boundary, occurrence, options in self.sites():
             # One representative call at each boundary/mode is sufficient here;
