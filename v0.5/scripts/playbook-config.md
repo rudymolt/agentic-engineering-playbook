@@ -477,7 +477,14 @@ replaced personal defaults/preset job bindings against the current source,
 retained proof and job contract before publication. Recommended resets only the
 project draft; pending personal saves still require this check. Drift blocks
 before either destination is written and retains the proposal for explicit
-editing and refreshed preview. Older unchanged reusable job bindings remain
+editing and refreshed preview. `Edit skills <job>` rereads that job's current
+options, eligibility and rejection diagnostics while retaining selected bindings,
+other role/context edits and pending personal data. Opening the editor or backing
+out chooses nothing. Explicitly choose an eligible fallback or newly qualified
+source, repeat Save defaults or Save preset <name> to replace the pending reusable
+preview, then Apply preference or project Apply. Reopen each affected job editor
+when its catalog changes; model Refresh and Reload are not skill-draft recovery.
+Older unchanged reusable job bindings remain
 inert during presentation, billing and model-only preference edits.
 
 ## Transaction and recovery

@@ -987,6 +987,14 @@ class Configuration:
             job = reply[len("edit skills "):].replace(" ", "_")
             if job not in draft["skill_after"]["jobs"]:
                 raise ConfigError("Choose alignment, specification, implementation, code review or application QA.")
+            # Re-entry is an explicit discovery checkpoint, not a selection.
+            # Rebuild diagnostics, but renew only the opened job's reviewed
+            # catalog; other pending jobs still require their own review.
+            bindings = self._bindings()
+            bindings.rejections = []
+            current = {key: bindings.options(key) for key in draft["skill_after"]["jobs"]}
+            draft["skill_alternatives"][job] = current[job]
+            draft["skill_rejections"] = deepcopy(bindings.rejections)
             draft.update(step="skill", edit_job=job, skill_options=deepcopy(draft["skill_alternatives"][job]),
                          choices=["Choose " + str(index + 1) for index in range(len(draft["skill_alternatives"][job]))] + ["Back", "Reload", "Not now"],
                          message="Choose a source-labelled route by number. Alignment permits ordered comma-separated adapter choices. Source labels are attribution, not authority.")

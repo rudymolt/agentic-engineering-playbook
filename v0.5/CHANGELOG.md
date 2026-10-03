@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- Refresh current skill options and rejection diagnostics on explicit job-editor
+  entry, preserving selected identities and unrelated drafts through fallback
+  choice, reusable-save preview and local or paired Apply.
+
+*Why — retained drafts need a complete recovery route:* stale retained catalogs
+blocked even an explicitly chosen eligible fallback after source or proof drift.
+Job-editor discovery now renews that job's reviewed catalog without substitution,
+invocation, weaker save checks or requalification of unchanged stored bindings.
+
 - Recheck newly added or replaced personal defaults/preset job bindings before
   paired project Apply, including when Recommended resets the project draft.
   Retain blocked proposals and preserve older unchanged reusable bindings.

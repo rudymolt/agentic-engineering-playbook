@@ -54,7 +54,13 @@ identical content. They are excluded, not resolved by search order. Separate
 collection identities never alias by display name. A missing, changed, unknown,
 colliding or incompatible saved source blocks invocation and Apply until the
 user explicitly previews a fallback. Reload never substitutes a saved choice.
-Compatibility evidence/invocation changes also invalidate the contract digest.
+The explicit `Edit skills <job>` recovery checkpoint refreshes current options
+and rejection diagnostics without replacing any selected identity or unrelated
+draft. Choose a current eligible route, preview it again (including Save defaults
+or Save preset <name> for pending reusable data), then explicitly Apply. Back or
+Not now does not accept a fallback. Other changed job catalogs require their own
+editor checkpoint. Compatibility evidence/invocation changes also invalidate
+the contract digest.
 
 ## Portable custom sources
 

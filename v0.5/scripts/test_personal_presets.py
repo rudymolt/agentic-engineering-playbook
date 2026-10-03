@@ -500,7 +500,7 @@ class PersonalPresetTests(unittest.TestCase):
             identity: {"source": str(source), "audits": {job: "fixture-audit"}}}}))
         return store, source, proof, identity
 
-    def reusable_skill_case(self, cli, action, drift, replace=False, paired=False):
+    def reusable_skill_case(self, cli, action, drift, replace=False, paired=False, recover=False):
         store, source, proof, identity = self.reusable_skill_fixture()
         service = Configuration(self.projects[0], self.discover, lambda: "2026-10-01T12:00:00Z",
                                 preferences_dir=self.local, bindings=JobBindings(self.projects[0], custom_dir=store))
@@ -536,8 +536,11 @@ class PersonalPresetTests(unittest.TestCase):
             return value
 
         proposal = call()
-        if paired:
+        if recover or paired:
             proposal = call(proposal, "Goal fixture project")
+        if recover:
+            proposal = call(call(proposal, "Edit Build"), "1")
+            proposal = call(call(proposal, "Expert"), "Billing api")
         editor = call(proposal, "Edit skills specification")
         option = next(index + 1 for index, value in enumerate(editor["skill_options"])
                       if value["binding"]["source_id"] == identity)
@@ -593,8 +596,54 @@ class PersonalPresetTests(unittest.TestCase):
             # A refreshed editor retains the local draft and requires an explicit choice.
             recovered = call(result, "Edit skills specification")
             self.assertEqual(recovered["personal"]["after"], proposal["personal"]["after"])
-            presentation = call(call(), "Expert")
-            self.assertEqual(call(presentation, "Apply preference")["state"], "proposal_ready")
+            if recover:
+                # Opening/backing out is not acceptance, and pending reusable
+                # data is not rewritten by discovery or by choosing a route.
+                for key in ("after", "skill_after", "context", "edited_roles"):
+                    self.assertEqual(recovered[key], proposal[key])
+                no_choice = call(recovered, "Back")
+                if not paired:
+                    no_choice = call(no_choice, "Expert")
+                no_choice = call(no_choice, "Apply" if paired else "Apply preference")
+                self.assertEqual(no_choice["state"], "blocked")
+                self.assertEqual(personal_path.read_bytes(), personal_before)
+                self.assertEqual(call(recovered, "Not now")["state"], "unchanged")
+                recovered = call(no_choice, "Edit skills specification")
+                ids = [value["binding"]["source_id"] for value in recovered["skill_options"]]
+                # A choice outside the refreshed eligible catalog still blocks.
+                invalid = call(recovered, "Choose " + str(len(ids) + 1))
+                self.assertEqual(invalid["state"], "blocked")
+                recovered = call(invalid, "Edit skills specification")
+                manual = next(index + 1 for index, value in enumerate(recovered["skill_options"])
+                              if value["binding"]["source_id"] == "playbook:specification-manual")
+                chosen = call(recovered, "Choose " + str(manual))
+                self.assertEqual(chosen["personal"]["after"], proposal["personal"]["after"])
+                pending_preview = chosen if paired else call(chosen, "Expert")
+                still_pending = call(pending_preview, "Apply" if paired else "Apply preference")
+                self.assertEqual(still_pending["state"], "blocked")
+                self.assertEqual(personal_path.read_bytes(), personal_before)
+                chosen = call(still_pending, "Edit skills specification")
+                chosen = call(chosen, "Choose " + str(manual))
+                final = call(chosen, action)
+                if paired:
+                    final = call(final, "Recommended")
+                self.assertEqual(final["context"], proposal["context"])
+                result = call(final, "Apply" if paired else "Apply preference")
+                self.assertEqual(result["state"], "applied" if paired else "proposal_ready", result["message"])
+                if drift in ("source", "proof", "resolution"):
+                    self.assertNotIn(identity, ids)
+                    self.assertTrue(any(item["source_id"] == identity for item in recovered["skill_rejections"]))
+                saved = json.loads(personal_path.read_text())
+                candidate = saved["defaults"] if action == "Save defaults" else saved["presets"]["Qualified"]
+                self.assertEqual(candidate["models"], proposal["after"])
+                self.assertEqual(candidate["skills"]["jobs"]["specification"][0]["source_id"], "playbook:specification-manual")
+                self.assertEqual(saved["presentation"], "expert")
+                self.assertEqual(saved["billing"], "api")
+                if paired:
+                    self.assertTrue(result["paired_completion"]["validated"])
+            else:
+                presentation = call(call(), "Expert")
+                self.assertEqual(call(presentation, "Apply preference")["state"], "proposal_ready")
         else:
             self.assertEqual(result["state"], "applied" if paired else "proposal_ready", result)
             if paired:
@@ -610,6 +659,81 @@ class PersonalPresetTests(unittest.TestCase):
         for path, content in store_before.items():
             self.assertEqual(path.read_bytes(), content)
         self.assertFalse(result.get("launched", False))
+
+    def test_editor_rejects_newly_ineligible_choice_and_requires_requalified_selection(self):
+        for cli in (False, True):
+            with self.subTest(cli=cli):
+                store, source, proof, identity = self.reusable_skill_fixture()
+                service = Configuration(self.projects[0], self.discover, lambda: "2026-10-01T12:00:00Z",
+                                        preferences_dir=self.local, bindings=JobBindings(self.projects[0], custom_dir=store))
+
+                def call(proposal=None, reply=None):
+                    if not cli:
+                        return service.read() if proposal is None else service.reply(proposal, reply)
+                    process, result = self.command("read" if proposal is None else "reply", proposal, reply, custom=store)
+                    self.assertEqual(process.returncode, 2 if result["state"] == "blocked" else 0, process.stderr)
+                    return result
+
+                try:
+                    proposal = call(call(), "Expert")
+                    editor = call(proposal, "Edit skills specification")
+                    number = next(i + 1 for i, value in enumerate(editor["skill_options"])
+                                  if value["binding"]["source_id"] == identity)
+                    selected = call(editor, "Choose " + str(number))
+                    pending = call(selected, "Save defaults")
+                    source.write_text("updated synthetic source, never invoked\n")
+                    blocked = call(pending, "Apply preference")
+                    self.assertEqual(blocked["state"], "blocked")
+                    # Even a displayed choice becoming ineligible before Choose
+                    # must fail, without invoking it or writing preferences.
+                    rejected = call(editor, "Choose " + str(number))
+                    self.assertEqual(rejected["state"], "blocked")
+                    self.assertFalse((self.local / "preferences.json").exists())
+                    # Simulate separately retained stage qualification inputs.
+                    audit = json.loads(proof.read_text())
+                    audit["source_sha256"] = fingerprint(source)
+                    proof.write_text(json.dumps(audit))
+                    approvals_path = store / "approvals.json"
+                    approvals = json.loads(approvals_path.read_text())
+                    approvals["audits"]["fixture-audit"].update(revision="fixture-2", evidence_sha256=fingerprint(proof))
+                    approvals_path.write_text(json.dumps(approvals))
+                    before = {p: p.read_bytes() for p in self.root.rglob("*") if p.is_file()}
+                    refreshed = call(blocked, "Edit skills specification")
+                    self.assertEqual(refreshed["skill_after"], pending["skill_after"])
+                    self.assertEqual(refreshed["personal"], pending["personal"])
+                    no_choice = call(call(refreshed, "Back"), "Expert")
+                    self.assertEqual(call(no_choice, "Apply preference")["state"], "blocked")
+                    number = next(i + 1 for i, value in enumerate(refreshed["skill_options"])
+                                  if value["binding"]["source_id"] == identity)
+                    chosen = call(refreshed, "Choose " + str(number))
+                    final = call(chosen, "Save defaults")
+                    self.assertEqual(call(final, "Apply preference")["state"], "proposal_ready")
+                    saved = json.loads((self.local / "preferences.json").read_text())
+                    self.assertEqual(saved["defaults"]["skills"], chosen["skill_after"])
+                    self.assertNotEqual(chosen["skill_after"], selected["skill_after"])
+                    for path, content in before.items():
+                        self.assertEqual(path.read_bytes(), content)
+                finally:
+                    shutil.rmtree(store)
+                    shutil.rmtree(self.local, ignore_errors=True)
+
+    def check_retained_fallback_recovery(self, cli):
+        for paired in (False, True):
+            for action in ("Save defaults", "Save preset Qualified"):
+                for replace in (False, True):
+                    for drift in ("source", "proof", "approval", "contract", "resolution", None):
+                        with self.subTest(cli=cli, paired=paired, action=action, replace=replace, drift=drift):
+                            try:
+                                self.reusable_skill_case(cli, action, drift, replace, paired, recover=True)
+                            finally:
+                                shutil.rmtree(self.root / "custom-store")
+                                shutil.rmtree(self.local)
+
+    def test_library_retained_fallback_recovery(self):
+        self.check_retained_fallback_recovery(False)
+
+    def test_cli_retained_fallback_recovery(self):
+        self.check_retained_fallback_recovery(True)
 
     def check_reusable_skill_freshness(self, cli):
         for action in ("Save defaults", "Save preset Qualified"):
@@ -722,6 +846,19 @@ class PersonalPresetTests(unittest.TestCase):
         self.assertEqual(refreshed["personal"]["after"], proposal["personal"]["after"])
         self.assertEqual(service.path.read_bytes(), encoded(config))
         self.assertFalse((self.local / "preferences.json").exists())
+        manual = next(index + 1 for index, value in enumerate(refreshed["skill_options"])
+                      if value["binding"]["source_id"] == "playbook:specification-manual")
+        chosen = service.reply(refreshed, "Choose " + str(manual))
+        final = service.reply(chosen, "Save defaults")
+        self.assertEqual(final["after"], proposal["after"])
+        applied = service.reply(final, "Apply")
+        self.assertEqual(applied["state"], "applied", applied)
+        self.assertTrue(applied["paired_completion"]["validated"])
+        self.assertEqual(json.loads(service.path.read_text())["models"], proposal["after"])
+        saved = json.loads((self.local / "preferences.json").read_text())
+        self.assertEqual(saved["defaults"]["models"], proposal["after"])
+        self.assertEqual(saved["defaults"]["skills"], chosen["skill_after"])
+        self.assertEqual((self.projects[0] / ".playbook-state.yml").read_bytes(), self.runtime[0])
 
     def test_library_paired_inert_reusable_skills(self):
         self.check_paired_inert_reusable_skills(False)
