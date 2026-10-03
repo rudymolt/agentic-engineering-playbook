@@ -110,5 +110,96 @@ class RuntimeCollectorTests(unittest.TestCase):
         self.assertNotIn("source_path", job)
 
 
+class ParallelRuntimeTests(unittest.TestCase):
+    root = Path(__file__).parent / "test-runtime"
+    head = "a89fd242ae2e87caed987359e65e7a454203c5cf"
+
+    def setUp(self):
+        self.manifest = json.loads((self.root / "manifests" / (self.head + ".json")).read_text())
+        self.logs = {s: (self.root / "fixtures" / ("pr14-" + s + ".log")).read_text()
+                     for s in ("edition", "delivery")}
+
+    def row(self, **kwargs):
+        return collect(self.head, 37138186128, self.logs["edition"], self.logs["delivery"],
+                       suite_manifest=kwargs.get("manifest", self.manifest))
+
+    def test_real_parallel_excerpts_are_complete(self):
+        row = self.row()
+        self.assertEqual(row["executions"], 1153)
+        self.assertEqual(row["summed_test_seconds"], 2218.484)
+        self.assertEqual([len(row["jobs"][s]["groups"]) for s in self.logs], [41, 15])
+        self.assertEqual([row["jobs"][s]["executions"] for s in self.logs], [616, 537])
+        self.assertEqual(row["jobs"]["edition"]["concurrent_workers"], 3)
+        self.assertGreater(row["summed_test_seconds"], row["parallel_jobs_log_span_seconds"])
+
+    def test_manifest_is_required_and_bound_to_revision_and_counts(self):
+        with self.assertRaises(ValueError):
+            self.row(manifest=None)
+        for change in ("head", "count", "missing", "duplicate"):
+            manifest = copy.deepcopy(self.manifest)
+            if change == "head": manifest["head_sha"] = "e" * 40
+            if change == "count": manifest["suites"]["edition"]["modules"][0]["executions"] += 1
+            if change == "missing": manifest["suites"]["edition"]["modules"].pop()
+            if change == "duplicate": manifest["suites"]["edition"]["modules"][1] = manifest["suites"]["edition"]["modules"][0]
+            with self.subTest(change=change), self.assertRaises(ValueError): self.row(manifest=manifest)
+
+    def test_missing_duplicate_failed_skipped_mislabelled_shards_rejected(self):
+        raw = self.logs["edition"]
+        cases = [raw.replace("Test shard 1/41:", "Test shard 2/41:"),
+                 raw.replace("test_audit_upstream_installed.py", "test_unknown.py"),
+                 raw.replace("(exit 0)", "(exit 1)", 1),
+                 raw.replace("OK", "OK (skipped=1)", 1),
+                 raw.replace("Ran 3 tests in 0.019s", "Ran 2 tests in 0.019s"),
+                 raw.replace("Playbook release-readiness checks passed.", ""),
+                 raw.replace("--jobs 3", "--jobs 0"),
+                 raw.replace("--jobs 3", "--jobs 3 --other"),
+                 raw.replace("Scheduled test shard 1/41:", "Missing test shard 1/41:")]
+        for value in cases:
+            self.logs["edition"] = value
+            with self.subTest(value=value[:30]), self.assertRaises(ValueError): self.row()
+
+    def test_real_failed_run_never_enters_history(self):
+        raw = (self.root / "fixtures" / "pr14-failed-edition.log").read_text()
+        self.assertIn("FAILED (failures=12)", raw)
+        with self.assertRaises(ValueError):
+            parse_job(raw, "edition", self.head, 1)
+
+    def test_missing_and_duplicate_summaries_and_schedules(self):
+        original = self.logs["edition"]
+        schedule = next(line for line in original.splitlines() if "Scheduled test shard 1/41:" in line)
+        summary = next(line for line in original.splitlines() if "Ran 3 tests in 0.019s" in line)
+        for raw in (original.replace(schedule, ""), original.replace(schedule, schedule + "\n" + schedule),
+                    original.replace(summary, ""), original.replace(summary, summary + "\n" + summary),
+                    original.replace("--skip-delivery --jobs 3", "--skip-delivery"),
+                    original + "2026-10-03T16:58:00.0000000Z ##[error]Post step failed\n"):
+            self.logs["edition"] = raw
+            with self.assertRaises(ValueError): self.row()
+
+    def test_parallel_cli_prefixes_preserve_extraction(self):
+        expected = self.row()
+        self.logs = {s: "\n".join(s + "\tVerify suite\t" + line for line in raw.splitlines())
+                     for s, raw in self.logs.items()}
+        actual = self.row()
+        for suite in self.logs:
+            actual["jobs"][suite].pop("source_log_sha256")
+            expected["jobs"][suite].pop("source_log_sha256")
+        self.assertEqual(actual, expected)
+
+    def test_historical_serial_records_are_unchanged(self):
+        records = json.loads((self.root / "suite-history.json").read_text())["records"]
+        daily = next(r for r in records if r["run_id"] == 37086875919)
+        self.assertEqual(daily["summed_test_seconds"], 803.053)
+        self.assertFalse(any(r["run_id"] == 37135602912 for r in records))
+        self.assertEqual(annotate(records)[-1]["daily_execution_count_change"], 391)
+
+    def test_concurrency_starts_separate_comparison_baseline(self):
+        serial = collect(HEAD, 10, log("edition"), log("delivery"), 1)
+        parallel = self.row()
+        rows = annotate([serial, parallel])
+        self.assertIsNone(rows[1]["daily_observed_saved_seconds"])
+        self.assertIsNone(rows[1]["cumulative_observed_reduction_percent"])
+        self.assertEqual(rows[1]["daily_execution_count_change"], 1149)
+
+
 if __name__ == "__main__":
     unittest.main()

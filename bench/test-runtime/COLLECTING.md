@@ -31,13 +31,20 @@ including the synthetic merge checkout used by pull-request CI. Both raw job
 logs and the job/step-prefixed `gh run view --log` format are supported. It rejects
 partial commands, failed/skipped unittest groups, missing success markers,
 unexpected group counts, mismatched checkouts and conflicting duplicate run IDs.
-The default is one edition group and 15 delivery groups; if canonical discovery
-grows, inspect the runner and explicitly set `--delivery-groups` to its new count.
-Never lower that count simply to admit an incomplete log. Same-evidence duplicate
+Legacy commands keep the default of one edition group and 15 delivery groups.
+Commands with the reviewed `--jobs N` suffix (1–4) require `--suite-manifest`:
+a JSON inventory bound to the exact head, with ordered module names and expected
+execution counts for each suite. Parallel runs must contain exactly one schedule,
+zero-exit completion and clean summary per expected module. Changing a group
+count alone cannot admit parallel logs. Unknown formats remain fail-closed.
+For serial legacy discovery growth, inspect the runner before changing
+`--delivery-groups`; never lower it to admit incomplete evidence. Same-evidence duplicate
 collection is idempotent. Logs with a different format require parser review.
 
 Keep raw logs in ignored context storage. Commit only sanitized history, the
-rendered summary, and relevant review-ledger updates. Input-log hashes bind the
+rendered summary, relevant review-ledger updates, reviewed discovery manifests
+and minimal public-safe fixture excerpts. Excerpt hashes differ from raw hashes;
+fixtures test parsing and never replace the raw source of a recorded observation. Input-log hashes bind the
 extraction; runner image/version, Python/Git versions, commands, counts, head and
 checkout SHAs and source run/job IDs remain in the JSON. Supply the actual public
 repository slug for `--repository`. Evidence links are
@@ -82,3 +89,36 @@ Verify the collector without exercising delivery fixtures:
 ```sh
 python3 -m unittest discover -s bench -p 'test_collect_ci_runtime.py' -v
 ```
+
+## Parallel format admission
+
+The first supported parallel revision is `a89fd242ae2e87caed987359e65e7a454203c5cf`.
+Its inventory is in `manifests/` and minimal real-log excerpts are in `fixtures/`.
+Pass the matching manifest explicitly with `--suite-manifest PATH` when collecting.
+A new head requires a freshly reviewed manifest; copying an old head field or
+inferring expected counts from the log under admission is not verification.
+
+To prepare an inventory without a timing run, inspect the exact revision in an
+isolated source checkout. Enumerate edition `test_*.py` files in sorted order and
+read delivery `verify.py`'s `SETS["K4.1"]`. For each module, use a fresh Python
+process with `unittest.TestLoader().discover(directory, pattern=module)`, require
+no loader errors, and call `countTestCases()` without running the suite. Review
+imports before discovery. Record ordered names, independent counts, test-file
+SHA-256 values, and hashes of both verifiers, the parallel runner and edition
+manifest. Review the runner's label/exit/output-buffering contract. The supplied
+manifest is trusted evidence reviewed by the caller, not an attestation produced
+by the collector. Hashes preserve provenance; the offline collector does not
+fetch or execute revision sources.
+
+`--jobs 1` retains serial duration semantics. With multiple workers, the sum of
+unittest durations includes overlap and scheduling contention. Reports start a
+separate comparison cohort for each edition/delivery worker-count combination,
+leave cross-cohort duration deltas blank, and retain execution-count changes.
+Do not interpret this as a serial baseline or a measured parallel speedup.
+GitHub API job timestamps, if independently verified, belong in the history's
+`supplemental_evidence`; distinguish them from log-derived spans. The gate span
+between earliest job start and latest job completion excludes queue time.
+
+The October 3 parallel run is supplemental evidence, not a replacement for the
+original daily observation. Its preceding failed run is never a successful
+baseline. CI action majors are action versions, not playbook edition labels.

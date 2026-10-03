@@ -21,6 +21,12 @@ the JSON include CLI checks and shell/log overhead, not just test time.
 | 2026-10-03 / `7828c463f807` | 762 | 668.769 s | +171.352 s (+20.40%) | +467.094 s (+41.12%) | 657.017 s | [run 37085960489](https://github.com/rudymolt/agentic-engineering-playbook/actions/runs/37085960489) |
 | 2026-10-03 / `d1a3214dad9b` | 762 | 803.053 s | -134.284 s (-20.08%) | +332.810 s (+29.30%) | 791.679 s | [run 37086875919](https://github.com/rudymolt/agentic-engineering-playbook/actions/runs/37086875919) |
 
+Comparison baseline: `parallel_unittest:3+3` (separate from serial durations).
+
+| Date / revision | Executions | Summed tests | Observed saved vs previous | Observed saved vs original | Parallel jobs log span | Evidence |
+| --- | ---: | ---: | ---: | ---: | ---: | --- |
+| 2026-10-03 / `a89fd242ae2e` | 1153 | 2218.484 s | — | — | 561.266 s | [run 37138186128](https://github.com/rudymolt/agentic-engineering-playbook/actions/runs/37138186128) |
+
 Execution-count changes remain part of the observed totals. No duration is
 subtracted for suite growth; per-test averages do not establish equivalence.
 Counts are canonical executions, not unique IDs: imported tests can be
@@ -38,3 +44,9 @@ A row is one selected full-suite run, not a daily median. The previous-row
 delta is the daily batch comparison only while one representative completed
 run is retained per batch. Keep selection consistent (final successful head);
 do not pick the fastest retry. Retain additional runs as separate evidence.
+
+With concurrent unittest workers, summed durations overlap. They are not
+suite, job, or gate elapsed time and cannot measure speedup against the
+serial baseline. Cross-concurrency duration deltas are intentionally blank.
+The supplemental concurrency baseline does not replace the original daily
+observation; retain suite growth and runner changes when interpreting it.
