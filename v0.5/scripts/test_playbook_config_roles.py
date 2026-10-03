@@ -306,6 +306,17 @@ class RoleConversationTests(unittest.TestCase):
         self.assertEqual(role_editor["after"], result["after"])
         self.assertEqual(self.service.reply(result, "Apply")["state"], "applied")
 
+    def test_back_from_role_editor_restores_full_preview_guidance(self):
+        initial = self.service.read()
+        editor = self.service.reply(initial, "Edit Build")
+        restored = self.service.reply(editor, "Back")
+        self.assertEqual(restored["step"], "preview")
+        self.assertEqual(restored["state"], "proposal_ready")
+        self.assertEqual(restored["after"], initial["after"])
+        self.assertIn("Apply", restored["choices"])
+        self.assertIn("before/after proposal", restored["message"])
+        self.assertNotIn("by number", restored["message"])
+
     def test_recovery_keeps_all_role_drafts_without_allowing_writes(self):
         for boundary in ("api", "cli"):
             for checkpoint in ("committed", "before_completion"):

@@ -979,6 +979,7 @@ class Configuration:
         if reply == "back":
             if draft.get("step") == "preference_preview":
                 draft["personal"]["after"] = deepcopy(draft["personal"]["before"])
+            draft["message"] = "Full before/after proposal restored. Review choices and destinations; Back saved nothing and launched nothing."
             return self._preview(draft)
         if reply == "edit skills":
             draft.update(step="skill_job", choices=["Edit skills " + job for job in draft["skill_after"]["jobs"]] + ["Back", "Not now"])

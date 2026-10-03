@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+- Restore full-proposal guidance when typed `Back` leaves a role or skill
+  editor, while retaining the reviewed draft and existing save gates.
+
+*Why — an editor prompt persisted after navigation:* S8's live Conductor
+  walkthrough returned to the complete preview but still told the user to pick
+  a Build route by number. The guidance now matches the active choices without
+  selecting, saving or launching a route.
+
 - Run the full public and delivery test files concurrently in PR CI, keep the
   local release command sequential by default, and use current GitHub action
   majors. Exercise real permission denials on ordinary Linux runners.
