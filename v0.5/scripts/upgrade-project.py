@@ -40,9 +40,9 @@ AUTHORITATIVE_EVIDENCE_KINDS = {
 MODEL_ROUTING_BLOCK = """model_routing:
   policy: gated
   defaults:
-    planning: { model_id: gpt-5.6-sol, runner: codex, reasoning: high }
-    implementation: { model_id: gpt-6-sol, runner: codex, reasoning: medium }
-    verification: { model_id: gpt-6-sol, runner: codex, reasoning: high }
+    planning: { model_id: gpt-6.1-sol, runner: codex, reasoning: high }
+    implementation: { model_id: gpt-6.1-sol, runner: codex, reasoning: medium }
+    verification: { model_id: gpt-6.1-sol, runner: codex, reasoning: high }
   allowed_runners: [codex, claude-code, cursor, opencode]
 
 """
@@ -55,9 +55,13 @@ V038_MODEL_DEFAULTS = """    planning: { model_id: gpt-5.6-sol, runner: codex, r
     implementation: { model_id: gpt-5.6-terra, runner: codex, reasoning: high }
     verification: { model_id: gpt-5.6-sol, runner: codex, reasoning: medium }"""
 
-CURRENT_MODEL_DEFAULTS = """    planning: { model_id: gpt-5.6-sol, runner: codex, reasoning: high }
+PRE_V061_MODEL_DEFAULTS = """    planning: { model_id: gpt-5.6-sol, runner: codex, reasoning: high }
     implementation: { model_id: gpt-6-sol, runner: codex, reasoning: medium }
     verification: { model_id: gpt-6-sol, runner: codex, reasoning: high }"""
+
+CURRENT_MODEL_DEFAULTS = """    planning: { model_id: gpt-6.1-sol, runner: codex, reasoning: high }
+    implementation: { model_id: gpt-6.1-sol, runner: codex, reasoning: medium }
+    verification: { model_id: gpt-6.1-sol, runner: codex, reasoning: high }"""
 
 OBSERVATIONAL_TEMPLATE_CONTRACTS = {
     "retro-template.md": "Time-to-merge (med/max)",
@@ -87,7 +91,7 @@ WAYFINDER_STATUS_SECTION = """## Open Wayfinder maps
 
 AGENT_ROUTE_ROW = "| Choose a Plan, Build, or Verify model | `{playbook-path}/v0.5/93-model-routing-track.md`, then `/model-router` |"
 AGENT_HANDOFF_RULE = "- Don't treat `.playbook-routing/` handoffs as durable feature docs; use them only to resume the named pending route."
-CLAUDE_ROUTING_RULE = "- **Model routing:** gated — use `{path-to-playbook}/v0.5/93-model-routing-track.md` at Plan, Build, and Verify. The normal typed action accepts the displayed OpenAI default; `models` shows verified alternatives; every route states current tab, sidecar, or Conductor new-tab behavior."
+CLAUDE_ROUTING_RULE = "- **Model routing:** gated — use `{path-to-playbook}/v0.5/93-model-routing-track.md` at Plan, Build, and Verify. The normal typed action accepts the resolved project/feature preference with origin; `models` shows verified alternatives; every route states current tab, sidecar, or Conductor new-tab behavior."
 CLAUDE_PACE_RULE = "- **Codex pace:** standard by default. When the human is waiting, they may append `fast` to a Build action (for example `build all fast`); carry fast pace through returned fixes and the fresh Verify handoff for that run only. Fast changes generation pace and usage, never the selected model, reasoning, tests, permissions, or safety gates."
 PRE_V040_CLOSEOUT_RULE = "- Any pending feature closeout — recommend its next missing action: production verification, doc-close, then feature retro. Never say “ready for new work” while one exists."
 V040_CLOSEOUT_RULE = PRE_V040_CLOSEOUT_RULE + " When doc-close and the feature retro will run in the same session, recommend them as one closeout branch and PR (stage 10's closeout mechanics), not a docs PR per step."
@@ -509,14 +513,17 @@ def migrate_state(text: str, report: UpgradeReport, starting_patch: int) -> str:
         text, found = insert_before(text, "counters:\n", MODEL_ROUTING_BLOCK)
         if not found:
             report.manual_reviews.append(".playbook-state.yml: add the model_routing policy before the customized counters block")
-    elif starting_patch < 38 and PRE_V038_MODEL_DEFAULTS in text:
-        # Change only the complete former default tuple. A partially customized
-        # route block is project-owned and must remain untouched.
-        text = text.replace(PRE_V038_MODEL_DEFAULTS, CURRENT_MODEL_DEFAULTS, 1)
-    elif V038_MODEL_DEFAULTS in text:
-        # Upgrade only the complete shipped default tuple. Feature-specific
-        # selections and customized project policy remain historical/owned.
-        text = text.replace(V038_MODEL_DEFAULTS, CURRENT_MODEL_DEFAULTS, 1)
+    else:
+        routing = re.search(r"(?m)^model_routing:\n(?:[ \t]+.*\n|[ \t]*\n)*", text)
+        previous_defaults = (V038_MODEL_DEFAULTS, PRE_V061_MODEL_DEFAULTS)
+        if starting_patch < 38:
+            previous_defaults = (PRE_V038_MODEL_DEFAULTS, *previous_defaults)
+        if routing:
+            for previous in previous_defaults:
+                if previous in routing.group():
+                    updated = routing.group().replace(previous, CURRENT_MODEL_DEFAULTS, 1)
+                    text = text[:routing.start()] + updated + text[routing.end():]
+                    break
 
     if not re.search(r"(?m)^pending_model_routes:", text):
         text, found = insert_before(text, "counters:\n", "pending_model_routes: []\n\n")

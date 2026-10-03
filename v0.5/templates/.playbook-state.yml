@@ -70,9 +70,9 @@ capability_routes:
 model_routing:
   policy: gated
   defaults:
-    planning: { model_id: gpt-5.6-sol, runner: codex, reasoning: high }
-    implementation: { model_id: gpt-6-sol, runner: codex, reasoning: medium }
-    verification: { model_id: gpt-6-sol, runner: codex, reasoning: high }
+    planning: { model_id: gpt-6.1-sol, runner: codex, reasoning: high }
+    implementation: { model_id: gpt-6.1-sol, runner: codex, reasoning: medium }
+    verification: { model_id: gpt-6.1-sol, runner: codex, reasoning: high }
     # Plan may override before immutable unattended run approval. A legacy run
     # without an explicit escalation_policy in that approval gains no authority.
     escalated_repair: { model_id: gpt-6-astra, runner: codex, reasoning: high, trigger_unsuccessful_repairs: 3, cycles_per_slice: 2, scope: approved_slice, authority: diagnose_and_implement }
@@ -91,8 +91,8 @@ pending_model_routes: []
   #   updated: 2026-07-10T12:00:02Z
   #   handoff_path: null
   #   planning:
-  #     model_id: gpt-5.6-sol
-  #     label: GPT-5.6 Sol
+  #     model_id: gpt-6.1-sol
+  #     label: GPT-6.1 Sol
   #     provider: openai
   #     runner: codex
   #     reasoning: high
@@ -103,7 +103,7 @@ pending_model_routes: []
   #     selected_at: 2026-07-10T12:00:00Z
   #     identity:
   #       status: pending
-  #       requested_model_id: gpt-5.6-sol
+  #       requested_model_id: gpt-6.1-sol
   #       reported_model_id: null
   #       evidence_kind: null   # e.g. provider_metadata | session_metadata | host_metadata
   #       verified_at: null

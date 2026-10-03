@@ -67,7 +67,7 @@ If you need archive content for an incident investigation, ask the human to surf
 - **Intrusion level:** nudge   *# silent | nudge | insist*
 - **Cadence config:** `./playbook-cadences.yml`
 - **State file:** `./.playbook-state.yml`
-- **Model routing:** gated — use `{path-to-playbook}/v0.5/93-model-routing-track.md` at Plan, Build, and Verify. The normal typed action accepts the displayed OpenAI default; `models` shows verified alternatives; every route states current tab, sidecar, or Conductor new-tab behavior.
+- **Model routing:** gated — use `{path-to-playbook}/v0.5/93-model-routing-track.md` at Plan, Build, and Verify. The normal typed action accepts the resolved project/feature preference with origin; `models` shows verified alternatives; every route states current tab, sidecar, or Conductor new-tab behavior.
 - **Codex pace:** standard by default. When the human is waiting, they may append `fast` to a Build action (for example `build all fast`); carry fast pace through returned fixes and the fresh Verify handoff for that run only. Fast changes generation pace and usage, never the selected model, reasoning, tests, permissions, or safety gates.
 - **Technical decisions:** ask by default. If `.playbook-state.yml → decisions.technical_decisions` is explicitly `auto_recommend`, choose only routine, reversible engineering details with a clear best option. Still ask about product/taste, scope, cost, credentials, external effects, destructive actions, security, and close trade-offs.
 - **Budget floor (§11 — tune per project, never delete):**

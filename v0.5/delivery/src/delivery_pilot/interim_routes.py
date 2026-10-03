@@ -21,12 +21,12 @@ def route_name(operation: dict[str, Any]) -> str:
 
 def route_for_operation(approval: dict[str, Any], operation: dict[str, Any]) -> dict[str, str]:
     name = route_name(operation)
-    source = ({"model": "gpt-6-sol", "effort": "high"} if name == "escalated_verify" else
+    source = (approval["routes"].get(name, {"model": "gpt-6-sol", "effort": "high"}) if name == "escalated_verify" else
               approval["escalation_policy"]["route"] if name == "escalation" else approval["routes"][name])
     return {key: source[key] for key in ("model", "effort")}
 
 
 def configured_route(routes: dict[str, Any], operation: dict[str, Any]) -> dict[str, str]:
     name = route_name(operation)
-    source = {"model": "gpt-6-sol", "effort": "high"} if name == "escalated_verify" else routes[name]
+    source = routes.get(name, {"model": "gpt-6-sol", "effort": "high"}) if name == "escalated_verify" else routes[name]
     return {key: source[key] for key in ("model", "effort")}
