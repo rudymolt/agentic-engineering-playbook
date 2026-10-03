@@ -699,7 +699,7 @@ class RoleConversationTests(unittest.TestCase):
         marker.write_text("{}\n")
         with self.assertRaisesRegex(ConfigError, "reconcile"):
             service.preferences._save(draft["personal"]["after"], draft["personal"]["inputs"],
-                                      draft["discovery"], create_directory=True)
+                                      draft["discovery"], create_directory=True, admission=lambda: None)
         self.assertFalse(local.exists())
         self.assertFalse(service.lock.exists())
         marker.unlink()
@@ -707,7 +707,7 @@ class RoleConversationTests(unittest.TestCase):
         (local / ".playbook-config.recovery").write_text("{}\n")
         with self.assertRaisesRegex(ConfigError, "reconcile"):
             service._save({"schema_version": 1, "adopted": True, "models": draft["after"]},
-                          draft["inputs"], draft["discovery"])
+                          draft["inputs"], draft["discovery"], admission=lambda: None)
         self.assertFalse(service.lock.exists())
         self.assertFalse(service.path.exists())
         self.assertEqual(self.state.read_bytes(), self.runtime)

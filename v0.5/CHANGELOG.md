@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+- Bootstrap seeding now rechecks every selected seed skill at the same
+  publication and completion points as Configure, and the shared saver requires
+  that admission check from every caller.
+
+*Why — one caller skipped the shared guard:* a personal defaults or preset seed
+was validated only before saving, so a source, proof, contract, approval,
+resolution or catalog change during the write could still publish an ineligible
+binding and report a successful bootstrap. Earlier drift now leaves the seed
+absent; later drift reports incomplete setup with retained recovery evidence.
+
 - Recheck reviewed skill admission at each destination's publication and save
   completion boundary, including pending personal defaults/presets after
   Recommended and paired completion. Retain recovery evidence on later drift.

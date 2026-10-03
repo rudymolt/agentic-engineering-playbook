@@ -62,12 +62,15 @@ def apply_seed(project, preferences_dir, discover, preview, clock=None, custom_d
     for role, choice in candidate["models"].items():
         if {key: value for key, value in choice.items() if key in IDENTITY} not in routes[role]:
             raise ConfigError("Seed route is no longer available; review without substitution.")
-    for job in candidate.get("skills", {}).get("jobs", {}):
-        service._bindings().resolve(candidate["skills"], job)
-        if service._bindings().options(job) != preview["skill_options"][job]:
-            raise ConfigError("Seed skill eligibility changed during bootstrap; review the retained source before Apply.")
+    def admission():
+        for job in candidate.get("skills", {}).get("jobs", {}):
+            service._bindings().resolve(candidate["skills"], job)
+            if service._bindings().options(job) != preview["skill_options"][job]:
+                raise ConfigError("Seed skill eligibility changed during bootstrap; review the retained source before Apply.")
+
+    admission()
     service.preferences._expected_directory = current_personal["directories"]
     try:
-        service._save(candidate, inputs, evidence)
+        service._save(candidate, inputs, evidence, admission=admission)
     finally:
         service.preferences._expected_directory = None

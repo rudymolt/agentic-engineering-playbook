@@ -1377,7 +1377,7 @@ class Configuration:
     def _unlink_directory(self, path):
         os.rmdir(self._filename(path), dir_fd=self._directory_fd)
 
-    def _save(self, candidate, inputs, evidence, create_directory=False, admission=None):
+    def _save(self, candidate, inputs, evidence, create_directory=False, *, admission):
         self._guard_write()
         if create_directory:
             self.project.mkdir(parents=True, exist_ok=True, mode=0o700)
@@ -1427,8 +1427,7 @@ class Configuration:
             journaled = True
             self._sync_directory()
             self._guard_write(active=True)
-            if admission is not None:
-                admission()
+            admission()
             if backup is not None:
                 self._replace(self.path, captured_path)
                 captured = True
@@ -1437,8 +1436,7 @@ class Configuration:
                     raise ConfigError("Concurrent configuration captured intact; reconcile recovery before continuing.")
             self.checkpoint("before_publish")
             self._guard_write(active=True)
-            if admission is not None:
-                admission()
+            admission()
             try:
                 self._link(publication, self.path)
             except FileExistsError as error:
@@ -1462,13 +1460,11 @@ class Configuration:
             self.checkpoint("before_completion")
             self._guard_write(active=True)
             self._receipt_conflicts(receipt, marker, completing=True)
-            if admission is not None:
-                admission()
+            admission()
             seal = receipt.with_name(receipt.name + ".complete")
             self._mkdir(seal)
             self.checkpoint("completion_sealed")
-            if admission is not None:
-                admission()
+            admission()
             completed = True
         except (OSError, ConfigError, UnicodeError) as error:
             if committed or captured:
@@ -1609,7 +1605,7 @@ class LocalPreferences(Configuration):
             self._expected_directory = None
             os.close(descriptor)
 
-    def _save(self, candidate, inputs, evidence, create_directory=False, admission=None):
+    def _save(self, candidate, inputs, evidence, create_directory=False, *, admission):
         if self._directory_fd is not None:
             return super()._save(candidate, inputs, evidence, admission=admission)
         with self._storage(inputs):

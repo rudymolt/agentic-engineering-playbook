@@ -178,8 +178,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "bb7743095e2c910d4ab312f80bea447aa505d7a097a6aeef332835f38d40c38c",
-      "size": 22904
+      "sha256": "e3fc4364e32555a44d75d61a3cbd803d5f8375a34bbdb3ca92accf5bc2c23cb4",
+      "size": 23490
     },
     {
       "path": "MAINTENANCE.md",
@@ -1028,8 +1028,8 @@
     },
     {
       "path": "scripts/bootstrap_seed.py",
-      "sha256": "b186f82e212c3405aaa0a57e3d34dd2bcda5b52dce970f64aff7fb010b932031",
-      "size": 4817
+      "sha256": "8224b45d3e671eb987106d4b5d20133afc22e15a3627611b32a8e549282bd8ee",
+      "size": 4892
     },
     {
       "path": "scripts/check-glossary.py",
@@ -1143,8 +1143,8 @@
     },
     {
       "path": "scripts/playbook_config.py",
-      "sha256": "c241d1aaddb87a7e8ba674c2f3c9f1cc095212f9f4706cabe8ebd53a61cc4932",
-      "size": 99245
+      "sha256": "45315209d2338fb6dfde18cbad0e15729b0ab0cefef056c1894b41c64da524fd",
+      "size": 99073
     },
     {
       "path": "scripts/playbook_state.py",
@@ -1283,8 +1283,8 @@
     },
     {
       "path": "scripts/test_personal_presets.py",
-      "sha256": "acb88856a3ab4fd372239c17e69a88027991ad412b0fa3a6c1a1515c30ac8337",
-      "size": 61569
+      "sha256": "d4718cc413170d2a84f8379dbc106ac198243c1f3e78ceb60889f96c28aa789f",
+      "size": 67021
     },
     {
       "path": "scripts/test_playbook_config.py",
@@ -1298,8 +1298,8 @@
     },
     {
       "path": "scripts/test_playbook_config_roles.py",
-      "sha256": "8d4ef73410f7104b4b632c064ad778b5695857a0fda42d85730270043b4586c7",
-      "size": 46510
+      "sha256": "c0249e0370b07e136d6924734920fc087ee31a8127716ab40a915629383de478",
+      "size": 46558
     },
     {
       "path": "scripts/test_playbook_state.py",

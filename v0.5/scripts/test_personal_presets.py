@@ -45,7 +45,7 @@ class PersonalPresetTests(unittest.TestCase):
                    "'roles':['planning','implementation','verification','escalated_repair']}]},sys.stdout)")
         command = [sys.executable, str(Path(__file__).with_name("configure-playbook.py")),
                    "--project", str(self.projects[index]), "--preferences-dir", str(self.local),
-                   "--discovery-command", json.dumps([sys.executable, "-c", adapter]),
+                "--discovery-command", json.dumps([sys.executable, "-c", adapter]),
                    "--now", "2026-10-01T12:00:00Z", action]
         if custom is not None:
             command[-1:-1] = ["--custom-bindings-dir", str(custom)]
@@ -924,17 +924,19 @@ class PersonalPresetTests(unittest.TestCase):
         self.assertEqual(qualified.path.read_text(), saved)
 
     def bootstrap(self, target, *extra):
+        return subprocess.run(self.bootstrap_command(target, *extra), text=True, capture_output=True)
+
+    def bootstrap_command(self, target, *extra):
         adapter = ("import json,sys; request=json.load(sys.stdin); "
                    "json.dump({'request_id':request['request_id'],'checked_at':request['started_at'],"
                    "'authority':'host-reported-selection','revision':'fixture-1',"
                    "'routes':[{'model_id':'fixture-model','runner':'codex','reasoning':'high',"
                    "'roles':['planning','implementation','verification','escalated_repair']}]},sys.stdout)")
-        command = [sys.executable, str(Path(__file__).with_name("bootstrap-project.py")), str(target),
-                   "--playbook-path", str(Path(__file__).resolve().parents[2]), "--project-name", "Fixture",
-                   "--ui", "no", "--ci", "copy", "--preferences-dir", str(self.local),
-                   "--discovery-command", json.dumps([sys.executable, "-c", adapter]),
-                   "--now", "2026-10-01T12:00:00Z", *extra]
-        return subprocess.run(command, text=True, capture_output=True)
+        return [sys.executable, str(Path(__file__).with_name("bootstrap-project.py")), str(target),
+                "--playbook-path", str(Path(__file__).resolve().parents[2]), "--project-name", "Fixture",
+                "--ui", "no", "--ci", "copy", "--preferences-dir", str(self.local),
+                "--discovery-command", json.dumps([sys.executable, "-c", adapter]),
+                "--now", "2026-10-01T12:00:00Z", *extra]
 
     def test_bootstrap_preview_seed_approval_and_existing_project_isolation(self):
         service = self.save_preset()
@@ -962,6 +964,99 @@ class PersonalPresetTests(unittest.TestCase):
         for project, runtime in zip(self.projects, self.runtime):
             self.assertFalse((project / ".playbook-config.json").exists())
             self.assertEqual((project / ".playbook-state.yml").read_bytes(), runtime)
+
+    def seed_skill_case(self, cli, preset, point):
+        store, source, _, identity = self.reusable_skill_fixture()
+        service = Configuration(self.projects[0], self.discover, lambda: "2026-10-01T12:00:00Z",
+                                preferences_dir=self.local, bindings=JobBindings(self.projects[0], custom_dir=store))
+        editor = service.reply(self.draft(service), "Edit skills specification")
+        option = next(index + 1 for index, value in enumerate(editor["skill_options"])
+                      if value["binding"]["source_id"] == identity)
+        proposal = service.reply(editor, "Choose " + str(option))
+        proposal = service.reply(proposal, "Save preset Qualified" if preset else "Save defaults")
+        self.assertEqual(service.reply(proposal, "Apply preference")["state"], "proposal_ready")
+        personal = (self.local / "preferences.json").read_bytes()
+        target = self.root / "seeded"
+        destination = target / ".playbook-config.json"
+        extra = ("--preset", "Qualified") if preset else ()
+        if cli:
+            plan = self.bootstrap(target, "--custom-bindings-dir", str(store), *extra)
+            self.assertEqual(plan.returncode, 0, plan.stderr)
+            preview = json.loads(plan.stdout[plan.stdout.index('{\n'):])
+            wrapper = ("import sys,runpy; from pathlib import Path; "
+                       "sys.path.insert(0,str(Path(sys.argv[1]).parent)); "
+                       "from playbook_config import Configuration; "
+                       "original=Configuration.__init__\n"
+                       "def initialize(self,*args,**kwargs):\n"
+                       " original(self,*args,**kwargs)\n"
+                       " def drift(point):\n"
+                       "  if point == " + repr(point) + ": Path(" + repr(str(source)) + ").write_text('changed synthetic source; never executed\\n')\n"
+                       " self.checkpoint=drift\n"
+                       "Configuration.__init__=initialize\n"
+                       "sys.argv=sys.argv[1:]; runpy.run_path(sys.argv[0],run_name='__main__')")
+            arguments = [sys.executable, "-c", wrapper,
+                         *self.bootstrap_command(target, "--custom-bindings-dir", str(store), *extra)[1:],
+                         "--apply", "--seed-revision", preview["seed_revision"]]
+            result = subprocess.run(arguments, text=True, capture_output=True)
+            succeeded = result.returncode == 0
+            if point is not None:
+                self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+                self.assertIn("Requested seeded setup is incomplete", result.stderr)
+                self.assertNotIn("Playbook files initialized", result.stdout)
+        else:
+            from bootstrap_seed import apply_seed, preview_seed
+            target.mkdir()
+            preview = preview_seed(target, self.local, self.discover, lambda: "2026-10-01T12:00:00Z",
+                                   "Qualified" if preset else None, store)
+            (target / ".playbook-state.yml").write_text("history: untouched\n")
+            info = target.stat()
+            identity_record = {"resolved": str(target.resolve()), "device": info.st_dev, "inode": info.st_ino}
+
+            def drift(checkpoint):
+                if checkpoint == point:
+                    source.write_text("changed synthetic source; never executed\n")
+
+            original = Configuration.__init__
+
+            def initialize(instance, *args, **kwargs):
+                original(instance, *args, **kwargs)
+                instance.checkpoint = drift
+
+            with patch.object(Configuration, "__init__", initialize):
+                try:
+                    apply_seed(target, self.local, self.discover, preview, lambda: "2026-10-01T12:00:00Z",
+                               store, identity_record)
+                    succeeded = True
+                except ValueError:
+                    succeeded = False
+        self.assertEqual((self.local / "preferences.json").read_bytes(), personal)
+        if point is None:
+            self.assertTrue(succeeded)
+            saved = json.loads(destination.read_text())
+            JobBindings(target, custom_dir=store).resolve(saved["skills"], "specification")
+        else:
+            self.assertFalse(succeeded)
+            if point in ("before_replace", "before_publish"):
+                self.assertFalse(destination.exists())
+            else:
+                self.assertTrue(list(target.glob(".playbook-config-*.receipt.conflict"))
+                                or (target / ".playbook-config.recovery").exists())
+
+    def check_seed_skill_admission(self, cli):
+        for preset in (False, True):
+            for point in (None, "before_replace", "before_publish", "completion_sealed"):
+                with self.subTest(preset=preset, point=point):
+                    try:
+                        self.seed_skill_case(cli, preset, point)
+                    finally:
+                        for path in ("custom-store", "seeded", "personal"):
+                            shutil.rmtree(self.root / path, ignore_errors=True)
+
+    def test_library_seed_rechecks_selected_skill_through_publication(self):
+        self.check_seed_skill_admission(False)
+
+    def test_cli_seed_rechecks_selected_skill_through_publication(self):
+        self.check_seed_skill_admission(True)
 
     def test_bootstrap_changed_defaults_rejects_old_approval_before_any_write(self):
         self.save_preset()
