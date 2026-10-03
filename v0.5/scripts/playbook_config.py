@@ -1197,6 +1197,8 @@ class Configuration:
             try:
                 paired_completion = None
                 if personal_changed:
+                    self._validate_reusable_skills(proposal["personal"]["before"],
+                                                   proposal["personal"]["after"], proposal)
                     paired_completion = self._save_pair(candidate, inputs, evidence, proposal["personal"])
                 else:
                     self._save(candidate, inputs, evidence)

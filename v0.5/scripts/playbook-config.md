@@ -472,6 +472,14 @@ Exit 2: blocked/recovery required or invalid request; report the message and
 reload/edit as directed. Argument syntax errors also exit 2.
 No environment, credentials or host changes are needed.
 
+Local Apply preference and paired project Apply both recheck newly added or
+replaced personal defaults/preset job bindings against the current source,
+retained proof and job contract before publication. Recommended resets only the
+project draft; pending personal saves still require this check. Drift blocks
+before either destination is written and retains the proposal for explicit
+editing and refreshed preview. Older unchanged reusable job bindings remain
+inert during presentation, billing and model-only preference edits.
+
 ## Transaction and recovery
 
 Apply binds all before/after defaults, runtime/settings digests and discovery.

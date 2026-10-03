@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- Recheck newly added or replaced personal defaults/preset job bindings before
+  paired project Apply, including when Recommended resets the project draft.
+  Retain blocked proposals and preserve older unchanged reusable bindings.
+
+*Why — both save destinations need current eligibility:* a pending personal save
+survives the project draft reset. Paired Apply now uses the same source, retained
+proof and job-contract boundary as local Apply preference before writing either
+destination, so stale bindings cannot be reported as validated reusable data.
+
 - Recheck current skill source, retained contract proof and reviewed eligibility
   before local Apply preference adds or replaces a defaults/preset job binding.
   Preserve blocked drafts and leave older inert reusable bindings untouched.

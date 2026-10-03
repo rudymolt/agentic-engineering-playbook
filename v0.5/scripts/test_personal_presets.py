@@ -11,7 +11,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from playbook_config import Configuration, ROLES
+from playbook_config import Configuration, ROLES, encoded
 from skill_bindings import JobBindings, JOBS, AUTHORITY, fingerprint
 
 
@@ -500,7 +500,7 @@ class PersonalPresetTests(unittest.TestCase):
             identity: {"source": str(source), "audits": {job: "fixture-audit"}}}}))
         return store, source, proof, identity
 
-    def reusable_skill_case(self, cli, action, drift, replace=False):
+    def reusable_skill_case(self, cli, action, drift, replace=False, paired=False):
         store, source, proof, identity = self.reusable_skill_fixture()
         service = Configuration(self.projects[0], self.discover, lambda: "2026-10-01T12:00:00Z",
                                 preferences_dir=self.local, bindings=JobBindings(self.projects[0], custom_dir=store))
@@ -520,8 +520,9 @@ class PersonalPresetTests(unittest.TestCase):
         personal_path = self.local / "preferences.json"
         personal_path.write_text(json.dumps(existing))
         # An adopted project and extra historical record must survive local saves.
-        config = {"schema_version": 1, "adopted": True, "models": service.read()["after"]}
-        service.path.write_text(json.dumps(config))
+        config = {"schema_version": 1, "adopted": True,
+                  "models": self.draft(service)["after"] if paired else service.read()["after"]}
+        service.path.write_bytes(encoded(config))
         history = self.projects[0] / "history.json"
         history.write_text('{"approved_binding":"retained"}\n')
         protected = {path: path.read_bytes() for project in self.projects for path in project.rglob("*") if path.is_file()}
@@ -535,11 +536,21 @@ class PersonalPresetTests(unittest.TestCase):
             return value
 
         proposal = call()
+        if paired:
+            proposal = call(proposal, "Goal fixture project")
         editor = call(proposal, "Edit skills specification")
         option = next(index + 1 for index, value in enumerate(editor["skill_options"])
                       if value["binding"]["source_id"] == identity)
         proposal = call(editor, "Choose " + str(option))
         proposal = call(proposal, action)
+        if paired:
+            pending_personal = deepcopy(proposal["personal"]["after"])
+            proposal = call(proposal, "Recommended")
+            self.assertFalse(proposal["skills_adopted"])
+            self.assertEqual(proposal["edited_jobs"], [])
+            self.assertEqual(proposal["personal"]["after"], pending_personal)
+            proposal = call(proposal, "Expert")
+            proposal = call(proposal, "Billing api")
         personal_before = personal_path.read_bytes()
         if drift == "source":
             source.write_text("changed synthetic source; never executed\n")
@@ -552,24 +563,46 @@ class PersonalPresetTests(unittest.TestCase):
             approvals = json.loads(approvals_path.read_text())
             approvals["audits"]["fixture-audit"]["revision"] = "fixture-2"
             approvals_path.write_text(json.dumps(approvals))
+        elif drift == "contract":
+            audit = json.loads(proof.read_text())
+            audit["effects"] = audit["effects"][:1]
+            proof.write_text(json.dumps(audit))
+            approvals_path = store / "approvals.json"
+            approvals = json.loads(approvals_path.read_text())
+            approvals["audits"]["fixture-audit"]["evidence_sha256"] = fingerprint(proof)
+            approvals_path.write_text(json.dumps(approvals))
+        elif drift == "resolution":
+            replacement = store / "replacement.md"
+            replacement.write_bytes(source.read_bytes())
+            bindings_path = store / "bindings.json"
+            bindings = json.loads(bindings_path.read_text())
+            bindings["sources"][identity]["source"] = str(replacement)
+            bindings_path.write_text(json.dumps(bindings))
         store_before = {path: path.read_bytes() for path in store.rglob("*") if path.is_file()}
-        result = call(proposal, "Apply preference")
+        files_before = {path for path in self.root.rglob("*") if path.is_file()}
+        result = call(proposal, "Apply" if paired else "Apply preference")
         if drift:
             self.assertEqual(result["state"], "blocked", result["message"])
             self.assertNotIn("saved and validated", result["message"])
+            self.assertIn("exact-source contract evidence", result["message"])
             self.assertEqual(result["retained_proposal"]["personal"]["after"], proposal["personal"]["after"])
             self.assertEqual(result["retained_proposal"]["skill_after"], proposal["skill_after"])
             self.assertEqual(personal_path.read_bytes(), personal_before)
+            self.assertEqual({path for path in self.root.rglob("*") if path.is_file()}, files_before)
+            self.assertEqual(result["retained_proposal"]["after"], proposal["after"])
             # A refreshed editor retains the local draft and requires an explicit choice.
             recovered = call(result, "Edit skills specification")
             self.assertEqual(recovered["personal"]["after"], proposal["personal"]["after"])
             presentation = call(call(), "Expert")
             self.assertEqual(call(presentation, "Apply preference")["state"], "proposal_ready")
         else:
-            self.assertEqual(result["state"], "proposal_ready", result)
+            self.assertEqual(result["state"], "applied" if paired else "proposal_ready", result)
+            if paired:
+                self.assertTrue(result["paired_completion"]["validated"])
             saved = json.loads(personal_path.read_text())
             candidate = saved["defaults"] if action == "Save defaults" else saved["presets"]["Qualified"]
-            self.assertEqual(candidate["skills"], proposal["skill_after"])
+            expected = proposal["personal"]["after"]["defaults"] if action == "Save defaults" else proposal["personal"]["after"]["presets"]["Qualified"]
+            self.assertEqual(candidate["skills"], expected["skills"])
             self.assertEqual(saved["presets"]["Older"], existing["presets"]["Older"])
         self.assertEqual(json.loads(personal_path.read_text())["presets"]["Older"], existing["presets"]["Older"])
         for path, content in protected.items():
@@ -594,6 +627,107 @@ class PersonalPresetTests(unittest.TestCase):
 
     def test_cli_reusable_skill_freshness(self):
         self.check_reusable_skill_freshness(True)
+
+    def check_paired_reusable_skill_freshness(self, cli):
+        for action in ("Save defaults", "Save preset Qualified"):
+            for replace in (False, True):
+                for drift in ("source", "proof", "approval", "contract", "resolution", None):
+                    with self.subTest(action=action, replace=replace, drift=drift):
+                        try:
+                            self.reusable_skill_case(cli, action, drift, replace, paired=True)
+                        finally:
+                            shutil.rmtree(self.root / "custom-store")
+                            shutil.rmtree(self.local)
+
+    def test_library_paired_reusable_skill_freshness(self):
+        self.check_paired_reusable_skill_freshness(False)
+
+    def test_cli_paired_reusable_skill_freshness(self):
+        self.check_paired_reusable_skill_freshness(True)
+
+    def check_paired_inert_reusable_skills(self, cli):
+        store, source, _, identity = self.reusable_skill_fixture()
+        service = Configuration(self.projects[0], self.discover, lambda: "2026-10-01T12:00:00Z",
+                                preferences_dir=self.local, bindings=JobBindings(self.projects[0], custom_dir=store))
+        config = {"schema_version": 1, "adopted": True, "models": self.draft(service)["after"]}
+        service.path.write_bytes(encoded(config))
+
+        def call(proposal=None, reply=None):
+            if not cli:
+                return service.read() if proposal is None else service.reply(proposal, reply)
+            result, value = self.command("read" if proposal is None else "reply", proposal, reply, custom=store)
+            self.assertEqual(result.returncode, 2 if value["state"] == "blocked" else 0, result.stderr)
+            return value
+
+        proposal = call(call(call(), "Guided"), "Billing unknown")
+        editor = call(proposal, "Edit skills specification")
+        option = next(index + 1 for index, value in enumerate(editor["skill_options"])
+                      if value["binding"]["source_id"] == identity)
+        proposal = call(editor, "Choose " + str(option))
+        proposal = call(call(proposal, "Save defaults"), "Save preset Qualified")
+        self.assertEqual(call(proposal, "Apply preference")["state"], "proposal_ready")
+        source.write_text("changed synthetic source; never executed\n")
+        personal_path = self.local / "preferences.json"
+        previous = json.loads(personal_path.read_text())
+        for candidate in (previous["defaults"], previous["presets"]["Qualified"]):
+            candidate["models"]["implementation"]["reasoning"] = "medium"
+        personal_path.write_bytes(encoded(previous))
+        protected = {path: path.read_bytes() for project in self.projects for path in project.rglob("*") if path.is_file()}
+        for edit in ("Expert", "Billing api", "Save defaults", "Save preset Qualified"):
+            with self.subTest(edit=edit):
+                proposal = call(call(), "Goal fixture project")
+                if edit.startswith("Save"):
+                    proposal = call(proposal, "Load defaults")
+                    # A model-only reusable edit must not requalify unchanged jobs.
+                    proposal = call(call(proposal, "Edit Build"), "1")
+                proposal = call(proposal, edit)
+                proposal = call(proposal, "Recommended")
+                result = call(proposal, "Apply")
+                self.assertEqual(result["state"], "applied", result["message"])
+                saved = json.loads(personal_path.read_text())
+                self.assertEqual(saved["defaults"]["skills"], previous["defaults"]["skills"])
+                self.assertEqual(saved["presets"]["Qualified"]["skills"], previous["presets"]["Qualified"]["skills"])
+                for path, content in protected.items():
+                    self.assertEqual(path.read_bytes(), content)
+
+    def test_paired_block_preserves_unrelated_model_draft(self):
+        store, source, _, identity = self.reusable_skill_fixture()
+
+        def discover(request):
+            result = self.discover(request)
+            result["routes"].append({"model_id": "fixture-model", "runner": "codex",
+                                     "reasoning": "medium", "roles": ["implementation"]})
+            return result
+
+        service = Configuration(self.projects[0], discover, lambda: "2026-10-01T12:00:00Z",
+                                preferences_dir=self.local, bindings=JobBindings(self.projects[0], custom_dir=store))
+        config = {"schema_version": 1, "adopted": True, "models": self.draft(service)["after"]}
+        service.path.write_bytes(encoded(config))
+        proposal = service.reply(service.reply(service.read(), "Goal fixture project"), "Guided")
+        proposal = service.reply(proposal, "Billing unknown")
+        editor = service.reply(proposal, "Edit skills specification")
+        option = next(index + 1 for index, value in enumerate(editor["skill_options"])
+                      if value["binding"]["source_id"] == identity)
+        proposal = service.reply(editor, "Choose " + str(option))
+        proposal = service.reply(service.reply(proposal, "Save defaults"), "Recommended")
+        proposal = service.reply(service.reply(proposal, "Edit Build"), "2")
+        self.assertEqual(proposal["after"]["implementation"]["reasoning"], "medium")
+        source.write_text("changed synthetic source; never executed\n")
+        result = service.reply(proposal, "Apply")
+        self.assertEqual(result["state"], "blocked")
+        self.assertIn("exact-source contract evidence", result["message"])
+        self.assertEqual(result["retained_proposal"]["after"], proposal["after"])
+        refreshed = service.reply(result, "Edit skills specification")
+        self.assertEqual(refreshed["after"], proposal["after"])
+        self.assertEqual(refreshed["personal"]["after"], proposal["personal"]["after"])
+        self.assertEqual(service.path.read_bytes(), encoded(config))
+        self.assertFalse((self.local / "preferences.json").exists())
+
+    def test_library_paired_inert_reusable_skills(self):
+        self.check_paired_inert_reusable_skills(False)
+
+    def test_cli_paired_inert_reusable_skills(self):
+        self.check_paired_inert_reusable_skills(True)
 
     def test_older_reusable_bindings_stay_inert_for_unrelated_edits(self):
         store, source, _, identity = self.reusable_skill_fixture()
