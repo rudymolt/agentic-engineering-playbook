@@ -1,0 +1,85 @@
+{
+  "baseline_revision": "ba48cfde92887a6f7197d810d3504afbd268ddb0",
+  "candidate_revision": "7828c463f8077e34cd398c12f6f079923dbc9221",
+  "method": "Three alternating baseline/candidate pairs; fresh process per selected set; no concurrent workspace tests",
+  "python": "3.12.14",
+  "platform": "Linux",
+  "git": "git version 2.52.0",
+  "successful_executions": 18,
+  "failed_or_skipped_executions": 0,
+  "scope": "selected test setup, method and cleanup; not full-suite timing",
+  "rows": [
+    {
+      "id": "test_interim_recovery.RecoveryBoundaryTests.test_transport_failures_at_every_call_site",
+      "before_samples": [
+        65.954519433,
+        71.61231478300004,
+        68.21627754200006
+      ],
+      "after_samples": [
+        64.72137683,
+        57.86128970300001,
+        54.64697153700001
+      ],
+      "before_median": 68.21627754200006,
+      "after_median": 57.86128970300001,
+      "reduction_percent": 15.179643645352225,
+      "before_range": [
+        65.954519433,
+        71.61231478300004
+      ],
+      "after_range": [
+        54.64697153700001,
+        64.72137683
+      ]
+    },
+    {
+      "id": "test_interim_recovery.RecoveryBoundaryTests.test_provider_programmer_and_storage_exceptions_are_not_conflated",
+      "before_samples": [
+        28.408711839000006,
+        27.651624728,
+        27.908039546000055
+      ],
+      "after_samples": [
+        25.105958698999984,
+        23.843223606999913,
+        22.600619917000017
+      ],
+      "before_median": 27.908039546000055,
+      "after_median": 23.843223606999913,
+      "reduction_percent": 14.56503575717032,
+      "before_range": [
+        27.651624728,
+        28.408711839000006
+      ],
+      "after_range": [
+        22.600619917000017,
+        25.105958698999984
+      ]
+    },
+    {
+      "id": "test_interim_recovery.RecoveryBoundaryTests.test_coordinator_and_prefix_malformed_matrix",
+      "before_samples": [
+        17.07799852400001,
+        16.210906324000007,
+        14.478978166000047
+      ],
+      "after_samples": [
+        14.679793002999986,
+        12.916856475000031,
+        12.717625864999945
+      ],
+      "before_median": 16.210906324000007,
+      "after_median": 12.916856475000031,
+      "reduction_percent": 20.31996103834851,
+      "before_range": [
+        14.478978166000047,
+        17.07799852400001
+      ],
+      "after_range": [
+        12.717625864999945,
+        14.679793002999986
+      ]
+    }
+  ]
+}

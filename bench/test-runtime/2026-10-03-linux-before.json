@@ -1,0 +1,117 @@
+{
+  "revision": "ba48cfde92887a6f7197d810d3504afbd268ddb0",
+  "dirty": false,
+  "python": "3.12.14",
+  "platform": "Linux",
+  "set": "K4.1",
+  "selected_tests": [
+    "test_interim_recovery.RecoveryBoundaryTests.test_transport_failures_at_every_call_site",
+    "test_interim_recovery.RecoveryBoundaryTests.test_provider_programmer_and_storage_exceptions_are_not_conflated",
+    "test_interim_recovery.RecoveryBoundaryTests.test_coordinator_and_prefix_malformed_matrix"
+  ],
+  "recorded_at": "2026-10-03T01:22:19.378042+00:00",
+  "privileged": false,
+  "test_sources": {
+    "control_ref_test_support.py": "aeccfed7d187d91d59e70d2e83ce229f0da233f7ad4e6f526c7fd37ed7cf050c",
+    "test_checker_monitor.py": "a3f92339d3f38ea658c3d23326b07275df21a40b8b769fe7e67b9c78ea34e8ea",
+    "test_cloud.py": "d05f972e577796b33170c84eeff7ee2be5d1f96ee2885692c6a63f5c3841b174",
+    "test_continuation.py": "4e45cbf0609c6ebc3615ab16547bfbe6128fd492d9b2907219adbb26579500da",
+    "test_core.py": "68067f8ce650a14ec1d1765bc0376356c1e15571208779a2903165109aac4f22",
+    "test_interim.py": "9d7dea5db96260689f7c4003cf9ef881510c9419fe6f3bae29d412db55af661c",
+    "test_interim_advance.py": "fb7998f1a115dee1b023d26432395f0c76e5c2ef204054b2327af0e05a0e383e",
+    "test_interim_conductor_host.py": "b7a905b0a1c481e6bb7ce9085cfea0cae2d60a14608aba9a83394566f57db2c4",
+    "test_interim_coordinator.py": "0679abf3ed4a0f092f818bc959580416c5d62deb0265d66235f0394a57dda2ef",
+    "test_interim_host_continuation.py": "42f69a88a39b996c9bc987587a8ce393da1e26a3494552d7d71380be104bd61e",
+    "test_interim_monitor.py": "f7d3bfbcd22b3d0d3872e0d69a9ec025ad84b037d4f2a4c1d5ba3498bd077d7a",
+    "test_interim_recovery.py": "15dfd170f65ba47298b5e617f2446867f13bd7ea873550fd18c5b62943cf80e2",
+    "test_interim_repair.py": "ea1a770693a8d68a0ae33339a56e171f669824a0a31642a172a97e1a2e9efb9b",
+    "test_interim_stack.py": "3c0c22ca14aed6b9af722835663b47a2946b8d204896fa2fc8838efa31f25f13",
+    "test_interim_watchdog.py": "78cbb62bc5e1b2fe8f78a502a8cb2a08dee41797e08cfe7c6d08d3bbad95e156",
+    "test_pack_lifecycle.py": "308a18a85400f3ca47cdf8a965cde922f174ade3afdfd388a999c08c00cd3eda"
+  },
+  "repetitions": [
+    [
+      {
+        "pattern": "selected",
+        "seconds": 111.44160282800001,
+        "successful": true,
+        "tests": [
+          {
+            "id": "test_interim_recovery.RecoveryBoundaryTests.test_transport_failures_at_every_call_site",
+            "seconds": 65.954519433,
+            "outcome": "passed"
+          },
+          {
+            "id": "test_interim_recovery.RecoveryBoundaryTests.test_provider_programmer_and_storage_exceptions_are_not_conflated",
+            "seconds": 28.408711839000006,
+            "outcome": "passed"
+          },
+          {
+            "id": "test_interim_recovery.RecoveryBoundaryTests.test_coordinator_and_prefix_malformed_matrix",
+            "seconds": 17.07799852400001,
+            "outcome": "passed"
+          }
+        ],
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    ],
+    [
+      {
+        "pattern": "selected",
+        "seconds": 115.47519146499997,
+        "successful": true,
+        "tests": [
+          {
+            "id": "test_interim_recovery.RecoveryBoundaryTests.test_transport_failures_at_every_call_site",
+            "seconds": 71.61231478300004,
+            "outcome": "passed"
+          },
+          {
+            "id": "test_interim_recovery.RecoveryBoundaryTests.test_provider_programmer_and_storage_exceptions_are_not_conflated",
+            "seconds": 27.651624728,
+            "outcome": "passed"
+          },
+          {
+            "id": "test_interim_recovery.RecoveryBoundaryTests.test_coordinator_and_prefix_malformed_matrix",
+            "seconds": 16.210906324000007,
+            "outcome": "passed"
+          }
+        ],
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    ],
+    [
+      {
+        "pattern": "selected",
+        "seconds": 110.60361179300003,
+        "successful": true,
+        "tests": [
+          {
+            "id": "test_interim_recovery.RecoveryBoundaryTests.test_transport_failures_at_every_call_site",
+            "seconds": 68.21627754200006,
+            "outcome": "passed"
+          },
+          {
+            "id": "test_interim_recovery.RecoveryBoundaryTests.test_provider_programmer_and_storage_exceptions_are_not_conflated",
+            "seconds": 27.908039546000055,
+            "outcome": "passed"
+          },
+          {
+            "id": "test_interim_recovery.RecoveryBoundaryTests.test_coordinator_and_prefix_malformed_matrix",
+            "seconds": 14.478978166000047,
+            "outcome": "passed"
+          }
+        ],
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    ]
+  ],
+  "timing": "perf_counter; setup, method, cleanup included",
+  "sampling_order": "Three alternating baseline/candidate pairs; fresh process per selected set; no concurrent workspace tests"
+}

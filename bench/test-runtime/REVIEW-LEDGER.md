@@ -601,3 +601,157 @@ push attempts failed authentication, including the existing credential helper
 and the permitted external Git route. The connected commit API cannot explicitly
 set author/committer identity, so it cannot guarantee the required noreply
 identity. No account/security setting was changed to bypass this blocker.
+
+## 2026-10-03 — batch 4 (UTC)
+
+Fresh host inspection confirmed PRs 6–9 merged into their historical target
+branches; only PR 6 reached main (`559070e08fefdf1bb5a9cfc1a0aef7fdbcf3bf33`).
+Consolidation draft PR 11 remains open at successful-CI head
+`ba48cfde92887a6f7197d810d3504afbd268ddb0`. This batch branches from that exact
+complete baseline and draft PR 12 targets `perf/consolidate-runtime-2026-10-02`.
+It depends on PR 11; after consolidation lands, refresh main, retarget and
+revalidate before any human merge. No merge or deployment is authorized.
+The starting checkout was clean; no live changes were overwritten. Git CLI API
+calls returned Forbidden after ordinary retry; the existing connected GitHub
+app verified PR/run/job metadata and provided logs. Ordinary Git fetch/push
+worked. No credential inspection or access/security changes were made.
+
+Measured implementation: `7828c463f8077e34cd398c12f6f079923dbc9221`.
+New reviewed IDs, all in `test_interim_recovery.RecoveryBoundaryTests`:
+
+- `test_transport_failures_at_every_call_site`
+- `test_provider_programmer_and_storage_exceptions_are_not_conflated`
+- `test_coordinator_and_prefix_malformed_matrix`
+
+These matrices repeatedly validate the same control ref. Apply the existing
+successful exact Git syntax cache to these three method invocations only.
+Independent review proved whole-module AST equality after removing the three
+new decorators: 116 transport subcases, 75 programmer-error subcases plus three
+storage exception injections, and 42 malformed coordinator/prefix subcases stay
+intact. Provider failures occur in fixture methods, and storage failures patch
+persist; neither injects Git subprocess faults. The Git executable and process
+environment stay fixed. Every validator still executes, invalid ref probes remain
+uncached, and all other commands retain their original behavior. Temporary remotes,
+mutable copies, real publication/CAS/persistence, independent clones and reload
+assertions are unchanged. Existing cache guards cover success, failure, distinct
+refs, options, other commands, invocation reset and exception restoration.
+All eight prior IDs remain excluded from this batch; now eleven IDs are reviewed.
+
+Three alternating baseline/candidate pairs ran sequentially in fresh processes,
+with clean pinned checkouts, Linux x86_64, Python 3.12.14, Git 2.52.0, non-root,
+canonical Git maintenance disabled and no concurrent workspace tests. Timings
+include setup, method and cleanup. Shared-host load variation remains possible;
+these are targeted comparisons, not a controlled full-suite speedup. An ignored
+orchestration reporting error occurred after the first baseline finished; its
+complete successful JSON was preserved and reused without rerunning or selecting
+samples. The profiler and test process did not fail.
+
+| Test suffix | Before median (range), s | After median (range), s | Reduction |
+| --- | --- | --- | --- |
+| `test_transport_failures_at_every_call_site` | 68.216 (65.955–71.612) | 57.861 (54.647–64.721) | 15.18% |
+| `test_provider_programmer_and_storage_exceptions_are_not_conflated` | 27.908 (27.652–28.409) | 23.843 (22.601–25.106) | 14.57% |
+| `test_coordinator_and_prefix_malformed_matrix` | 16.211 (14.479–17.078) | 12.917 (12.718–14.680) | 20.32% |
+
+All 18 executions passed, zero failures/skips. Every paired comparison improved.
+The first two before/after ranges are disjoint; coordinator/prefix ranges overlap
+slightly (14.479–14.680 s), so that result has weaker separation and does not
+establish a precise constant gain. Samples trend faster over time on this host;
+alternation reduces but does not eliminate load/order confounding. Evidence:
+[before](2026-10-03-linux-before.json), [after](2026-10-03-linux-after.json),
+[comparison](2026-10-03-linux-comparison.json). All 16 test-source hashes per
+revision match their pinned Git trees. No test source changes after measurement.
+
+Next unreviewed candidates, retaining the earlier screening order:
+
+- `test_interim_recovery.RecoveryBoundaryTests.test_unknown_active_queued_and_terminal_are_distinct`
+- `test_interim_host_continuation.RepairHostContinuationTests.test_async_three_failure_diagnosis_and_stagnation_with_and_without_caps`
+- `test_interim_recovery.RecoveryBoundaryTests.test_truthful_stop_proof_still_gates_validation_persist_reload_and_resume`
+
+These remain screening leads, not measured/reviewed improvements. Check each
+purity boundary and establish a fresh repeated baseline; do not force a gain.
+The four previously excluded checker-monitor IDs still lack successful local
+per-test measurements. Their correctness route is existing privileged Actions,
+with no security changes or local privilege workaround.
+
+The integration CI observation was recovered from normal run 37060591883 at
+baseline `ba48cfde92887a6f7197d810d3504afbd268ddb0`: edition job 111015987159,
+delivery job 111015987530, synthetic checkout
+`825a99099539c08519d70ed0736cc348be1b72d8`. Both jobs succeeded; full delivery
+ran and only its alternative skip-report step skipped. The existing collector
+accepted all 16 successful groups (228 edition + 534 delivery = 762 executions),
+840.121 summed test seconds, and 825.421 seconds parallel job-log span. This is
+integration evidence, not a new daily-batch gain. Its concrete evidence link and
+raw-input hashes are in [history](suite-history.json) and [totals](TOTAL-RUNTIME.md).
+
+Original baseline `a57af6de259d34e9b772105e0ad0610290797cfa` remains 756
+executions / 1135.863 summed test seconds. Fresh downloads reproduced all counts,
+durations and metadata; stripping their leading BOM and appending one newline
+also reproduced both historical input hashes. Prior history is unchanged.
+Historical run links were checked against GitHub run/job metadata. Older ledger
+entries contain legacy owner-placeholder links; use the concrete verified links
+in TOTAL-RUNTIME.md/suite-history.json instead. No placeholder is new evidence.
+
+Collector exclusions: failed, skipped, incomplete, source-mismatched, ambiguous
+or unexpected-group logs and scope-skipped delivery are not full-suite rows.
+Targeted local measurements and collector guards are excluded from suite totals.
+No extra full-suite timing-only run was launched. Summed unittest time includes
+fixture setup/cleanup but excludes interpreter startup and standalone CLI checks.
+Command spans include CLI/shell overhead. Parallel job-log span is an elapsed
+proxy, not a duration sum; queue and exact workflow wall time remain unknown.
+
+Normal implementation CI run 37085960489 passed at measured implementation
+`7828c463f8077e34cd398c12f6f079923dbc9221`, testing synthetic merge
+`4d088567203b45cae2e7cf12eba17848dcc5c914` against the consolidation branch.
+Verified edition job 111096212039 and full privileged delivery job 111096211857
+both succeeded. All 16 groups passed, including the 29-test recovery group and
+all four watcher tests unavailable locally. The alternative skip-report step
+alone skipped; no tests were excluded from this total.
+
+| Checkpoint | Executions | Summed unittest seconds | Parallel job-log span seconds |
+| --- | ---: | ---: | ---: |
+| Original `a57af6de259d34e9b772105e0ad0610290797cfa` | 756 | 1135.863 | 1126.805 |
+| Prior batch final `1dfab0ed947a3892f8b94e504b13d79edfe20a47` | 762 | 934.088 | 915.979 |
+| Integration `ba48cfde92887a6f7197d810d3504afbd268ddb0` | 762 | 840.121 | 825.421 |
+| October 3 implementation `7828c463f8077e34cd398c12f6f079923dbc9221` | 762 | 668.769 | 657.017 |
+
+The implementation observation is 265.319 s (28.40%) below the prior daily batch,
+171.352 s (20.40%) below integration, and 467.094 s (41.12%) below the original.
+These are **observed differences, not causal optimization gains**. The unchanged
+coordinator group fell from 185.553 s in the prior batch / 179.994 s in integration
+to 141.543 s here, demonstrating unrelated variation. Today's test count is
+unchanged; growth from the original is four cache guards and two public-content
+regressions. No coverage was removed or time normalized away.
+
+All current jobs use Python 3.12.14, Git 2.55.0 and Ubuntu 24.04 image
+20260927.320.1; the original used image 20260920.314.1. Hosted hardware and load
+are unidentified. Implementation edition/delivery command spans are
+19.280264/654.250780 s, distinct from summed tests and the parallel-job span.
+The committed history preserves both implementation and integration observations;
+the final evidence-only head's terminal CI and latest collector extraction will
+be recorded on draft PR 12 against the frozen exact SHA. This avoids an endless
+cycle of evidence commits creating new CI revisions. The final row there is the
+final-head daily observation; this implementation row is an explicit checkpoint,
+not a claim that final-head CI has already passed.
+
+Independent fresh-context review passed: whole-module AST parity except the
+three decorators, 32 measurement source hashes, and all sample arithmetic.
+Independent execution passed four cache guards and all three changed IDs:
+7 tests / 233 subtests plus three storage exception injections, 100.111 s,
+zero failures/errors/skips. Source equality to the published measured commit
+was checked before execution. Review was behaviorally read-only, not a claim
+of filesystem-enforced read-only permissions. Browser QA is n/a for this
+test-only change; existing real Git integration tests cover runtime boundaries.
+No new failing regression test was appropriate for an assertion-preserving
+performance-only decorator application; existing guards and unchanged matrices
+provide the verification seam. No applicable installed project skill was found;
+repository stage-08 manual review and stage-09 integration routes were used.
+
+Local canonical public-edition aggregate `verify-playbook.py --skip-delivery`
+passed 228 tests in 17.227 s plus conventions, metadata, links, public-content,
+generated inventory/status, edition manifest and drift cadence (current through
+2026-10-08). Nine collector guards passed. Python compilation, delivery manifest
+check and diff whitespace check passed. No separate lint/type runner is configured;
+repository convention checks and compilation cover those lanes. Public-safe
+outputs contain no raw fixture diagnostics, personal paths or private addresses.
+Both author and committer identities are GitHub noreply. Final-head CI remains
+separate from these local and implementation-head results; consult draft PR 12.
