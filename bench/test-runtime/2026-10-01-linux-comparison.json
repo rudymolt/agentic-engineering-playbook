@@ -1,0 +1,69 @@
+{
+  "baseline_revision": "f5cad4fa0c588fce4906cdde01fb60ba82657e57",
+  "candidate_revision": "8c02e9cde00789c6c63e90cdf1e5dc264b034158",
+  "schedule": "three fresh baseline processes, then three fresh candidate processes; no concurrent workspace test workloads",
+  "git_version": "2.52.0",
+  "python_version": "3.12.14",
+  "platform": "Linux x86_64, non-root",
+  "scope": "selected tests including setup and cleanup; no whole-suite speedup claim",
+  "reviewed_tests": [
+    {
+      "id": "test_interim_recovery.RecoveryBoundaryTests.test_owned_inventory_malformed_matrix",
+      "before": {
+        "samples_seconds": [
+          252.33900993299997,
+          245.24436243499997,
+          261.0643123730001
+        ],
+        "median_seconds": 252.33900993299997,
+        "range_seconds": [
+          245.24436243499997,
+          261.0643123730001
+        ]
+      },
+      "after": {
+        "samples_seconds": [
+          231.87492233099988,
+          229.34224737299996,
+          231.71212923599978
+        ],
+        "median_seconds": 231.71212923599978,
+        "range_seconds": [
+          229.34224737299996,
+          231.87492233099988
+        ]
+      },
+      "reduction_percent": 8.174273451606616
+    },
+    {
+      "id": "test_interim_recovery.RecoveryBoundaryTests.test_malformed_observation_and_cancellation_matrix",
+      "before": {
+        "samples_seconds": [
+          163.96915510600002,
+          162.66395628399994,
+          171.79319509000015
+        ],
+        "median_seconds": 163.96915510600002,
+        "range_seconds": [
+          162.66395628399994,
+          171.79319509000015
+        ]
+      },
+      "after": {
+        "samples_seconds": [
+          151.78844037399995,
+          150.50168517999987,
+          147.75998006999998
+        ],
+        "median_seconds": 150.50168517999987,
+        "range_seconds": [
+          147.75998006999998,
+          151.78844037399995
+        ]
+      },
+      "reduction_percent": 8.213416674187247
+    }
+  ],
+  "local_privileged_tests": "not attempted; existing GitHub Actions validates privileged K4.1",
+  "total_successful_executions": 12
+}

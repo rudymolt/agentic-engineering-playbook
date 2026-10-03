@@ -13,7 +13,6 @@ import unittest
 from datetime import datetime, timedelta, timezone
 from uuid import uuid4
 from copy import deepcopy
-from functools import wraps
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import redirect_stdout
 from pathlib import Path
@@ -33,43 +32,9 @@ from delivery_pilot.interim_conductor_host import ConductorHostAdapter
 from delivery_pilot.interim_pr import ensure_verify_pr
 from test_interim_host_continuation import QueuedConductor
 from test_interim_repair import RepairFixture, EscalatedFixture
+from control_ref_test_support import memoized_control_refs
 
 
-def memoized_control_refs(test):
-    """Reuse only successful, input-only Git syntax probes within one test.
-
-    Every validator still runs on every call. These three tests keep the Git
-    executable and environment fixed; check-ref-format without options depends
-    only on its ref argument, not on repository state. Distinct refs and failures
-    still invoke real Git. All other subprocess calls remain real and uncached.
-    """
-    @wraps(test)
-    def run(*args, **kwargs):
-        original = interim_module.subprocess
-        successful = {}
-
-        class SyntaxProbes:
-            def __getattr__(self, name):
-                return getattr(original, name)
-
-            def run(self, command, *positional, **options):
-                eligible = (not positional and isinstance(command, (list, tuple))
-                            and len(command) == 3 and command[:2] == ["git", "check-ref-format"]
-                            and isinstance(command[2], str)
-                            and options == {"stdout": subprocess.PIPE, "stderr": subprocess.PIPE, "check": False})
-                if not eligible:
-                    return original.run(command, *positional, **options)
-                key = tuple(command)
-                if key not in successful:
-                    result = original.run(command, **options)
-                    if result.returncode:
-                        return result
-                    successful[key] = (result.returncode, result.stdout, result.stderr)
-                return subprocess.CompletedProcess(list(command), *successful[key])
-
-        with mock.patch.object(interim_module, "subprocess", SyntaxProbes()):
-            return test(*args, **kwargs)
-    return run
 
 
 class PhaseHost:

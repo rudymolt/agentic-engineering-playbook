@@ -47,6 +47,30 @@ class PublicContentGateTest(unittest.TestCase):
                     (root / "README.md").write_text(content)
                     self.assertTrue(MODULE.problems(root))
 
+    def test_public_runtime_urls_are_allowed_only_in_evidence_outputs(self):
+        url = "https://github.com/rudy" + "molt/agentic-engineering-playbook/actions/runs/123"
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            for relative in MODULE.PUBLIC_RUNTIME_FILES:
+                path = root / relative
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text('[run 123](' + url + ')\n"run_url": "' + url + '"')
+            self.assertEqual(MODULE.problems(root), [])
+            (root / "other.md").write_text('[run 123](' + url + ')')
+            self.assertTrue(any("other.md" in item for item in MODULE.problems(root)))
+
+    def test_runtime_url_exception_does_not_hide_private_content_or_other_urls(self):
+        url = "https://github.com/rudy" + "molt/agentic-engineering-playbook/actions/runs/123"
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            path = root / "bench/test-runtime/TOTAL-RUNTIME.md"
+            path.parent.mkdir(parents=True)
+            for text in ("rudy" + "molt", url.replace("playbook/", "private/"),
+                         url + "/extra", url + "?private=1", url.replace("/123", "/{run}")):
+                with self.subTest(text=text):
+                    path.write_text('[run 123](' + url + ')\n(' + text + ')')
+                    self.assertTrue(MODULE.problems(root))
+
     def test_lowercase_private_fixture_identifiers_are_rejected(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

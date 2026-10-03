@@ -15,6 +15,7 @@ from delivery_pilot.interim_coordinator import InterimDispatchError, InterimFixt
 from delivery_pilot.canonical import digest  # noqa: E402
 from delivery_pilot.interim_identity import operation_identities  # noqa: E402
 from test_interim import InterimCheckpointTests  # noqa: E402
+from control_ref_test_support import memoized_control_refs  # noqa: E402
 
 
 MISSING = object()
@@ -217,12 +218,15 @@ class CoordinatorTests(InterimCheckpointTests):
             ("extra-failed-command", lambda r: r["evidence"]["commands"].append(dict(r["evidence"]["commands"][0], result="fail"))),
         ])
 
+    @memoized_control_refs
     def test_worker_acceptance_parity_build_matrix(self):
         self.assert_receipt_parity(worker_mutations("build"), phase="build")
 
+    @memoized_control_refs
     def test_worker_acceptance_parity_verify_matrix(self):
         self.assert_receipt_parity(worker_mutations("verify"))
 
+    @memoized_control_refs
     def test_handoff_acceptance_parity_matrix(self):
         self.assert_receipt_parity(handoff_mutations(), handoff=True)
 
