@@ -1,0 +1,620 @@
+{
+  "schema_version": 1,
+  "records": [
+    {
+      "head_sha": "a57af6de259d34e9b772105e0ad0610290797cfa",
+      "run_id": 36475493848,
+      "observed_date": "2026-09-28",
+      "evidence_kind": "observed_normal_ci_not_controlled_benchmark",
+      "coverage": "full_edition_and_K4.1",
+      "jobs": {
+        "edition": {
+          "command": "python3 v0.5/scripts/verify-playbook.py --skip-drift --skip-delivery",
+          "checked_out_sha": "a57af6de259d34e9b772105e0ad0610290797cfa",
+          "source_log_sha256": "0149ef5c32517a63873881aad9097bc2f8cf36cb575ca0d2119bc5b6a0eebbb4",
+          "python": "3.12.14",
+          "git": "2.55.0",
+          "runner_image": "ubuntu-24.04",
+          "runner_image_version": "20260920.314.1",
+          "runner_hardware": null,
+          "privileged": false,
+          "groups": [
+            {
+              "executions": 226,
+              "test_seconds": 15.962
+            }
+          ],
+          "executions": 226,
+          "test_seconds": 15.962,
+          "verification_log_span_seconds": 17.642397,
+          "first_log_at": "2026-09-28T19:54:48.0243775Z",
+          "last_log_at": "2026-09-28T19:55:08.8441092Z",
+          "job_log_span_seconds": 20.819732,
+          "successful": true,
+          "skipped_executions": 0,
+          "job_id": 109108034511
+        },
+        "delivery": {
+          "command": "sudo \"$(command -v python3)\" v0.5/delivery/scripts/verify.py --set K4.1",
+          "checked_out_sha": "a57af6de259d34e9b772105e0ad0610290797cfa",
+          "source_log_sha256": "f4152d242cb927206a4bedbfe970feb43267ce534cd209f2155bf8b46c6c73ed",
+          "python": "3.12.14",
+          "git": "2.55.0",
+          "runner_image": "ubuntu-24.04",
+          "runner_image_version": "20260920.314.1",
+          "runner_hardware": null,
+          "privileged": true,
+          "groups": [
+            {
+              "executions": 75,
+              "test_seconds": 0.745
+            },
+            {
+              "executions": 8,
+              "test_seconds": 12.234
+            },
+            {
+              "executions": 62,
+              "test_seconds": 3.784
+            },
+            {
+              "executions": 11,
+              "test_seconds": 1.906
+            },
+            {
+              "executions": 55,
+              "test_seconds": 0.483
+            },
+            {
+              "executions": 14,
+              "test_seconds": 1.299
+            },
+            {
+              "executions": 40,
+              "test_seconds": 257.258
+            },
+            {
+              "executions": 33,
+              "test_seconds": 49.925
+            },
+            {
+              "executions": 29,
+              "test_seconds": 634.56
+            },
+            {
+              "executions": 19,
+              "test_seconds": 13.225
+            },
+            {
+              "executions": 15,
+              "test_seconds": 8.579
+            },
+            {
+              "executions": 93,
+              "test_seconds": 49.794
+            },
+            {
+              "executions": 17,
+              "test_seconds": 1.238
+            },
+            {
+              "executions": 18,
+              "test_seconds": 40.713
+            },
+            {
+              "executions": 41,
+              "test_seconds": 44.158
+            }
+          ],
+          "executions": 530,
+          "test_seconds": 1119.901,
+          "verification_log_span_seconds": 1122.496517,
+          "first_log_at": "2026-09-28T19:54:49.6027718Z",
+          "last_log_at": "2026-09-28T20:13:34.8292984Z",
+          "job_log_span_seconds": 1125.226527,
+          "successful": true,
+          "skipped_executions": 0,
+          "job_id": 109108034814
+        }
+      },
+      "executions": 756,
+      "summed_test_seconds": 1135.863,
+      "parallel_jobs_log_span_seconds": 1126.804921,
+      "queue_seconds": null,
+      "overall_workflow_wall_seconds": null,
+      "run_url": "https://github.com/rudymolt/agentic-engineering-playbook/actions/runs/36475493848"
+    },
+    {
+      "head_sha": "f5cad4fa0c588fce4906cdde01fb60ba82657e57",
+      "run_id": 36779311758,
+      "observed_date": "2026-09-30",
+      "evidence_kind": "observed_normal_ci_not_controlled_benchmark",
+      "coverage": "full_edition_and_K4.1",
+      "jobs": {
+        "edition": {
+          "command": "python3 v0.5/scripts/verify-playbook.py --skip-drift --skip-delivery",
+          "checked_out_sha": "3adfcb62c62cd2b53ac8061b916aea209a467397",
+          "source_log_sha256": "a9418b15d503bb58589b425bf79de401974d50671d9f286073ed9fae783b4f79",
+          "python": "3.12.14",
+          "git": "2.55.0",
+          "runner_image": "ubuntu-24.04",
+          "runner_image_version": "20260927.320.1",
+          "runner_hardware": null,
+          "privileged": false,
+          "groups": [
+            {
+              "executions": 226,
+              "test_seconds": 15.726
+            }
+          ],
+          "executions": 226,
+          "test_seconds": 15.726,
+          "verification_log_span_seconds": 17.3709,
+          "first_log_at": "2026-09-30T21:25:22.8505419Z",
+          "last_log_at": "2026-09-30T21:25:43.3285167Z",
+          "job_log_span_seconds": 20.477975,
+          "successful": true,
+          "skipped_executions": 0,
+          "job_id": 110105086484
+        },
+        "delivery": {
+          "command": "sudo \"$(command -v python3)\" v0.5/delivery/scripts/verify.py --set K4.1",
+          "checked_out_sha": "3adfcb62c62cd2b53ac8061b916aea209a467397",
+          "source_log_sha256": "d8e6b32430e1570399d22ee1421b7a4bb6ef1939cbf7f3773443c90be187d799",
+          "python": "3.12.14",
+          "git": "2.55.0",
+          "runner_image": "ubuntu-24.04",
+          "runner_image_version": "20260920.314.1",
+          "runner_hardware": null,
+          "privileged": true,
+          "groups": [
+            {
+              "executions": 75,
+              "test_seconds": 0.587
+            },
+            {
+              "executions": 8,
+              "test_seconds": 9.403
+            },
+            {
+              "executions": 62,
+              "test_seconds": 2.714
+            },
+            {
+              "executions": 11,
+              "test_seconds": 4.917
+            },
+            {
+              "executions": 55,
+              "test_seconds": 0.341
+            },
+            {
+              "executions": 14,
+              "test_seconds": 1.253
+            },
+            {
+              "executions": 40,
+              "test_seconds": 212.84
+            },
+            {
+              "executions": 33,
+              "test_seconds": 43.443
+            },
+            {
+              "executions": 29,
+              "test_seconds": 558.213
+            },
+            {
+              "executions": 19,
+              "test_seconds": 12.412
+            },
+            {
+              "executions": 15,
+              "test_seconds": 6.764
+            },
+            {
+              "executions": 93,
+              "test_seconds": 42.506
+            },
+            {
+              "executions": 17,
+              "test_seconds": 1.046
+            },
+            {
+              "executions": 18,
+              "test_seconds": 32.19
+            },
+            {
+              "executions": 45,
+              "test_seconds": 36.092
+            }
+          ],
+          "executions": 534,
+          "test_seconds": 964.721,
+          "verification_log_span_seconds": 967.21806,
+          "first_log_at": "2026-09-30T21:25:23.4334751Z",
+          "last_log_at": "2026-09-30T21:41:33.9353331Z",
+          "job_log_span_seconds": 970.501858,
+          "successful": true,
+          "skipped_executions": 0,
+          "job_id": 110105086160
+        }
+      },
+      "executions": 760,
+      "summed_test_seconds": 980.447,
+      "parallel_jobs_log_span_seconds": 971.084792,
+      "queue_seconds": null,
+      "overall_workflow_wall_seconds": null,
+      "run_url": "https://github.com/rudymolt/agentic-engineering-playbook/actions/runs/36779311758"
+    },
+    {
+      "head_sha": "bf858067687ffb751e5073c6ccc2287c56468a5a",
+      "run_id": 36802981894,
+      "observed_date": "2026-10-01",
+      "evidence_kind": "observed_normal_ci_not_controlled_benchmark",
+      "coverage": "full_edition_and_K4.1",
+      "jobs": {
+        "edition": {
+          "command": "python3 v0.5/scripts/verify-playbook.py --skip-drift --skip-delivery",
+          "checked_out_sha": "ab42fe9fd2da1ed85e5d95b7a639090b231f8466",
+          "source_log_sha256": "d3254925ba8aca19eaa8da72c323ebbf4852c0529db6bbc66b9743b9500c7445",
+          "python": "3.12.14",
+          "git": "2.55.0",
+          "runner_image": "ubuntu-24.04",
+          "runner_image_version": "20260920.314.1",
+          "runner_hardware": null,
+          "privileged": false,
+          "groups": [
+            {
+              "executions": 226,
+              "test_seconds": 23.836
+            }
+          ],
+          "executions": 226,
+          "test_seconds": 23.836,
+          "verification_log_span_seconds": 26.384677,
+          "first_log_at": "2026-10-01T01:50:18.6202387Z",
+          "last_log_at": "2026-10-01T01:50:47.1448194Z",
+          "job_log_span_seconds": 28.524581,
+          "successful": true,
+          "skipped_executions": 0,
+          "job_id": 110181200180
+        },
+        "delivery": {
+          "command": "sudo \"$(command -v python3)\" v0.5/delivery/scripts/verify.py --set K4.1",
+          "checked_out_sha": "ab42fe9fd2da1ed85e5d95b7a639090b231f8466",
+          "source_log_sha256": "cd610e13a91557f96e3ef47edc04ade6b9b668be9476707cf1143e9cefa236e2",
+          "python": "3.12.14",
+          "git": "2.55.0",
+          "runner_image": "ubuntu-24.04",
+          "runner_image_version": "20260927.320.1",
+          "runner_hardware": null,
+          "privileged": true,
+          "groups": [
+            {
+              "executions": 75,
+              "test_seconds": 0.489
+            },
+            {
+              "executions": 8,
+              "test_seconds": 7.385
+            },
+            {
+              "executions": 62,
+              "test_seconds": 2.553
+            },
+            {
+              "executions": 11,
+              "test_seconds": 5.078
+            },
+            {
+              "executions": 55,
+              "test_seconds": 0.271
+            },
+            {
+              "executions": 14,
+              "test_seconds": 0.726
+            },
+            {
+              "executions": 40,
+              "test_seconds": 137.68
+            },
+            {
+              "executions": 33,
+              "test_seconds": 26.737
+            },
+            {
+              "executions": 29,
+              "test_seconds": 351.755
+            },
+            {
+              "executions": 19,
+              "test_seconds": 7.731
+            },
+            {
+              "executions": 15,
+              "test_seconds": 4.89
+            },
+            {
+              "executions": 93,
+              "test_seconds": 30.419
+            },
+            {
+              "executions": 17,
+              "test_seconds": 0.656
+            },
+            {
+              "executions": 18,
+              "test_seconds": 22.512
+            },
+            {
+              "executions": 45,
+              "test_seconds": 24.496
+            }
+          ],
+          "executions": 534,
+          "test_seconds": 623.378,
+          "verification_log_span_seconds": 625.556419,
+          "first_log_at": "2026-10-01T01:50:18.3892132Z",
+          "last_log_at": "2026-10-01T02:00:46.0467938Z",
+          "job_log_span_seconds": 627.65758,
+          "successful": true,
+          "skipped_executions": 0,
+          "job_id": 110181199987
+        }
+      },
+      "executions": 760,
+      "summed_test_seconds": 647.214,
+      "parallel_jobs_log_span_seconds": 627.65758,
+      "queue_seconds": null,
+      "overall_workflow_wall_seconds": null,
+      "run_url": "https://github.com/rudymolt/agentic-engineering-playbook/actions/runs/36802981894"
+    },
+    {
+      "head_sha": "b17ee92fcf8d2fc43338e0252ce0bc10f2126883",
+      "run_id": 36953393473,
+      "observed_date": "2026-10-02",
+      "evidence_kind": "observed_normal_ci_not_controlled_benchmark",
+      "coverage": "full_edition_and_K4.1",
+      "jobs": {
+        "edition": {
+          "command": "python3 v0.5/scripts/verify-playbook.py --skip-drift --skip-delivery",
+          "checked_out_sha": "f4ed54eba0eb19f3e33eb5117ddc723ab3512e9c",
+          "source_log_sha256": "60e975cc11203e9d97783a3e35064a3d55172b3e994f5a6668c849f914bff459",
+          "python": "3.12.14",
+          "git": "2.55.0",
+          "runner_image": "ubuntu-24.04",
+          "runner_image_version": "20260927.320.1",
+          "runner_hardware": null,
+          "privileged": false,
+          "groups": [
+            {
+              "executions": 228,
+              "test_seconds": 22.96
+            }
+          ],
+          "executions": 228,
+          "test_seconds": 22.96,
+          "verification_log_span_seconds": 25.439479,
+          "first_log_at": "2026-10-02T01:57:53.6796277Z",
+          "last_log_at": "2026-10-02T01:58:20.8845534Z",
+          "job_log_span_seconds": 27.204926,
+          "successful": true,
+          "skipped_executions": 0,
+          "job_id": 110671004803
+        },
+        "delivery": {
+          "command": "sudo \"$(command -v python3)\" v0.5/delivery/scripts/verify.py --set K4.1",
+          "checked_out_sha": "f4ed54eba0eb19f3e33eb5117ddc723ab3512e9c",
+          "source_log_sha256": "16ffd45a2309ad9a0069b9ac514cc08a1fae0520a6b42dd104be95ca77f8bdd2",
+          "python": "3.12.14",
+          "git": "2.55.0",
+          "runner_image": "ubuntu-24.04",
+          "runner_image_version": "20260927.320.1",
+          "runner_hardware": null,
+          "privileged": true,
+          "groups": [
+            {
+              "executions": 75,
+              "test_seconds": 0.719
+            },
+            {
+              "executions": 8,
+              "test_seconds": 9.878
+            },
+            {
+              "executions": 62,
+              "test_seconds": 3.453
+            },
+            {
+              "executions": 11,
+              "test_seconds": 1.776
+            },
+            {
+              "executions": 55,
+              "test_seconds": 0.482
+            },
+            {
+              "executions": 14,
+              "test_seconds": 1.183
+            },
+            {
+              "executions": 40,
+              "test_seconds": 189.553
+            },
+            {
+              "executions": 33,
+              "test_seconds": 43.725
+            },
+            {
+              "executions": 29,
+              "test_seconds": 539.139
+            },
+            {
+              "executions": 19,
+              "test_seconds": 12.296
+            },
+            {
+              "executions": 15,
+              "test_seconds": 7.809
+            },
+            {
+              "executions": 93,
+              "test_seconds": 46.146
+            },
+            {
+              "executions": 17,
+              "test_seconds": 1.065
+            },
+            {
+              "executions": 18,
+              "test_seconds": 35.895
+            },
+            {
+              "executions": 45,
+              "test_seconds": 39.286
+            }
+          ],
+          "executions": 534,
+          "test_seconds": 932.405,
+          "verification_log_span_seconds": 935.443676,
+          "first_log_at": "2026-10-02T01:57:54.4308629Z",
+          "last_log_at": "2026-10-02T02:13:32.9582105Z",
+          "job_log_span_seconds": 938.527348,
+          "successful": true,
+          "skipped_executions": 0,
+          "job_id": 110671005025
+        }
+      },
+      "executions": 762,
+      "summed_test_seconds": 955.365,
+      "parallel_jobs_log_span_seconds": 939.278583,
+      "queue_seconds": null,
+      "overall_workflow_wall_seconds": null,
+      "run_url": "https://github.com/rudymolt/agentic-engineering-playbook/actions/runs/36953393473"
+    },
+    {
+      "head_sha": "1dfab0ed947a3892f8b94e504b13d79edfe20a47",
+      "run_id": 36955234310,
+      "observed_date": "2026-10-02",
+      "evidence_kind": "observed_normal_ci_not_controlled_benchmark",
+      "coverage": "full_edition_and_K4.1",
+      "jobs": {
+        "edition": {
+          "command": "python3 v0.5/scripts/verify-playbook.py --skip-drift --skip-delivery",
+          "checked_out_sha": "333f43454764cf074068161b1469c02e336b0cff",
+          "source_log_sha256": "de04d1b3fded23c9977a3edadf2a1f8d307c34f5f2e785110d411c1b1d17f8c6",
+          "python": "3.12.14",
+          "git": "2.55.0",
+          "runner_image": "ubuntu-24.04",
+          "runner_image_version": "20260927.320.1",
+          "runner_hardware": null,
+          "privileged": false,
+          "groups": [
+            {
+              "executions": 228,
+              "test_seconds": 23.485
+            }
+          ],
+          "executions": 228,
+          "test_seconds": 23.485,
+          "verification_log_span_seconds": 26.068237,
+          "first_log_at": "2026-10-02T02:21:22.5209707Z",
+          "last_log_at": "2026-10-02T02:21:50.4974131Z",
+          "job_log_span_seconds": 27.976443,
+          "successful": true,
+          "skipped_executions": 0,
+          "job_id": 110676631425
+        },
+        "delivery": {
+          "command": "sudo \"$(command -v python3)\" v0.5/delivery/scripts/verify.py --set K4.1",
+          "checked_out_sha": "333f43454764cf074068161b1469c02e336b0cff",
+          "source_log_sha256": "e8db44cf9a97a52fbd141a001436050aaa2f7def849c4aa871741a2cd4a96e50",
+          "python": "3.12.14",
+          "git": "2.55.0",
+          "runner_image": "ubuntu-24.04",
+          "runner_image_version": "20260927.320.1",
+          "runner_hardware": null,
+          "privileged": true,
+          "groups": [
+            {
+              "executions": 75,
+              "test_seconds": 0.705
+            },
+            {
+              "executions": 8,
+              "test_seconds": 10.072
+            },
+            {
+              "executions": 62,
+              "test_seconds": 3.386
+            },
+            {
+              "executions": 11,
+              "test_seconds": 1.702
+            },
+            {
+              "executions": 55,
+              "test_seconds": 0.469
+            },
+            {
+              "executions": 14,
+              "test_seconds": 1.11
+            },
+            {
+              "executions": 40,
+              "test_seconds": 185.553
+            },
+            {
+              "executions": 33,
+              "test_seconds": 43.684
+            },
+            {
+              "executions": 29,
+              "test_seconds": 523.777
+            },
+            {
+              "executions": 19,
+              "test_seconds": 11.996
+            },
+            {
+              "executions": 15,
+              "test_seconds": 7.716
+            },
+            {
+              "executions": 93,
+              "test_seconds": 45.241
+            },
+            {
+              "executions": 17,
+              "test_seconds": 1.068
+            },
+            {
+              "executions": 18,
+              "test_seconds": 35.633
+            },
+            {
+              "executions": 45,
+              "test_seconds": 38.491
+            }
+          ],
+          "executions": 534,
+          "test_seconds": 910.603,
+          "verification_log_span_seconds": 912.987751,
+          "first_log_at": "2026-10-02T02:21:22.7871630Z",
+          "last_log_at": "2026-10-02T02:36:38.5003416Z",
+          "job_log_span_seconds": 915.713178,
+          "successful": true,
+          "skipped_executions": 0,
+          "job_id": 110676631193
+        }
+      },
+      "executions": 762,
+      "summed_test_seconds": 934.088,
+      "parallel_jobs_log_span_seconds": 915.979371,
+      "queue_seconds": null,
+      "overall_workflow_wall_seconds": null,
+      "run_url": "https://github.com/rudymolt/agentic-engineering-playbook/actions/runs/36955234310"
+    }
+  ]
+}

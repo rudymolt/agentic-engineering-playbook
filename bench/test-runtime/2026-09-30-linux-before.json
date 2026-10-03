@@ -1,0 +1,116 @@
+{
+  "revision": "a57af6de259d34e9b772105e0ad0610290797cfa",
+  "dirty": false,
+  "python": "3.12.14",
+  "platform": "Linux",
+  "set": "K4.1",
+  "selected_tests": [
+    "test_interim_advance.AdvanceTests.test_bound_host_brief_names_candidate_checkout_and_implementation_paths",
+    "test_interim_advance.AdvanceTests.test_bound_candidate_symlink_cannot_escape_shared_workspace_root",
+    "test_interim_advance.AdvanceTests.test_bound_verify_send_includes_pr_helper_before_worker_done"
+  ],
+  "recorded_at": "2026-09-30T20:37:44.962169+00:00",
+  "privileged": false,
+  "test_sources": {
+    "test_checker_monitor.py": "a3f92339d3f38ea658c3d23326b07275df21a40b8b769fe7e67b9c78ea34e8ea",
+    "test_cloud.py": "d05f972e577796b33170c84eeff7ee2be5d1f96ee2885692c6a63f5c3841b174",
+    "test_continuation.py": "4e45cbf0609c6ebc3615ab16547bfbe6128fd492d9b2907219adbb26579500da",
+    "test_core.py": "68067f8ce650a14ec1d1765bc0376356c1e15571208779a2903165109aac4f22",
+    "test_interim.py": "9d7dea5db96260689f7c4003cf9ef881510c9419fe6f3bae29d412db55af661c",
+    "test_interim_advance.py": "cad8a2aa16d39f5995781e90520af4965b1b09864278220c214bdd7593981eb4",
+    "test_interim_conductor_host.py": "b7a905b0a1c481e6bb7ce9085cfea0cae2d60a14608aba9a83394566f57db2c4",
+    "test_interim_coordinator.py": "b9cf86bdd4626a806c9194d7fe92b2a1fe677e5381d88f801cb249c20951d49a",
+    "test_interim_host_continuation.py": "42f69a88a39b996c9bc987587a8ce393da1e26a3494552d7d71380be104bd61e",
+    "test_interim_monitor.py": "f7d3bfbcd22b3d0d3872e0d69a9ec025ad84b037d4f2a4c1d5ba3498bd077d7a",
+    "test_interim_recovery.py": "01072b3ce7f5dbae5149cb1af298b0e13514954f2faf6ceadb6824ded4200cec",
+    "test_interim_repair.py": "ea1a770693a8d68a0ae33339a56e171f669824a0a31642a172a97e1a2e9efb9b",
+    "test_interim_stack.py": "3c0c22ca14aed6b9af722835663b47a2946b8d204896fa2fc8838efa31f25f13",
+    "test_interim_watchdog.py": "78cbb62bc5e1b2fe8f78a502a8cb2a08dee41797e08cfe7c6d08d3bbad95e156",
+    "test_pack_lifecycle.py": "308a18a85400f3ca47cdf8a965cde922f174ade3afdfd388a999c08c00cd3eda"
+  },
+  "repetitions": [
+    [
+      {
+        "pattern": "selected",
+        "seconds": 2.6370064910000224,
+        "successful": true,
+        "tests": [
+          {
+            "id": "test_interim_advance.AdvanceTests.test_bound_host_brief_names_candidate_checkout_and_implementation_paths",
+            "seconds": 0.7271885919999477,
+            "outcome": "passed"
+          },
+          {
+            "id": "test_interim_advance.AdvanceTests.test_bound_candidate_symlink_cannot_escape_shared_workspace_root",
+            "seconds": 0.6920943339999894,
+            "outcome": "passed"
+          },
+          {
+            "id": "test_interim_advance.AdvanceTests.test_bound_verify_send_includes_pr_helper_before_worker_done",
+            "seconds": 1.217528639999955,
+            "outcome": "passed"
+          }
+        ],
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    ],
+    [
+      {
+        "pattern": "selected",
+        "seconds": 2.5655084830000305,
+        "successful": true,
+        "tests": [
+          {
+            "id": "test_interim_advance.AdvanceTests.test_bound_host_brief_names_candidate_checkout_and_implementation_paths",
+            "seconds": 0.6932869679999953,
+            "outcome": "passed"
+          },
+          {
+            "id": "test_interim_advance.AdvanceTests.test_bound_candidate_symlink_cannot_escape_shared_workspace_root",
+            "seconds": 0.6925073689999977,
+            "outcome": "passed"
+          },
+          {
+            "id": "test_interim_advance.AdvanceTests.test_bound_verify_send_includes_pr_helper_before_worker_done",
+            "seconds": 1.1795571289999884,
+            "outcome": "passed"
+          }
+        ],
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    ],
+    [
+      {
+        "pattern": "selected",
+        "seconds": 2.616107757000009,
+        "successful": true,
+        "tests": [
+          {
+            "id": "test_interim_advance.AdvanceTests.test_bound_host_brief_names_candidate_checkout_and_implementation_paths",
+            "seconds": 0.7014468790000024,
+            "outcome": "passed"
+          },
+          {
+            "id": "test_interim_advance.AdvanceTests.test_bound_candidate_symlink_cannot_escape_shared_workspace_root",
+            "seconds": 0.6661010610000062,
+            "outcome": "passed"
+          },
+          {
+            "id": "test_interim_advance.AdvanceTests.test_bound_verify_send_includes_pr_helper_before_worker_done",
+            "seconds": 1.2483118869999998,
+            "outcome": "passed"
+          }
+        ],
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    ]
+  ],
+  "timing": "perf_counter; setup, method, cleanup included",
+  "sampling": "Three fresh subprocess sets, alternating baseline then candidate, no concurrent local test workloads."
+}

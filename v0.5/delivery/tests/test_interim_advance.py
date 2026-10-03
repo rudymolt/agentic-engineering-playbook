@@ -23,6 +23,7 @@ from test_interim_coordinator import Fixture
 from delivery_pilot.canonical import digest
 from delivery_pilot.interim import InterimError, initial_record, validate_record
 from delivery_pilot.interim import main as interim_main
+from delivery_pilot import interim as interim_module
 from delivery_pilot.interim_disposition import unresolved as recovery_unresolved
 from delivery_pilot.interim_disposition import ObservationFailure
 from delivery_pilot.interim_advance import advance_once, github_pr_readback
@@ -31,6 +32,9 @@ from delivery_pilot.interim_conductor_host import ConductorHostAdapter
 from delivery_pilot.interim_pr import ensure_verify_pr
 from test_interim_host_continuation import QueuedConductor
 from test_interim_repair import RepairFixture, EscalatedFixture
+from control_ref_test_support import memoized_control_refs
+
+
 
 
 class PhaseHost:
@@ -1183,6 +1187,7 @@ class AdvanceTests(unittest.TestCase):
         self.assertEqual(advance_once(store, record, tasks, host)["outcome"], "review-ready")
         self.assertEqual(len(host.sent), 2)
 
+    @memoized_control_refs
     def test_bound_host_brief_names_candidate_checkout_and_implementation_paths(self):
         store, record, tasks, host = self._run()
         advance_once(store, record, tasks, host)
@@ -1214,6 +1219,7 @@ class AdvanceTests(unittest.TestCase):
         with self.assertRaises(InterimDispatchError):
             adapter.bind_worker_hint(current, operation["id"], self.first)
 
+    @memoized_control_refs
     def test_bound_candidate_symlink_cannot_escape_shared_workspace_root(self):
         store, record, tasks, host = self._run()
         advance_once(store, record, tasks, host)
@@ -1234,6 +1240,7 @@ class AdvanceTests(unittest.TestCase):
                 self.second.unlink()
                 shutil.move(str(external), str(self.second))
 
+    @memoized_control_refs
     def test_bound_verify_send_includes_pr_helper_before_worker_done(self):
         store, record, tasks, host = self._run()
         advance_once(store, record, tasks, host)
@@ -1383,6 +1390,67 @@ class AdvanceTests(unittest.TestCase):
             ensure_verify_pr(store, host.sent[-1], api)
         self.assertEqual(posts, [])
         self.assertNotIn("pr_create_intent", next(op for op in store.reload(record).value["usage"]["operations"] if op["phase"] == "verify"))
+
+
+class ControlRefMemoizationTests(unittest.TestCase):
+    def test_success_is_reused_but_every_validator_call_still_runs(self):
+        original = interim_module._control_ref
+        ref = "refs/heads/delivery-control/issue-test-run"
+        @memoized_control_refs
+        def exercise():
+            for _ in range(2):
+                self.assertEqual(interim_module._control_ref(ref, "name", "test-run"), ref)
+            # The other diagnostic label still runs the complete validator.
+            self.assertEqual(interim_module._control_ref(ref, "other", "test-run"), ref)
+        with mock.patch.object(interim_module, "_control_ref", wraps=original) as validator:
+            with mock.patch.object(subprocess, "run", wraps=subprocess.run) as git:
+                exercise()
+                self.assertEqual(validator.call_count, 3)
+                self.assertEqual(git.call_count, 1)
+                exercise()
+                self.assertEqual(validator.call_count, 6)
+                self.assertEqual(git.call_count, 2)
+
+    def test_real_invalid_refs_and_nonstring_inputs_are_not_cached(self):
+        @memoized_control_refs
+        def exercise():
+            for _ in range(2):
+                with self.assertRaisesRegex(InterimError, "not valid Git ref syntax"):
+                    interim_module._control_ref("refs/heads/delivery-control/issue-invalid..run", "name", "invalid..run")
+                with self.assertRaisesRegex(InterimError, "run-specific"):
+                    interim_module._control_ref("refs/heads/other", "name", "test-run")
+                for value in ([], {}):
+                    with self.assertRaises(InterimError):
+                        interim_module._control_ref(value, "name", "test-run")
+        with mock.patch.object(subprocess, "run", wraps=subprocess.run) as git:
+            exercise()
+            self.assertEqual(git.call_count, 2)
+
+    def test_other_commands_options_and_distinct_refs_are_not_reused(self):
+        @memoized_control_refs
+        def exercise():
+            for ref in ("refs/heads/one", "refs/heads/two"):
+                for _ in range(2):
+                    self.assertEqual(interim_module.subprocess.run(["git", "check-ref-format", ref],
+                        stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False).returncode, 0)
+            for _ in range(2):
+                interim_module.subprocess.run(["git", "check-ref-format", "refs/heads/one"],
+                    stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False, cwd=self.root)
+                interim_module.subprocess.run(["git", "--version"], stdout=subprocess.PIPE)
+        with tempfile.TemporaryDirectory() as tmp:
+            self.root = tmp
+            with mock.patch.object(subprocess, "run", wraps=subprocess.run) as git:
+                exercise()
+                self.assertEqual(git.call_count, 6)
+
+    def test_exception_restores_the_original_subprocess_module(self):
+        @memoized_control_refs
+        def exercise():
+            raise RuntimeError("test failed")
+        original = interim_module.subprocess
+        with self.assertRaisesRegex(RuntimeError, "test failed"):
+            exercise()
+        self.assertIs(interim_module.subprocess, original)
 
 
 if __name__ == "__main__":
