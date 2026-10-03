@@ -466,7 +466,7 @@
       "source": "scripts/lifecycle.py"
     },
     {
-      "digest": "sha256:c4705ea7c7f6a5be8ab8ee1ab487f8fd996dd9df8046d98bd3d04de0914adea1",
+      "digest": "sha256:c9d38ed89ec7a11b3e96146af6a0aa0ba38a75a909ad610d3ecc4ad6a8352cde",
       "install_path": null,
       "source": "scripts/verify.py"
     },
@@ -803,5 +803,5 @@
   ],
   "manifest_schema_version": 1,
   "manifest_self_rule": "pack_digest covers the complete non-manifest source inventory",
-  "pack_digest": "sha256:c52603ec2e52242d0506237960d32576db510c16daa14abd66ba419c37576f99"
+  "pack_digest": "sha256:05dac6624d488e02614ef0e1ce903e4d712c06c13ae0ddf88d78bc2a2a38840c"
 }

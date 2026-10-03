@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+- Run the full public and delivery test files concurrently in PR CI, keep the
+  local release command sequential by default, and use current GitHub action
+  majors. Exercise real permission denials on ordinary Linux runners.
+
+*Why — CI was slow and the public gate failed before checking denials:* the
+  delivery suite spent most of its time in a few independent files, while
+  permission fixtures invoked root-only capability changes on a non-root
+  runner. File shards retain every test and failure; direct non-root DAC checks
+  keep the privacy assertions active on GitHub.
+
 - Bootstrap seeding now rechecks every selected seed skill at the same
   publication and completion points as Configure, and the shared saver requires
   that admission check from every caller.

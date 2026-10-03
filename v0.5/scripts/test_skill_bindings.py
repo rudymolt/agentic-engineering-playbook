@@ -3,6 +3,7 @@
 import hashlib
 import json
 import errno
+from functools import lru_cache
 import os
 from pathlib import Path
 import shutil
@@ -15,6 +16,35 @@ from unittest.mock import patch
 from playbook_config import Configuration, ConfigError
 from skill_bindings import JobBindings, JOBS
 from test_playbook_config import ConfigurationTests
+
+
+@lru_cache(maxsize=1)
+def ordinary_dac_denies():
+    """Probe the effective process, since non-root users may hold DAC caps."""
+    if sys.platform != "linux":
+        return False
+    with tempfile.TemporaryDirectory() as temporary:
+        target = Path(temporary) / "denied"
+        target.write_text("fixture")
+        target.chmod(0)
+        try:
+            result = subprocess.run(
+                [sys.executable, "-c", "from pathlib import Path; import sys; "
+                 "Path(sys.argv[1]).read_bytes()", str(target)], capture_output=True)
+            return result.returncode != 0 and b"PermissionError" in result.stderr
+        finally:
+            target.chmod(0o600)
+
+
+def dac_isolation_available():
+    return sys.platform == "linux" and (ordinary_dac_denies() or shutil.which("setpriv") is not None)
+
+
+def dac_isolation_command(command):
+    # Some non-root containers also hold a DAC override capability.
+    if not ordinary_dac_denies():
+        return ["setpriv", "--bounding-set=-all", "--inh-caps=-all", "--ambient-caps=-all", *command]
+    return command
 
 
 def qualified_qa(project):
@@ -261,7 +291,7 @@ class BindingTests(ConfigurationTests):
                           json.dumps(str(self.project)) + ":2}")
         self.assert_private_qa_rejection(self.service.read(), saved, "eligibility record", "invalid qualification")
 
-    @unittest.skipUnless(sys.platform == "linux" and shutil.which("setpriv"), "requires Linux DAC isolation")
+    @unittest.skipUnless(dac_isolation_available(), "requires Linux DAC isolation")
     def test_cli_unreadable_qa_artifacts_are_private(self):
         source, record, evidence, saved = self.save_qa_selection()
         adapter = ("import json,sys; request=json.load(sys.stdin); "
@@ -269,10 +299,10 @@ class BindingTests(ConfigurationTests):
                    "'authority':'host-reported-selection','revision':'fixture-1',"
                    "'routes':[{'model_id':'available-build','runner':'codex','reasoning':'medium',"
                    "'roles':['implementation']}]},sys.stdout)")
-        command = ["setpriv", "--bounding-set=-all", "--inh-caps=-all", "--ambient-caps=-all",
-                   sys.executable, str(Path(__file__).with_name("configure-playbook.py")),
-                   "--project", str(self.project), "--discovery-command",
-                   json.dumps([sys.executable, "-c", adapter]), "read"]
+        command = dac_isolation_command([
+            sys.executable, str(Path(__file__).with_name("configure-playbook.py")),
+            "--project", str(self.project), "--discovery-command",
+            json.dumps([sys.executable, "-c", adapter]), "read"])
         for target, artifact in ((record, "eligibility record"), (evidence, "retained evidence"),
                                  (source, "skill source")):
             with self.subTest(artifact=artifact):

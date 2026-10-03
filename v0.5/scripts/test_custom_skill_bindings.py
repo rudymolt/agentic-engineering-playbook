@@ -5,7 +5,6 @@ import hashlib
 import json
 import os
 from pathlib import Path
-import shutil
 import subprocess
 import sys
 import tempfile
@@ -89,7 +88,7 @@ class CustomBindingTests(test_playbook_config.ConfigurationTests):
                    "--project", str(self.project), "--custom-bindings-dir", str(self.local),
                    "--discovery-command", json.dumps([sys.executable, "-c", adapter]), *extra, action]
         if deny:
-            command = ["setpriv", "--bounding-set=-all", "--inh-caps=-all", "--ambient-caps=-all"] + command
+            command = test_skill_bindings.dac_isolation_command(command)
         result = subprocess.run(command, input=json.dumps(request or {}), text=True, capture_output=True,
                                 env=dict(os.environ, HOME=str(self.machines)))
         for private in (str(self.project), str(self.machines), "PRIVATE_FIXTURE_MARKER", "SYNTHETIC_CREDENTIAL",
@@ -283,7 +282,7 @@ class CustomBindingTests(test_playbook_config.ConfigurationTests):
         self.assertEqual(self.privacy_cli("reply", {"proposal": retained, "reply": "Apply"})[1]["state"], "unchanged")
         return retained
 
-    @unittest.skipUnless(sys.platform == "linux" and shutil.which("setpriv"), "requires Linux DAC isolation")
+    @unittest.skipUnless(test_skill_bindings.dac_isolation_available(), "requires Linux DAC isolation")
     def test_cli_denied_store_and_artifacts_preserve_saved_custom_choice(self):
         preview = self.save_public_custom()
         (self.project / "customisation.md").write_text("intentional customisation\n")
@@ -296,10 +295,10 @@ class CustomBindingTests(test_playbook_config.ConfigurationTests):
                 path.chmod(0)
                 try:
                     probe = path / ("bindings.json" if artifact == "." else "fixture-audit.json") if path.is_dir() else path
-                    denied = subprocess.run(
-                        ["setpriv", "--bounding-set=-all", "--inh-caps=-all", "--ambient-caps=-all",
-                         sys.executable, "-c", "import pathlib,sys\ntry: pathlib.Path(sys.argv[1]).read_bytes()\n"
-                         "except PermissionError: sys.exit(73)\nelse: sys.exit(74)", str(probe)], capture_output=True)
+                    denied = subprocess.run(test_skill_bindings.dac_isolation_command([
+                        sys.executable, "-c", "import pathlib,sys\ntry: pathlib.Path(sys.argv[1]).read_bytes()\n"
+                        "except PermissionError: sys.exit(73)\nelse: sys.exit(74)", str(probe)]),
+                        capture_output=True)
                     self.assertEqual(denied.returncode, 73, "DAC denial must be observed, not assumed")
                     for action, request in self.public_actions(preview):
                         with self.subTest(action=action):
@@ -440,7 +439,7 @@ class CustomBindingTests(test_playbook_config.ConfigurationTests):
                                      for rows in public["skill_alternatives"].values() for row in rows))
                 self.assertEqual(self.stored_bytes(), before)
 
-    @unittest.skipUnless(sys.platform == "linux" and shutil.which("setpriv"), "requires Linux DAC isolation")
+    @unittest.skipUnless(test_skill_bindings.dac_isolation_available(), "requires Linux DAC isolation")
     def test_cli_denied_saved_qa_selection_state_blocks_without_changes(self):
         _, source, _, _ = test_skill_bindings.qualified_qa(self.project)
         for identity in ("custom:team-qa", "project:" + source.relative_to(self.project).as_posix()):
