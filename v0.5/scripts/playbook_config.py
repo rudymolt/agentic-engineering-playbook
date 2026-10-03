@@ -678,7 +678,10 @@ class Configuration:
 
     @staticmethod
     def _revision(proposal):
-        return digest(encoded({key: value for key, value in proposal.items() if key != "proposal_revision"}))
+        try:
+            return digest(encoded({key: value for key, value in proposal.items() if key != "proposal_revision"}))
+        except (ValueError, TypeError):
+            raise ConfigError("Proposal contains unsupported numeric or JSON data; reload and review a valid proposal without saving.") from None
 
     def _seal(self, proposal):
         if self._has_advice_claims(proposal):
@@ -749,7 +752,7 @@ class Configuration:
                 withheld.setdefault("guidance", deepcopy(record.get("guidance")) or
                                     {"checked_at": None, "status": "incomplete"})
                 record["withheld_evidence"] = withheld
-            return project_advice(record, now, requested_workload=workload)
+            return project_advice(record, now, requested_workload=workload, requested_context=context)
 
         records = proposal.get("recommendations")
         records = records if isinstance(records, dict) else {}
@@ -796,6 +799,13 @@ class Configuration:
         retained = proposal
         if isinstance(proposal, dict) and proposal.get("state") in {"blocked", "recovery_required"}:
             retained = proposal.get("retained_proposal")
+        # Invalid wire data cannot be retained or resealed as an editor draft.
+        # Check before copying/projecting, including nested public copies.
+        if isinstance(retained, dict):
+            try:
+                Configuration._revision(retained)
+            except ConfigError:
+                return result
         if (result.get("state") in {"blocked", "recovery_required"} and isinstance(retained, dict)
                 and retained.get("state") in {"decision_required", "proposal_ready"}
                 and retained.get("proposal_revision") == Configuration._revision(retained)):

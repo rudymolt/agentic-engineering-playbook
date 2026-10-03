@@ -401,7 +401,32 @@ def supported_estimate(estimate, rate, requested_workload):
     return type(amount) in (int, float) and math.isfinite(expected) and amount == expected
 
 
-def project_advice(advice, now, requested_workload=None):
+def guidance_supports(claim, choice, context):
+    """The selected claim must support this identity and the requested task fit."""
+    if not isinstance(choice, dict) or not isinstance(context, dict):
+        return False
+    goal = context.get("goal", "")
+    if not isinstance(goal, str):
+        return False
+    task = context.get("task")
+    if "task" not in context:
+        if re.search(r"implement|cod(e|ing)|software|test|repair|parser|\bapi\b|application|build|refactor", goal, re.I):
+            task = "coding"
+        elif re.search(r"analy[sz]|research|reason|plan|document", goal, re.I):
+            task = "analysis"
+    risk = context.get("risk", "high" if re.search(
+        r"security|billing|financial|medical|privacy|authentication|permission", goal, re.I) else "ordinary")
+    return (all(isinstance(choice.get(key), str) and choice[key] and claim.get(key) == choice[key]
+                for key in ("model_id", "provider"))
+            and isinstance(claim.get("text"), str) and bool(claim["text"])
+            and all(isinstance(claim.get(key), list) and value in claim[key]
+                    for key, value in (("tasks", task), ("risks", risk)))
+            and isinstance(choice.get("reasoning"), str) and bool(choice["reasoning"])
+            and ("reasoning" not in claim or isinstance(claim["reasoning"], list)
+                 and choice["reasoning"] in claim["reasoning"]))
+
+
+def project_advice(advice, now, requested_workload=None, requested_context=None):
     """Recheck only original selected claims; never retrieve or rank a substitute."""
     result = deepcopy(advice) if isinstance(advice, dict) else {}
     result.setdefault("choice", None)
@@ -424,6 +449,8 @@ def project_advice(advice, now, requested_workload=None):
         try:
             usable = (isinstance(claim, dict) and claim.get("status") in (None, "retrieved")
                       and valid_claim(claim, kind, now=now))
+            if usable and kind == "guidance":
+                usable = guidance_supports(claim, result.get("choice"), requested_context)
             if usable and kind == "rates":
                 choice = result.get("choice")
                 usable = (isinstance(choice, dict) and billing.get("billing") == "api"
@@ -577,10 +604,7 @@ def recommendations(routes, context, evidence, allowed_runners, lane=False, now=
                     or constraints.get("allowed_reasoning") is not None and choice["reasoning"] not in constraints["allowed_reasoning"]):
                 continue
             for record in evidence.get("guidance", []):
-                if (valid_claim(record, "guidance", now=now) and record.get("model_id") == choice["model_id"]
-                        and record.get("provider") == choice.get("provider") and task in record.get("tasks", [])
-                        and risk in record.get("risks", []) and record.get("text")
-                        and choice["reasoning"] in record.get("reasoning", [choice["reasoning"]])):
+                if (valid_claim(record, "guidance", now=now) and guidance_supports(record, choice, context)):
                     eligible.append((choice, record))
                     break
         advice = {"role": role, "choice": None, "guidance": None, "cost": None, "local_outcomes": None,
