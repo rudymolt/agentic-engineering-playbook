@@ -1129,6 +1129,15 @@ class Configuration:
                             if bindings != previous_jobs.get(job)]
             self._validate_selected_skills(skills, changed_jobs, proposal)
 
+    def _validate_publication_skills(self, proposal, candidate=None):
+        # Admission belongs to the whole reviewed transaction, even when the
+        # first destination is the project and Recommended reset its skill draft.
+        if candidate is not None and (proposal["skills_adopted"] or proposal["edited_jobs"]):
+            self._validate_selected_skills(candidate["skills"], candidate["skills"]["jobs"], proposal)
+        if proposal["personal"] is not None:
+            self._validate_reusable_skills(proposal["personal"]["before"],
+                                           proposal["personal"]["after"], proposal)
+
     def _apply_preference(self, draft):
         saved = False
         try:
@@ -1143,7 +1152,8 @@ class Configuration:
             self.preferences._validate_candidate(draft["personal"]["after"])
             self._validate_reusable_skills(before, draft["personal"]["after"], draft)
             if before != draft["personal"]["after"]:
-                self.preferences._save(draft["personal"]["after"], inputs, draft["discovery"], create_directory=True)
+                self.preferences._save(draft["personal"]["after"], inputs, draft["discovery"], create_directory=True,
+                                       admission=lambda: self._validate_publication_skills(draft))
                 saved = True
             draft["personal"] = self._personal_snapshot()
             draft["message"] = "Local preferences saved and validated. Project draft remains unsaved; other projects and active execution unchanged. No model launches."
@@ -1204,12 +1214,13 @@ class Configuration:
                 self.preferences._expected_directory = proposal["personal"]["inputs"]["directories"]
             try:
                 paired_completion = None
+                admission = lambda: self._validate_publication_skills(proposal, candidate)
                 if personal_changed:
                     self._validate_reusable_skills(proposal["personal"]["before"],
                                                    proposal["personal"]["after"], proposal)
-                    paired_completion = self._save_pair(candidate, inputs, evidence, proposal["personal"])
+                    paired_completion = self._save_pair(candidate, inputs, evidence, proposal["personal"], admission)
                 else:
-                    self._save(candidate, inputs, evidence)
+                    self._save(candidate, inputs, evidence, admission=admission)
             finally:
                 if self.preferences is not None:
                     self.preferences._expected_directory = None
@@ -1220,7 +1231,7 @@ class Configuration:
         except (ConfigError, OSError, UnicodeError, KeyError, TypeError) as error:
             return self._blocked(error)
 
-    def _save_pair(self, candidate, inputs, evidence, personal):
+    def _save_pair(self, candidate, inputs, evidence, personal, admission):
         self.preferences._validate_candidate(personal["after"])
         self._guard_write()
         with self._paired_storage(personal["inputs"]):
@@ -1252,21 +1263,24 @@ class Configuration:
                     store._sync_directory()
                     store._pair_active = True
                 for store, proposed, observed in zip(stores, candidates, observations):
-                    store._save(proposed, observed, evidence)
+                    store._save(proposed, observed, evidence, admission=admission)
                     completed.append(store)
                     if store is self:
                         self.checkpoint("paired_first_written")
                 self.checkpoint("paired_before_completion")
                 self._validate_pair(records)
+                admission()
                 seal = self.preferences.pair.with_name(self.preferences.pair.name + ".complete")
                 self.preferences._mkdir(seal)
                 self.preferences._sync_directory()
                 sealed = True
                 self.checkpoint("paired_completion_sealed")
                 self._validate_pair(records)
+                admission()
                 for store, record in records:
                     store._unlink(store.pair)
                     store._sync_directory()
+                admission()
                 self.preferences._unlink_directory(seal)
                 self.preferences._sync_directory()
                 for store, record in records:
@@ -1363,7 +1377,7 @@ class Configuration:
     def _unlink_directory(self, path):
         os.rmdir(self._filename(path), dir_fd=self._directory_fd)
 
-    def _save(self, candidate, inputs, evidence, create_directory=False):
+    def _save(self, candidate, inputs, evidence, create_directory=False, admission=None):
         self._guard_write()
         if create_directory:
             self.project.mkdir(parents=True, exist_ok=True, mode=0o700)
@@ -1413,6 +1427,8 @@ class Configuration:
             journaled = True
             self._sync_directory()
             self._guard_write(active=True)
+            if admission is not None:
+                admission()
             if backup is not None:
                 self._replace(self.path, captured_path)
                 captured = True
@@ -1421,6 +1437,8 @@ class Configuration:
                     raise ConfigError("Concurrent configuration captured intact; reconcile recovery before continuing.")
             self.checkpoint("before_publish")
             self._guard_write(active=True)
+            if admission is not None:
+                admission()
             try:
                 self._link(publication, self.path)
             except FileExistsError as error:
@@ -1444,8 +1462,13 @@ class Configuration:
             self.checkpoint("before_completion")
             self._guard_write(active=True)
             self._receipt_conflicts(receipt, marker, completing=True)
+            if admission is not None:
+                admission()
             seal = receipt.with_name(receipt.name + ".complete")
             self._mkdir(seal)
+            self.checkpoint("completion_sealed")
+            if admission is not None:
+                admission()
             completed = True
         except (OSError, ConfigError, UnicodeError) as error:
             if committed or captured:
@@ -1586,11 +1609,11 @@ class LocalPreferences(Configuration):
             self._expected_directory = None
             os.close(descriptor)
 
-    def _save(self, candidate, inputs, evidence, create_directory=False):
+    def _save(self, candidate, inputs, evidence, create_directory=False, admission=None):
         if self._directory_fd is not None:
-            return super()._save(candidate, inputs, evidence)
+            return super()._save(candidate, inputs, evidence, admission=admission)
         with self._storage(inputs):
-            return super()._save(candidate, inputs, evidence)
+            return super()._save(candidate, inputs, evidence, admission=admission)
 
     def _validate_candidate(self, candidate):
         if (not isinstance(candidate, dict) or set(candidate) - {"schema_version", "presentation", "billing", "defaults", "presets"}

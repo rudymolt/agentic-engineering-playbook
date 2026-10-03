@@ -474,10 +474,16 @@ No environment, credentials or host changes are needed.
 
 Local Apply preference and paired project Apply both recheck newly added or
 replaced personal defaults/preset job bindings against the current source,
-retained proof and job contract before publication. Recommended resets only the
-project draft; pending personal saves still require this check. Drift blocks
-before either destination is written and retains the proposal for explicit
-editing and refreshed preview. `Edit skills <job>` rereads that job's current
+retained proof, approval, resolution, job contract and reviewed catalog immediately
+before each destination mutation and again at individual and paired completion.
+Recommended resets only the project draft; pending personal saves still require this check. Drift blocks
+before either destination is written when observed at the first publication
+check, and retains the proposal for explicit editing and refreshed preview.
+Drift observed after capture or publication requires the existing recovery
+protocol; it never produces a validated success receipt or overwrites concurrent
+bytes. These are bounded observations, not a lock on external skill sources;
+changes after completion still invalidate eligibility at the stage invocation
+gate. `Edit skills <job>` rereads that job's current
 options, eligibility and rejection diagnostics while retaining selected bindings,
 other role/context edits and pending personal data. Opening the editor or backing
 out chooses nothing. Explicitly choose an eligible fallback or newly qualified

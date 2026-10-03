@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+- Recheck reviewed skill admission at each destination's publication and save
+  completion boundary, including pending personal defaults/presets after
+  Recommended and paired completion. Retain recovery evidence on later drift.
+
+*Why — early validation leaves a publication window:* source, proof, approval,
+resolution or catalog changes during staging could publish an ineligible reusable
+binding and report validated success. Both destinations now use the same current
+admission guard before mutation and completion, preserving concurrent bytes and
+requiring explicit recovery instead of claiming a partially valid save.
+
 - Refresh current skill options and rejection diagnostics on explicit job-editor
   entry, preserving selected identities and unrelated drafts through fallback
   choice, reusable-save preview and local or paired Apply.
