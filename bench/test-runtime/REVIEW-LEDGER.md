@@ -1,5 +1,56 @@
 # Delivery test runtime review ledger
 
+
+## Integration correction — 2026-10-03
+
+This is integration of the existing October 3 batch, **not a new optimization**.
+All eleven reviewed IDs and all historical targeted measurements remain intact.
+Fresh GitHub inspection confirmed PR 11 merged into main at
+`366565964017e62360acaccc93ec797c58eacbe4`, then PR 12 merged into its old parent
+branch `perf/consolidate-runtime-2026-10-02` at
+`70994dda3e30bddcb140a5e963b2048fb88b18b5`. That parent was three commits ahead
+and one behind main; October 3's changes were still outside main. No open PR
+addressed this gap. The parent tree exactly matched PR 12's reviewed final head
+`d1a3214dad9b4fdc49080b6ae555f98bf671b1a5`.
+
+Fresh branch `perf/consolidate-runtime-2026-10-03` starts from current main
+`366565964017e62360acaccc93ec797c58eacbe4` and carries the two reviewed October 3
+commits forward. Its draft PR targets **main directly**. Every executable source,
+workflow, manifest and targeted measurement matches the reviewed final source.
+Only this handoff and recovery of the already-published final CI row extend that
+tree. No historical measured value is corrected or replaced. This consolidation
+is integration-ready after its exact-head CI passes, but is not on main until a
+human merges it. No merge or deployment is authorized by this work.
+
+Recovered ordinary final-head CI run 37086875919 at
+`d1a3214dad9b4fdc49080b6ae555f98bf671b1a5` passed all 762 executions, including
+privileged watchers. Existing collector output agrees with the complete record
+published on PR 12: **803.053 summed test seconds**, 791.678718 s parallel job-log
+span; edition/delivery jobs 111098904637/111098904874, synthetic checkout
+`6e5a46abc631063df3b6a250f34a1e10ac5e63d6`. The final observation is now also in
+[history](suite-history.json) and [totals](TOTAL-RUNTIME.md). It is 14.03% below
+the prior daily batch and 29.30% below original, but 20.08% slower than the same
+batch's implementation CI despite identical executable sources. Runner/load and
+suite-growth caveats remain unchanged. No new timing-only full-suite run occurred.
+Consolidation CI is separate integration evidence; its exact final SHA and
+terminal result are recorded on the consolidation draft PR.
+
+Local consolidation validation passed 228 edition tests (17.112 s), nine collector
+guards, conventions, metadata, links, privacy, generated status/inventory, edition
+and delivery manifests, and drift cadence current through 2026-10-08. Source
+parity makes the prior independent execution evidence applicable to the unchanged
+tests; normal consolidation CI supplies fresh privileged integration validation.
+No new test is marked reviewed, and no new targeted timing claim is made.
+
+Future daily work should refresh main and target main directly whenever its
+required reviewed baseline is included there. If required changes remain only
+in a parent branch, resolve their integration first where possible instead of
+extending the stack. Before any merge, verify the PR base explicitly: merging a
+child into a parent does not put its changes on main, even if that parent had
+already merged earlier. Historical branch/open-PR statements below describe
+original checkpoints, not current integration status. Check current main ancestry
+and the complete eleven-ID ledger before selecting any new tests.
+
 ## Integration handoff — 2026-10-02
 
 This is consolidation of existing batches, not a new daily batch: **eight IDs
