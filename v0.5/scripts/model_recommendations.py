@@ -419,7 +419,11 @@ def guidance_supports(claim, choice, context):
     return (all(isinstance(choice.get(key), str) and choice[key] and claim.get(key) == choice[key]
                 for key in ("model_id", "provider"))
             and isinstance(claim.get("text"), str) and bool(claim["text"])
-            and all(isinstance(claim.get(key), list) and value in claim[key]
+            and all(isinstance(value, str) and bool(value.strip())
+                    and isinstance(claim.get(key), list)
+                    and all(isinstance(element, str) and bool(element.strip())
+                            for element in claim[key])
+                    and value in claim[key]
                     for key, value in (("tasks", task), ("risks", risk)))
             and isinstance(choice.get("reasoning"), str) and bool(choice["reasoning"])
             and ("reasoning" not in claim or isinstance(claim["reasoning"], list)

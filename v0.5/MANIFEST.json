@@ -1133,8 +1133,8 @@
     },
     {
       "path": "scripts/model_recommendations.py",
-      "sha256": "579a3baa112c02cfa287a92aac21068f62508845115ec35b5d1df99a65676f0b",
-      "size": 36944
+      "sha256": "a4faa61cdad60f252fd80f24894a1c2fdf8a9288360f00810252e8e42548462f",
+      "size": 37169
     },
     {
       "path": "scripts/playbook-config.md",
@@ -1275,6 +1275,11 @@
       "path": "scripts/test_model_subtotal_projection.py",
       "sha256": "265ebec2fd17ecb21ebfadac8ad49209c17265fe1578d65be82977553b90570e",
       "size": 13598
+    },
+    {
+      "path": "scripts/test_model_task_risk_boundaries.py",
+      "sha256": "37fa560be0cf79dcfd4e0ec168c7a1804e27682234d9aa4b36ab385c2180f995",
+      "size": 11979
     },
     {
       "path": "scripts/test_personal_presets.py",
