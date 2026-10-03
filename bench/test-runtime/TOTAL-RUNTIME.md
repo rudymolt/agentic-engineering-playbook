@@ -17,6 +17,9 @@ the JSON include CLI checks and shell/log overhead, not just test time.
 | 2026-10-01 / `bf858067687f` | 760 | 647.214 s | +333.233 s (+33.99%) | +488.649 s (+43.02%) | 627.658 s | [run 36802981894](https://github.com/rudymolt/agentic-engineering-playbook/actions/runs/36802981894) |
 | 2026-10-02 / `b17ee92fcf8d` | 762 | 955.365 s | -308.151 s (-47.61%) | +180.498 s (+15.89%) | 939.279 s | [run 36953393473](https://github.com/rudymolt/agentic-engineering-playbook/actions/runs/36953393473) |
 | 2026-10-02 / `1dfab0ed947a` | 762 | 934.088 s | +21.277 s (+2.23%) | +201.775 s (+17.76%) | 915.979 s | [run 36955234310](https://github.com/rudymolt/agentic-engineering-playbook/actions/runs/36955234310) |
+| 2026-10-02 / `ba48cfde9288` | 762 | 840.121 s | +93.967 s (+10.06%) | +295.742 s (+26.04%) | 825.421 s | [run 37060591883](https://github.com/rudymolt/agentic-engineering-playbook/actions/runs/37060591883) |
+| 2026-10-03 / `7828c463f807` | 762 | 668.769 s | +171.352 s (+20.40%) | +467.094 s (+41.12%) | 657.017 s | [run 37085960489](https://github.com/rudymolt/agentic-engineering-playbook/actions/runs/37085960489) |
+| 2026-10-03 / `d1a3214dad9b` | 762 | 803.053 s | -134.284 s (-20.08%) | +332.810 s (+29.30%) | 791.679 s | [run 37086875919](https://github.com/rudymolt/agentic-engineering-playbook/actions/runs/37086875919) |
 
 Execution-count changes remain part of the observed totals. No duration is
 subtracted for suite growth; per-test averages do not establish equivalence.
