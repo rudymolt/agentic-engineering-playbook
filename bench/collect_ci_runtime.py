@@ -25,27 +25,80 @@ def seconds(start, end):
                   datetime.fromisoformat(start.replace("Z", "+00:00"))).total_seconds(), 6)
 
 
-def parse_job(raw, suite, head_sha, expected_groups):
+def manifest_modules(manifest, suite, head_sha):
+    """A reviewed discovery inventory is independent of the log being admitted."""
+    if not manifest or manifest.get("schema_version") != 1 or manifest.get("head_sha") != head_sha:
+        raise ValueError("revision-bound suite manifest required for --jobs")
+    modules = manifest["suites"][suite]["modules"]
+    names = [m["module"] for m in modules]
+    if (not names or len(set(names)) != len(names) or
+            any(not re.fullmatch(r"test_[A-Za-z0-9_]+\.py", name) for name in names) or
+            any(type(m["executions"]) is not int or m["executions"] < 1 for m in modules) or
+            sum(m["executions"] for m in modules) != manifest["suites"][suite]["executions"]):
+        raise ValueError("invalid suite module/count manifest")
+    return modules
+
+
+def parse_job(raw, suite, head_sha, expected_groups, *, suite_manifest=None):
     if expected_groups < 1:
         raise ValueError("positive expected group count required")
     lines = [(m[1], m[2]) for line in raw.splitlines() if (m := STAMP.match(line))]
     if not lines:
         raise ValueError("timestamped GitHub job log required")
-    starts = [stamp for stamp, text in lines if text == "##[group]Run " + COMMANDS[suite]]
+    pattern = re.compile(re.escape("##[group]Run " + COMMANDS[suite]) + r"(?: --jobs ([1-4]))?$")
+    commands = [(stamp, text, match) for stamp, text in lines if (match := pattern.fullmatch(text))]
+    starts = [stamp for stamp, _, _ in commands]
     ends = [stamp for stamp, text in lines if text == MARKERS[suite]]
     if len(starts) != 1 or len(ends) != 1 or seconds(starts[0], ends[0]) < 0:
         raise ValueError(f"{suite}: one complete canonical successful command required")
+    command = commands[0][1].removeprefix("##[group]Run ")
+    workers = int(commands[0][2][1] or 1)
+    modules = manifest_modules(suite_manifest, suite, head_sha) if commands[0][2][1] or suite_manifest else None
+    parallel = workers > 1
+    if modules:
+        expected_groups = len(modules) if parallel or suite == "delivery" else 1
     body = [(stamp, text) for stamp, text in lines if starts[0] <= stamp <= ends[0]]
-    if any("##[error]" in text or text.startswith("FAILED") for _, text in body):
+    if any("##[error]" in text or text.startswith("FAILED") for _, text in lines):
         raise ValueError(f"{suite}: failed command cannot enter full-suite history")
     groups = []
+    scheduled, completed = set(), set()
+    active = None
     for index, (_, text) in enumerate(body):
+        if text.startswith(("Scheduled test shard ", "Test shard ")):
+            if not parallel:
+                raise ValueError(f"{suite}: shard output contradicts serial command")
+            label = re.fullmatch(r"(Scheduled test shard|Test shard) ([1-9][0-9]*)/([1-9][0-9]*): (test_[A-Za-z0-9_]+\.py)(?: \(exit (-?[0-9]+)\))?", text)
+            if not label:
+                raise ValueError(f"{suite}: malformed shard label")
+            number, total = int(label[2]), int(label[3])
+            if total != len(modules) or not 1 <= number <= total or label[4] != modules[number - 1]["module"]:
+                raise ValueError(f"{suite}: shard identity does not match manifest")
+            target = scheduled if label[1] == "Scheduled test shard" else completed
+            if number in target or (target is scheduled and label[5] is not None):
+                raise ValueError(f"{suite}: duplicate/invalid shard")
+            if target is completed:
+                if label[5] != "0" or number not in scheduled or active is not None:
+                    raise ValueError(f"{suite}: failed or incomplete shard")
+                active = number
+            target.add(number)
         match = SUMMARY.fullmatch(text)
         if match:
             following = next((t for _, t in body[index + 1:] if t.strip()), "")
             if following != "OK":
                 raise ValueError(f"{suite}: failed/skipped/ambiguous unittest group")
-            groups.append({"executions": int(match[1]), "test_seconds": float(match[2])})
+            group = {"executions": int(match[1]), "test_seconds": float(match[2])}
+            if parallel:
+                if active is None or group["executions"] != modules[active - 1]["executions"]:
+                    raise ValueError(f"{suite}: missing shard or mismatched execution count")
+                group["module"] = modules[active - 1]["module"]
+                active = None
+            elif modules:
+                counts = [sum(m["executions"] for m in modules)] if suite == "edition" else [m["executions"] for m in modules]
+                if len(groups) >= len(counts) or group["executions"] != counts[len(groups)]:
+                    raise ValueError(f"{suite}: mismatched serial execution count")
+            groups.append(group)
+    if parallel and (active is not None or scheduled != set(range(1, len(modules) + 1)) or completed != scheduled):
+        raise ValueError(f"{suite}: incomplete scheduled/completed module inventory")
     if len(groups) != expected_groups or any(g["executions"] < 1 for g in groups):
         raise ValueError(f"{suite}: expected {expected_groups} complete unittest groups, got {len(groups)}")
     checkouts = [lines[i + 1][1] for i, (_, text) in enumerate(lines[:-1])
@@ -62,8 +115,8 @@ def parse_job(raw, suite, head_sha, expected_groups):
     if image_index is not None:
         image_version = next((text.removeprefix("Version: ") for _, text in lines[image_index + 1:]
                               if text.startswith("Version: ")), None)
-    return {
-        "command": COMMANDS[suite], "checked_out_sha": checkout,
+    result = {
+        "command": command, "checked_out_sha": checkout,
         "source_log_sha256": hashlib.sha256(raw.encode()).hexdigest(),
         "python": first(r"Successfully set up CPython \(([^)]+)\)"),
         "git": first(r"^git version (\S+)"),
@@ -76,6 +129,12 @@ def parse_job(raw, suite, head_sha, expected_groups):
         "job_log_span_seconds": seconds(lines[0][0], lines[-1][0]),
         "successful": True, "skipped_executions": 0,
     }
+
+    if modules:
+        result.update(concurrent_workers=workers,
+                      duration_semantics="summed_unittest_durations_overlap" if parallel else "serial_unittest_durations",
+                      suite_manifest_sha256=hashlib.sha256(json.dumps(suite_manifest, sort_keys=True).encode()).hexdigest())
+    return result
 
 
 def run_url(repository, run_id):
@@ -92,12 +151,12 @@ def validate_run_url(row):
         raise ValueError("concrete GitHub evidence URL matching run ID required")
 
 
-def collect(head_sha, run_id, edition_log, delivery_log, delivery_groups=15, *, repository):
+def collect(head_sha, run_id, edition_log, delivery_log, delivery_groups=15, *, repository, suite_manifest=None):
     evidence_url = run_url(repository, run_id)
     if not SHA.fullmatch(head_sha) or run_id < 1:
         raise ValueError("full lowercase SHA and positive run ID required")
-    jobs = {"edition": parse_job(edition_log, "edition", head_sha, 1),
-            "delivery": parse_job(delivery_log, "delivery", head_sha, delivery_groups)}
+    jobs = {"edition": parse_job(edition_log, "edition", head_sha, 1, suite_manifest=suite_manifest),
+            "delivery": parse_job(delivery_log, "delivery", head_sha, delivery_groups, suite_manifest=suite_manifest)}
     if len({j["checked_out_sha"] for j in jobs.values()}) != 1:
         raise ValueError("edition and delivery must test the same checkout")
     return {
@@ -114,19 +173,31 @@ def collect(head_sha, run_id, edition_log, delivery_log, delivery_groups=15, *, 
     }
 
 
+def comparison_cohort(record):
+    workers = [record["jobs"][suite].get("concurrent_workers", 1) for suite in ("edition", "delivery")]
+    return "serial_unittest" if workers == [1, 1] else f"parallel_unittest:{workers[0]}+{workers[1]}"
+
+
 def annotate(records):
     """Positive saved seconds mean faster; raw changes are not causal estimates."""
     if not records:
         return []
     result = []
-    original = records[0]
+    originals = {}
     previous = None
     for record in records:
         row = dict(record)
+        cohort = comparison_cohort(record)
+        original = originals.setdefault(cohort, record)
         for name, base in (("daily", previous), ("cumulative", original)):
+            count_base = base
+            if base is not None and comparison_cohort(base) != cohort:
+                base = None
+            if name == "cumulative" and original is record and previous is not None:
+                base = None
             row[name + "_observed_saved_seconds"] = None if base is None else round(base["summed_test_seconds"] - record["summed_test_seconds"], 6)
             row[name + "_observed_reduction_percent"] = None if base is None else round(100 * (1 - record["summed_test_seconds"] / base["summed_test_seconds"]), 4)
-            row[name + "_execution_count_change"] = None if base is None else record["executions"] - base["executions"]
+            row[name + "_execution_count_change"] = None if count_base is None else record["executions"] - count_base["executions"]
         result.append(row)
         previous = record
     return result
@@ -144,7 +215,14 @@ def render(records):
         "the JSON include CLI checks and shell/log overhead, not just test time.", "",
         "| Date / revision | Executions | Summed tests | Observed saved vs previous | Observed saved vs original | Parallel jobs log span | Evidence |",
         "| --- | ---: | ---: | ---: | ---: | ---: | --- |"]
+    cohort = "serial_unittest"
     for row in annotate(records):
+        current_cohort = comparison_cohort(row)
+        if current_cohort != cohort:
+            lines += ["", f"Comparison baseline: `{current_cohort}` (separate from serial durations).", "",
+                      "| Date / revision | Executions | Summed tests | Observed saved vs previous | Observed saved vs original | Parallel jobs log span | Evidence |",
+                      "| --- | ---: | ---: | ---: | ---: | ---: | --- |"]
+            cohort = current_cohort
         validate_run_url(row)
         def delta(kind):
             value = row[kind + "_observed_saved_seconds"]
@@ -165,6 +243,12 @@ def render(records):
         "delta is the daily batch comparison only while one representative completed",
         "run is retained per batch. Keep selection consistent (final successful head);",
         "do not pick the fastest retry. Retain additional runs as separate evidence.", ""]
+    if any(comparison_cohort(r) != "serial_unittest" for r in records):
+        lines += ["With concurrent unittest workers, summed durations overlap. They are not",
+                  "suite, job, or gate elapsed time and cannot measure speedup against the",
+                  "serial baseline. Cross-concurrency duration deltas are intentionally blank.",
+                  "The supplemental concurrency baseline does not replace the original daily",
+                  "observation; retain suite growth and runner changes when interpreting it.", ""]
     return "\n".join(lines)
 
 
@@ -180,6 +264,7 @@ def main():
     add.add_argument("--edition-job-id", type=int, required=True)
     add.add_argument("--delivery-job-id", type=int, required=True)
     add.add_argument("--delivery-groups", type=int, default=15)
+    add.add_argument("--suite-manifest", type=Path, help="reviewed revision-bound module/count inventory; required with --jobs")
     add.add_argument("--history", type=Path, required=True)
     report = sub.add_parser("report")
     report.add_argument("--history", type=Path, required=True)
@@ -190,7 +275,7 @@ def main():
         if history.get("schema_version") != 1:
             raise ValueError("unsupported history schema")
         if args.action == "collect":
-            row = collect(args.head_sha, args.run_id, args.edition_log.read_text(), args.delivery_log.read_text(), args.delivery_groups, repository=args.repository)
+            row = collect(args.head_sha, args.run_id, args.edition_log.read_text(), args.delivery_log.read_text(), args.delivery_groups, repository=args.repository, suite_manifest=json.loads(args.suite_manifest.read_text()) if args.suite_manifest else None)
             for suite, job_id in (("edition", args.edition_job_id), ("delivery", args.delivery_job_id)):
                 if job_id < 1:
                     raise ValueError("positive job IDs required")
@@ -206,7 +291,7 @@ def main():
             print(f'Collected {row["executions"]} executions, {row["summed_test_seconds"]:.3f} test seconds')
         else:
             args.output.write_text(render(history["records"]))
-    except (ValueError, KeyError) as error:
+    except (ValueError, KeyError, TypeError) as error:
         parser.error(str(error))
     return 0
 
