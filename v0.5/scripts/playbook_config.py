@@ -1100,6 +1100,27 @@ class Configuration:
             draft["message"] = "Directory identity changed; review the resolved personal destination. Role drafts are retained."
         return self._seal(draft)
 
+    def _validate_selected_skills(self, skills, jobs, proposal):
+        for job in jobs:
+            self._bindings().resolve(skills, job)
+            if self._bindings().options(job) != proposal["skill_alternatives"][job]:
+                raise ConfigError("Skill eligibility evidence changed; reload and explicitly review the new routes.")
+
+    def _validate_reusable_skills(self, before, after, proposal):
+        before = before or {}
+        after = after or {}
+        reusable = [(before.get("defaults", {}), after.get("defaults", {}))]
+        reusable.extend((before.get("presets", {}).get(name, {}), candidate)
+                        for name, candidate in after.get("presets", {}).items())
+        for previous, candidate in reusable:
+            skills = candidate.get("skills")
+            if skills is None:
+                continue
+            previous_jobs = previous.get("skills", {}).get("jobs", {})
+            changed_jobs = [job for job, bindings in skills["jobs"].items()
+                            if bindings != previous_jobs.get(job)]
+            self._validate_selected_skills(skills, changed_jobs, proposal)
+
     def _apply_preference(self, draft):
         saved = False
         try:
@@ -1112,6 +1133,7 @@ class Configuration:
             if before != draft["personal"]["before"] or inputs != draft["personal"]["inputs"]:
                 raise ConfigError("Personal preferences or runtime changed since preview; reload without overwriting them.")
             self.preferences._validate_candidate(draft["personal"]["after"])
+            self._validate_reusable_skills(before, draft["personal"]["after"], draft)
             if before != draft["personal"]["after"]:
                 self.preferences._save(draft["personal"]["after"], inputs, draft["discovery"], create_directory=True)
                 saved = True
@@ -1155,10 +1177,7 @@ class Configuration:
                     raise ConfigError("Skill inputs changed since preview; reload without replacing intentional choices.")
                 candidate["skills"] = deepcopy(proposal["skill_after"])
                 validate_config(candidate)
-                for job in candidate["skills"]["jobs"]:
-                    self._bindings().resolve(candidate["skills"], job)
-                    if self._bindings().options(job) != proposal["skill_alternatives"][job]:
-                        raise ConfigError("Skill eligibility evidence changed; reload and explicitly review the new routes.")
+                self._validate_selected_skills(candidate["skills"], candidate["skills"]["jobs"], proposal)
             constraints = lambda choice: {key: value for key, value in choice.items() if key not in IDENTITY}
             for role in ROLES:
                 choice = candidate["models"][role]

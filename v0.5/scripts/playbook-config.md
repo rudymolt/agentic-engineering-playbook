@@ -109,7 +109,12 @@ instead of writing somewhere implicitly.
 
 Local saves reuse the accepted project save protocol below: staged validation,
 request-bound discovery recheck, no-clobber publication, retained evidence,
-content-digest completion and non-destructive recovery. Their lock, recovery
+content-digest completion and non-destructive recovery. Newly added or replaced
+reusable job bindings also use project Apply's current-source, retained-proof and
+job-contract eligibility check against the reviewed preview. Drift blocks before
+publication and retains the pending draft for explicit editing and a fresh preview.
+Unchanged older reusable bindings remain inert; presentation, billing and unrelated
+model edits do not requalify them. Their lock, recovery
 journal and `.playbook-config-*` evidence live beside the local destination,
 never in shared configuration. Invalid or newer personal schemas block rather
 than dropping unknown fields. Reconciliation remains human-owned.

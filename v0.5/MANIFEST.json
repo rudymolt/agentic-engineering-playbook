@@ -178,8 +178,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "4519c3d7cc69e47a6c6c2cc62a680c33c39634ce8edb42658956639689e0159e",
-      "size": 20617
+      "sha256": "7ab9307974bdb95a43b000cd98a4b4ed7712e6c533ea70a4a6fa1096bdd4eca1",
+      "size": 21176
     },
     {
       "path": "MAINTENANCE.md",
@@ -1138,13 +1138,13 @@
     },
     {
       "path": "scripts/playbook-config.md",
-      "sha256": "59be74f765de26b4bcbeb28218f79490c984d0a764d0c5a0c0e8cf5099634b17",
-      "size": 36347
+      "sha256": "58c6530d3131f5905f1b60fb0f4140c638591b42153999a1baa28a50529e051c",
+      "size": 36737
     },
     {
       "path": "scripts/playbook_config.py",
-      "sha256": "cc688f5087251f1dd6460645b4c9244e84a2d59438867f8c80c2ffcd192d68e6",
-      "size": 96203
+      "sha256": "a8a7d785926e0b3da51317e965eda8f2f6f363a0670c71566360f6b2779b4304",
+      "size": 97189
     },
     {
       "path": "scripts/playbook_state.py",
@@ -1283,8 +1283,8 @@
     },
     {
       "path": "scripts/test_personal_presets.py",
-      "sha256": "a75948c7d548a2eae78a3eb75fd0baaa48c7a952a4317e34c9638a3053217414",
-      "size": 35977
+      "sha256": "c448e5da44908bedb035fa3274a64d9175600c74cfa81727774b29f802034de7",
+      "size": 43888
     },
     {
       "path": "scripts/test_playbook_config.py",

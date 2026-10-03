@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- Recheck current skill source, retained contract proof and reviewed eligibility
+  before local Apply preference adds or replaces a defaults/preset job binding.
+  Preserve blocked drafts and leave older inert reusable bindings untouched.
+
+*Why — local reuse needs the same eligibility boundary as project Apply:* a
+source or audit can change after preview. Shape validation alone published stale
+bindings as validated; fresh resolution now blocks before any preference write,
+without requalifying unrelated presentation, billing or existing reusable data.
+
 - Validate retained token subtotals against the selected rate and requested
   proposal workload before displaying them.
 
