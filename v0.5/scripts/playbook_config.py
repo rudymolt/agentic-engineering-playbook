@@ -730,6 +730,8 @@ class Configuration:
     @staticmethod
     def _project_advice(proposal, now):
         from model_recommendations import project_advice
+        context = proposal.get("context")
+        workload = context.get("workload") if isinstance(context, dict) else None
         copies = Configuration._advice_copies(proposal)
         invalid = proposal.get("advice_recovery_required") or not Configuration._advice_mapping_valid(proposal)
         if invalid:
@@ -747,7 +749,7 @@ class Configuration:
                 withheld.setdefault("guidance", deepcopy(record.get("guidance")) or
                                     {"checked_at": None, "status": "incomplete"})
                 record["withheld_evidence"] = withheld
-            return project_advice(record, now)
+            return project_advice(record, now, requested_workload=workload)
 
         records = proposal.get("recommendations")
         records = records if isinstance(records, dict) else {}

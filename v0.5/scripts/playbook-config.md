@@ -304,6 +304,15 @@ guidance or rate. A token subtotal requires an adequate original rate for the
 selected model/provider and API route, with supported currency, units and
 numeric amounts; source/date metadata alone cannot support it. Missing or
 invalid pricing leaves valid suitability available with cost unknown.
+The supplied estimate must also match the proposal's `context.workload`,
+including bounded token/retry counts and the selected rate's exact billing route.
+Its numeric amount must agree with those counts and rates, and its currency,
+source URL and original successful date must match the selected rate. Missing or
+inconsistent assumptions, amount or source metadata withhold only the subtotal;
+self-consistent estimate assumptions cannot replace the requested workload.
+Projection retains the unsupported estimate as dated withheld evidence and
+never silently recalculates a displayed amount. Explicit Refresh can obtain new
+evidence; ordinary role editing remains available.
 The selected `recommendations[role]` owns the claim text and successful dates;
 a divergent, missing or malformed `replacement.advice` cannot replace it during
 rejected Accept. Even a partial root retains its own claims. When suitability

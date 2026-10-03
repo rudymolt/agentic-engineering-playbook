@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- Validate retained token subtotals against the selected rate and requested
+  proposal workload before displaying them.
+
+*Why — adequate rates do not establish a subtotal:* caller drafts could retain
+an amount with a mismatched billing route, changed rates, boolean amount or
+self-consistent assumptions for another workload. Projection now withholds the
+unsupported subtotal while preserving suitable draft choices, valid rates and
+original dates, without fetching, saving or substituting an amount.
+
 - Project every advice cost payload, including estimate-only caller drafts, and
   require an adequate original selected rate before displaying a token subtotal.
 

@@ -376,7 +376,32 @@ def valid_claim(record, kind, now=None, allow_unusable=False):
                                   now if now is not None else datetime.now(timezone.utc)) == "retrieved"
 
 
-def project_advice(advice, now):
+def supported_estimate(estimate, rate, requested_workload):
+    """Validate a supplied subtotal against its selected rate, without replacing it."""
+    if not isinstance(estimate, dict) or not isinstance(rate, dict):
+        return False
+    workload = estimate.get("assumptions")
+    if (not isinstance(workload, dict) or not isinstance(requested_workload, dict)
+            or workload != requested_workload
+            or estimate.get("status") not in (None, "retrieved")
+            or workload.get("billing_route") != rate.get("billing_route")
+            or any(type(counts.get(key)) is not int or not 0 <= counts[key] <= 2 ** 53 - 1
+                   for counts in (workload, requested_workload)
+                   for key in ("input_tokens", "output_tokens", "retries"))
+            or any(estimate.get(key) != rate.get(key)
+                   for key in ("currency", "source_url", "checked_at"))
+            or any(not isinstance(estimate.get(key), str) or not estimate[key]
+                   for key in ("label", "uncertainty"))):
+        return False
+    expected = (workload["input_tokens"] * rate["input"]
+                + workload["output_tokens"] * rate["output"]) / 1_000_000 * (1 + workload["retries"])
+    amount = estimate.get("amount")
+    # Bounded inputs make expected finite. Equality also rejects nonfinite and
+    # arbitrarily large caller amounts without converting huge integers to float.
+    return type(amount) in (int, float) and math.isfinite(expected) and amount == expected
+
+
+def project_advice(advice, now, requested_workload=None):
     """Recheck only original selected claims; never retrieve or rank a substitute."""
     result = deepcopy(advice) if isinstance(advice, dict) else {}
     result.setdefault("choice", None)
@@ -424,6 +449,12 @@ def project_advice(advice, now):
     elif "rates" in withheld and result.get("cost"):
         result["cost"].update(rates=None, estimate=None)
         result["cost"]["limitations"] = "Original pricing evidence is inadequate; rates and token subtotal unknown."
+    elif result.get("cost"):
+        estimate = result["cost"].get("estimate")
+        if estimate is not None and not supported_estimate(estimate, pricing, requested_workload):
+            withheld["estimate"] = deepcopy(estimate)
+            result["cost"]["estimate"] = None
+            result["cost"]["limitations"] = "Original subtotal is unsupported by the selected rate and workload assumptions; token subtotal unknown."
     if withheld:
         for kind, claim in list(withheld.items()):
             if not isinstance(claim, dict):
