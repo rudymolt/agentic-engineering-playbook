@@ -21,7 +21,8 @@ from playbook_state import parse_scalar, strip_inline_comment
 DESTINATION = ".playbook-config.json"
 ROLES = ("planning", "implementation", "verification", "escalated_repair")
 ROLE_LABELS = dict(zip(ROLES, ("Plan", "Build", "Verify", "Repair")))
-IDENTITY = ("model_id", "runner", "reasoning", "provider", "label", "thinking")
+CORE_IDENTITY = ("model_id", "runner", "reasoning")
+IDENTITY = CORE_IDENTITY + ("provider", "label", "thinking")
 
 
 class ConfigError(ValueError):
@@ -175,6 +176,16 @@ def validate_choice(choice, location):
                 raise ConfigError(f"{location}.{key} must be a positive integer; correct it before adoption.")
         if choice.get("scope") != "approved_slice" or choice.get("authority") != "diagnose_and_implement":
             raise ConfigError(f"{location} has unsupported escalation constraints; reconcile before adoption.")
+
+
+def unique_available_route(choice, routes):
+    """Match every saved identity field without guessing among host variants."""
+    if not isinstance(choice, dict) or any(key not in choice for key in CORE_IDENTITY):
+        return False
+    identity = {key: value for key, value in choice.items() if key in IDENTITY}
+    matches = [route for route in routes
+               if all(key in route and route[key] == value for key, value in identity.items())]
+    return len(matches) == 1
 
 
 def validate_config(config):
@@ -551,8 +562,8 @@ class Configuration:
         return ["Apply", "Edit", "Edit Plan", "Edit Build", "Edit Verify", "Edit Repair", "Edit skills", "Explain", "Refresh", "Not now"]
 
     def _replacement(self, draft):
-        unavailable = [role for role in ROLES if {key: value for key, value in draft['after'][role].items() if key in IDENTITY}
-                       not in draft['role_alternatives'][role]]
+        unavailable = [role for role in ROLES if not unique_available_route(
+            draft['after'][role], draft['role_alternatives'][role])]
         draft['unavailable_roles'] = unavailable
         draft.pop('replacement', None)
         if unavailable:
@@ -1069,7 +1080,7 @@ class Configuration:
             if role is None:
                 return self._blocked("Explain Plan, Build, Verify or Repair; QA inherits Verify and Coordinator is display-only.")
             draft["explanation"] = {"role": role, "choice": deepcopy(draft["after"][role]),
-                                    "available": {key: value for key, value in draft["after"][role].items() if key in IDENTITY} in draft["role_alternatives"][role],
+                                    "available": unique_available_route(draft["after"][role], draft["role_alternatives"][role]),
                                     "authority": draft["discovery"]["authority"], "checked_at": draft["discovery"]["checked_at"],
                                     "recommendation": deepcopy(draft.get("recommendations", {}).get(role)),
                                     "limitations": "Availability is a bounded observation, not live launch proof. Recommendation is distinct from this saved or edited choice and selects nothing. Unevidenced suitability, consumption and costs remain unknown."}
@@ -1183,7 +1194,7 @@ class Configuration:
             if inputs != proposal.get("inputs") or config["models"] != proposal.get("before"):
                 raise ConfigError("Inputs changed since preview; reload and review the new proposal.")
             candidate = validate_config({"schema_version": 1, "adopted": True, "models": deepcopy(proposal["after"])})
-            if any({key: value for key, value in candidate['models'][role].items() if key in IDENTITY} not in routes[role] for role in ROLES):
+            if any(not unique_available_route(candidate['models'][role], routes[role]) for role in ROLES):
                 refreshed = deepcopy(proposal)
                 refreshed.update(role_alternatives=routes, discovery=evidence,
                                  recommendation_evidence=self._recommendation_evidence(evidence))
@@ -1203,8 +1214,7 @@ class Configuration:
                 if constraints(choice) != constraints(config["models"][role]):
                     raise ConfigError("Role constraints are not editable preferences; reload without changing them.")
                 if (role == "implementation" and not proposal["edited_roles"]) or role in proposal["edited_roles"] or choice != config["models"][role]:
-                    identity = {key: value for key, value in choice.items() if key in IDENTITY}
-                    if identity not in routes[role]:
+                    if not unique_available_route(choice, routes[role]):
                         raise ConfigError(ROLE_LABELS[role] + " choice is unavailable; edit the role and review again. No substitution.")
             if self._discovery_revision(evidence) != self._discovery_revision(proposal["discovery"]):
                 raise ConfigError("Discovery changed since preview; reload and review current available choices.")

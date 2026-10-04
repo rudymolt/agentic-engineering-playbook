@@ -281,6 +281,12 @@ from availability and launch identity. Execution still requires independent
 live admission. `--now` is a fixture clock only. Suitability/cost claims remain
 separate from availability and execution authority.
 
+Legacy model choices may omit optional provider, label or thinking metadata.
+Such a choice is available only when exactly one freshly admitted route matches
+every saved identity field. Explicitly saved metadata must still match. Multiple
+host routes matching an underspecified choice require explicit selection; the
+configuration helper never guesses which provider or label the user intended.
+
 ## Read-only recommendation evidence
 
 Successful official evidence is reused for at most 24 hours only at Configure

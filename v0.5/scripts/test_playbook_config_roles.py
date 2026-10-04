@@ -72,6 +72,45 @@ class RoleConversationTests(unittest.TestCase):
         self.assertEqual(self.state.read_bytes(), self.runtime)
         self.assertEqual(self.approval.read_bytes(), b'{"approved":true}\n')
 
+    def test_legacy_core_routes_remain_available_with_unique_host_metadata(self):
+        for route in self.routes:
+            if route['model_id'] in {'gpt-6.1-sol', 'custom-repair'}:
+                route.update(provider='observed-provider', label='Host display label')
+        proposal = self.service.read()
+        self.assertEqual(proposal['unavailable_roles'], [])
+        self.assertEqual(proposal['step'], 'read')
+        explanation = self.service.reply(proposal, 'Explain Build')
+        self.assertTrue(explanation['explanation']['available'])
+        result = self.service.reply(proposal, 'Apply')
+        self.assertEqual(result['state'], 'applied')
+        saved = json.loads((self.project / '.playbook-config.json').read_text())
+        self.assertEqual(saved['models'], proposal['after'])
+        self.assertNotIn('provider', saved['models']['implementation'])
+
+    def test_legacy_route_with_ambiguous_host_metadata_requires_selection(self):
+        matching = next(route for route in self.routes
+                        if route['model_id'] == 'gpt-6.1-sol' and route['reasoning'] == 'medium')
+        matching.update(provider='provider-one', label='First route')
+        self.routes.append({**matching, 'provider': 'provider-two', 'label': 'Second route'})
+        proposal = self.service.read()
+        self.assertIn('implementation', proposal['unavailable_roles'])
+        self.assertEqual(proposal['step'], 'replacement')
+        self.assertFalse(self.service.reply(proposal, 'Explain Build')['explanation']['available'])
+        self.assertFalse((self.project / '.playbook-config.json').exists())
+
+    def test_new_host_ambiguity_before_apply_preserves_legacy_settings(self):
+        matching = next(route for route in self.routes
+                        if route['model_id'] == 'gpt-6.1-sol' and route['reasoning'] == 'medium')
+        matching.update(provider='provider-one', label='First route')
+        proposal = self.service.read()
+        self.routes.append({**matching, 'provider': 'provider-two', 'label': 'Second route'})
+        result = self.service.reply(proposal, 'Apply')
+        self.assertEqual(result['state'], 'decision_required')
+        self.assertEqual(result['step'], 'replacement')
+        self.assertIn('implementation', result['unavailable_roles'])
+        self.assertFalse((self.project / '.playbook-config.json').exists())
+        self.assertEqual(self.state.read_bytes(), self.runtime)
+
     def test_component_editor_has_typed_role_model_runner_reasoning_choices(self):
         for index, role in enumerate(ROLES):
             with self.subTest(role=role):

@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- Match core-only legacy model choices to a unique freshly admitted route when
+  the host adds optional provider, label or thinking metadata. Require an
+  explicit choice if those fields leave more than one matching route.
+
+*Why — optional host metadata falsely triggered replacement:* S8's fresh
+  Conductor adapter admitted the saved model/runner/reasoning tuples, but the
+  helper reported all four legacy choices unavailable because its dictionary
+  comparison required metadata the older project had never stored.
+
 - Describe an incomplete first source refresh as having no successful check
   date, while retaining the prior-date wording only when one exists.
 
