@@ -756,7 +756,7 @@
       "source": "tests/test_interim_coordinator.py"
     },
     {
-      "digest": "sha256:42f69a88a39b996c9bc987587a8ce393da1e26a3494552d7d71380be104bd61e",
+      "digest": "sha256:6f490229c0ce352f6e0da044e6f0a0a3ba653c32cf8b7b6c59c5be7c80d25801",
       "install_path": null,
       "source": "tests/test_interim_host_continuation.py"
     },
@@ -766,7 +766,7 @@
       "source": "tests/test_interim_monitor.py"
     },
     {
-      "digest": "sha256:cbd8c3743614be700fd71b31c7209584d0b1bf9b68291ae5800ab565e9afd453",
+      "digest": "sha256:4558b03eeb97f51697f248ec595677829577468aad56d347e507adfef076f2e7",
       "install_path": null,
       "source": "tests/test_interim_recovery.py"
     },
@@ -793,5 +793,5 @@
   ],
   "manifest_schema_version": 1,
   "manifest_self_rule": "pack_digest covers the complete non-manifest source inventory",
-  "pack_digest": "sha256:a350b5d0ecc7ba307acbbdff691625a3b6029609e3ab14df21bf79cb5f4700d8"
+  "pack_digest": "sha256:531c18c2500867fffcef437049875c85d45d1d5b1c4b9fb59d827030e0f95e81"
 }

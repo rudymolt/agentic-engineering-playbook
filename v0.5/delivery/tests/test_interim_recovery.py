@@ -575,6 +575,7 @@ class RecoveryBoundaryTests(unittest.TestCase):
                     self.assertEqual(charge["status"], "pending")
                     self.assertIn("elapsed_seconds", result.value["state"]["handback"]["reason"])
 
+    @memoized_control_refs
     def test_unknown_active_queued_and_terminal_are_distinct(self):
         for path in ("wake", "recover", "stop", "continue", "resume"):
             for state in ("unknown", "active", "queued", "terminal"):
@@ -739,6 +740,7 @@ class RecoveryBoundaryTests(unittest.TestCase):
         self.preserved(snapshot.value, stopped.value, "stop")
         self.reload(stopped)
 
+    @memoized_control_refs
     def test_truthful_stop_proof_still_gates_validation_persist_reload_and_resume(self):
         from delivery_pilot.interim import InterimError
         cases = [("observation", value) for value in ("active", "queued", "unknown")]
