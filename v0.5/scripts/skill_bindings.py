@@ -117,9 +117,9 @@ class JobBindings:
 
     def _check_custom_store(self):
         try:
-            locations = [self.custom_dir.resolve()] + [(self.custom_dir / name).resolve()
+            locations = [resolve_private_path(self.custom_dir)] + [resolve_private_path(self.custom_dir / name)
                          for name in ("bindings.json", "approvals.json", "evidence")]
-            project = self.project.resolve()
+            project = resolve_private_path(self.project)
         except (OSError, RuntimeError):
             raise ConfigError("Custom binding/audit storage cannot be resolved. Restore an external machine-local store.") from None
         if locations[0].is_relative_to(project):

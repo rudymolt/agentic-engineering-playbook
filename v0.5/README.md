@@ -36,7 +36,11 @@ effective-default reader for existing lane gates. New projects still use the
 existing bootstrap approval gate, which can preview seeding personal defaults
 or a named preset without replacing existing project configuration. Loading a
 preset edits a draft; only explicit Apply changes an existing project.
-Evidence-backed recommendation advice remains a later slice.
+Explain shows claim-specific sources, successful check dates, uncertainty and
+published API rates where established. Explicit Refresh rechecks advice; ordinary
+checkpoints reuse it for up to 24 hours. An unavailable saved route stays visible
+until an explicit replacement or another selection is previewed. Source outages
+retain the last actual successful date and do not create new recommendations.
 
 Projects already using a private V0.4.2 checkout should use the tested [transition guide](skills/ai-playbook-upgrade-project/MIGRATIONS.md) to adopt a public V0.5 release without overwriting their content. Projects still on V0.3 first use their private migration bridge. No earlier edition source tree is distributed here.
 

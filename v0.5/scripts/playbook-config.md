@@ -52,6 +52,12 @@ opens that role directly. Choose a complete numbered route or `Pick model`,
 then a numbered model, supported runner and supported reasoning. If multiple
 identities remain, select the complete identity explicitly. All editor levels
 have typed choices and `Back` / `Not now`; native controls are optional mirrors.
+
+Numeric editor choices accept decimal Unicode digits and leading zeros, with a
+maximum of 64 characters per index. Non-decimal digits, oversized indexes and
+out-of-range choices block with corrective guidance and retain the sealed draft
+for Back or Reload. This applies to role, model, runner, reasoning, identity and
+skill indexes, including each comma-separated skill choice.
 Edits and explanations preserve other draft values. Invalid replies retain
 the valid draft under `retained_proposal`; `Back`, `Edit` and `Edit <role>`
 reuse it without losing unrelated edits, while explicit
@@ -93,9 +99,11 @@ preference reader; Configure supplies existing context rather than reasking it.
 
 `Guided` / `Expert` produces a personal before/after preview and exact local
 destination, including `resolved_destination` behind any directory aliases.
-The preview records both personal and project directory identities (resolved
-paths and device/inode identities, or the nearest existing ancestor for a new
-directory). Apply rejects changed identities even when file bytes match.
+An unpaired public project proposal carries an opaque digest of the project
+directory identity. Paired personal previews retain private project and personal
+directory records with resolved paths and device/inode identities, or the nearest
+existing ancestor for a new directory. Apply rechecks these identities and rejects
+changes even when file bytes match.
 An explicit new preview can refresh a reconciled directory identity while
 retaining role drafts; it displays the changed destination before another Apply.
 `Apply preference` is an explicit **local-only** transaction,
@@ -191,6 +199,11 @@ with the same options. Changed personal inputs, discovery, eligibility or
 destinations require another preview before any bootstrap write. Missing local
 dependencies block, rather than silently dropping skill bindings.
 
+Defaults and named presets use the same unique admitted-route match as Configure.
+Omitted optional host metadata does not block a unique match; saved metadata
+remains a constraint, and ambiguous or missing matches block seeding. Preview
+and Apply preserve the saved values without enriching them from host discovery.
+
 Bootstrap retains its existing managed-file preview, approval, preservation and
 status flow. Seeding creates configuration only after bootstrap completes
 without manual reviews; partial bootstrap or seed failure is reported honestly.
@@ -198,6 +211,8 @@ It never replaces existing state/configuration. Existing projects use Configure
 and explicit Load/Apply instead. Subsequent ordinary bootstrap checks omit the
 seeding flags. Configure does not invoke bootstrap or launch a model/stage.
 
+Project saves with or without personal preferences open and verify the reviewed
+project directory and keep transaction operations relative to its descriptor.
 Personal saves open and verify the reviewed directory, create missing children
 relative to that descriptor, and keep all transaction writes, cleanup and
 directory sync relative to the opened directory. Alias changes cannot redirect
@@ -216,7 +231,10 @@ files. Identity checks detect observed changes but cannot make ancestry tests
 atomic with writes or prevent changes after observation. Keep these directories
 stationary during Apply; an absolute guarantee against such relocation requires
 filesystem permission isolation or coordination with every directory mover.
-Unsupported descriptor-relative storage operations block the save.
+Unsupported descriptor-relative storage operations block the save. Observable
+project path or device/inode changes require a fresh preview even when file
+bytes are identical; cleanup stays in the opened directory. After capture or
+publication, retained recovery evidence must be reconciled there.
 
 Both save directions recheck the paired store's locks, recovery journals and
 unfinished/conflicting receipts during staging, after discovery, before capture
@@ -576,7 +594,9 @@ invocation descriptor, never a launcher. Active/approved execution remains
 outside preference writes. Model-only adoptions remain valid and unchanged.
 
 `test_playbook_config.py` and `test_playbook_config_roles.py` use temporary projects, fixture discovery and a clock
-at this boundary, including injected storage checkpoints. It proves typed
+at this boundary, including injected storage checkpoints.
+`test_config_repair_boundaries.py` covers directory identity and numeric recovery
+through both the API and CLI. This coverage proves typed
 read/edit/preview/Apply/cancel, migration, next-lane resolution, revision
 conflicts, conflict-preserving recovery and runtime preservation. Fixture results are not direct
 Codex or Conductor qualification; S8 remains separate. Upstream updates remain

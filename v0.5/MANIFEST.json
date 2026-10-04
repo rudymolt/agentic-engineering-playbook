@@ -178,8 +178,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "097334df356b67b8319407f386a8591595cfc9eb981a21c5dc00feb8a12c3da8",
-      "size": 25393
+      "sha256": "3067d62189bccedbe51c292c31dd933805f88b25d00bfc097eba215010040458",
+      "size": 29248
     },
     {
       "path": "MAINTENANCE.md",
@@ -188,8 +188,8 @@
     },
     {
       "path": "README.md",
-      "sha256": "67f592963ccf6dcf810a0237a0fff3b910e8e463394895f2e66ec1a8e1927100",
-      "size": 4110
+      "sha256": "32029b7e61c661309e1aa2b725b64fb4c1cce6bce90155cb1e13e1fa6e72763b",
+      "size": 4449
     },
     {
       "path": "assets/playbook-docs.css",
@@ -1028,8 +1028,8 @@
     },
     {
       "path": "scripts/bootstrap_seed.py",
-      "sha256": "8224b45d3e671eb987106d4b5d20133afc22e15a3627611b32a8e549282bd8ee",
-      "size": 4892
+      "sha256": "edc321e067e8b96a5e3c1e07bcb3b8e49cd6d1d8f5250e1307037ed32d35b9c1",
+      "size": 4806
     },
     {
       "path": "scripts/check-glossary.py",
@@ -1143,13 +1143,13 @@
     },
     {
       "path": "scripts/playbook-config.md",
-      "sha256": "5a8ffd35fa0f2382b20ffd3a19487ad11c5aa3d957a647f18144c7a389732bc9",
-      "size": 38670
+      "sha256": "058ce8a57dd18f3d5e61bc26ff31cea02671ddf7704ffe0c1ec33aef03124b27",
+      "size": 40008
     },
     {
       "path": "scripts/playbook_config.py",
-      "sha256": "ca248a19c249ea2c00047d6bc575c9227a93d17b99b8eb973b49cdad667807ef",
-      "size": 99538
+      "sha256": "5864ea70b04c44e719c012954306f9706c89d2f5fdaf86d16a68d09b97b69480",
+      "size": 102134
     },
     {
       "path": "scripts/playbook_state.py",
@@ -1178,8 +1178,8 @@
     },
     {
       "path": "scripts/skill_bindings.py",
-      "sha256": "f4815aafb646c5073a2f01a8d251b415dfc00e6e70a659803edf0ae4ecdb1150",
-      "size": 29796
+      "sha256": "6e1f907113a5323fdd0af646bf488dcd37f246bca0f82227081ebaa90ec6b47d",
+      "size": 29830
     },
     {
       "path": "scripts/template_base.py",
@@ -1198,8 +1198,13 @@
     },
     {
       "path": "scripts/test_bootstrap_project.py",
-      "sha256": "23a12bb4bb0a258266360c95b8f3ca13d3f452acf8f907466686e207262d7633",
-      "size": 16296
+      "sha256": "f298586072d922874f8399d143353ff849d6b7d84c424b62edc122dd2e22ed17",
+      "size": 18283
+    },
+    {
+      "path": "scripts/test_bootstrap_seed_routes.py",
+      "sha256": "8b00b158d1e90c509e46d9fb5dd7d2ac715a09dfca33a9c79c286662b42309be",
+      "size": 11539
     },
     {
       "path": "scripts/test_check_glossary.py",
@@ -1217,14 +1222,19 @@
       "size": 5487
     },
     {
+      "path": "scripts/test_config_repair_boundaries.py",
+      "sha256": "e69111b682f94fbc13751182e7cf9427721f25cf95b4a8f46756b0e00573779b",
+      "size": 15965
+    },
+    {
       "path": "scripts/test_convention_checks.py",
       "sha256": "2259b23e67e9ad54959af5756a143c15dcb0c1b3b7fe58912e96b68ebf405922",
       "size": 24119
     },
     {
       "path": "scripts/test_custom_skill_bindings.py",
-      "sha256": "16538fb6e31f9caffa877c342230f67b36e24e6c10a897eeab1d044c33e14797",
-      "size": 51959
+      "sha256": "6b6c384c8b609c1257e57ce684f8ee7d354effd5172e37d7e57395008af51152",
+      "size": 57010
     },
     {
       "path": "scripts/test_delivery_ci_scope.py",
@@ -1293,18 +1303,18 @@
     },
     {
       "path": "scripts/test_personal_presets.py",
-      "sha256": "d4718cc413170d2a84f8379dbc106ac198243c1f3e78ceb60889f96c28aa789f",
-      "size": 67021
+      "sha256": "3ab08a132199fecf9e0a7f27b259aa665f24a62ef9b403f58350c1600020e882",
+      "size": 67042
     },
     {
       "path": "scripts/test_playbook_config.py",
-      "sha256": "9ce91157e08d8ed8ce9fa9fdc49d6064256d1c705d57a96ddde32c42658d9cf4",
-      "size": 43549
+      "sha256": "5cf0a6d90bde4a962e8cfcb057d989e7a70bef2657adfb2ac85964ffa1c1a9fa",
+      "size": 43627
     },
     {
       "path": "scripts/test_playbook_config_directory.py",
-      "sha256": "c37e08e473a91f60a794d5413e727a05498e5d8959e77634e92bbf7032bc86c5",
-      "size": 16175
+      "sha256": "f355943eb639310e802defabe594be4c06bc97e61cb528922034e93c9ba79f1a",
+      "size": 16217
     },
     {
       "path": "scripts/test_playbook_config_roles.py",
@@ -1328,8 +1338,8 @@
     },
     {
       "path": "scripts/test_public_upgrade_transition.py",
-      "sha256": "caceaeace302cbb0b7d0bbb9c636607cd9b8690e2582841443378fd04e429be5",
-      "size": 3920
+      "sha256": "8957fe50d8ecc71f3fe554f914949ed3e5d920b303f735fc53fda2edb2c0f169",
+      "size": 5388
     },
     {
       "path": "scripts/test_rename_upstream_skill.py",
@@ -1393,8 +1403,8 @@
     },
     {
       "path": "scripts/upgrade-project.py",
-      "sha256": "8503f5fb244bb30f72ee5d0fd5295ba7bf4f8387f72e3793d93beff2d5aea2ff",
-      "size": 58212
+      "sha256": "c77837a69deefdc79e7e8e2a8186e619f5a4d56a7138591890149dedd5f81dba",
+      "size": 58676
     },
     {
       "path": "scripts/upstream_registry.py",

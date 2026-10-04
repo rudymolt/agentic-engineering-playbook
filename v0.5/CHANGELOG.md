@@ -2,6 +2,73 @@
 
 ## Unreleased
 
+- Supply the existing synthetic fixture clock to custom-binding privacy CLI
+  calls and the installed-source diagnostic fixture.
+
+*Why — synthetic availability alone left live evidence retrieval enabled:*
+  those CLI fixtures omitted the clock that marks controlled offline runs.
+  The fixture clock keeps their recommendation checks offline while preserving
+  production live retrieval and all existing public-boundary assertions.
+
+- Retain the unpaired project-directory identity as an opaque proposal digest;
+  revalidate it against the actual directory before opening save storage.
+  Clarify its public representation and the private records in paired previews.
+
+*Why — an absolute project path leaked into public Configure replies:* the
+  directory replacement guard exposed its internal locator in serialized
+  previews and retained drafts. The digest preserves stale-preview rejection
+  while keeping those private locators out of the public helper output.
+
+- Bind every Configure project preview and save to the resolved project
+  directory and device/inode, including the helper without personal preferences.
+  Keep transaction writes and cleanup relative to the verified directory.
+- Bound numeric choices across all Configure editors and retain the sealed
+  draft with corrective guidance for non-decimal or oversized digit replies.
+
+*Why — stale directory previews and malformed digit replies bypassed recovery:*
+  byte-identical replacement project directories could receive an unpaired
+  Apply and leave locks in displaced directories. Superscript or very long
+  digit replies could escape as conversion exceptions, losing structured CLI
+  recovery and exposing tracebacks. Identity checks now require a fresh preview;
+  numeric failures keep the draft without changing settings or launch authority.
+
+- Resolve private source and storage paths with missing-destination support
+  while rejecting cycles and access errors on supported Python versions. Use
+  the shared guard for custom binding and audit store ancestry checks.
+
+*Why — non-strict cycle resolution changed between Python versions:* newer
+interpreters could accept a cyclic personal store or pass a cyclic source to
+its reader. Resolution now blocks with portable recovery guidance before those
+boundaries, retaining valid aliases, nested new stores and source fingerprints.
+The cycle fixture uses strict resolution so its product assertions run on both
+interpreter behaviours.
+
+
+- Restrict historical model-default migration to the actual
+  `model_routing.defaults` map, preserving sibling routing maps, comments and
+  customised model, runner and reasoning choices.
+
+*Why — an unrelated retained-defaults map matched the migration substring:*
+  a custom runner prevented the actual defaults from matching, so the upgrade
+  silently rewrote a sibling map instead. Focused library and public-helper
+  regressions cover preservation, canonical upgrades and repeat migration.
+
+- Verify cyclic test fixtures with strict path resolution across Python
+  versions, keeping all product-boundary denial assertions intact.
+
+*Why — Python 3.14 permits non-strict resolution of cyclic symlinks:* the
+  fixture failed before exercising the product and caused cascading setup
+  errors; strict resolution proves the cycle on both supported test runtimes.
+
+- Use Configure's unique admitted-route match for personal defaults and named
+  presets in bootstrap seed preview and Apply, preserving saved values and
+  requiring every explicitly saved identity field to match.
+
+*Why — accepted legacy defaults could not seed a new project:* bootstrap still
+required exact identity dictionaries after Configure accepted a unique route
+with optional host metadata. The shared matcher now admits the same valid seed
+without guessing among variants or adding metadata to the saved choices.
+
 - Match core-only legacy model choices to a unique freshly admitted route when
   the host adds optional provider, label or thinking metadata. Require an
   explicit choice if those fields leave more than one matching route.

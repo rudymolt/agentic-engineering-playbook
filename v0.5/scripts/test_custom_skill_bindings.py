@@ -11,7 +11,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from playbook_config import Configuration, ConfigError
+from playbook_config import Configuration, ConfigError, resolve_private_path
 from skill_bindings import AUTHORITY, JOBS, JobBindings, fingerprint
 import test_playbook_config
 import test_skill_bindings
@@ -86,6 +86,7 @@ class CustomBindingTests(test_playbook_config.ConfigurationTests):
                    "'routes':" + repr(self.discovery['routes']) + "},sys.stdout)")
         command = [sys.executable, str(Path(__file__).with_name("configure-playbook.py")),
                    "--project", str(self.project), "--custom-bindings-dir", str(self.local),
+                   "--now", "2026-10-01T12:00:00Z",
                    "--discovery-command", json.dumps([sys.executable, "-c", adapter]), *extra, action]
         if deny:
             command = test_skill_bindings.dac_isolation_command(command)
@@ -112,7 +113,7 @@ class CustomBindingTests(test_playbook_config.ConfigurationTests):
         self.addCleanup(target.unlink, missing_ok=True)
         self.addCleanup(other.unlink, missing_ok=True)
         with self.assertRaises((RuntimeError, OSError)):
-            target.resolve()
+            target.resolve(strict=True)
         return target
 
     def assert_private_denial(self, value):
@@ -254,6 +255,90 @@ class CustomBindingTests(test_playbook_config.ConfigurationTests):
             code, public = self.privacy_cli(action, request, extra=("--preferences-dir", str(personal)))
             self.assertEqual((code, public["state"]), (2, "blocked"))
         self.assertEqual(personal.readlink(), target)
+        self.assertEqual(self.stored_bytes(), before)
+
+    def test_private_resolution_rejects_cycles_but_preserves_missing_alias_destinations(self):
+        before = self.stored_bytes()
+        for pair in (False, True):
+            with self.subTest(pair=pair):
+                target = self.external_cycle(pair)
+                try:
+                    for path in (target, target / "missing" / "nested", target / ".." / "missing"):
+                        with self.assertRaises(ConfigError) as denied:
+                            resolve_private_path(path)
+                        self.assert_private_denial(denied.exception)
+                finally:
+                    target.unlink()
+                    (self.local / "cycle-peer").unlink(missing_ok=True)
+        alias = self.machines / "local-alias"
+        alias.symlink_to(self.local, target_is_directory=True)
+        dangling = self.machines / "missing-alias"
+        dangling.symlink_to(self.local / "missing" / "nested", target_is_directory=True)
+        for path in (alias, alias / "missing" / "nested", dangling):
+            with self.subTest(destination=path.name):
+                self.assertEqual(resolve_private_path(path), path.resolve())
+                Configuration(self.project, self.discover, preferences_dir=path / "personal",
+                              evidence_dir=path / "cache")
+                JobBindings(self.project, installed={}, custom_dir=path / "custom")
+        self.assertFalse((self.local / "missing").exists())
+        self.assertEqual(self.stored_bytes(), before)
+
+    def test_cyclic_private_store_constructors_block_before_discovery_or_mutation(self):
+        before = self.stored_bytes()
+        target = self.external_cycle()
+        readers = []
+        for store in (target, target / "missing" / "nested"):
+            for keyword in ("preferences_dir", "evidence_dir"):
+                with self.subTest(store=store.name, keyword=keyword):
+                    with self.assertRaises(ConfigError) as denied:
+                        Configuration(self.project, readers.append, **{keyword: store})
+                    self.assert_private_denial(denied.exception)
+            with self.assertRaises(ConfigError) as denied:
+                JobBindings(self.project, installed={}, custom_dir=store)
+            self.assert_private_denial(denied.exception)
+        for name in ("bindings.json", "approvals.json", "evidence"):
+            store = self.machines / ("custom-" + name)
+            store.mkdir()
+            (store / name).symlink_to(target)
+            with self.subTest(artifact=name):
+                with self.assertRaises(ConfigError) as denied:
+                    JobBindings(self.project, installed={}, custom_dir=store)
+                self.assert_private_denial(denied.exception)
+            self.assertEqual(list(store.iterdir()), [store / name])
+        self.assertEqual(readers, [])
+        self.assertEqual(target.readlink(), target)
+        self.assertEqual(self.stored_bytes(), before)
+
+    def test_private_resolution_access_error_is_portable_not_missing(self):
+        before = self.stored_bytes()
+        with patch("os.lstat", side_effect=PermissionError("PRIVATE_FIXTURE_MARKER_SYNTHETIC_CREDENTIAL")):
+            with self.assertRaises(ConfigError) as denied:
+                resolve_private_path(self.local / "missing" / "nested")
+        self.assert_private_denial(denied.exception)
+        self.assertIsNone(denied.exception.__cause__)
+        self.assertEqual(self.stored_bytes(), before)
+
+    def test_private_resolution_without_allow_missing_library_support(self):
+        before = self.stored_bytes()
+        target = self.external_cycle()
+        missing = self.local / "missing" / "nested"
+        # Both installed interpreters backport ALLOW_MISSING. Select the legacy
+        # branch without changing the library's own globals or filesystem calls.
+        with patch("playbook_config.getattr", return_value=None, create=True):
+            expected = self.local.resolve(strict=True) / "missing" / "nested"
+            self.assertEqual(resolve_private_path(missing), expected)
+            Configuration(self.project, self.discover, preferences_dir=missing)
+            JobBindings(self.project, installed={}, custom_dir=missing)
+            for path in (target, target / "missing" / "nested", target / ".." / "missing"):
+                with self.subTest(destination=path.name):
+                    with self.assertRaises(ConfigError) as denied:
+                        resolve_private_path(path)
+                    self.assert_private_denial(denied.exception)
+            with patch("os.lstat", side_effect=PermissionError("PRIVATE_FIXTURE_MARKER")):
+                with self.assertRaises(ConfigError) as denied:
+                    resolve_private_path(missing)
+                self.assert_private_denial(denied.exception)
+        self.assertFalse(missing.exists())
         self.assertEqual(self.stored_bytes(), before)
 
     def test_unrelated_runtime_error_is_not_a_filesystem_denial(self):
@@ -564,6 +649,7 @@ class CustomBindingTests(test_playbook_config.ConfigurationTests):
                    "'roles':['implementation']}]},sys.stdout)")
         command = [sys.executable, str(Path(__file__).with_name("configure-playbook.py")),
                    "--project", str(self.project), "--custom-bindings-dir", str(self.local),
+                   "--now", "2026-10-01T12:00:00Z",
                    "--discovery-command", json.dumps([sys.executable, "-c", adapter]), "read"]
         completed = subprocess.run(command, input="{}", text=True, capture_output=True,
                                    env=dict(os.environ, HOME=str(home)))

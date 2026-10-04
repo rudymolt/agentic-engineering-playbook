@@ -240,6 +240,33 @@ class ModelDefaultsUpgradeTest(unittest.TestCase):
                 self.assertIn(custom, migrated)
                 self.assertTrue(migrated.endswith(history))
 
+    def test_migration_only_updates_actual_defaults_preserving_siblings_and_comments(self):
+        historical = (upgrade_project.PRE_V038_MODEL_DEFAULTS,
+                      upgrade_project.V038_MODEL_DEFAULTS,
+                      upgrade_project.PRE_V061_MODEL_DEFAULTS)
+        for old in historical:
+            for override in (None, ("runner: codex", "runner: opencode"),
+                             ("gpt-5.6-sol", "custom-model"),
+                             ("reasoning: high", "reasoning: low")):
+                for sibling_first in (False, True):
+                    with self.subTest(old=old, override=override, sibling_first=sibling_first):
+                        defaults = old if override is None else old.replace(*override, 1)
+                        sibling = "  # Intentional retained routes\n  retained_defaults:\n" + old + "\n"
+                        original = self.state().replace(upgrade_project.CURRENT_MODEL_DEFAULTS, defaults)
+                        if sibling_first:
+                            original = original.replace("  defaults:\n", sibling + "  defaults:\n", 1)
+                        else:
+                            original = original.replace("  allowed_runners:", sibling + "  allowed_runners:", 1)
+                        history = "\nunrelated_settings: {enabled: true}\nselected_routes:\n" + old + "\n"
+                        original += history
+                        expected = original
+                        if override is None:
+                            expected = expected.replace("  defaults:\n" + old,
+                                                        "  defaults:\n" + upgrade_project.CURRENT_MODEL_DEFAULTS, 1)
+                        migrated = upgrade_project.migrate_state(original, upgrade_project.UpgradeReport(), 0)
+                        self.assertEqual(migrated, expected)
+                        self.assertEqual(migrated, upgrade_project.migrate_state(migrated, upgrade_project.UpgradeReport(), 0))
+
 
 class BootstrapProvenanceTest(unittest.TestCase):
     def test_fresh_bootstrap_records_bases_and_provenance_matching_installed_files(self):

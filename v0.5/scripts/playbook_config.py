@@ -34,9 +34,29 @@ class RecoveryRequired(ConfigError):
 
 
 def resolve_private_path(path):
-    """Contain pathlib's version-dependent filesystem failures at resolution only."""
+    """Resolve aliases and missing destinations without accepting filesystem errors."""
     try:
-        return path.resolve()
+        # ALLOW_MISSING rejects loops/access errors but permits missing suffixes.
+        # It is unavailable on older supported interpreters; never pass an
+        # invented strictness value to their resolver.
+        allow_missing = getattr(os.path, "ALLOW_MISSING", None)
+        if allow_missing is not None:
+            return Path(os.path.realpath(path, strict=allow_missing))
+        try:
+            return path.resolve(strict=True)
+        except FileNotFoundError:
+            pass
+        resolved = path.resolve()
+        # Non-strict resolution can suppress filesystem errors. Check the
+        # nearest existing ancestor strictly, bounded
+        # by path depth; only absence is permitted, including nested new stores.
+        for location in (resolved, *resolved.parents):
+            try:
+                location.resolve(strict=True)
+                break
+            except FileNotFoundError:
+                continue
+        return resolved
     except (OSError, RuntimeError) as error:
         # Python 3.11/3.12 use RuntimeError for symlink loops. Neither exception
         # text nor its chained filesystem error is safe for public diagnostics.
@@ -253,6 +273,7 @@ class Configuration:
         self.preferences = None
         self._write_stores = (self,)
         self._directory_fd = None
+        self._expected_project_directory = None
         self.pair = self.project / ".playbook-config.pair"
         self._pair_active = False
         if preferences_dir is not None:
@@ -284,8 +305,38 @@ class Configuration:
     def _validate_candidate(self, candidate):
         return validate_config(candidate)
 
+    def _directory_identity(self, path):
+        resolved = resolve_private_path(path)
+        anchor = resolved
+        while not anchor.exists():
+            anchor = anchor.parent
+        info = anchor.stat()
+        if not stat.S_ISDIR(info.st_mode):
+            raise ConfigError("Storage requires a directory; reconcile its destination.")
+        return {"resolved": str(resolved), "anchor": str(anchor), "device": info.st_dev, "inode": info.st_ino}
+
     def _check_directory(self):
-        pass
+        if (self._expected_project_directory is not None
+                and self._directory_identity(self.project) != self._expected_project_directory):
+            raise ConfigError("Project directory changed since preview; reload and review its destination.")
+
+    @contextmanager
+    def _project_storage(self, expected):
+        if self._directory_identity(self.project) != expected or expected["anchor"] != expected["resolved"]:
+            raise ConfigError("Project directory changed since preview; reload and review its destination.")
+        descriptor = os.open(expected["resolved"], os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+        try:
+            info = os.fstat(descriptor)
+            if (info.st_dev, info.st_ino) != (expected["device"], expected["inode"]):
+                raise ConfigError("Project directory changed while opening storage; reload and preview it again.")
+            self._expected_project_directory = deepcopy(expected)
+            self._directory_fd = descriptor
+            self._check_directory()
+            yield
+        finally:
+            self._directory_fd = None
+            self._expected_project_directory = None
+            os.close(descriptor)
 
     def _filename(self, path):
         if self._directory_fd is None:
@@ -355,6 +406,7 @@ class Configuration:
             return stream.read()
 
     def _snapshot(self):
+        directory = self._directory_identity(self.project)
         self._guard_write()
         if self.lock.exists() or self.recovery.exists():
             raise ConfigError("Configuration transaction/recovery pending; reconcile before reading or writing defaults.")
@@ -382,7 +434,10 @@ class Configuration:
         if self.lock.exists() or self.recovery.exists():
             raise ConfigError("Configuration changed during read; wait for the transaction or reconcile recovery.")
         self._reconcile_receipts()
-        return config, origins, {DESTINATION: digest(saved), ".playbook-state.yml": digest(runtime)}
+        if self._directory_identity(self.project) != directory:
+            raise ConfigError("Project directory changed during preview; reload and review its destination.")
+        return config, origins, {DESTINATION: digest(saved), ".playbook-state.yml": digest(runtime),
+                                 "project_directory": digest(encoded(directory))}
 
     def _selection_state_error(self, error):
         return ConfigError("Cannot read configuration selection state (.playbook-state.yml): "
@@ -796,6 +851,19 @@ class Configuration:
     def _discovery_revision(self, evidence):
         return digest(encoded({key: value for key, value in evidence.items() if key not in {"checked_at", "request_id", "coordinator"}}))
 
+    @staticmethod
+    def _choice_index(raw, count):
+        message = "Choose a displayed number within the available choices."
+        if len(raw) > 64 or not raw.isdecimal():
+            raise ConfigError(message)
+        try:
+            index = int(raw) - 1
+        except ValueError:
+            raise ConfigError(message) from None
+        if not 0 <= index < count:
+            raise ConfigError(message)
+        return index
+
     def reply(self, proposal, text):
         try:
             result = self._reply(proposal, text)
@@ -1014,11 +1082,7 @@ class Configuration:
         if draft.get("step") == "skill" and (reply.startswith("choose ") or reply.isdigit()):
             raw = reply[len("choose "):] if reply.startswith("choose ") else reply
             parts = raw.split(",")
-            if any(not part.strip().isdigit() for part in parts):
-                raise ConfigError("Choose displayed numbers separated by commas, in invocation order.")
-            indexes = [int(part.strip()) - 1 for part in parts]
-            if any(not 0 <= index < len(draft["skill_options"]) for index in indexes):
-                raise ConfigError("Choose only a displayed eligible skill or explicit fallback.")
+            indexes = [self._choice_index(part.strip(), len(draft["skill_options"])) for part in parts]
             job = draft["edit_job"]
             draft["skill_after"]["jobs"][job] = [deepcopy(draft["skill_options"][index]["binding"]) for index in indexes]
             self._bindings().resolve(draft["skill_after"], job)
@@ -1039,9 +1103,7 @@ class Configuration:
             draft.update(step="role", choices=[str(index + 1) + " " + ROLE_LABELS[role] for index, role in enumerate(ROLES)] + ["Edit skills", "Back", "Not now"])
             return self._seal(draft)
         if reply.isdigit() and draft.get("step") == "role":
-            index = int(reply) - 1
-            if not 0 <= index < len(ROLES):
-                return self._blocked("Invalid role; reload and choose Plan, Build, Verify or Repair.")
+            index = self._choice_index(reply, len(ROLES))
             reply = "edit " + ROLE_LABELS[ROLES[index]].lower()
         role = next((role for role in ROLES if reply in {"edit " + role, "edit " + role.replace("_", " "), "edit " + ROLE_LABELS[role].lower()}), None)
         if role:
@@ -1053,9 +1115,7 @@ class Configuration:
         if reply == "pick model" and draft.get("step") == "edit":
             return self._component(draft, "model")
         if reply.isdigit() and draft.get("step") in {"model", "runner", "reasoning", "identity"}:
-            index = int(reply) - 1
-            if not 0 <= index < len(draft["options"]):
-                return self._blocked("Invalid editor choice; reload and select a displayed number.")
+            index = self._choice_index(reply, len(draft["options"]))
             step = draft["step"]
             if step == "identity":
                 return self._select(draft, draft["component_routes"][index])
@@ -1071,9 +1131,7 @@ class Configuration:
                          message="Several verified identities share these settings; choose the complete identity explicitly.")
             return self._seal(draft)
         if reply.isdigit() and draft.get("step") == "edit":
-            index = int(reply) - 1
-            if not 0 <= index < len(draft["alternatives"]):
-                return self._blocked("Invalid choice; edit Build or reload the proposal.")
+            index = self._choice_index(reply, len(draft["alternatives"]))
             return self._select(draft, draft["alternatives"][index])
         if reply == "explain" or reply.startswith("explain "):
             role = "implementation" if reply == "explain" else next((role for role in ROLES if reply[8:] in {role, role.replace("_", " "), ROLE_LABELS[role].lower()}), None)
@@ -1372,23 +1430,20 @@ class Configuration:
 
     @contextmanager
     def _paired_storage(self, inputs):
-        project = inputs["directories"]["project"]
-        descriptor = os.open(project["resolved"], os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
-        try:
-            info = os.fstat(descriptor)
-            if (info.st_dev, info.st_ino) != (project["device"], project["inode"]):
-                raise ConfigError("Reviewed project directory changed; reload before a paired write.")
-            self._directory_fd = descriptor
+        with self._project_storage(inputs["directories"]["project"]):
             with self.preferences._storage(inputs):
                 yield
-        finally:
-            self._directory_fd = None
-            os.close(descriptor)
 
     def _unlink_directory(self, path):
         os.rmdir(self._filename(path), dir_fd=self._directory_fd)
 
     def _save(self, candidate, inputs, evidence, create_directory=False, *, admission):
+        if self.destination == DESTINATION and self._directory_fd is None:
+            directory = self._directory_identity(self.project)
+            if digest(encoded(directory)) != inputs["project_directory"]:
+                raise ConfigError("Project directory changed since preview; reload and review its destination.")
+            with self._project_storage(directory):
+                return self._save(candidate, inputs, evidence, admission=admission)
         self._guard_write()
         if create_directory:
             self.project.mkdir(parents=True, exist_ok=True, mode=0o700)
@@ -1475,6 +1530,8 @@ class Configuration:
             seal = receipt.with_name(receipt.name + ".complete")
             self._mkdir(seal)
             self.checkpoint("completion_sealed")
+            if self.destination == DESTINATION:
+                self._check_directory()
             admission()
             completed = True
         except (OSError, ConfigError, UnicodeError) as error:
@@ -1520,6 +1577,9 @@ class Configuration:
                 self._unlink(self.lock)
 
     def _check_inputs(self, inputs):
+        if ("project_directory" in inputs
+                and digest(encoded(self._directory_identity(self.project))) != inputs["project_directory"]):
+            raise ConfigError("Project directory changed since preview; reload and review its destination.")
         if digest(self._bytes(self.path)) != inputs[self.destination] or digest(self._bytes(self.state_path)) != inputs[".playbook-state.yml"]:
             raise ConfigError("Inputs changed before save; reload without overwriting them.")
 
@@ -1561,16 +1621,6 @@ class LocalPreferences(Configuration):
         self.path = self.project / self.destination
         self.owner_project = None
         self._expected_directory = None
-
-    def _directory_identity(self, path):
-        resolved = resolve_private_path(path)
-        anchor = resolved
-        while not anchor.exists():
-            anchor = anchor.parent
-        info = anchor.stat()
-        if not stat.S_ISDIR(info.st_mode):
-            raise ConfigError("Personal storage requires a directory; reconcile its destination.")
-        return {"resolved": str(resolved), "anchor": str(anchor), "device": info.st_dev, "inode": info.st_ino}
 
     def _directory_inputs(self):
         local = self._directory_identity(self.project)

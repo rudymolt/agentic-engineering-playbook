@@ -384,7 +384,7 @@ class PersonalPresetTests(unittest.TestCase):
         self.assertEqual(result.returncode, 2)
         self.assertEqual(failed["state"], "recovery_required")
         self.assertNotIn("credential-bearing", result.stdout + result.stderr)
-        self.assertEqual(failed["retained_proposal"]["personal"]["resolved_destination"], str(self.local / "preferences.json"))
+        self.assertEqual(failed["retained_proposal"]["personal"]["resolved_destination"], str(self.local.resolve(strict=True) / "preferences.json"))
         self.assertTrue((self.projects[0] / ".playbook-config.pair").exists())
         self.assertTrue((self.local / ".playbook-config.pair").exists())
         self.assertEqual(self.service(1).read()["state"], "recovery_required")

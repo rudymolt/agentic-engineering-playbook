@@ -379,7 +379,7 @@ class ConfigurationTests(unittest.TestCase):
                 writer = self.service.path.open("r+b") if captured_writer else None
                 if writer:
                     self.addCleanup(writer.close)
-                original_replace = os.replace
+                original_replace = self.service._replace
 
                 def replace(source, destination):
                     if source == self.service.recovery:
@@ -393,7 +393,7 @@ class ConfigurationTests(unittest.TestCase):
                             self.service.path.write_bytes(external_bytes)
                     return original_replace(source, destination)
 
-                with patch("playbook_config.os.replace", side_effect=replace):
+                with patch.object(self.service, "_replace", side_effect=replace):
                     result = self.service.apply(proposal)
                 self.assertEqual(result["state"], "recovery_required")
                 marker = json.loads(self.service.recovery.read_text())
@@ -424,7 +424,7 @@ class ConfigurationTests(unittest.TestCase):
                 external = json.loads(json.dumps({"schema_version": 1, "adopted": True, "models": proposal["after"]}))
                 external["models"]["implementation"]["model_id"] = "future-build"
                 external_bytes = json.dumps(external).encode()
-                original_mkdir = Path.mkdir
+                original_mkdir = self.service._mkdir
 
                 def checkpoint(checkpoint_point):
                     if checkpoint_point == "before_completion" and point == "before_check":
@@ -437,7 +437,7 @@ class ConfigurationTests(unittest.TestCase):
                         self.service.path.write_bytes(external_bytes)
                     return original_mkdir(path, *args, **kwargs)
 
-                with patch("playbook_config.Path.mkdir", new=mkdir):
+                with patch.object(self.service, "_mkdir", side_effect=mkdir):
                     result = self.service.apply(proposal)
                 self.assertEqual(self.service.path.read_bytes(), external_bytes)
                 self.assertEqual(result["state"], "recovery_required" if point == "before_check" else "applied")
@@ -486,7 +486,7 @@ class ConfigurationTests(unittest.TestCase):
         proposal = self.preview()
         external = json.loads(json.dumps({"schema_version": 1, "adopted": True, "models": proposal["after"]}))
         external["models"]["implementation"]["model_id"] = "future-build"
-        original_mkdir = Path.mkdir
+        original_mkdir = self.service._mkdir
 
         def mkdir(path, *args, **kwargs):
             if path.name.endswith(".receipt.complete"):
@@ -494,7 +494,7 @@ class ConfigurationTests(unittest.TestCase):
                 os.chmod(self.service.path, self.service.path.stat().st_mode & 0o777)
             return original_mkdir(path, *args, **kwargs)
 
-        with patch("playbook_config.Path.mkdir", new=mkdir):
+        with patch.object(self.service, "_mkdir", side_effect=mkdir):
             self.assertEqual(self.service.apply(proposal)["state"], "applied")
         self.assertEqual(self.service.read()["state"], "decision_required")
         self.assertEqual(self.service.resolve("implementation")["choice"]["model_id"], "future-build")
@@ -595,7 +595,7 @@ class ConfigurationTests(unittest.TestCase):
     def test_displaced_publication_open_inode_write_is_also_a_completion_conflict(self):
         writer = None
         proposal = self.preview()
-        original_replace = os.replace
+        original_replace = self.service._replace
 
         def checkpoint(point):
             nonlocal writer
@@ -617,7 +617,7 @@ class ConfigurationTests(unittest.TestCase):
             return original_replace(source, destination)
 
         self.service.checkpoint = checkpoint
-        with patch("playbook_config.os.replace", side_effect=replace):
+        with patch.object(self.service, "_replace", side_effect=replace):
             self.assertEqual(self.service.apply(proposal)["state"], "recovery_required")
         marker = json.loads(self.service.recovery.read_text())
         self.assertEqual((self.project / marker["published"]).read_bytes(), b"external displaced publication choice")
@@ -661,7 +661,7 @@ class ConfigurationTests(unittest.TestCase):
         self.service.apply(self.preview())
         self.discovery["routes"][0]["model_id"] = "next-build"
         external = b'{"external": "capture-window"}\n'
-        original_replace = os.replace
+        original_replace = self.service._replace
 
         def replace(source, destination):
             if source == self.service.path:
@@ -669,7 +669,7 @@ class ConfigurationTests(unittest.TestCase):
             return original_replace(source, destination)
 
         proposal = self.preview()
-        with patch("playbook_config.os.replace", side_effect=replace):
+        with patch.object(self.service, "_replace", side_effect=replace):
             self.assertEqual(self.service.apply(proposal)["state"], "recovery_required")
         self.assertEqual(self.service.path.read_bytes(), external)
 

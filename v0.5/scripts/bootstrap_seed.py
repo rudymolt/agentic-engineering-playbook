@@ -3,7 +3,7 @@
 from copy import deepcopy
 from pathlib import Path
 
-from playbook_config import Configuration, ConfigError, DESTINATION, IDENTITY, digest, encoded, validate_config
+from playbook_config import Configuration, ConfigError, DESTINATION, digest, encoded, unique_available_route, validate_config
 from skill_bindings import JobBindings
 
 
@@ -23,8 +23,7 @@ def preview_seed(project, preferences_dir, discover, clock=None, preset=None, cu
     service._guard_write()
     routes, evidence = service._available()
     for role, choice in candidate["models"].items():
-        identity = {key: value for key, value in choice.items() if key in IDENTITY}
-        if identity not in routes[role]:
+        if not unique_available_route(choice, routes[role]):
             raise ConfigError("Bootstrap preset model is unavailable; restore the route or explicitly edit the personal seed. No substitution.")
     if "skills" in candidate:
         for job in candidate["skills"]["jobs"]:
@@ -60,7 +59,7 @@ def apply_seed(project, preferences_dir, discover, preview, clock=None, custom_d
         raise ConfigError("Seed discovery changed during bootstrap; review the new evidence, never substitute.")
     candidate = validate_config(deepcopy(preview["after"]))
     for role, choice in candidate["models"].items():
-        if {key: value for key, value in choice.items() if key in IDENTITY} not in routes[role]:
+        if not unique_available_route(choice, routes[role]):
             raise ConfigError("Seed route is no longer available; review without substitution.")
     def admission():
         for job in candidate.get("skills", {}).get("jobs", {}):

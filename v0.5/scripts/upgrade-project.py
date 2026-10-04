@@ -519,11 +519,17 @@ def migrate_state(text: str, report: UpgradeReport, starting_patch: int) -> str:
         if starting_patch < 38:
             previous_defaults = (PRE_V038_MODEL_DEFAULTS, *previous_defaults)
         if routing:
-            for previous in previous_defaults:
-                if previous in routing.group():
-                    updated = routing.group().replace(previous, CURRENT_MODEL_DEFAULTS, 1)
-                    text = text[:routing.start()] + updated + text[routing.end():]
-                    break
+            # Only direct children of the actual defaults map are eligible;
+            # sibling maps can intentionally retain identical historical routes.
+            defaults = re.search(r"(?m)^  defaults:\n(?:[ \t]{3,}.*\n|[ \t]*\n)*", routing.group())
+            if defaults:
+                for previous in previous_defaults:
+                    historical = re.search(r"(?m)^" + re.escape(previous) + r"(?=\n|$)", defaults.group())
+                    if historical:
+                        start = routing.start() + defaults.start() + historical.start()
+                        end = routing.start() + defaults.start() + historical.end()
+                        text = text[:start] + CURRENT_MODEL_DEFAULTS + text[end:]
+                        break
 
     if not re.search(r"(?m)^pending_model_routes:", text):
         text, found = insert_before(text, "counters:\n", "pending_model_routes: []\n\n")
