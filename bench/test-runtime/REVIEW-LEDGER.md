@@ -917,3 +917,47 @@ Review made no edits; read-only behavior is not filesystem-enforced isolation.
 Security review found no new input boundary, secret or dependency change.
 Normal draft PR CI remains the authoritative privileged correctness gate; final
 publication identity and terminal CI will be recorded on the exact frozen PR head.
+
+### Normal batch CI checkpoint and final publication
+
+Draft PR 16 targets main directly. Normal CI run 37169647763 passed edition job
+111339807356 and full privileged delivery job 111339807279 at evidence checkpoint
+`157a6c7c5ef05bd59f0ae844a176bbc8cd15b382`. Synthetic checkout:
+`857f9321b396150c6b98754905fc9163f64cac29`. Both jobs and the complete delivery step succeeded;
+only the alternative skip-report step skipped. The run covered all 762 executions
+(228 edition + 534 delivery) in 16 groups, including privileged watchers. Counts
+match independent source discovery; no failure, skip or partial row is admitted.
+
+The unchanged main collector accepted the complete logs. [Totals](TOTAL-RUNTIME.md)
+and [history](suite-history.json) preserve exact run/job/head/checkout identities,
+commands, runner fields and input hashes. Summed unittest runtime is
+**991.362 s**: 188.309 s (23.45%) above the October 3 final
+803.053 s, and 144.501 s (12.72%) below original 1135.863 s. Counts are unchanged
+from October 3 and six above original (four cache guards and two content regressions).
+These are same serial-command observations, not causal optimization estimates.
+Unchanged coordinator-group runtime is 195.787 s versus
+165.490 s previously; runner/load and unrelated variation remain material.
+
+Edition/delivery verification command spans are 22.631877 /
+973.597332 s. Parallel job-log span is
+975.898134 s, an elapsed proxy including logged
+setup/cleanup, not summed test runtime. Exact workflow and queue time remain null.
+Both jobs used Python 3.12.14, Git 2.55.0, ubuntu-24.04 image
+20260927.320.1; original image was 20260920.314.1. Actual hosted
+hardware/load is unknown. The separate PR 14 concurrency observation above is
+never substituted for the serial daily baseline.
+
+This evidence-only follow-up leaves measured executable sources untouched. The
+final frozen PR head requires its own terminal normal CI; its exact SHA, result,
+verified links and final-head total will be recorded in PR 16's description after
+completion, avoiding an unending evidence-commit/CI cycle. This row explicitly
+belongs to the pre-follow-up checkpoint, not a claim about yet-unrun final CI.
+No extra timing-only full suite was invoked.
+
+Independent evidence review reproduced the complete serial row, hashes, group
+counts and comparison arithmetic with the unchanged main collector. All eight
+prior records and separate parallel evidence remain unchanged; this follow-up
+changes only the ledger, totals and history. Public-content, links, conventions,
+edition manifest and whitespace checks passed again. No executable retest was
+needed locally for this documentation-only follow-up; normal exact-head CI still
+owns final integration correctness.
