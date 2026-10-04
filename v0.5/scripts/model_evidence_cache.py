@@ -143,10 +143,13 @@ class EvidenceCache:
                     refreshed = True
                 else:
                     prior = old.get('source', {})
+                    retained_date = prior.get('checked_at')
+                    uncertainty = ('Refresh incomplete; previous successful date retained. No fresh comparison.'
+                                   if retained_date else 'Refresh incomplete; no successful check date is known. No fresh comparison.')
                     current = {**{kind: claims[kind] or old.get(kind, []) for kind in ('guidance', 'rates')},
-                               'source': {**metadata, **prior, 'source_url': url, 'checked_at': prior.get('checked_at'),
-                                               'status': 'stale' if prior.get('checked_at') else 'incomplete',
-                                               'uncertainty': 'Refresh incomplete; previous successful date retained. No fresh comparison.'}}
+                               'source': {**metadata, **prior, 'source_url': url, 'checked_at': retained_date,
+                                               'status': 'stale' if retained_date else 'incomplete',
+                                               'uncertainty': uncertainty}}
             if not current or (not official and not old and not any(claims.values()) and not metadata):
                 continue
             entries[url] = current

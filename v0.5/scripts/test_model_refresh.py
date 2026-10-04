@@ -250,6 +250,19 @@ class ClaimFreshnessTests(unittest.TestCase):
         self.assertEqual(second['sources'][0]['checked_at'], self.clock)
         self.assertIsNone(cost(self.routes[0], self.context, second)['rates'])
 
+    def test_first_failed_refresh_does_not_claim_a_prior_success(self):
+        incomplete = {'guidance': [], 'rates': [], 'sources': [
+            {'source_url': url, 'status': 'incomplete', 'checked_at': None}
+            for url in SOURCES]}
+        result = EvidenceCache(lambda: self.clock).retrieve(
+            lambda: incomplete, {'routes': self.routes, 'revision': 'fixture'})
+        self.assertEqual(len(result['sources']), len(SOURCES))
+        for source in result['sources']:
+            self.assertEqual(source['status'], 'incomplete')
+            self.assertIsNone(source['checked_at'])
+            self.assertIn('no successful check date is known', source['uncertainty'])
+            self.assertNotIn('previous successful date retained', source['uncertainty'])
+
     def test_official_retrieval_evaluates_dates_after_fetch_completes(self):
         now = [self.clock]
         def fetch(url):
@@ -285,6 +298,7 @@ class ClaimFreshnessTests(unittest.TestCase):
                 self.assertEqual(claim['checked_at'], '2026-10-01T12:00:00+00:00')
                 self.assertEqual(claim['status'], 'stale')
             self.assertEqual(reused['sources'][0]['checked_at'], self.clock)
+            self.assertIn('previous successful date retained', reused['sources'][0]['uncertainty'])
             self.assertEqual(path.stat().st_mode & 0o777, 0o600)
 
     def test_raw_advice_library_uses_clock_not_supplied_evaluation_metadata(self):

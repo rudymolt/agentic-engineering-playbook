@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- Describe an incomplete first source refresh as having no successful check
+  date, while retaining the prior-date wording only when one exists.
+
+*Why — S8 live guidance implied a prior success where none existed:* all five
+  official source checks had null successful dates, yet each uncertainty line
+  said a previous date was retained. The message now matches the evidence.
+
 - Restore full-proposal guidance when typed `Back` leaves a role or skill
   editor, while retaining the reviewed draft and existing save gates.
 
