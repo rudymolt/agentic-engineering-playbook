@@ -806,3 +806,288 @@ repository convention checks and compilation cover those lanes. Public-safe
 outputs contain no raw fixture diagnostics, personal paths or private addresses.
 Both author and committer identities are GitHub noreply. Final-head CI remains
 separate from these local and implementation-head results; consult draft PR 12.
+
+## 2026-10-04 — batch 5 (UTC)
+
+Fresh fetch and GitHub metadata verified main at
+`8827c7a1190ed64d0a70c9efaeca91cdb841be27`, including merged PR 13 and all eleven
+previous reviewed IDs. PR 14 remains a draft at
+`fb86bc0511fe32d40f872517c0d261c02f42e0b8`; PR 15 remains a draft at
+`2c7f4528884a21756c4e126d410d671eef86e766`. Both have main as their actual merge
+base. Neither changes the selected test sources relative to main. No resolved
+consolidation or parser work is repeated. The initial checkout was clean.
+Fresh branch `perf/test-runtime-2026-10-04` starts from that verified main and
+its draft targets main directly, independent of PRs 14 and 15.
+
+Measured implementation: `df35c6499eea75903c0cbb27bb682a9bf77ca066`.
+Three NEW reviewed IDs:
+
+- `test_interim_recovery.RecoveryBoundaryTests.test_unknown_active_queued_and_terminal_are_distinct`
+- `test_interim_host_continuation.RepairHostContinuationTests.test_async_three_failure_diagnosis_and_stagnation_with_and_without_caps`
+- `test_interim_recovery.RecoveryBoundaryTests.test_truthful_stop_proof_still_gates_validation_persist_reload_and_resume`
+
+Diagnosis: repeated checkpoint validation invokes identical successful, input-only
+Git ref syntax probes. Apply the existing invocation-scoped `memoized_control_refs`
+to exactly these methods, with one helper import in host continuation. The helper
+and all production code remain unchanged. The eligible exact command may validate
+control refs or base refs; every validator still runs and failed probes are never
+cached. Selected flows keep the Git executable and environment fixed; their faults
+change provider receipts/checkpoint data, not Git subprocess outcomes.
+
+All bodies, assertions and 35 subcases remain: 20 recovery path/state combinations,
+four async capped/uncapped progress combinations (each three repair attempts),
+and 11 stop-proof corruption cases. Real remote publication/CAS, raw corrupt
+checkpoint injection, validation/persistence refusal, independent clone/reload,
+provider no-effect assertions, per-case tearDown/setUp and deep copies stay intact.
+No mutable fixture or snapshot is cached. The patch restores subprocess state
+on success or exception and starts a new syntax cache per method invocation.
+All fourteen IDs are now reviewed; do not select any of them in a later batch.
+
+Three alternating baseline/candidate pairs ran sequentially in fresh processes,
+Linux x86_64, Python 3.12.14, Git 2.52.0, non-root, with canonical Git maintenance
+disabled. Both source checkouts were clean at every sample. No other workspace
+tests ran during measurement. Setup, method and cleanup are included. All 18
+executions passed, zero failures/errors/skips. Every pair improved and all
+before/after ranges are disjoint; shared-host load/order effects remain possible.
+These are selected-test results, not causal whole-suite savings.
+
+| Test suffix | Before median (range), s | After median (range), s | Reduction |
+| --- | --- | --- | --- |
+| unknown/active/queued/terminal | 8.822 (8.538–8.902) | 7.076 (6.931–7.393) | 19.78% |
+| async three-failure/stagnation | 8.527 (8.072–8.712) | 6.423 (6.378–6.779) | 24.67% |
+| truthful stop-proof validation | 6.766 (6.632–6.908) | 5.848 (5.562–6.034) | 13.57% |
+
+Evidence: [before](2026-10-04-linux-before.json),
+[after](2026-10-04-linux-after.json), [comparison](2026-10-04-linux-comparison.json).
+Every test-source hash was checked against its measured Git revision. No test
+source changes follow measurement. No failed or skipped timing is counted as a gain.
+
+Runtime collection also verified normal feature run 37150936632 at PR 14's exact
+head, with edition job 111284514364 and delivery job 111284514201 both successful.
+The synthetic checkout is `c9a63d0cc977c5fb2102878d7bce368ccca2f932`.
+Fresh source discovery in an isolated exact-head checkout, one process per module,
+found 617 edition plus 537 delivery executions over 41 + 15 groups. It did not run
+the tests. The [new manifest](manifests/fb86bc0511fe32d40f872517c0d261c02f42e0b8.json)
+binds all 56 module hashes and both verifier, parallel runner and edition-manifest
+hashes. PR 15's older inventory was not reused or relabeled. Its unchanged collector
+accepted the new logs and idempotent recollection; its 17 regression tests passed.
+
+[Totals and verified CI links](TOTAL-RUNTIME.md) and [history](suite-history.json)
+retain parallel observation details separately from serial daily records. Latest
+parallel summed time is 2432.901 s, up 214.417 s (9.67%) from the prior equivalent
+concurrency observation; API job envelope is 630 s, up 67 s (11.90%). One edition
+execution was added. The overlapping sum is not suite elapsed time. Edition and
+delivery command spans, API setup-inclusive job durations, job-log span, unknown
+queue/workflow time, runner image and source/count differences are recorded there.
+Neither this trend nor cross-concurrency comparisons establish causal savings.
+Original serial baseline remains 756 executions / 1135.863 summed seconds; prior
+daily final remains 762 / 803.053. No extra full-suite timing-only run was launched.
+PR 15 exact-head run 37141141959 passed edition but correctly scope-skipped full
+delivery; it is excluded from total-runtime baselines.
+
+Local canonical `verify-playbook.py --skip-delivery` passed 228 tests (14.549 s),
+conventions, metadata, links, public-content, generated status/inventory, edition
+manifest and drift cadence current through 2026-10-08. Main collector's nine guards
+and separate PR 15 collector's 17 guards passed. Delivery manifest generation and
+whitespace checks passed. Privileged watchers remain assigned to existing normal
+GitHub Actions; no security, credential, workflow, merge or deployment changes.
+No relevant installed project `.agents/skills` exists in this cloud checkout;
+repository manual stage-08 review and stage-09 integration routes apply. Browser
+QA is n/a for an assertion-preserving test-only edit. No new behavior requires a
+new regression test; existing cache guards and unchanged real-Git matrices verify
+the seam. Both author and committer use GitHub noreply identities.
+
+Next unreviewed candidates, retaining the successful screening order:
+
+- `test_interim_recovery.RecoveryBoundaryTests.test_consumed_elapsed_is_validated_before_accounting`
+- `test_interim_coordinator.CoordinatorTests.test_operation_binding_parity_matrix`
+- `test_interim_recovery.RecoveryBoundaryTests.test_shared_boundary_red_matrix`
+
+Profile these afresh, inspect fault/cache purity boundaries and record no-improvement
+when warranted. The four fanotify watcher IDs still require privileged correctness
+CI and have no successful local per-test ranking; no privilege bypass is authorized.
+
+Fresh-context independent review passed whole-module AST parity after removing
+exactly the three decorators and new import. Independent execution passed all four
+cache guards plus the three selected IDs: seven tests, 35 subcases, 20.572 s,
+zero failures/errors/skips. It reproduced all 32 measurement source hashes and
+all sample arithmetic. A separate 56-process discovery reproduced the exact
+feature inventory/counts and checked all module and four provenance hashes.
+Review made no edits; read-only behavior is not filesystem-enforced isolation.
+Security review found no new input boundary, secret or dependency change.
+Normal draft PR CI remains the authoritative privileged correctness gate; final
+publication identity and terminal CI will be recorded on the exact frozen PR head.
+
+### Normal batch CI checkpoint and final publication
+
+Draft PR 16 targets main directly. Normal CI run 37169647763 passed edition job
+111339807356 and full privileged delivery job 111339807279 at evidence checkpoint
+`157a6c7c5ef05bd59f0ae844a176bbc8cd15b382`. Synthetic checkout:
+`857f9321b396150c6b98754905fc9163f64cac29`. Both jobs and the complete delivery step succeeded;
+only the alternative skip-report step skipped. The run covered all 762 executions
+(228 edition + 534 delivery) in 16 groups, including privileged watchers. Counts
+match independent source discovery; no failure, skip or partial row is admitted.
+
+The unchanged main collector accepted the complete logs. [Totals](TOTAL-RUNTIME.md)
+and [history](suite-history.json) preserve exact run/job/head/checkout identities,
+commands, runner fields and input hashes. Summed unittest runtime is
+**991.362 s**: 188.309 s (23.45%) above the October 3 final
+803.053 s, and 144.501 s (12.72%) below original 1135.863 s. Counts are unchanged
+from October 3 and six above original (four cache guards and two content regressions).
+These are same serial-command observations, not causal optimization estimates.
+Unchanged coordinator-group runtime is 195.787 s versus
+165.490 s previously; runner/load and unrelated variation remain material.
+
+Edition/delivery verification command spans are 22.631877 /
+973.597332 s. Parallel job-log span is
+975.898134 s, an elapsed proxy including logged
+setup/cleanup, not summed test runtime. Exact workflow and queue time remain null.
+Both jobs used Python 3.12.14, Git 2.55.0, ubuntu-24.04 image
+20260927.320.1; original image was 20260920.314.1. Actual hosted
+hardware/load is unknown. The separate PR 14 concurrency observation above is
+never substituted for the serial daily baseline.
+
+This evidence-only follow-up leaves measured executable sources untouched. The
+final frozen PR head requires its own terminal normal CI; its exact SHA, result,
+verified links and final-head total will be recorded in PR 16's description after
+completion, avoiding an unending evidence-commit/CI cycle. This row explicitly
+belongs to the pre-follow-up checkpoint, not a claim about yet-unrun final CI.
+No extra timing-only full suite was invoked.
+
+Independent evidence review reproduced the complete serial row, hashes, group
+counts and comparison arithmetic with the unchanged main collector. All eight
+prior records and separate parallel evidence remain unchanged; this follow-up
+changes only the ledger, totals and history. Public-content, links, conventions,
+edition manifest and whitespace checks passed again. No executable retest was
+needed locally for this documentation-only follow-up; normal exact-head CI still
+owns final integration correctness.
+
+## 2026-10-05 — batch 6 (UTC)
+
+Live GitHub PR metadata and fetched refs confirm main at
+`8827c7a1190ed64d0a70c9efaeca91cdb841be27`. PRs 14, 15 and 16 remain open drafts,
+all targeting main with that exact actual merge base. PR14 has advanced to
+`0a1b232c4d23725f268eef5aa993cc72a43b5554`; PR15 remains
+`2c7f4528884a21756c4e126d410d671eef86e766`; PR16 remains
+`aaba65cc8bac533ad3b13d9929706184b6bfaca9`. Main includes the eleven earlier
+reviewed IDs; the three October 4 IDs remain only in PR16. All FOURTEEN were
+excluded before selecting this batch. Earlier consolidation work is resolved
+on main and was not redone. The original checkout was clean and preserved.
+
+Fresh branch `perf/test-runtime-2026-10-05` starts from current main and targets
+main directly. It has no executable dependency on PRs 14–16. Its three methods
+match all open PR baselines; it does not copy PR16's test changes or PR15's parser.
+For complete durable context only, it carries forward PR16's unchanged bench
+ledger, measurements, inventory and history, then appends this batch and recovers
+PR16's final observation. These shared documentation additions may require a
+normal merge-conflict reconciliation when the independent PRs land; preserve all
+records and regenerate manifests from the combined test tree. Do not count the
+carried fourteen IDs as new work or silently drop PR16's unmerged optimization.
+
+Measured implementation: `f32f32346b8b30c7bd84c7580a66ed0e91276f7d`.
+Three NEW reviewed IDs (seventeen reviewed in the complete ledger):
+
+- `test_interim_recovery.RecoveryBoundaryTests.test_consumed_elapsed_is_validated_before_accounting`
+- `test_interim_coordinator.CoordinatorTests.test_operation_binding_parity_matrix`
+- `test_interim_recovery.RecoveryBoundaryTests.test_shared_boundary_red_matrix`
+
+Diagnosis: repeated checkpoint validation performs identical input-only successful
+Git syntax checks. Apply the unchanged invocation-scoped `memoized_control_refs`
+to these three methods only. Test bodies, assertions, helpers and production
+sources are unchanged. The 21 elapsed fault combinations, 53 binding mutations
+across three boundaries (159 subcases), and 11 shared boundary cases remain.
+Real publication/CAS, corrupt checkpoint injection, refusal-before-sends checks,
+independent clone/reload, deep copies and temporary fixture isolation remain real.
+Faults alter provider receipts and checkpoint data, not subprocess outcomes or
+the Git executable/environment. Every validator runs; failures and other Git
+commands remain uncached. Cache reset and restoration retain the existing guards.
+
+Three alternating baseline/candidate pairs ran sequentially in fresh processes
+on clean checkouts, Linux x86_64, Python 3.12.14, Git 2.52.0, non-root, with canonical
+Git maintenance disabled. No other workspace tests ran during measurement.
+Command: `python3 bench/profile_delivery_tests.py --root CHECKOUT --repeat 1
+--output REPORT` with one `--test` for each exact ID above; repeat before/after
+three times. Setup, method and cleanup are included. All 18 executions passed;
+zero failures/errors/skips. All pairs improved and all ranges are disjoint.
+Shared-host load/order variation remains possible; these are narrow targeted
+results, not a whole-suite causal estimate.
+
+| Test suffix | Before median (range), s | After median (range), s | Reduction |
+| --- | --- | --- | --- |
+| consumed elapsed validation | 6.987 (6.873–7.177) | 5.977 (5.871–6.214) | 14.45% |
+| operation binding parity | 5.798 (5.737–6.051) | 5.344 (5.200–5.552) | 7.82% |
+| shared recovery boundary | 5.428 (5.347–5.479) | 4.570 (4.446–4.756) | 15.81% |
+
+Evidence: [before](2026-10-05-linux-before.json),
+[after](2026-10-05-linux-after.json), [comparison](2026-10-05-linux-comparison.json).
+Reports bind every delivery test-source hash and exact revisions. No sampled
+failure was discarded and no additional timing-only full suite was run.
+
+Ordinary CI history recovers PR16 final run 37170621708 at its exact head:
+762 executions, 930.348 summed seconds. Both terminal success and job association
+were rechecked, and the collector reproduces every field and source hash in the
+PR16 final JSON after stripping the connector's UTF-8 BOM. The initial transfer
+added a newline/BOM and failed the hash-equality check; lossless transfer and BOM
+normalization resolved it before admission. The 991.362s earlier checkpoint and
+803.053s October 3 final are retained as distinct observations. Original remains
+1135.863s / 756 executions. See [totals](TOTAL-RUNTIME.md) for qualified comparisons.
+
+Latest feature run 37243478663 at PR14's current head succeeded fully. Independent
+source discovery (without test execution) found 640 edition and 537 delivery
+executions over 43 + 15 groups. The initial local discovery script read only the
+literal delivery SETS assignment and omitted its later appended advance module;
+review of the actual runner corrected discovery to evaluate the complete SETS
+before collection. No incorrect inventory was published. The new
+[manifest](manifests/0a1b232c4d23725f268eef5aa993cc72a43b5554.json) binds 58 module
+hashes and four provenance hashes. Old manifests were not relabeled and expected
+counts were never inferred from logs. Unchanged PR15 collector supplies the
+parallel extraction; no collector work is duplicated or required on this branch.
+
+Parallel totals are separate: 2628.000 overlapping summed seconds, 614.878525s
+parallel job-log span; command spans 610.712874 / 586.314698s. Compared with the
+prior recorded equivalent-concurrency feature run: +195.099s (8.02%) and +23
+executions, +2 edition groups. API timestamps are unavailable in this tool's
+normalized metadata; setup, queue and exact workflow time are not inferred.
+The newer feature head supersedes the supplied d5964dee/37223574371 checkpoint;
+that intermediate run is not relabeled or treated as today's inventory.
+Runner/count/suite growth and unknown load prevent causal attribution.
+
+Repository AGENTS/digest and manual stage-08/09 routes were read. No relevant
+installed project or user `.agents/skills/SKILL.md` exists in this environment.
+Bootstrap is n/a to maintenance of the playbook source repository. No production
+behavior changes need new regression tests; existing guards and unchanged
+integration assertions are the verification seam. Browser QA is n/a for this
+test-only change. No credentials/security/workflows were changed; privileged
+watchers remain assigned to existing normal GitHub Actions. CLI API calls return
+Forbidden, while ordinary Git and the connected GitHub tool remain usable.
+All commits use noreply author and committer identities. No merge or deployment.
+
+Next unreviewed screening candidates:
+
+- `test_interim_monitor.MonitoringTests.test_repair_worker_errors_keep_one_monitored_failed_operation`
+- `test_interim_recovery.RecoveryBoundaryTests.test_explicit_uncertain_stop_retry_retains_confirmed_progress`
+- `test_interim_coordinator.CoordinatorTests.test_receipt_acceptance_parity_diagnosed_cases`
+
+Profile afresh and inspect purity/fault boundaries; prior regression execution
+alone is not a performance review. Four fanotify watcher IDs still lack successful
+local timing and require privileged correctness CI. Never change permissions to
+obtain their timings. Final frozen-head CI and collection belong in the draft PR
+as well as the durable evidence checkpoint below, avoiding endless evidence-only
+commits that each trigger another full CI run.
+
+Fresh-context independent test review passed whole-module AST parity after
+removing exactly three decorators. Independent execution passed seven tests in
+17.039s, zero failures/errors/skips, instrumenting all 191 subcases (21 + 159 + 11).
+The reviewer independently reproduced all 32 source hashes, all 18 successful
+samples and comparison arithmetic, and verified exclusion of all fourteen prior
+IDs. No findings or edits; read-only behavior was not filesystem-enforced.
+
+Local canonical `python3 v0.5/scripts/verify-playbook.py --skip-delivery` passed
+228 edition tests in 15.305s plus privacy/content, conventions, links, generated
+status/inventory/manifests and drift current through 2026-10-08. Nine main collector
+guards passed after a guard caught a hand-appended totals appendix: regenerate
+TOTAL-RUNTIME.md exactly from the unchanged main renderer; keep parallel evidence
+in this ledger and supplemental history. No parser or test guard was weakened.
+These local checks are partial correctness evidence, not a full-suite runtime row.
+No executable source changed after measurement/review. Final privileged integration
+CI remains required and its terminal result will be recorded on the frozen draft.

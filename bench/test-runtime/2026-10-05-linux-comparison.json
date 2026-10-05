@@ -1,0 +1,85 @@
+{
+  "baseline_revision": "8827c7a1190ed64d0a70c9efaeca91cdb841be27",
+  "candidate_revision": "f32f32346b8b30c7bd84c7580a66ed0e91276f7d",
+  "method": "Three alternating baseline/candidate pairs; fresh process per selected set; no concurrent workspace tests",
+  "python": "3.12.14",
+  "platform": "Linux",
+  "git": "git version 2.52.0",
+  "successful_executions": 18,
+  "failed_or_skipped_executions": 0,
+  "scope": "selected test setup, method and cleanup; not full-suite timing",
+  "rows": [
+    {
+      "id": "test_interim_recovery.RecoveryBoundaryTests.test_consumed_elapsed_is_validated_before_accounting",
+      "before_samples": [
+        7.177161175000009,
+        6.872891478000014,
+        6.986581751999978
+      ],
+      "before_median": 6.986581751999978,
+      "before_range": [
+        6.872891478000014,
+        7.177161175000009
+      ],
+      "after_samples": [
+        6.213755275000011,
+        5.976856313000013,
+        5.871096550000004
+      ],
+      "after_median": 5.976856313000013,
+      "after_range": [
+        5.871096550000004,
+        6.213755275000011
+      ],
+      "reduction_percent": 14.452352736170603
+    },
+    {
+      "id": "test_interim_coordinator.CoordinatorTests.test_operation_binding_parity_matrix",
+      "before_samples": [
+        6.050975499999993,
+        5.797773622000022,
+        5.736820159000018
+      ],
+      "before_median": 5.797773622000022,
+      "before_range": [
+        5.736820159000018,
+        6.050975499999993
+      ],
+      "after_samples": [
+        5.552290798999991,
+        5.344169877000013,
+        5.200294609999986
+      ],
+      "after_median": 5.344169877000013,
+      "after_range": [
+        5.200294609999986,
+        5.552290798999991
+      ],
+      "reduction_percent": 7.8237574381790465
+    },
+    {
+      "id": "test_interim_recovery.RecoveryBoundaryTests.test_shared_boundary_red_matrix",
+      "before_samples": [
+        5.428467845,
+        5.479312045,
+        5.346545714999991
+      ],
+      "before_median": 5.428467845,
+      "before_range": [
+        5.346545714999991,
+        5.479312045
+      ],
+      "after_samples": [
+        4.755665894999993,
+        4.57007470100001,
+        4.446261184999997
+      ],
+      "after_median": 4.57007470100001,
+      "after_range": [
+        4.446261184999997,
+        4.755665894999993
+      ],
+      "reduction_percent": 15.812807011293817
+    }
+  ]
+}
