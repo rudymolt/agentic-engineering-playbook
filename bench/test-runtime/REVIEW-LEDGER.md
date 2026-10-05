@@ -1091,3 +1091,59 @@ in this ledger and supplemental history. No parser or test guard was weakened.
 These local checks are partial correctness evidence, not a full-suite runtime row.
 No executable source changed after measurement/review. Final privileged integration
 CI remains required and its terminal result will be recorded on the frozen draft.
+
+Fresh-context independent evidence review passed: separate-process discovery
+reproduced all 58 ordered module counts/hashes and four provenance hashes, then
+reviewed shard labels, buffered outputs and exit propagation. PR15's 17 collector
+regressions passed in 0.015s; its unchanged collector independently reproduced
+the complete latest feature row. Main collector independently reproduced every
+field of PR16's final record and verified supplied API timing arithmetic.
+Live run/job status and latest-head selection were checked separately by the
+owning session. Reviewer executed no feature suites and edited no tracked files.
+
+Independent count-only discovery on this batch's source confirms 228 edition +
+534 delivery executions across 1 + 15 groups. Exact canonical commands remain
+`python3 v0.5/scripts/verify-playbook.py --skip-drift --skip-delivery` and privileged
+`sudo python3 v0.5/delivery/scripts/verify.py --set K4.1` (CI resolves the configured
+interpreter). This branch starts from main's eleven optimizations, so PR16's three
+unmerged optimizations are absent: comparisons against its final total are
+observations across independent branches, not a cumulative optimization estimate.
+The overlapping parallel feature sum never enters this serial comparison cohort.
+
+### Ordinary batch CI checkpoint
+
+Normal draft PR17 run 37253579646 passed at `ca5ce4bdf32fcadf2743084078c9229e9984f2b8`.
+Edition job 111585967534 and privileged delivery job 111585967387 succeeded;
+all 762 executions (228 + 534) passed in 16 groups, zero unittest skips.
+Count-only source discovery matches every logged group. Synthetic checkout:
+`84d363bd053248926d7e2a893d8292d01724524c`. Full delivery ran, including watchers.
+
+Summed unittest runtime: **952.408s**, including fixtures/cleanup and excluding
+interpreter startup and standalone CLI checks. Versus October 4 final 930.348s:
+**+22.060s (+2.37%)**; versus October 3 final 803.053s:
+**+149.355s (+18.60%)**; versus original 1135.863s:
+**-183.455s (-16.15%)**. Counts remain 762 versus
+original 756. These are observed differences, not causal test-optimization gains;
+runner/load and the absent PR16 optimizations prevent cumulative attribution.
+
+Edition/delivery command log spans: 20.413823 /
+936.975882s. Parallel job-log span:
+942.445712s, including logged setup/cleanup, excluding
+queue/pre-log setup. Exact setup, queue and workflow elapsed are unknown.
+Runner: Python 3.12.14, Git 2.55.0,
+ubuntu-24.04 image 20260927.320.1;
+hardware/load unknown. Original image was 20260920.314.1.
+
+Collector accepted complete logs; history retains commands, group counts, head,
+checkout, run/job IDs and source hashes. This evidence-only commit changes no
+measured executable source. Its final frozen head gets normal CI, with terminal
+result and final collector JSON retained in PR17's description to avoid an
+unending evidence-commit/CI cycle. No timing-only full suite was requested.
+
+Fresh independent evidence review reproduced the checkpoint row field-for-field,
+all 16 source-discovered group counts, both input hashes, 952.408 = 18.399 +
+934.009 seconds, 942.445712s log union and every comparison above. All ten prior
+serial records remain unchanged and TOTAL-RUNTIME.md exactly matches the canonical
+main renderer. Nine collector guards passed again. Privacy/content, conventions,
+links, manifests, whitespace and executable-source parity passed for this final
+evidence-only follow-up. No review findings or tracked reviewer edits.
