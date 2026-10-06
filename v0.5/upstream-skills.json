@@ -1095,6 +1095,17 @@
         "source": "pstack/skills/blast-radius/SKILL.md"
       }
     },
+    "ai-playbook-configure": {
+      "package": "playbook",
+      "status": "current",
+      "invocation": "user",
+      "tier": "core",
+      "lanes": ["state_lifecycle"],
+      "stages": ["AGENT-DIGEST", "README", "93-model-routing-track"],
+      "install_by_default": true,
+      "previous_names": [],
+      "provenance": null
+    },
     "ship-release": {
       "package": "playbook",
       "status": "current",

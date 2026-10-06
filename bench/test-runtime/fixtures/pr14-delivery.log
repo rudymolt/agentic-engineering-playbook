@@ -1,0 +1,75 @@
+﻿2026-10-03T16:48:11.2868110Z Current runner version: '2.337.0'
+2026-10-03T16:48:11.2892144Z Version: 20260901.588
+2026-10-03T16:48:11.2897969Z Image: ubuntu-24.04
+2026-10-03T16:48:11.2898358Z Version: 20260927.320.1
+2026-10-03T16:48:12.3859906Z ##[group]Run actions/checkout@v7
+2026-10-03T16:48:12.4724602Z git version 2.55.0
+2026-10-03T16:48:14.2910853Z HEAD is now at 16d3f23 Merge a89fd242ae2e87caed987359e65e7a454203c5cf into 8827c7a1190ed64d0a70c9efaeca91cdb841be27
+2026-10-03T16:48:14.2947538Z [command]/usr/bin/git log -1 --format=%H
+2026-10-03T16:48:14.2977525Z 16d3f23eeb75e1c59a493f2122706e333b676e02
+2026-10-03T16:48:14.3332185Z ##[group]Run actions/setup-python@v7
+2026-10-03T16:48:14.5325271Z Successfully set up CPython (3.12.14)
+2026-10-03T16:48:14.5502723Z ##[group]Run if [[ "$GITHUB_EVENT_NAME" == "workflow_dispatch" ]]; then
+2026-10-03T16:48:14.7764651Z ##[group]Run sudo "$(command -v python3)" v0.5/delivery/scripts/verify.py --set K4.1 --jobs 3
+2026-10-03T16:48:15.0242392Z Scheduled test shard 1/15: test_core.py
+2026-10-03T16:48:15.0246962Z Scheduled test shard 2/15: test_pack_lifecycle.py
+2026-10-03T16:48:15.0250617Z Scheduled test shard 3/15: test_cloud.py
+2026-10-03T16:48:15.0254797Z Scheduled test shard 4/15: test_checker_monitor.py
+2026-10-03T16:48:15.0256887Z Scheduled test shard 5/15: test_continuation.py
+2026-10-03T16:48:15.0258300Z Scheduled test shard 6/15: test_interim.py
+2026-10-03T16:48:15.0259727Z Scheduled test shard 7/15: test_interim_coordinator.py
+2026-10-03T16:48:15.0261372Z Scheduled test shard 8/15: test_interim_repair.py
+2026-10-03T16:48:15.0262968Z Scheduled test shard 9/15: test_interim_recovery.py
+2026-10-03T16:48:15.0264511Z Scheduled test shard 10/15: test_interim_stack.py
+2026-10-03T16:48:15.0267748Z Scheduled test shard 11/15: test_interim_watchdog.py
+2026-10-03T16:48:15.0293537Z Scheduled test shard 12/15: test_interim_monitor.py
+2026-10-03T16:48:15.0323517Z Scheduled test shard 13/15: test_interim_conductor_host.py
+2026-10-03T16:48:15.0360356Z Scheduled test shard 14/15: test_interim_host_continuation.py
+2026-10-03T16:48:15.0361443Z Scheduled test shard 15/15: test_interim_advance.py
+2026-10-03T16:48:16.3359477Z Test shard 1/15: test_core.py (exit 0)
+2026-10-03T16:48:16.3769041Z Ran 75 tests in 0.895s
+2026-10-03T16:48:16.3769484Z OK
+2026-10-03T16:48:18.3295364Z Test shard 4/15: test_checker_monitor.py (exit 0)
+2026-10-03T16:48:18.3315758Z Ran 11 tests in 1.899s
+2026-10-03T16:48:18.3316516Z OK
+2026-10-03T16:48:18.6829159Z Test shard 5/15: test_continuation.py (exit 0)
+2026-10-03T16:48:18.6913860Z Ran 55 tests in 0.267s
+2026-10-03T16:48:18.6920945Z OK
+2026-10-03T16:48:18.9866886Z Test shard 3/15: test_cloud.py (exit 0)
+2026-10-03T16:48:18.9938911Z Ran 62 tests in 3.559s
+2026-10-03T16:48:18.9939390Z OK
+2026-10-03T16:48:20.1035981Z Test shard 6/15: test_interim.py (exit 0)
+2026-10-03T16:48:20.1059296Z Ran 16 tests in 1.309s
+2026-10-03T16:48:20.1059791Z OK
+2026-10-03T16:48:25.8191592Z Test shard 2/15: test_pack_lifecycle.py (exit 0)
+2026-10-03T16:48:25.8203517Z Ran 8 tests in 10.383s
+2026-10-03T16:48:25.8203993Z OK
+2026-10-03T16:49:09.0501622Z Test shard 8/15: test_interim_repair.py (exit 0)
+2026-10-03T16:49:09.0578907Z Ran 33 tests in 48.815s
+2026-10-03T16:49:09.0579128Z OK
+2026-10-03T16:49:21.4505187Z Test shard 10/15: test_interim_stack.py (exit 0)
+2026-10-03T16:49:21.4532889Z Ran 19 tests in 12.266s
+2026-10-03T16:49:21.4533373Z OK
+2026-10-03T16:49:29.1974448Z Test shard 11/15: test_interim_watchdog.py (exit 0)
+2026-10-03T16:49:29.2056712Z Ran 15 tests in 7.632s
+2026-10-03T16:49:29.2056914Z OK
+2026-10-03T16:50:15.0958261Z Test shard 12/15: test_interim_monitor.py (exit 0)
+2026-10-03T16:50:15.1533749Z Ran 93 tests in 45.686s
+2026-10-03T16:50:15.1533829Z OK
+2026-10-03T16:50:16.2574073Z Test shard 13/15: test_interim_conductor_host.py (exit 0)
+2026-10-03T16:50:16.2605939Z Ran 18 tests in 1.047s
+2026-10-03T16:50:16.2606171Z OK
+2026-10-03T16:50:52.5799641Z Test shard 14/15: test_interim_host_continuation.py (exit 0)
+2026-10-03T16:50:52.5879069Z Ran 18 tests in 36.212s
+2026-10-03T16:50:52.5879492Z OK
+2026-10-03T16:51:30.7504558Z Test shard 15/15: test_interim_advance.py (exit 0)
+2026-10-03T16:51:30.7541939Z Ran 45 tests in 38.071s
+2026-10-03T16:51:30.7542070Z OK
+2026-10-03T16:51:35.6992225Z Test shard 7/15: test_interim_coordinator.py (exit 0)
+2026-10-03T16:51:35.7021072Z Ran 40 tests in 196.594s
+2026-10-03T16:51:35.7021287Z OK
+2026-10-03T16:55:44.2988248Z Test shard 9/15: test_interim_recovery.py (exit 0)
+2026-10-03T16:55:44.3009721Z Ran 29 tests in 438.362s
+2026-10-03T16:55:44.3009854Z OK
+2026-10-03T16:55:44.3010000Z V0.5 delivery K4.1 checks passed.
+2026-10-03T16:55:44.4750928Z git version 2.55.0

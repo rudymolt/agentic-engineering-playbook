@@ -9,6 +9,7 @@ import unittest
 
 import test_interim_repair as repair_tests
 from test_interim_repair import RepairFixture
+from control_ref_test_support import memoized_control_refs
 from delivery_pilot.interim import initial_record
 from delivery_pilot.interim_conductor_host import ConductorHostAdapter
 from delivery_pilot.interim_repair_coordinator import InterimRepairCoordinator
@@ -310,6 +311,7 @@ class RepairHostContinuationTests(unittest.TestCase):
         approved["hard_limits"] = getattr(self, "selected_limits", "none")
         return approved
 
+    @memoized_control_refs
     def test_async_three_failure_diagnosis_and_stagnation_with_and_without_caps(self):
         for limits in ("none", {"dispatch_max": 30}):
             for progress in (False, True):

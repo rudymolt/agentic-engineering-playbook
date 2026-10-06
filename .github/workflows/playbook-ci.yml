@@ -13,20 +13,20 @@ jobs:
   edition:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       - name: Verify public edition and content boundary
-        run: python3 v0.5/scripts/verify-playbook.py --skip-drift --skip-delivery
+        run: python3 v0.5/scripts/verify-playbook.py --skip-drift --skip-delivery --jobs 3
 
   delivery:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       - name: Classify delivery test scope
@@ -55,7 +55,7 @@ jobs:
             >> "$GITHUB_OUTPUT"
       - name: Verify delivery contracts and fault tests
         if: steps.delivery-scope.outputs.run_delivery == 'true'
-        run: sudo "$(command -v python3)" v0.5/delivery/scripts/verify.py --set K4.1
+        run: sudo "$(command -v python3)" v0.5/delivery/scripts/verify.py --set K4.1 --jobs 3
       - name: Record delivery suite skip
         if: steps.delivery-scope.outputs.run_delivery != 'true'
         run: echo "Delivery suite skipped — ${{ steps.delivery-scope.outputs.reason }}."
