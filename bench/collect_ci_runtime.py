@@ -179,7 +179,7 @@ def comparison_cohort(record):
 
 
 def annotate(records):
-    """Positive saved seconds mean faster; raw changes are not causal estimates."""
+    """Compare each run with its cohort; keep cross-record growth separate."""
     if not records:
         return []
     result = []
@@ -191,12 +191,13 @@ def annotate(records):
         cohort = comparison_cohort(record)
         original = originals.setdefault(cohort, record)
         for name, base in (("daily", previous_by_cohort.get(cohort)), ("cumulative", original)):
-            count_base = previous if name == "daily" else original
             if name == "cumulative" and original is record and previous is not None:
                 base = None
+            count_base = base
             row[name + "_observed_saved_seconds"] = None if base is None else round(base["summed_test_seconds"] - record["summed_test_seconds"], 6)
             row[name + "_observed_reduction_percent"] = None if base is None else round(100 * (1 - record["summed_test_seconds"] / base["summed_test_seconds"]), 4)
             row[name + "_execution_count_change"] = None if count_base is None else record["executions"] - count_base["executions"]
+        row["cross_record_execution_count_change"] = None if previous is None else record["executions"] - previous["executions"]
         result.append(row)
         previous = record
         previous_by_cohort[cohort] = record
