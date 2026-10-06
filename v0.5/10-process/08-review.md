@@ -49,7 +49,7 @@ admitted K4.1 fresh session may replace that click for an eligible exact head;
 it performs a new review and verification from durable evidence and stops at
 merge. K4.1 does not make a builder's review self-certifying.
 
-At the Verify boundary, use [`../93-model-routing-track.md`](../93-model-routing-track.md). The OpenAI default is GPT-6 Sol/high; `models` exposes verified alternatives. Verification always starts in fresh context without builder chat. If the active Build run selected `fast`, inherit that pace only when the fresh Codex/host route proves fast mode available; pace never changes the Verify model, reasoning, read-only boundary, evidence, or gates, and it clears when verification hands control back. Show “read-only” only when the selected runner enforces it, and reject output when authoritative runtime metadata does not match the selected route. Never use the model's generated self-description as identity proof.
+At the Verify boundary, use [`../93-model-routing-track.md`](../93-model-routing-track.md). Resolve the project/feature preference and show its origin (edition fallback: GPT-6.1 Sol/high); `models` exposes verified alternatives. Verification always starts in fresh context without builder chat. If the active Build run selected `fast`, inherit that pace only when the fresh Codex/host route proves fast mode available; pace never changes the Verify model, reasoning, read-only boundary, evidence, or gates, and it clears when verification hands control back. Show “read-only” only when the selected runner enforces it, and reject output when authoritative runtime metadata does not match the selected route. Never use the model's generated self-description as identity proof.
 
 Findings and verdicts carry typed evidence scaled by the ladder. At or above cross-module, include scope/acceptance criteria checked, diff or commit range, exact commands or browser flows run, pass/fail with visible result, artefact paths (logs/screenshots) where relevant, severity + confidence per finding, and verdict (`pass` / `blocked` / `pass-with-accepted-risk`). Below cross-module, one line is enough: command + result. Evidence without provenance is narrative.
 
@@ -75,6 +75,35 @@ tests, or fresh-verifier requirements.
 - Any time a user says "is this safe to merge?"
 
 ## First pass: standards and spec fidelity
+
+For new choices, resolve the saved binding before this pass's primary invocation.
+Resume with the retained `approved_binding`, not current defaults; older active
+routes without a binding remain unchanged:
+
+```sh
+printf '%s' '{"job":"code_review","owner":"08"}' | python3 {playbook-path}/v0.5/scripts/configure-playbook.py --project . job-route
+```
+
+A configured manual/Playbook adapter performs the standards/spec axes below.
+An eligible upstream source uses only the returned exact-source report-only
+invocation. Re-resolve immediately before invocation if source resolution
+changed. Blocked means stop and explicitly edit/preview a fallback, never
+invoke despite a warning. `configured: false` retains existing source checks.
+Fresh independence, verifier identity, evidence/verdict, mandatory adversarial
+and security axes, permissions and commit/launch boundaries remain stage-owned.
+See the [job contract](../scripts/skill-bindings.md).
+
+For a custom-retained-audit route, immediately before invoking call
+`catalog.invocation_source(saved, "code_review", "08", route["source_id"])`
+on this stage's local catalog, then load the returned private `SKILL.md` through
+the host's skill reader in the retained report-only mode. Use the same saved
+selection or authenticated retained review execution and external store as
+`job-route`; follow the
+[custom invocation recipe](../scripts/skill-bindings.md#stage-owned-custom-invocation).
+A portable identity is not a path; unresolved means block. Custom embedded
+upstream forms are excluded. The resolver does not authenticate approval or
+independence; real qualification, fresh verifier identity and effects enforcement
+remain owned here.
 
 Use a direct upstream reviewer only after
 `../scripts/check-upstream-compatibility.py` confirms the resolved installed source has

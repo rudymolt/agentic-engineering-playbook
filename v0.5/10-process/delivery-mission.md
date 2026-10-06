@@ -12,6 +12,19 @@ K4.1 merge receipt; never deploy or release.
 
 ## Assurance boundary
 
+Before creating an approval envelope, resolve unselected preferences through
+the [shared project reader](../scripts/playbook-config.md), including repair
+preferences and retained escalation constraints. Explicit envelope choices
+override preferences. After approval, routes, escalation policy and execution
+records are immutable: Configure cannot amend/re-resolve an active mission.
+Existing discovery, identity and gate checks admit every launch independently.
+For a new interim escalation approval, bind the approved seed with
+`routes.escalated_verify: {model: gpt-6.1-sol, effort: high, fallback: null}`
+before its immutable approval digest is issued. Absence in an existing approval
+means the historical GPT-6 Sol/high policy, not permission to migrate history.
+Keep GPT-6 Astra/high as the escalated-repair seed; neither operation payloads
+nor current defaults can weaken or reroute a retained approval.
+
 V0.5.0 ships two process-attested routes:
 
 | Route | Maximum action | What it proves | What it never proves |

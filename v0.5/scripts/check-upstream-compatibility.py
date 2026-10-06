@@ -124,7 +124,9 @@ def evaluate(
         actual = hashlib.sha256(source.read_bytes()).hexdigest()
     except OSError as error:
         return Decision(
-            skill, "missing", False, f"cannot read installed source: {error}", None, fallback,
+            skill, "missing", False,
+            f"cannot read installed source ({type(error).__name__}); restore a readable regular SKILL.md for this exact source and retry",
+            None, fallback,
             version, expected, None,
         )
     if actual != expected:

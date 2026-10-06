@@ -115,7 +115,7 @@ class AdvanceTests(unittest.TestCase):
         self.assertEqual(len({op["id"] for op in saved["usage"]["operations"]}), len(saved["usage"]["operations"]))
         forged = deepcopy(saved)
         first_verify = next(op for op in forged["usage"]["operations"] if op.get("escalated_verify") and op.get("verify_attempt") == 1)
-        first_verify["route"] = {"model": "gpt-6-sol", "effort": "medium"}
+        first_verify["route"] = {"model": "gpt-6.1-sol", "effort": "medium"}
         with self.assertRaises(InterimError):
             validate_record(forged)
 
