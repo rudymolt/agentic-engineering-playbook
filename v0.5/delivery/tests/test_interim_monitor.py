@@ -22,6 +22,8 @@ from pathlib import Path
 PACK = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(PACK / "src"))
 
+from control_ref_test_support import memoized_control_refs  # noqa: E402
+
 from delivery_pilot.interim import InterimCheckpointError, InterimCheckpointStore, initial_record, validate_record  # noqa: E402
 from delivery_pilot.interim import main as interim_main  # noqa: E402
 from delivery_pilot.git_control import GitControlStore  # noqa: E402
@@ -1112,6 +1114,7 @@ class MonitoringTests(unittest.TestCase):
         self.assertEqual(third.value["recovery_disposition"]["active"]["count"], 3)
         self.assertEqual(third.value["monitoring"]["state"], "inactive")
 
+    @memoized_control_refs
     def test_repair_worker_errors_keep_one_monitored_failed_operation(self):
         for index, phase in enumerate(("diagnosis", "repair", "repair-verify")):
             if index:

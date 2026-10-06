@@ -1,0 +1,85 @@
+{
+  "baseline_revision": "8827c7a1190ed64d0a70c9efaeca91cdb841be27",
+  "candidate_revision": "fb1836b4cd2424507824d43974aec0fef72ab28f",
+  "method": "Three alternating baseline/candidate pairs; fresh process per selected set; no concurrent workspace tests",
+  "python": "3.12.14",
+  "platform": "Linux",
+  "git": "git version 2.52.0",
+  "successful_executions": 18,
+  "failed_or_skipped_executions": 0,
+  "scope": "selected test setup, method and cleanup; not full-suite timing",
+  "rows": [
+    {
+      "id": "test_interim_monitor.MonitoringTests.test_repair_worker_errors_keep_one_monitored_failed_operation",
+      "before_samples": [
+        5.275502169999996,
+        5.144213872999984,
+        5.29703373000001
+      ],
+      "before_median": 5.275502169999996,
+      "before_range": [
+        5.144213872999984,
+        5.29703373000001
+      ],
+      "after_samples": [
+        3.9810245719999955,
+        3.929957889999997,
+        3.956206578000007
+      ],
+      "after_median": 3.956206578000007,
+      "after_range": [
+        3.929957889999997,
+        3.9810245719999955
+      ],
+      "reduction_percent": 25.00796226570389
+    },
+    {
+      "id": "test_interim_recovery.RecoveryBoundaryTests.test_explicit_uncertain_stop_retry_retains_confirmed_progress",
+      "before_samples": [
+        4.391154394999987,
+        4.447384631999995,
+        4.274600179999993
+      ],
+      "before_median": 4.391154394999987,
+      "before_range": [
+        4.274600179999993,
+        4.447384631999995
+      ],
+      "after_samples": [
+        3.8333473510000005,
+        3.6711634600000025,
+        3.7419769759999895
+      ],
+      "after_median": 3.7419769759999895,
+      "after_range": [
+        3.6711634600000025,
+        3.8333473510000005
+      ],
+      "reduction_percent": 14.783752986212162
+    },
+    {
+      "id": "test_interim_coordinator.CoordinatorTests.test_receipt_acceptance_parity_diagnosed_cases",
+      "before_samples": [
+        4.121062041000002,
+        4.121876474999993,
+        4.028215632999974
+      ],
+      "before_median": 4.121062041000002,
+      "before_range": [
+        4.028215632999974,
+        4.121876474999993
+      ],
+      "after_samples": [
+        3.2688897649999973,
+        3.353150849000002,
+        3.357168607999995
+      ],
+      "after_median": 3.353150849000002,
+      "after_range": [
+        3.2688897649999973,
+        3.357168607999995
+      ],
+      "reduction_percent": 18.633817796483864
+    }
+  ]
+}

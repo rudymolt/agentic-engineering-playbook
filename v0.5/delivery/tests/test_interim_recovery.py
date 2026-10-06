@@ -598,6 +598,7 @@ class RecoveryBoundaryTests(unittest.TestCase):
                     self.preserved(snapshot.value, result.value, path)
                     self.reload(result)
 
+    @memoized_control_refs
     def test_explicit_uncertain_stop_retry_retains_confirmed_progress(self):
         for boundary in ("cancel", "observe", "owned_workers"):
             with self.subTest(boundary=boundary):

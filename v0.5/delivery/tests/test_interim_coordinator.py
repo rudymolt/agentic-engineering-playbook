@@ -206,6 +206,7 @@ class CoordinatorTests(InterimCheckpointTests):
                 self.assertEqual(len(build.operations), 1)
                 self.assertEqual(len(verify.operations), int(phase == "verify"))
 
+    @memoized_control_refs
     def test_receipt_acceptance_parity_diagnosed_cases(self):
         self.assert_receipt_parity([
             ("not-fresh", lambda r: r.update(fresh_context=False)),
