@@ -1,0 +1,7 @@
+2026-10-03T16:06:05.2815534Z HEAD is now at 0894af9 Merge bfe593335e3cc1a0c96e33e90e887feea5fa5089 into 8827c7a1190ed64d0a70c9efaeca91cdb841be27
+2026-10-03T16:06:05.2852090Z [command]/usr/bin/git log -1 --format=%H
+2026-10-03T16:06:05.2874821Z 0894af9ebd1f8b99fa05fc7112cb6bf64cfbbf65
+2026-10-03T16:06:05.4515085Z ##[group]Run python3 v0.5/scripts/verify-playbook.py --skip-drift --skip-delivery
+2026-10-03T16:19:32.2377250Z Ran 614 tests in 805.339s
+2026-10-03T16:19:32.2377465Z FAILED (failures=12)
+2026-10-03T16:19:32.2550569Z ##[error]Process completed with exit code 1.
