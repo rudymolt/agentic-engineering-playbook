@@ -359,9 +359,32 @@ stale/incomplete. A discovery fingerprint detects changed model/version
 identities without saving a route catalogue. The cache is at most 256 KiB,
 with at most 256 records per kind; it is advisory and never launch authority.
 Changed material claims return source-specific `changes` with old/new evidence
-and dates, reassessing existing models. Unchanged source content yields no
-change notice. Missing pricing remains unknown; new models need adequate
-task-fit evidence and live host-supported capability/reasoning.
+and dates, reassessing existing models. Semantic claims are compared before any
+cache filtering, independently of page fingerprints: list changes can withdraw
+claims even when page bytes are unchanged. Equal claims yield no change notice.
+Missing pricing remains unknown; new models need a reviewed
+guidance entry and live host-supported capability/reasoning. A withdrawn
+reviewed entry is a material change.
+
+On the official adapter path, cached guidance and retained advice must exactly
+match the canonical JSON SHA-256 fingerprint of every current reviewed entry
+field, including its heading and model link, as well as its claim fields. Legacy
+claims without a valid fingerprint and removed or changed claims
+are dropped and their source is due for refresh; matching confirmations keep
+the inclusive 24-hour cache for viewing advice. Display checks the current list
+and latest successful cached source check locally. Accept replacement instead
+retrieves the original reviewed entry's official source once before editing
+the draft, including retained and recovered proposals. A saved confirmation
+alone cannot authorize acceptance. Unavailability, withdrawal or a changed
+current reviewed entry refuses with an explanation and unchanged draft,
+project and approval bytes; no other model is ranked or chosen. This explicit
+acceptance boundary is independent of cache publication success. A cache write
+failure is nonfatal only when this attempt obtained an actual fresh source
+confirmation; a stale fallback never confirms. Cached advisory display retains
+its ordinary freshness rules; no durable invalidation subsystem is added.
+Controlled evidence injected by
+tests or `--evidence-fixture` keeps its existing structured-fixture behaviour;
+it is never live provider proof.
 
 Before accepting a replacement, recheck current authoritative discovery and the
 specific proposed route's role/task/risk suitability against its original guidance
@@ -369,7 +392,8 @@ date at the current clock. Exactly 24 hours is valid; one second later, future,
 missing or malformed dates cannot edit the draft. Retain the unavailable saved
 value and other edits, and offer explicit `Refresh` or ordinary role editing.
 Changed discovery/version invalidates cached suitability until explicit Refresh;
-acceptance never fetches official sources or substitutes another route. Missing
+acceptance checks only the original official source and never substitutes
+another route. Missing
 pricing alone does not invalidate suitable guidance. Apply still performs its
 independent availability, identity, file-revision and skill-eligibility checks.
 
@@ -392,18 +416,171 @@ reasoning and pricing pages through `model_recommendations.OfficialSources`.
 Only HTTPS GETs are used: no credentials, provider model execution, benchmark,
 package change or billing lookup. Redirects outside the source host are blocked;
 retrieval has size/time bounds. Provider page text is untrusted data, never
-instructions. There are no static model rankings or prices. General guidance,
-ambiguous tables and unrecognized identities remain incomplete. Exact provider
-IDs must match fresh host discovery, including host-supported reasoning.
-Provider guidance alone proves neither availability nor job suitability.
-Task-fit records require an exact model-associated affirmative suitability
-predicate (such as suitable, recommended, designed or built for the task), not merely
-the words reasoning, intelligence, tool use or a capability/control mention.
-The adapter stops model descriptions at paragraph, card and section boundaries;
-bare `for <task>` suffixes, effort-setting instructions, control prose anywhere
-in the description block and negative, unproven, conditional or
-ambiguous task statements do not establish suitability. This conservative
-recognition can leave valid but unrecognized provider wording unknown.
+instructions. There are no static prices or model rankings. Ambiguous tables and
+unrecognized identities remain incomplete. Exact provider IDs must match fresh
+host discovery, including host-supported reasoning. Provider guidance alone
+proves neither availability nor job suitability.
+Task fit comes only from the edition's reviewed guidance list,
+`v0.5/model-guidance.json`; the adapter never infers task fit from provider
+prose. A retrieval confirms an entry only when the official page has the
+entry's section heading immediately followed by a leaf block whose rendered
+text equals its exact reviewed paragraph
+(whitespace, Unicode default-ignorable characters and inline formatting ignored)
+containing the entry's model link. Neither heading nor block may be inside or
+contain deleted, struck-through or quoted markup (`del`, `s`, `strike`,
+`blockquote`, `q`). Inert template descendants are excluded at runtime and
+release checking. Otherwise the entry is
+withdrawn: the source uncertainty says "provider wording changed since review"
+and no task fit or replacement follows. Empty leaf blocks and separators break
+adjacency; textless layout wrappers containing the paragraph do not. Inline
+text is composed before whitespace is normalised, preserving spacing across
+formatting boundaries. Text composition treats native `</br>` as an
+attribute-free `br` start: both
+separate words, while breaks between words retain normalized whitespace.
+Hidden starts, raw/inert bodies and withheld select/foreign content remain
+excluded; a self-closing `br` start keeps its own visibility attributes.
+Element traversal, block classification and text composition are iterative:
+deeply nested visible wrappers and inline text
+retain the same order, adjacency and leaf rules beyond interpreter recursion
+limits. Native CDATA-shaped and marked declarations are bogus comments ending
+at their first `>`; abrupt empty comment closes (`<!-->`, `<!--->`) precede
+later full closes. Visible suffix text still changes reviewed wording or
+pricing context. Genuine comments and harmless closed bogus declarations
+contribute no text and leave unchanged visible units usable, including elsewhere
+on the page. Withholding does not change declaration namespaces: native bogus
+comments inside templates still end at the first `>`, preserving genuine
+template closes and visible successors. Only exact uppercase CDATA in an actual
+SVG/MathML declaration context consumes through `]]>`; close-like text cannot
+release inert confirming copies. Namespace tracking distinguishes nesting,
+integration descendants, ignored native tokens, foreign breakouts and
+self-closing foreign elements. Foreign names do not enter HTML raw-text or
+template mode. Foreign own closes cannot release an enclosing native template;
+integration encodings use the first attribute. Native raw bodies and
+hidden/excluded descendants remain withheld.
+Within native select context, ignored or misplaced end tokens cannot remove
+the select or its foreign integration ancestors from declaration tracking.
+Option/optgroup ends affect only their permitted current entries; genuine
+select and template closes retain usable visible successors. Real foreign
+CDATA after a genuine select close still consumes close-like text through `]]>`.
+Native scope scans can still take additional work on deeply nested
+input within the existing source byte limit; this is not a rendering or
+performance guarantee. A malformed list supplies no guidance; schema version
+must be the integer 1, never a boolean or another type. Duplicate JSON object
+keys anywhere or duplicate labels within a provider invalidate the whole list;
+labels identify price rows. Duplicate attributes on confirming elements or
+their context cannot confirm an entry.
+Literal bodies of `script`, `style`, `xmp`, `iframe`, `noembed`, `noframes`,
+`textarea` and `title`, conditional `noscript` content and `plaintext` cannot
+supply heading, paragraph, link or pricing-table elements. Self-closing flags
+are effective only for HTML void elements. Raw bodies consume close-like text
+until their genuine close; `plaintext` continues through EOF. The adapter
+handles [script escaped/double-escaped transitions](https://html.spec.whatwg.org/multipage/parsing.html#script-data-double-escaped-less-than-sign-state):
+a double-escaped `</script` returns to escaped text rather than closing the
+element. Ordinary scripts and visible entries after genuine closes remain
+usable. This rendered-element boundary applies equally at runtime and release
+checking on supported Python versions; it adds no whole-page prose inference.
+Finalize native EOF before guidance confirmation and pricing extraction.
+Bare `<` and `</` become rendered text; buffered character references resolve.
+Incomplete native start/end tags, comments and declarations supply no visible
+text. Valid unclosed visible elements retain their text without synthetic
+closing tokens; incomplete pricing tables remain unknown. EOF cannot release
+raw/RCDATA, hidden, inert, foreign or select exclusions or erase existing
+interrupted-paragraph barriers. Runtime retrieval and release checking use
+the same boundary on supported Python versions.
+Forbidden `del`, `s`, `strike`, `blockquote` and `q` descendants still exclude
+their containing reviewed heading or paragraph when the element or an ancestor
+is hidden, including closed `details` and `dialog` content. This structural
+condition is separate from rendered-text filtering. Apparent tokens in
+raw/RCDATA bodies or inert templates supply no such descendants. Hidden
+ordinary text, links and blocks remain excluded from rendering and adjacency;
+unrelated clean reviewed units and visible successors remain usable.
+
+HTML `hidden` attribute presence excludes the element and its descendants for
+all cases and values, including `until-found`. Hidden inline text, links and
+blocks contribute neither rendered text nor link evidence nor adjacency.
+Closed `dialog` content and closed `details` content outside its first direct
+`summary` are excluded too. `datalist` content, metadata (`base`, `link`, `meta`,
+`param`, `source`, `track`), image-map `area` elements and hidden inputs create
+no rendered block. Nested scopes and nonvoid self-closing flags retain this
+boundary, while genuine visible guidance and pricing after closes remain
+usable. These explicit HTML visibility rules do not implement CSS/JavaScript
+rendering or general browser tree repair. Fresh replacement acceptance uses
+the same boundary and refuses hidden copies without mutating the draft,
+project or approval records.
+Visibility filtering preserves bounded implied paragraph, heading, list-item
+and table-cell ends. A hidden block start can end a visible paragraph; its
+prefix and following text cannot be joined into one reviewed leaf block.
+Stray paragraph closes retain an empty structural barrier to adjacency.
+Interrupted source paragraphs are ambiguous; they cannot become confirming
+leaf blocks merely by dropping the block that interrupted them.
+Ambiguous table content outside cells or captions cannot confirm guidance;
+the adapter withdraws it instead of reconstructing a browser tree. Valid
+visible successors and hidden inline additions remain usable.
+Native HTML `image` starts normalize to void `img` before visibility filtering.
+Legacy metadata `basefont`/`bgsound` and legacy control `keygen` starts are void;
+native `frame` starts outside a frameset are ignored. Their attributes cannot hide following visible
+qualifiers in headings, paragraphs, model links or pricing. Actual hidden
+containers and ancestors retain their visibility boundary; foreign/integration
+scopes and raw/inert content retain their existing exclusions. Genuine visible
+successors remain usable, with the same fresh draft-only acceptance rules.
+Ruby and its `rb`, `rp`, `rt` and `rtc` descendants remain inline in reviewed
+headings, paragraphs and model links. Hidden annotations contribute no text;
+visible annotation text participates in exact matching. With ruby in native
+scope, annotation starts apply implied ends only at the stack top before
+visibility filtering; `rt`/`rp` retain an enclosing `rtc`. Genuine nested blocks,
+excluded descendants and ambiguous contexts still withdraw affected units.
+Native content-model scopes cannot supply confirming blocks from apparent
+markup. The bounded adapter withholds `select`, `option`, `optgroup`, `button`,
+`meter`, `progress`, embedded fallback (`object`, `applet`, `audio`, `video`,
+`canvas`) and `frameset` subtrees. SVG/MathML subtrees are conservatively
+withheld, including HTML integration points. An ambiguous barrier prevents
+omission of qualifiers from making a heading, paragraph or price newly usable.
+Ignored document/table tokens and nested forms likewise cannot hide visible
+qualifiers; repeated document tokens withdraw ambiguous document evidence.
+Nested controls and foreign integration/breakout contexts retain raw-text and
+inert-template safeguards. HTML nonvoid self-closing flags cannot escape those
+contexts; genuine foreign self-closing elements retain usable successors.
+Correctly closed scopes, ordinary forms and hidden inline additions remain
+usable. This is bounded exclusion, not general browser tree construction or
+CSS/JavaScript rendering; reviewed-list and fresh acceptance rules are unchanged.
+Literal `hidden` attributes on these scopes or apparent ancestors cannot remove
+their ambiguity barriers. Nested selects/buttons, implicit control closes,
+ignored starts and foreign breakouts can expose qualifiers outside the apparent
+hidden scope. Affected headings, paragraphs, model links and pricing context
+remain withheld. Ordinary hidden inline additions and visible successors after
+correctly closed scopes retain the existing visibility rules.
+The barrier applies consistently to every ignored or misplaced scope family,
+including table structural tokens outside a table, nested forms and repeated
+document tokens, even under apparent hidden or closed ancestors. Unrelated
+closes and nonvoid self-closing flags cannot erase visible qualifiers from
+reviewed units or pricing context. Raw-text/inert exclusions and ordinary
+valid forms retain their existing handling.
+Active HTML formatting elements (including anchors) can survive paragraph and
+other structural ends and reconstruct hidden or excluded context later. The
+adapter retains an ambiguity barrier for detached formatting and adoption or
+misnesting, including nested anchors and `nobr`; affected reviewed text, links
+and pricing cannot confirm. Explicit own closes and genuine cell/caption or
+`marquee` formatting boundaries release usable visible successors. Raw/inert
+and withheld native/foreign descendants never supply this formatting state.
+An own close across open blocks can clone the formatting entry; repeated own
+closes alone cannot prove release. Retain that adoption barrier until a genuine
+formatting marker clears the affected context.
+Genuine closed hidden-inline additions remain usable. This is conservative
+visibility handling, without browser reconstruction or a new dependency;
+the reviewed-list and advisory-cache/fresh-acceptance rules are unchanged.
+End tags cannot release an ancestor across native scope boundaries, including
+tables, cells and captions. Generic inline closes stop at native structural
+boundaries; document ends do not remove document ancestry. Withhold ambiguous
+partial ancestor closes rather than reconstruct them. Genuine explicit and
+implied table ends release cell/caption formatting markers so visible successors
+remain usable. Hidden content and ambiguous text, links or pricing cannot
+authorize fresh acceptance; refusal preserves the retained draft and project,
+approval and original proposal bytes without reranking or launch.
+Successful withdrawal also removes any retained guidance label used to identify
+Anthropic prices during that check; it cannot attribute a new price row.
+Rationale and limitations distinguish "No reviewed guidance yet for …" from
+"Reviewed guidance withdrawn for …: provider wording changed since review".
+Maintainers run `scripts/check-model-guidance.py` before a release.
 Rates require the table's explicit enclosing tier (a heading or provider
 switcher pane), not a nearby Standard label or a generic pricing URL. Batch,
 other nonstandard tiers and ambiguous context cannot supply Standard estimates.
@@ -450,8 +627,9 @@ amends `openai defaults`, active/pending routes or reusable preferences.
 
 Keep the three classes separate:
 
-- `guidance`: model-specific official task/capability description, source URL,
-  successful `checked_at`, uncertainty and inferred task/risk fit. Host reasoning
+- `guidance`: a reviewed provider statement confirmed on its official page:
+  model, label, reviewed tasks/risks, text, source URL, successful `checked_at`,
+  `reviewed_at`, `entry_fingerprint` and uncertainty. Host reasoning
   support remains availability evidence, not a claim derived from pricing.
 - `cost.rates`: published API base rates, model/runner route, billing route,
   currency, unit, source URL, successful check date and exclusions. Estimates

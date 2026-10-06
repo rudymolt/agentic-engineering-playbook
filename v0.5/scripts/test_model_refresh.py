@@ -92,11 +92,11 @@ class RefreshTests(unittest.TestCase):
 
     def test_official_sources_coalesce_and_fingerprint_unchanged_new_version(self):
         fetched = []
-        html = '<p><a href="/api/docs/models/fixture-code">fixture-code</a> Recommended for coding.</p>'
+        html = fixtures.REVIEWED_PAGE
         def fetch(url):
             fetched.append(url)
             return html if url == SOURCES[0] else '<p>Official guidance with no unambiguous rates</p>'
-        service = self.service(sources=OfficialSources(lambda: NOW, fetch=fetch).retrieve)
+        service = self.service(sources=OfficialSources(lambda: NOW, fetch=fetch, reviewed=[fixtures.REVIEWED_CODE]).retrieve)
         first = service.read()
         self.assertEqual(fetched, list(SOURCES))
         self.assertEqual(len(first['recommendation_evidence']['sources'][0]['content_fingerprint']), 64)
@@ -142,11 +142,11 @@ class RefreshTests(unittest.TestCase):
         def fetch(url):
             fetched.append(url)
             if url == SOURCES[0]:
-                return '<p><a href="/api/docs/models/fixture-code">fixture-code</a> Recommended for coding.</p>'
+                return fixtures.REVIEWED_PAGE
             if url == SOURCES[1]:
                 return '<p>Reasoning controls</p>'
             raise OSError('outage')
-        service = self.service(sources=OfficialSources(lambda: NOW, fetch=fetch).retrieve)
+        service = self.service(sources=OfficialSources(lambda: NOW, fetch=fetch, reviewed=[fixtures.REVIEWED_CODE]).retrieve)
         service.read()
         fetched.clear()
         draft = service.read()
@@ -268,10 +268,10 @@ class ClaimFreshnessTests(unittest.TestCase):
         def fetch(url):
             now[0] = '2026-10-02T12:00:01+00:00'
             if url == SOURCES[0]:
-                return '<p><a href="/api/docs/models/fixture-code">fixture-code</a> Recommended for coding.</p>'
+                return fixtures.REVIEWED_PAGE
             return '<p>General official guidance</p>'
         cache = EvidenceCache(lambda: now[0])
-        result = cache.retrieve(OfficialSources(lambda: now[0], fetch=fetch).retrieve,
+        result = cache.retrieve(OfficialSources(lambda: now[0], fetch=fetch, reviewed=[fixtures.REVIEWED_CODE]).retrieve,
                                 {'routes': self.routes, 'revision': 'fixture'})
         self.assertEqual(result['guidance'][0]['checked_at'], now[0])
         self.assertNotIn(result['guidance'][0].get('status'), ('stale', 'incomplete'))

@@ -8,7 +8,7 @@ import os
 from pathlib import Path
 import tempfile
 
-from model_recommendations import SOURCES, OfficialSources, valid_claim, successful_date_status
+from model_recommendations import SOURCES, OfficialSources, matches_reviewed_guidance, valid_claim, successful_date_status
 
 
 def fingerprint(value):
@@ -22,12 +22,20 @@ def instant(value):
     return date
 
 
+def semantic_claims(entry):
+    # Review identity binds reuse, but an unchanged statement is not new advice.
+    return {kind: [{key: value for key, value in record.items() if key not in {'checked_at', 'retrieved_at'}
+                   and (kind != 'guidance' or key not in {'entry_fingerprint', 'reviewed_at', 'uncertainty'})}
+                   for record in entry.get(kind, []) if isinstance(record, dict)] for kind in ('guidance', 'rates')}
+
+
 class EvidenceCache:
     def __init__(self, clock, path=None, project=None):
         self.clock = clock
         self.path = Path(path) if path else None
         self.project = Path(project) if project else None
         self.saved = {}
+        self.unpersisted = False
 
     def _private(self):
         if self.path is None:
@@ -60,19 +68,32 @@ class EvidenceCache:
         except (OSError, ValueError, TypeError, AttributeError):
             return {}
 
-    def retrieve(self, source, discovery, force=False):
-        saved = self._load()
+    def retrieve(self, source, discovery, force=False, urls=None):
+        saved = self._latest_saved()
         entries = saved.get('entries', {})
+        before_entries = deepcopy(entries)
         # Hash exact discovered identity/version metadata; do not save a catalogue.
         identities = sorted(fingerprint(route) for route in discovery['routes'])
         discovered = fingerprint({'identities': identities, 'revision': discovery['revision']})
         new = discovered != saved.get('discovery_fingerprint')
         now = instant(self.clock())
         due = []
-        official = isinstance(getattr(source, '__self__', None), OfficialSources)
+        adapter = getattr(source, '__self__', None)
+        official = isinstance(adapter, OfficialSources)
+        reviewed = adapter.reviewed_entries() if official else None
         tracked = SOURCES if official or not entries else tuple(entries)
+        if urls is not None:
+            tracked = tuple(url for url in tracked if url in urls)
         for url in tracked:
             entry = entries.get(url, {})
+            rejected = False
+            if official:
+                guidance = entry.get('guidance', [])
+                matching = [record for record in guidance if matches_reviewed_guidance(record, reviewed)
+                            and record.get('source_url') == url]
+                rejected = len(matching) != len(guidance)
+                if rejected:
+                    entry['guidance'] = matching
             try:
                 age = (now - instant(entry['source']['checked_at'])).total_seconds()
                 fresh = (0 <= age <= 86400 and entry['source']['status'] == 'retrieved'
@@ -80,7 +101,7 @@ class EvidenceCache:
                                  for kind in ('guidance', 'rates') for record in entry.get(kind, [])))
             except (KeyError, ValueError, TypeError, AttributeError):
                 fresh = False
-            if force or new or not fresh:
+            if force or new or rejected or not fresh:
                 due.append(url)
         fetched = {}
         if due and source is not None:
@@ -105,6 +126,8 @@ class EvidenceCache:
         changes = []
         refreshed = False
         result = {'guidance': [], 'rates': [], 'sources': [], 'changes': changes}
+        if official:
+            result['reviewed_models'] = [entry['model_id'] for entry in reviewed]
         for url in SOURCES:
             old = entries.get(url, {})
             if not isinstance(old, dict):
@@ -112,7 +135,8 @@ class EvidenceCache:
             current = deepcopy(old)
             if url in due:
                 claims = {kind: [deepcopy(record) for record in fetched.get(kind, [])[:256]
-                                 if valid_claim(record, kind, allow_unusable=True) and record.get('source_url') == url]
+                                 if valid_claim(record, kind, allow_unusable=True) and record.get('source_url') == url
+                                 and (kind != 'guidance' or not official or matches_reviewed_guidance(record, reviewed))]
                           for kind in ('guidance', 'rates')}
                 metadata = next((deepcopy(item) for item in fetched.get('sources', [])
                                  if isinstance(item, dict) and item.get('source_url') == url), {})
@@ -128,18 +152,8 @@ class EvidenceCache:
                 except (KeyError, ValueError, TypeError, AttributeError):
                     success = False
                 if success:
-                    semantic = {kind: [{key: value for key, value in record.items() if key not in {'checked_at', 'retrieved_at'}} for record in records]
-                                for kind, records in claims.items()}
-                    metadata.setdefault('content_fingerprint', fingerprint(semantic))
+                    metadata.setdefault('content_fingerprint', fingerprint(semantic_claims(claims)))
                     current = {**claims, 'source': metadata}
-                    if old.get('source', {}).get('content_fingerprint') and old['source']['content_fingerprint'] != metadata['content_fingerprint']:
-                        before = {kind: [{key: value for key, value in record.items() if key not in {'checked_at', 'retrieved_at'}} for record in old.get(kind, [])]
-                                  for kind in ('guidance', 'rates')}
-                        if before != semantic:
-                            changes.append({'source_url': url, 'checked_at': metadata['checked_at'],
-                                            'previous_checked_at': old['source'].get('checked_at'),
-                                            'before': before, 'after': semantic,
-                                            'message': 'Official advice/cost evidence changed; reassess affected models. Defaults and approvals retained.'})
                     refreshed = True
                 else:
                     prior = old.get('source', {})
@@ -152,6 +166,13 @@ class EvidenceCache:
                                                'uncertainty': uncertainty}}
             if not current or (not official and not old and not any(claims.values()) and not metadata):
                 continue
+            previous = before_entries.get(url, {})
+            before, after = semantic_claims(previous), semantic_claims(current)
+            if previous.get('source', {}).get('checked_at') and before != after:
+                changes.append({'source_url': url, 'checked_at': self.clock(),
+                                'previous_checked_at': previous['source'].get('checked_at'),
+                                'before': before, 'after': after,
+                                'message': 'Official advice/cost evidence changed; reassess affected models. Defaults and approvals retained.'})
             entries[url] = current
             result['sources'].append(deepcopy(current['source']))
             for kind in ('guidance', 'rates'):
@@ -169,10 +190,13 @@ class EvidenceCache:
                             if item.get('status') not in ('stale', 'incomplete', 'failed'):
                                 item['status'] = 'incomplete'
                         result[kind].append(item)
-        self.saved = {'schema_version': 1, 'entries': entries, 'discovery_fingerprint': discovered}
+        # A source-only acceptance check is not a complete discovery pass.
+        self.saved = {'schema_version': 1, 'entries': entries,
+                      'discovery_fingerprint': discovered if urls is None else saved.get('discovery_fingerprint')}
         result['cache_refreshed'] = refreshed
         result['cache_persisted'] = False
         if self.path and due and self._private():
+            self.unpersisted = True
             data = json.dumps(self.saved, sort_keys=True, allow_nan=False)
             temporary_path = None
             try:
@@ -183,6 +207,7 @@ class EvidenceCache:
                         temporary_path = temporary.name
                     os.replace(temporary_path, self.path)
                     result['cache_persisted'] = True
+                    self.unpersisted = False
             except OSError:
                 result['cache_limitations'] = 'Local advisory cache could not be persisted; configuration unchanged.'
             finally:
@@ -194,3 +219,39 @@ class EvidenceCache:
         elif self.path and not self._private():
             result['cache_limitations'] = 'Local advisory cache destination is no longer external; persistence refused.'
         return result
+
+    def current_reviewed_entries(self, reviewed):
+        """Local latest successful source state; never fetch or rerank retained advice."""
+        entries = self._latest_saved().get('entries', {})
+        current = []
+        for entry in reviewed:
+            source = entries.get(entry['source_url'], {})
+            if not source.get('source', {}).get('checked_at') or any(
+                    matches_reviewed_guidance(record, [entry]) for record in source.get('guidance', [])):
+                current.append(entry)
+        return current
+
+    def _latest_saved(self):
+        """A failed disk write must not undo a successful check in this instance."""
+        saved = self._load()
+        entries = saved.setdefault('entries', {})
+        for url, local in self.saved.get('entries', {}).items() if self.unpersisted else ():
+            try:
+                local_date = instant(local['source']['checked_at'])
+            except (KeyError, ValueError, TypeError, AttributeError):
+                continue
+            try:
+                disk_date = instant(entries[url]['source']['checked_at'])
+            except (KeyError, ValueError, TypeError, AttributeError):
+                disk_date = None
+            if disk_date is None or local_date >= disk_date:
+                current = deepcopy(local)
+                if local_date == disk_date:
+                    # Equal timestamps cannot order two checks. A known
+                    # withdrawal in either snapshot wins over confirmation.
+                    confirmed = {record.get('entry_fingerprint') for record in entries[url].get('guidance', [])
+                                 if isinstance(record, dict)}
+                    current['guidance'] = [record for record in current.get('guidance', [])
+                                           if record.get('entry_fingerprint') in confirmed]
+                entries[url] = current
+        return saved

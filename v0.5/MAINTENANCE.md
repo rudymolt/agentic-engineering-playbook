@@ -49,6 +49,21 @@ Classify each upstream-driven change before assigning a playbook version:
 
 The changelog `Why` paragraph names the lane. An explicit human request to release overrides the suggested calendar timing, but not verification or release invariants.
 
+## Reviewed model guidance
+
+`v0.5/model-guidance.json` is the only source of provider task-fit guidance. Each
+entry records the model, tasks, risks, official source URL, section heading, exact
+reviewed paragraph, model link and review date. Live retrieval confirms or
+withdraws entries; it never creates one.
+
+Before each release, and when a provider changes its model-selection page, run
+`python3 v0.5/scripts/check-model-guidance.py`. It fetches the official pages and
+exits non-zero for any entry the current page no longer confirms. Use
+`--page URL=FILE` to check retained page bytes offline. For a withdrawn entry,
+read the page in full, then update or remove the entry in a reviewed PR. Add an
+entry only from an explicit, unconditional provider statement whose surrounding
+section was read in full; record the review date.
+
 ## Per-release evidence
 
 Run the public release-readiness suite and record its result with the release.
