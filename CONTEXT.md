@@ -15,3 +15,23 @@ A separate local clone used for public `main` and feature-branch work.
 ## Managed file
 
 A project file installed from a playbook template and tracked with a pristine merge base so upgrades can preserve project changes.
+
+## Personal defaults
+
+A person's preferred playbook settings used to initialise new projects. Applying later changes to an existing project is an explicit choice.
+
+## Project defaults
+
+The preferred playbook settings for one project. They are distinct from choices already made for an active feature and the record of what actually ran.
+
+## Configuration preset
+
+A named collection of playbook defaults that a person can use as a starting point and customise.
+
+## Skill binding
+
+The assignment of an eligible skill to a specific playbook job, such as alignment or code review. A job's requirements determine which skills can fill it.
+
+## Model recommendation
+
+A suggested model choice with an explanation of its suitability and expected cost trade-offs. It is distinct from the model selection the user has approved.

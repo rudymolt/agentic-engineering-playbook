@@ -1,7 +1,7 @@
 {
   "files": [
     {
-      "digest": "sha256:0028d6a55b93729c563fffcd4c7c1a67de149638cf282a8a28c6ce00999419c6",
+      "digest": "sha256:4b087e72fd9d4081ecf1d62dcd258f38f63fcc963181ad4fbfe975119a5bc648",
       "install_path": null,
       "source": "README.md"
     },
@@ -466,7 +466,7 @@
       "source": "scripts/lifecycle.py"
     },
     {
-      "digest": "sha256:c4705ea7c7f6a5be8ab8ee1ab487f8fd996dd9df8046d98bd3d04de0914adea1",
+      "digest": "sha256:c9d38ed89ec7a11b3e96146af6a0aa0ba38a75a909ad610d3ecc4ad6a8352cde",
       "install_path": null,
       "source": "scripts/verify.py"
     },
@@ -591,7 +591,7 @@
       "source": "src/delivery_pilot/interfaces.py"
     },
     {
-      "digest": "sha256:d708a42979c7f7fc2e5f0336a1512474df3c2776eb654cee1827bf84eaf3e2c3",
+      "digest": "sha256:7b0ba13effd24fa23c3d11549d9a8a48186012735de2de62351865c3858f1fdb",
       "install_path": "runtime/delivery_pilot/interim.py",
       "source": "src/delivery_pilot/interim.py"
     },
@@ -601,7 +601,7 @@
       "source": "src/delivery_pilot/interim_advance.py"
     },
     {
-      "digest": "sha256:2b548323f77ebdfbd4753092155c8f58132f8d3ecfa5076a24dafcab6aa99982",
+      "digest": "sha256:700c31661f942f63827589b6a5ce8d7b9ec9f7097057546fe41142c1f4c0d92a",
       "install_path": "runtime/delivery_pilot/interim_conductor_host.py",
       "source": "src/delivery_pilot/interim_conductor_host.py"
     },
@@ -656,7 +656,7 @@
       "source": "src/delivery_pilot/interim_repair_coordinator.py"
     },
     {
-      "digest": "sha256:fc4995003abdcbc2c2f0e373307317e4b9a0c86fab43484915da838f80124f01",
+      "digest": "sha256:e69fa879438a1eeb1167f839d1c70a9c77770da323042265000fba5de2001235",
       "install_path": "runtime/delivery_pilot/interim_routes.py",
       "source": "src/delivery_pilot/interim_routes.py"
     },
@@ -716,6 +716,16 @@
       "source": "tests/control_ref_test_support.py"
     },
     {
+      "digest": "sha256:68f774486de670e33c3ae1f395da6c5eab818787e188a56530d33df9624fd33c",
+      "install_path": null,
+      "source": "tests/fixtures/README.md"
+    },
+    {
+      "digest": "sha256:9c621914725618c80cbbabfb1f85c4809b2935dafe4c7015ac6adfb23f27c9a5",
+      "install_path": null,
+      "source": "tests/fixtures/legacy-escalated-history.json"
+    },
+    {
       "digest": "sha256:a3f92339d3f38ea658c3d23326b07275df21a40b8b769fe7e67b9c78ea34e8ea",
       "install_path": null,
       "source": "tests/test_checker_monitor.py"
@@ -736,17 +746,17 @@
       "source": "tests/test_core.py"
     },
     {
-      "digest": "sha256:9d7dea5db96260689f7c4003cf9ef881510c9419fe6f3bae29d412db55af661c",
+      "digest": "sha256:396f67f1d8776401c3e49519f5949af4f84db5eda53878fd1dd5e3ffd49a5962",
       "install_path": null,
       "source": "tests/test_interim.py"
     },
     {
-      "digest": "sha256:fb7998f1a115dee1b023d26432395f0c76e5c2ef204054b2327af0e05a0e383e",
+      "digest": "sha256:c8cf8edaaa7d46052fb2302321cd4d62d03143a0e6431d925cf75bfdfe13e3c5",
       "install_path": null,
       "source": "tests/test_interim_advance.py"
     },
     {
-      "digest": "sha256:b7a905b0a1c481e6bb7ce9085cfea0cae2d60a14608aba9a83394566f57db2c4",
+      "digest": "sha256:d43569b438cfca13fbd8008b0066a28d78dbb800cb573b6acf7768b48392a14a",
       "install_path": null,
       "source": "tests/test_interim_conductor_host.py"
     },
@@ -793,5 +803,5 @@
   ],
   "manifest_schema_version": 1,
   "manifest_self_rule": "pack_digest covers the complete non-manifest source inventory",
-  "pack_digest": "sha256:a350b5d0ecc7ba307acbbdff691625a3b6029609e3ab14df21bf79cb5f4700d8"
+  "pack_digest": "sha256:05dac6624d488e02614ef0e1ce903e4d712c06c13ae0ddf88d78bc2a2a38840c"
 }

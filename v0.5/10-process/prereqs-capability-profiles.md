@@ -26,7 +26,7 @@ If none exists, halt at stage 00 and name the missing capability. An unavailable
 | Real-environment QA when the ladder requires it | Compatibility-gated report-only browser skill | Human or agent follows stage 09 in a real browser/device and records evidence | The acceptance criteria require an environment that nobody can exercise |
 | Security and secret handling | Compatibility-gated security reviewer, host permission/sandbox controls | Apply stage 00 Check E and stage 08's security checklist; keep secrets in ignored environment storage and redact diagnostic evidence before display | Secret exposure cannot be contained or a required trust boundary cannot be reviewed |
 | State and document lifecycle | `compute-status.py`, `/whats-next`, `/document-release` | Update the state/status blocks and run the doc-close checklist by hand | Project state cannot be reconciled with observable files and git evidence |
-| Stage-aware model routing | `/model-router`, host model catalogs, provider CLIs | Use the OpenAI lane default in the current session, or perform the documented Conductor handoff and record identity evidence | The selected route cannot prove model identity, required permissions, fresh Verify context, or handoff delivery |
+| Stage-aware model routing | `/model-router`, host model catalogs, provider CLIs | Resolve the project/feature preference through the shared configuration reader, then use the verified current session or documented Conductor handoff and record identity evidence | The selected route cannot prove model identity, required permissions, fresh Verify context, or handoff delivery |
 
 ## Profiles
 

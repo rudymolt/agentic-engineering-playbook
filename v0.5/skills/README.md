@@ -12,7 +12,7 @@ Provenance: [Matt Pocock's `writing-for-agents`](https://github.com/mattpocock/s
 Every local skill carries `agents/openai.yaml` with Codex picker metadata (`interface.display_name` and `interface.short_description`). Metadata and frontmatter must agree on invocation ownership; picker visibility never broadens the user's authority grant.
 
 <!-- generated: upstream/local-skills -->
-local_skills[11]{name,invocation}:
+local_skills[12]{name,invocation}:
   whats-next, model
   model-router, model
   ai-playbook-upgrade-project, model
@@ -23,6 +23,7 @@ local_skills[11]{name,invocation}:
   ai-playbook-why, model
   ai-playbook-how, model
   ai-playbook-blast-radius, model
+  ai-playbook-configure, user
   ship-release, model
 <!-- /generated: upstream/local-skills -->
 
@@ -48,6 +49,15 @@ an explicit approved **deliver to PR** or admitted K4.1 action starts it.
 | `/model-router` | Lane boundaries and typed `models` / `openai defaults` replies must reach one consistent chooser | It selects and launches a route only after the human's lane action; stage and external-mutation gates remain intact |
 
 ## Embedded upstream skill contract
+
+`/ai-playbook-configure` is user-invoked. S2 edits all four project model roles
+with typed migration preview and explicit Apply; it never starts a model.
+QA inherits Verify and Coordinator is observed display-only. Guided/expert
+presentation is saved locally through a separate explicit destination preview,
+without applying the project draft. New projects retain the bootstrap gate.
+The shared [configuration boundary](../scripts/playbook-config.md) supplies
+effective preferences to model-router. Bootstrap/upgrade install the skill
+through the registry without adopting or replacing project settings.
 
 An upstream skill is **embedded** when a playbook stage selects it as one capability
 inside a larger workflow. That differs from an explicit user request to run the upstream

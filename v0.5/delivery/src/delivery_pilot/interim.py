@@ -281,10 +281,14 @@ def validate_approval(value: object) -> dict[str, Any]:
         _fail("coordinator has unknown or missing fields")
     _text(coordinator["session_id"], "coordinator session_id")
     routes = _mapping(approval["routes"], "routes")
-    if set(routes) != _ROUTE_NAMES:
+    if set(routes) not in (_ROUTE_NAMES, _ROUTE_NAMES | {"escalated_verify"}):
         _fail("routes has unknown or missing fields")
     for name in _ROUTE_NAMES:
         _route(routes[name], f"{name} route")
+    if "escalated_verify" in routes:
+        _route(routes["escalated_verify"], "escalated_verify")
+        if routes["escalated_verify"] != {"model": "gpt-6.1-sol", "effort": "high", "fallback": None}:
+            _fail("new escalated Verify policy requires gpt-6.1-sol/high without fallback")
     forecast = _mapping(approval["forecast"], "forecast")
     allowed_forecasts = ({"work_units", "verification_units"}, {"work_units", "verification_units", "likely_repair_units", "final_handback_units"})
     if set(forecast) not in allowed_forecasts or any(type(forecast[name]) is not int or forecast[name] < 0 for name in forecast):

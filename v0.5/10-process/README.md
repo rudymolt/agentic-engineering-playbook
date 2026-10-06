@@ -33,7 +33,7 @@
 
 Optional pre-spec branch: `01 Align ─► 92 Wayfinder ─► 01/02 graduation ─► 03 Spec`. Wayfinder is user-invoked and appears only when the destination is nameable but the route remains multi-session and foggy; see [`../92-wayfinder-track.md`](../92-wayfinder-track.md).
 
-Optional model-routing overlay: [`../93-model-routing-track.md`](../93-model-routing-track.md) wraps the Plan (01–06), Build (07), and Verify (08–09) boundaries with text-only model prompts. OpenAI defaults remain one typed action away; `models` reveals verified Conductor or provider alternatives without changing the 13-stage loop.
+Optional model-routing overlay: [`../93-model-routing-track.md`](../93-model-routing-track.md) wraps the Plan (01–06), Build (07), and Verify (08–09) boundaries with text-only model prompts. Resolved project/feature preferences show their origin; feature-only OpenAI edition overrides remain explicit; `models` reveals verified Conductor or provider alternatives without changing the 13-stage loop.
 
 ## Terminal result contract
 
@@ -92,7 +92,7 @@ When the user asks for something, route as follows. These are also the rules bak
 | [`90-loop-track.md`](../90-loop-track.md) | Already-specified AFK slices should run back-to-back under earned ceilings | Human opt-in |
 | [`91-delegation-track.md`](../91-delegation-track.md) | An anchored multi-phase plan needs separate implementation and verification | Human orchestration |
 | [`92-wayfinder-track.md`](../92-wayfinder-track.md) | A named destination still has a coupled, multi-session decision frontier before spec | **Human invocation**; model may offer only |
-| [`93-model-routing-track.md`](../93-model-routing-track.md) | Plan, Build, or Verify should use a verified model/runner route while keeping OpenAI defaults | Model presents the lane prompt; human types the route/action |
+| [`93-model-routing-track.md`](../93-model-routing-track.md) | Plan, Build, or Verify should use a verified model/runner route while honouring project/feature preferences | Model presents the lane prompt; human types the route/action |
 
 ---
 

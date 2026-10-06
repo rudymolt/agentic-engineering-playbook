@@ -5,6 +5,9 @@
 PR CI gate: an overdue upstream review has a different owner and remedy than a
 broken PR, so it must not turn unrelated PRs red. The weekly maintenance cron
 and local release runs keep the strict, full set.
+
+--jobs runs the same public unittest files in parallel CI shards. The default
+remains the ordinary single-process release-readiness run.
 """
 
 from __future__ import annotations
@@ -13,6 +16,8 @@ import argparse
 import subprocess
 import sys
 from pathlib import Path
+
+from parallel_verification import run_parallel, test_files
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -43,7 +48,11 @@ def main(argv: list[str] | None = None) -> int:
                         help="omit the monthly upstream-drift check (PR CI only)")
     parser.add_argument("--skip-delivery", action="store_true",
                         help="omit privileged delivery checks (split CI job only)")
+    parser.add_argument("--jobs", type=int, default=1,
+                        help="concurrent public unittest file shards (CI only; default: 1)")
     args = parser.parse_args(argv)
+    if not 1 <= args.jobs <= 4:
+        parser.error("--jobs must be between 1 and 4")
 
     for command in COMMANDS:
         if args.skip_drift and command[-1].endswith(DRIFT_COMMAND):
@@ -51,6 +60,15 @@ def main(argv: list[str] | None = None) -> int:
             continue
         if args.skip_delivery and DELIVERY_COMMAND in command:
             print(f"\n(skipped {DELIVERY_COMMAND} — --skip-delivery)", flush=True)
+            continue
+        if command == COMMANDS[0] and args.jobs > 1:
+            files = test_files(ROOT / "v0.5/scripts")
+            shards = [(*command[:-1], name) for name in files]
+            print(f"\n$ public unittest discovery: {len(files)} file shards, "
+                  f"{args.jobs} concurrent jobs", flush=True)
+            result = run_parallel(shards, cwd=ROOT, jobs=args.jobs)
+            if result:
+                return result
             continue
         print(f"\n$ {' '.join(command)}", flush=True)
         completed = subprocess.run(command, cwd=ROOT, check=False)

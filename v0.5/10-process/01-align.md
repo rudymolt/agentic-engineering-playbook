@@ -18,9 +18,36 @@ Skip if the change is a one-line typo, comment, or formatting fix.
 
 ## What to run
 
+For new choices, resolve the saved primary binding at this stage-owned invocation
+point. Resume an approved execution with its retained `approved_binding`, not
+current defaults; older active routes without a binding remain unchanged:
+
+```sh
+printf '%s' '{"job":"alignment","owner":"01"}' | python3 {playbook-path}/v0.5/scripts/configure-playbook.py --project . job-route
+```
+
+For a configured result, consume `routes` in saved order instead of automatically
+choosing the upstream defaults below. Manual/Playbook adapters perform this
+stage directly; context → decisions settles facts before human decisions and
+confirmation. `configured: false` retains the existing options. Blocked means
+stop and explicitly edit/preview a fallback, never acknowledge a warning and
+continue. The Plan gate, human confirmation and UI preview sequence remain
+mandatory. See the [job contract](../scripts/skill-bindings.md).
+
+For a custom-retained-audit route, the portable descriptor is not a skill path.
+Immediately before invoking, this stage's integration must call
+`catalog.invocation_source(saved, "alignment", "01", route["source_id"])`
+on its local binding catalog and load that returned private `SKILL.md` through
+the host's skill reader. Use the same saved selection (or authenticated retained
+approved execution) and the same external local store as `job-route`; see the
+[custom invocation recipe](../scripts/skill-bindings.md#stage-owned-custom-invocation).
+An unresolved source blocks. The resolver neither authenticates approval nor
+grants invocation authority; real independent evidence and human gates remain
+owned here.
+
 Three skills, layered. Use the smallest set that settles the question.
 
-Before the first planning skill starts, use the Plan gate in [`../93-model-routing-track.md`](../93-model-routing-track.md). The normal `plan` reply accepts GPT-5.6 Sol; `models` opens verified alternatives; `openai defaults` applies GPT-5.6 Sol/high → GPT-6 Sol/medium → GPT-6 Sol/high to this feature. A pre-feature choice creates only a pending route, not a feature folder or alignment counter.
+Before the first planning skill starts, use the Plan gate in [`../93-model-routing-track.md`](../93-model-routing-track.md). The normal `plan` reply accepts the resolved project/feature preference and shows its origin (edition fallback: GPT-6.1 Sol/high); `models` opens verified alternatives; `openai defaults` applies GPT-6.1 Sol/high → GPT-6.1 Sol/medium → GPT-6.1 Sol/high to this feature only. A pre-feature choice creates only a pending route, not a feature folder or alignment counter.
 
 ### Option A — settled-product project, code-level change
 
