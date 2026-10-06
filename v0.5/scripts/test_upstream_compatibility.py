@@ -60,6 +60,22 @@ class UpstreamCompatibilityTests(unittest.TestCase):
         self.assertEqual(decision.embedded_invocation, "/sample-review --report-only")
         self.assertEqual(decision.fallback, "manual: stage 08 sample review")
 
+    def test_source_read_errors_expose_only_portable_class_and_recovery(self) -> None:
+        manifest, source = self.fixture()
+        source.unlink()
+        for error_class in ("FileNotFoundError", "IsADirectoryError"):
+            with self.subTest(error_class=error_class):
+                if error_class == "IsADirectoryError":
+                    source.mkdir()
+                decision = MODULE.evaluate("sample-review", source, self.UNKNOWN_FALLBACK, manifest)
+                self.assertEqual(decision.status, "missing")
+                self.assertFalse(decision.may_invoke)
+                self.assertIsNone(decision.embedded_invocation)
+                self.assertIn(error_class, decision.reason)
+                self.assertIn("restore a readable regular SKILL.md", decision.reason)
+                self.assertNotIn(str(source.parent), decision.reason)
+                self.assertEqual(decision.fallback, self.UNKNOWN_FALLBACK)
+
     def test_known_incompatible_source_falls_back_even_when_hash_matches(self) -> None:
         manifest, source = self.fixture(compatible=False)
         decision = MODULE.evaluate("sample-review", source, self.UNKNOWN_FALLBACK, manifest)

@@ -231,6 +231,7 @@ class CoordinatorTests(InterimCheckpointTests):
     def test_handoff_acceptance_parity_matrix(self):
         self.assert_receipt_parity(handoff_mutations(), handoff=True)
 
+    @memoized_control_refs
     def test_operation_binding_parity_matrix(self):
         store = self.store(self.first)
         approved = initial_record(self.s2_approval())

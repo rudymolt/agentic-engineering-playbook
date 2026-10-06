@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import json
 import re
 import shutil
 import subprocess
@@ -272,6 +273,8 @@ def bootstrap_project(
         raise FileNotFoundError(f"playbook templates not found: {templates}")
     project.mkdir(parents=True, exist_ok=True)
     report = BootstrapReport()
+    info = project.stat()
+    report.project_identity = {"resolved": str(project), "device": info.st_dev, "inode": info.st_ino}
     version = current_version(playbook_root)
 
     state_path = project / ".playbook-state.yml"
@@ -411,10 +414,43 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--ui", required=True, choices=("no", "defaults"))
     parser.add_argument("--ci", required=True, choices=("copy", "existing"))
     parser.add_argument("--apply", action="store_true")
+    parser.add_argument("--preferences-dir", type=Path)
+    parser.add_argument("--preset", help="Named personal seed; omission uses saved personal defaults.")
+    parser.add_argument("--seed-revision", help="Exact seed_revision from the read-only bootstrap plan; required for seeded Apply.")
+    parser.add_argument("--discovery-command", help="JSON argv for the current-availability adapter; no model launch.")
+    parser.add_argument("--custom-bindings-dir", type=Path)
+    parser.add_argument("--now", help="Fixture clock only.")
     args = parser.parse_args(argv)
+    from playbook_config import ConfigError, public_error_message, strict_json
+    from bootstrap_seed import apply_seed, preview_seed
+
+    def discover(request):
+        command = strict_json(args.discovery_command or "null")
+        if not isinstance(command, list) or not command or any(not isinstance(part, str) or not part for part in command):
+            raise ConfigError("Personal seeding requires a current-availability adapter JSON argv; preview again after supplying it.")
+        result = subprocess.run(command, input=json.dumps(request), text=True, capture_output=True)
+        if result.returncode:
+            raise ConfigError("Seed discovery failed; restore the adapter and preview again. No substitute.")
+        return strict_json(result.stdout)
+
+    clock = (lambda: args.now) if args.now else None
+    seed = None
+    try:
+        if args.preset and args.preferences_dir is None:
+            raise ConfigError("A named preset requires an explicit external personal preferences directory.")
+        if args.preferences_dir is not None:
+            seed = preview_seed(args.project, args.preferences_dir, discover, clock, args.preset, args.custom_bindings_dir)
+        if args.apply and seed is not None and args.seed_revision != seed["seed_revision"]:
+            raise ConfigError("Seed approval is missing or changed; rerun the read-only bootstrap plan and approve its exact seed_revision.")
+    except (ConfigError, OSError, UnicodeError) as error:
+        print("bootstrap seed blocked: " + public_error_message(error), file=sys.stderr)
+        return 2
     if not args.apply:
         try:
             print_plan(args.project, args.playbook_path, ui=args.ui, ci=args.ci)
+            if seed is not None:
+                print("Configuration seed (create .playbook-config.json; no personal write):")
+                print(json.dumps(seed, sort_keys=True, indent=2))
         except FileNotFoundError as error:
             print(f"bootstrap plan failed: {error}", file=sys.stderr)
             return 1
@@ -427,9 +463,18 @@ def main(argv: list[str] | None = None) -> int:
             ui=args.ui,
             ci=args.ci,
         )
-    except (FileNotFoundError, ValueError, RuntimeError) as error:
-        print(f"bootstrap failed: {error}", file=sys.stderr)
-        print("No certification completed; safe partial changes may remain, so inspect the diff.", file=sys.stderr)
+        if seed is not None:
+            if report.manual_reviews:
+                raise ConfigError("Bootstrap requires review; personal configuration was not seeded. Preserve partial project changes and resolve reviews first.")
+            apply_seed(args.project, args.preferences_dir, discover, seed, clock, args.custom_bindings_dir,
+                       report.project_identity)
+            report.changed_files.append(str(args.project / ".playbook-config.json"))
+    except (OSError, ValueError, RuntimeError) as error:
+        print("bootstrap failed: " + public_error_message(error), file=sys.stderr)
+        if seed is not None:
+            print("Requested seeded setup is incomplete; bootstrap files may already be initialized. Inspect the diff and retained recovery evidence before retrying.", file=sys.stderr)
+        else:
+            print("No certification completed; safe partial changes may remain, so inspect the diff.", file=sys.stderr)
         return 1
     for changed in report.changed_files:
         print(f"changed: {changed}")

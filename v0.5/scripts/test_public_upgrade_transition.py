@@ -71,6 +71,29 @@ class PublicTransitionTest(unittest.TestCase):
             self.assertEqual(second.returncode, 0, second.stdout + second.stderr)
             self.assertEqual(before, self.snapshot(project))
 
+    def test_helper_preserves_custom_defaults_and_retained_sibling(self):
+        from test_bootstrap_project import upgrade_project
+
+        with tempfile.TemporaryDirectory() as tmp:
+            project, _ = self.fixture(Path(tmp))
+            state_path = project / ".playbook-state.yml"
+            custom = upgrade_project.PRE_V061_MODEL_DEFAULTS.replace("runner: codex", "runner: opencode", 1)
+            sibling = "  # Retain this unrelated routing map\n  retained_defaults:\n" + upgrade_project.PRE_V061_MODEL_DEFAULTS + "\n"
+            history = "\nselected_routes:\n" + upgrade_project.PRE_V061_MODEL_DEFAULTS + "\n"
+            state_path.write_text(state_path.read_text().replace(upgrade_project.CURRENT_MODEL_DEFAULTS, custom)
+                                  .replace("  allowed_runners:", sibling + "  allowed_runners:") + history)
+            first = self.run_upgrade(project)
+            self.assertEqual(first.returncode, 0, first.stdout + first.stderr)
+            self.assertNotIn("manual review:", first.stdout)
+            state = state_path.read_text()
+            self.assertIn("  defaults:\n" + custom, state)
+            self.assertIn(sibling, state)
+            self.assertTrue(state.endswith(history))
+            before = self.snapshot(project)
+            second = self.run_upgrade(project)
+            self.assertEqual(second.returncode, 0, second.stdout + second.stderr)
+            self.assertEqual(before, self.snapshot(project))
+
     def test_conflict_preserves_old_stamp_and_project_text(self):
         with tempfile.TemporaryDirectory() as tmp:
             project, _ = self.fixture(Path(tmp))

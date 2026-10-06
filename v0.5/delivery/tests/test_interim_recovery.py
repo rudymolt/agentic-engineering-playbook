@@ -420,6 +420,7 @@ class RecoveryBoundaryTests(unittest.TestCase):
         self.reload(result)
         return result
 
+    @memoized_control_refs
     def test_shared_boundary_red_matrix(self):
         wrong_id = lambda result: {**result, "observation": {**result["observation"], "message_id": "wrong"}}
         cases = [
@@ -564,6 +565,7 @@ class RecoveryBoundaryTests(unittest.TestCase):
                     result = self.check_fault(path, boundary, fault, occurrence, **options)
                     self.assertIn("malformed", result.value["state"]["handback"]["reason"])
 
+    @memoized_control_refs
     def test_consumed_elapsed_is_validated_before_accounting(self):
         for path, occurrence in (("wake", 1), ("recover", 2), ("recover-wake", 2)):
             for elapsed in (-1, True, 1.5, "1", None, [], {}):
@@ -575,6 +577,7 @@ class RecoveryBoundaryTests(unittest.TestCase):
                     self.assertEqual(charge["status"], "pending")
                     self.assertIn("elapsed_seconds", result.value["state"]["handback"]["reason"])
 
+    @memoized_control_refs
     def test_unknown_active_queued_and_terminal_are_distinct(self):
         for path in ("wake", "recover", "stop", "continue", "resume"):
             for state in ("unknown", "active", "queued", "terminal"):
@@ -740,6 +743,7 @@ class RecoveryBoundaryTests(unittest.TestCase):
         self.preserved(snapshot.value, stopped.value, "stop")
         self.reload(stopped)
 
+    @memoized_control_refs
     def test_truthful_stop_proof_still_gates_validation_persist_reload_and_resume(self):
         from delivery_pilot.interim import InterimError
         cases = [("observation", value) for value in ("active", "queued", "unknown")]

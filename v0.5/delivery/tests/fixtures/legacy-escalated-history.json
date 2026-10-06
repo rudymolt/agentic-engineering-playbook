@@ -1,0 +1,1347 @@
+{
+  "approval": {
+    "approval_id": "approval-task-413",
+    "checkpoint": {
+      "ref": "refs/heads/delivery-control/issue-run-task-413"
+    },
+    "coordinator": {
+      "session_id": "coordinator-1"
+    },
+    "escalation_policy": {
+      "authority": "diagnose-and-implement",
+      "cycles_per_slice": 2,
+      "route": {
+        "effort": "high",
+        "model": "gpt-6-astra"
+      },
+      "scope": "approved-slice",
+      "trigger": 1
+    },
+    "forecast": {
+      "final_handback_units": 1,
+      "likely_repair_units": 4,
+      "verification_units": 5,
+      "work_units": 9
+    },
+    "hard_limits": "none",
+    "implementation_paths": [
+      "v0.5/delivery/src/delivery_pilot/interim.py",
+      "v0.5/delivery/tests/test_interim.py"
+    ],
+    "kind": "interim-run-approval",
+    "maximum_action": "open-pr",
+    "progress_checkpoint_policy": "worker-result-and-forecast-exceeded",
+    "repository": {
+      "control_ref": "refs/heads/delivery-control/issue-run-task-413",
+      "fetch_url": "https://example.invalid/approved.git",
+      "push_url": "https://example.invalid/approved.git",
+      "remote": "origin"
+    },
+    "routes": {
+      "build": {
+        "effort": "high",
+        "fallback": null,
+        "model": "gpt-5.6-terra"
+      },
+      "diagnosis": {
+        "effort": "high",
+        "fallback": null,
+        "model": "gpt-5.6-terra"
+      },
+      "verify": {
+        "effort": "medium",
+        "fallback": "same-runner-human-override",
+        "model": "gpt-5.6-sol"
+      }
+    },
+    "run_id": "run-task-413",
+    "slices": [
+      {
+        "dependencies": [],
+        "id": "TASK-413",
+        "mode": "AFK"
+      }
+    ],
+    "source_event_id": "human-approval-task-413",
+    "tasks": [
+      {
+        "digest": "sha256:c4b39ff2b37b4b66387b67d0434c3be73e3fb8b69e7f8a9499cdf94e20b2a706",
+        "id": "build-task-413",
+        "slice_id": "TASK-413",
+        "spec_revision": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    ],
+    "tracker": {
+      "id": "TASK-413",
+      "spec_revision": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "version": 1,
+    "whole_run_stop": "disable-coordinator-watchdog-cancel-known-workers-and-checkpoint",
+    "workspaces": {
+      "candidate": "second",
+      "coordinator": "first"
+    }
+  },
+  "approval_digest": "sha256:81cd70fc9884aae9967b922344c309c7121b2bb1d394069adf83bf3d1d773679",
+  "forecasts": {
+    "initial": {
+      "final_handback_units": 1,
+      "likely_repair_units": 4,
+      "verification_units": 5,
+      "work_units": 9
+    },
+    "revised": []
+  },
+  "kind": "interim-run",
+  "monitoring": {
+    "control_ref": "refs/heads/delivery-control/issue-run-task-413",
+    "coordinator_session_id": "coordinator-1",
+    "coordinator_workspace_id": "11111111-1111-4111-8111-111111111111",
+    "epoch": 1,
+    "inactive_reason": null,
+    "last_reconciliation": null,
+    "pending_wake": {
+      "checkpoint_parent_commit": "7ce942ee2fc79d517d4303195abfd927eddcaadf",
+      "generation": "wake-5f01e92266f7e25e",
+      "reason": "coordinator-boundary-repair-complete"
+    },
+    "state": "active",
+    "version": 1
+  },
+  "repair": {
+    "batch": {
+      "credited_progress": [],
+      "cycles": 1,
+      "diagnosis_id": "escalation-1",
+      "no_progress": 0
+    },
+    "cycles": [
+      {
+        "attempt": 1,
+        "diagnosis_id": "diagnosis-1",
+        "experiment_id": "experiment-1",
+        "finding": {
+          "capability": "available",
+          "criterion_id": "AC01",
+          "evidence": [
+            {
+              "artifact_id": "op-07c903271319ace1",
+              "command": "conductor session status",
+              "id": "host-failure-op-07c903271319ace1",
+              "result": "pass"
+            }
+          ],
+          "external_effect": false,
+          "id": "failed-worker-op-07c903271319ace1",
+          "requirement_changed": false,
+          "reversible": true,
+          "scope": "in-scope",
+          "summary": "Exact worker stopped before an acceptable result"
+        },
+        "id": "cycle-1",
+        "outcome": "incomplete",
+        "repair_operation_id": "op-0db84315001f704d",
+        "verify_operation_id": null
+      },
+      {
+        "attempt": 2,
+        "diagnosis_id": "escalation-1",
+        "experiment_id": "escalation-1",
+        "finding": {
+          "capability": "available",
+          "criterion_id": "AC01",
+          "evidence": [
+            {
+              "artifact_id": "op-07c903271319ace1",
+              "command": "conductor session status",
+              "id": "host-failure-op-07c903271319ace1",
+              "result": "pass"
+            }
+          ],
+          "external_effect": false,
+          "id": "failed-worker-op-07c903271319ace1",
+          "requirement_changed": false,
+          "reversible": true,
+          "scope": "in-scope",
+          "summary": "Exact worker stopped before an acceptable result"
+        },
+        "id": "cycle-2",
+        "outcome": "pass",
+        "repair_operation_id": "op-92ca9a350cb88ebe",
+        "verify_operation_id": "op-4e6f536936b3ac53"
+      }
+    ],
+    "diagnoses": [
+      {
+        "actionable": true,
+        "conclusion": {
+          "cause": "reproduced bounded defect"
+        },
+        "criteria": [
+          "AC01"
+        ],
+        "execution_evidence": [
+          {
+            "artifact_id": "artifact-diagnosis",
+            "command": "diagnosis-command",
+            "id": "diagnosis-evidence",
+            "result": "pass"
+          }
+        ],
+        "id": "diagnosis-1",
+        "next_experiment": {
+          "approach": "change-one-bounded-cause-1",
+          "finding_id": "failed-worker-op-07c903271319ace1",
+          "id": "experiment-1"
+        },
+        "operation_id": "op-4f0d2d0122e1d5f8",
+        "prior_hypotheses": [],
+        "revisions": {
+          "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "head": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      },
+      {
+        "actionable": true,
+        "conclusion": {
+          "cause": "missing setup"
+        },
+        "criteria": [
+          "AC01"
+        ],
+        "execution_evidence": [
+          {
+            "artifact_id": "artifact-escalated",
+            "command": "unit",
+            "id": "escalated-evidence",
+            "result": "pass"
+          }
+        ],
+        "id": "escalation-1",
+        "next_experiment": {
+          "approach": "fix approved setup 1",
+          "finding_id": "failed-worker-op-07c903271319ace1",
+          "id": "escalation-1"
+        },
+        "operation_id": "op-92ca9a350cb88ebe",
+        "prior_hypotheses": [
+          "reproduced bounded defect"
+        ],
+        "revisions": {
+          "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "head": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        }
+      }
+    ],
+    "escalated_slots": [
+      "op-92ca9a350cb88ebe"
+    ],
+    "opening": {
+      "criteria": [
+        "AC01"
+      ],
+      "execution_evidence": [
+        {
+          "artifact_id": "op-07c903271319ace1",
+          "command": "conductor session status",
+          "id": "host-failure-op-07c903271319ace1",
+          "result": "pass"
+        }
+      ],
+      "finding": {
+        "capability": "available",
+        "criterion_id": "AC01",
+        "evidence": [
+          {
+            "artifact_id": "op-07c903271319ace1",
+            "command": "conductor session status",
+            "id": "host-failure-op-07c903271319ace1",
+            "result": "pass"
+          }
+        ],
+        "external_effect": false,
+        "id": "failed-worker-op-07c903271319ace1",
+        "requirement_changed": false,
+        "reversible": true,
+        "scope": "in-scope",
+        "summary": "Exact worker stopped before an acceptable result"
+      },
+      "origin_operation_id": "op-07c903271319ace1",
+      "revisions": {
+        "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "head": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      }
+    },
+    "progress": [],
+    "slice_id": "TASK-413",
+    "status": "completed"
+  },
+  "state": {
+    "candidate": {
+      "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "head": "cccccccccccccccccccccccccccccccccccccccc"
+    },
+    "handback": null,
+    "next_action": "repair-complete",
+    "review": {
+      "findings": [
+        {
+          "id": "retained"
+        }
+      ],
+      "verdict": "pass"
+    }
+  },
+  "usage": {
+    "charges": [
+      {
+        "charged_at": "2026-09-29T22:45:54.911250Z",
+        "operation_id": "op-64539afe4c71ae23",
+        "status": "observed",
+        "work_units": 1
+      },
+      {
+        "charged_at": "2026-09-29T22:45:55.142219Z",
+        "operation_id": "op-07c903271319ace1",
+        "status": "observed",
+        "work_units": 1
+      },
+      {
+        "charged_at": "2026-09-29T22:45:56.062414Z",
+        "operation_id": "op-4f0d2d0122e1d5f8",
+        "status": "observed",
+        "work_units": 1
+      },
+      {
+        "charged_at": "2026-09-29T22:45:56.583439Z",
+        "operation_id": "op-0db84315001f704d",
+        "status": "observed",
+        "work_units": 1
+      },
+      {
+        "charged_at": "2026-09-29T22:45:57.158486Z",
+        "operation_id": "op-92ca9a350cb88ebe",
+        "status": "observed",
+        "work_units": 1
+      },
+      {
+        "charged_at": "2026-09-29T22:45:57.784745Z",
+        "operation_id": "op-6b3c2aaca9f9b31a",
+        "status": "observed",
+        "work_units": 1
+      },
+      {
+        "charged_at": "2026-09-29T22:45:58.777865Z",
+        "operation_id": "op-4e6f536936b3ac53",
+        "status": "observed",
+        "work_units": 1
+      }
+    ],
+    "host_counters": {
+      "cost": null,
+      "tokens": null
+    },
+    "launches": [
+      {
+        "issued_at": "2026-09-29T22:45:54.911250Z",
+        "operation_id": "op-64539afe4c71ae23",
+        "phase": "coordinator"
+      },
+      {
+        "issued_at": "2026-09-29T22:45:55.142219Z",
+        "operation_id": "op-07c903271319ace1",
+        "phase": "build"
+      },
+      {
+        "issued_at": "2026-09-29T22:45:56.062414Z",
+        "operation_id": "op-4f0d2d0122e1d5f8",
+        "phase": "diagnosis"
+      },
+      {
+        "issued_at": "2026-09-29T22:45:56.583439Z",
+        "operation_id": "op-0db84315001f704d",
+        "phase": "repair"
+      },
+      {
+        "issued_at": "2026-09-29T22:45:57.158486Z",
+        "operation_id": "op-92ca9a350cb88ebe",
+        "phase": "repair"
+      },
+      {
+        "issued_at": "2026-09-29T22:45:57.784745Z",
+        "operation_id": "op-6b3c2aaca9f9b31a",
+        "phase": "repair-verify"
+      },
+      {
+        "issued_at": "2026-09-29T22:45:58.777865Z",
+        "operation_id": "op-4e6f536936b3ac53",
+        "phase": "repair-verify"
+      }
+    ],
+    "operations": [
+      {
+        "elapsed_seconds": 0,
+        "id": "op-64539afe4c71ae23",
+        "issued_at": "2026-09-29T22:45:54.911250Z",
+        "message_id": "9f80e0cd-a0ac-5b77-b755-08d37465dee0",
+        "phase": "coordinator",
+        "receipt": {
+          "current_coordinator": "coordinator-1",
+          "elapsed_seconds": 0,
+          "observation": {
+            "id": "op-64539afe4c71ae23",
+            "message_id": "9f80e0cd-a0ac-5b77-b755-08d37465dee0",
+            "session_id": "coordinator-1",
+            "terminal_turn_id": "9f80e0cd-a0ac-5b77-b755-08d37465dee0"
+          },
+          "state": "active"
+        },
+        "session_id": "coordinator-1",
+        "slice": "TASK-413",
+        "status": "active",
+        "task": {
+          "attempt": 1,
+          "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "candidate_ref": "candidate-task-413",
+          "commands": {
+            "build": [
+              "unit"
+            ],
+            "ci": [
+              "ci-command"
+            ],
+            "qa": [
+              "qa-command"
+            ],
+            "verify": [
+              "unit"
+            ]
+          },
+          "criteria": [
+            "AC01"
+          ],
+          "id": "build-task-413",
+          "limits": {
+            "max_artifacts": 2,
+            "max_tools": 2,
+            "wall_time_seconds": 60
+          },
+          "runtimes": {
+            "build": {
+              "permissions": "read-only",
+              "runner": "build-runner"
+            },
+            "verify": {
+              "permissions": "read-only",
+              "runner": "verify-runner"
+            }
+          },
+          "slice_id": "TASK-413"
+        },
+        "terminal_turn_id": "9f80e0cd-a0ac-5b77-b755-08d37465dee0"
+      },
+      {
+        "elapsed_seconds": 0,
+        "failure_reconciliation": {
+          "branch_head": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "candidate": {
+            "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "head": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          },
+          "candidate_work": {
+            "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "head": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "paths": []
+          },
+          "ceased": true,
+          "effects_complete": true,
+          "observation": {
+            "id": "op-07c903271319ace1",
+            "message_id": "1e91f568-58a8-5fb1-9e80-72e21c19590e",
+            "session_id": "c2b5729a-df8e-53aa-87b6-2e0326877fa9",
+            "terminal_turn_id": "1e91f568-58a8-5fb1-9e80-72e21c19590e"
+          },
+          "pr": null
+        },
+        "id": "op-07c903271319ace1",
+        "issued_at": "2026-09-29T22:45:55.142219Z",
+        "message_id": "1e91f568-58a8-5fb1-9e80-72e21c19590e",
+        "phase": "build",
+        "receipt": {
+          "elapsed_seconds": 0,
+          "observation": {
+            "id": "op-07c903271319ace1",
+            "message_id": "1e91f568-58a8-5fb1-9e80-72e21c19590e",
+            "session_id": "c2b5729a-df8e-53aa-87b6-2e0326877fa9",
+            "terminal_turn_id": "1e91f568-58a8-5fb1-9e80-72e21c19590e"
+          },
+          "transport": "accepted",
+          "worker_state": "error"
+        },
+        "send_admission": {
+          "at": "2026-09-29T22:45:55.305110Z",
+          "operation_id": "op-07c903271319ace1"
+        },
+        "session_id": "c2b5729a-df8e-53aa-87b6-2e0326877fa9",
+        "slice": "TASK-413",
+        "status": "result-unusable",
+        "task": {
+          "attempt": 1,
+          "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "candidate_ref": "candidate-task-413",
+          "commands": {
+            "build": [
+              "unit"
+            ],
+            "ci": [
+              "ci-command"
+            ],
+            "qa": [
+              "qa-command"
+            ],
+            "verify": [
+              "unit"
+            ]
+          },
+          "criteria": [
+            "AC01"
+          ],
+          "id": "build-task-413",
+          "limits": {
+            "max_artifacts": 2,
+            "max_tools": 2,
+            "wall_time_seconds": 60
+          },
+          "runtimes": {
+            "build": {
+              "permissions": "read-only",
+              "runner": "build-runner"
+            },
+            "verify": {
+              "permissions": "read-only",
+              "runner": "verify-runner"
+            }
+          },
+          "slice_id": "TASK-413"
+        },
+        "terminal_turn_id": "1e91f568-58a8-5fb1-9e80-72e21c19590e",
+        "validation_error": "InterimDispatchError"
+      },
+      {
+        "elapsed_seconds": 1,
+        "id": "op-4f0d2d0122e1d5f8",
+        "issued_at": "2026-09-29T22:45:56.062414Z",
+        "message_id": "379ae47d-d8e6-54cb-911b-a52534cc2331",
+        "phase": "diagnosis",
+        "prior_hypotheses": [],
+        "purpose": "diagnosis-1",
+        "receipt": {
+          "diagnosis": {
+            "actionable": true,
+            "conclusion": {
+              "cause": "reproduced bounded defect"
+            },
+            "criteria": [
+              "AC01"
+            ],
+            "execution_evidence": [
+              {
+                "artifact_id": "artifact-diagnosis",
+                "command": "diagnosis-command",
+                "id": "diagnosis-evidence",
+                "result": "pass"
+              }
+            ],
+            "id": "diagnosis-1",
+            "next_experiment": {
+              "approach": "change-one-bounded-cause-1",
+              "finding_id": "failed-worker-op-07c903271319ace1",
+              "id": "experiment-1"
+            },
+            "operation_id": "op-4f0d2d0122e1d5f8",
+            "prior_hypotheses": [],
+            "revisions": {
+              "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+              "head": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            }
+          },
+          "elapsed_seconds": 1,
+          "observation": {
+            "id": "op-4f0d2d0122e1d5f8",
+            "message_id": "379ae47d-d8e6-54cb-911b-a52534cc2331",
+            "session_id": "bd885fd8-b8e8-5e9f-9047-16cf9c1d0787",
+            "terminal_turn_id": "379ae47d-d8e6-54cb-911b-a52534cc2331"
+          },
+          "runtime": {
+            "effort": "high",
+            "model": "gpt-5.6-terra",
+            "permissions": "read-only",
+            "runner": "diagnosis-runner"
+          },
+          "task_success": true,
+          "terminal_turn": true,
+          "transport": "accepted"
+        },
+        "repair_attempt": 1,
+        "repair_context": {
+          "criteria": [
+            "AC01"
+          ],
+          "execution_evidence": [
+            {
+              "artifact_id": "op-07c903271319ace1",
+              "command": "conductor session status",
+              "id": "host-failure-op-07c903271319ace1",
+              "result": "pass"
+            }
+          ],
+          "finding": {
+            "capability": "available",
+            "criterion_id": "AC01",
+            "evidence": [
+              {
+                "artifact_id": "op-07c903271319ace1",
+                "command": "conductor session status",
+                "id": "host-failure-op-07c903271319ace1",
+                "result": "pass"
+              }
+            ],
+            "external_effect": false,
+            "id": "failed-worker-op-07c903271319ace1",
+            "requirement_changed": false,
+            "reversible": true,
+            "scope": "in-scope",
+            "summary": "Exact worker stopped before an acceptable result"
+          },
+          "origin_operation_id": "op-07c903271319ace1",
+          "revisions": {
+            "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "head": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+          }
+        },
+        "route": {
+          "effort": "high",
+          "model": "gpt-5.6-terra"
+        },
+        "send_admission": {
+          "at": "2026-09-29T22:45:56.259976Z",
+          "operation_id": "op-4f0d2d0122e1d5f8"
+        },
+        "session_id": "bd885fd8-b8e8-5e9f-9047-16cf9c1d0787",
+        "slice": "TASK-413",
+        "status": "result",
+        "task": {
+          "attempt": 1,
+          "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "candidate_ref": "candidate-task-413",
+          "commands": {
+            "build": [
+              "unit"
+            ],
+            "ci": [
+              "ci-command"
+            ],
+            "qa": [
+              "qa-command"
+            ],
+            "verify": [
+              "unit"
+            ]
+          },
+          "criteria": [
+            "AC01"
+          ],
+          "id": "build-task-413",
+          "limits": {
+            "max_artifacts": 2,
+            "max_tools": 2,
+            "wall_time_seconds": 60
+          },
+          "runtimes": {
+            "build": {
+              "permissions": "read-only",
+              "runner": "build-runner"
+            },
+            "verify": {
+              "permissions": "read-only",
+              "runner": "verify-runner"
+            }
+          },
+          "slice_id": "TASK-413"
+        },
+        "terminal_turn_id": "379ae47d-d8e6-54cb-911b-a52534cc2331"
+      },
+      {
+        "elapsed_seconds": 1,
+        "id": "op-0db84315001f704d",
+        "issued_at": "2026-09-29T22:45:56.583439Z",
+        "message_id": "9fcd981b-01c1-59b5-a5cd-588015d61b18",
+        "phase": "repair",
+        "purpose": "experiment-1",
+        "receipt": {
+          "elapsed_seconds": 1,
+          "execution_evidence": [
+            {
+              "artifact_id": "artifact-repair",
+              "command": "repair-command",
+              "id": "repair-evidence",
+              "result": "pass"
+            }
+          ],
+          "observation": {
+            "id": "op-0db84315001f704d",
+            "message_id": "9fcd981b-01c1-59b5-a5cd-588015d61b18",
+            "session_id": "bc423164-f400-5640-bc09-0215c03f4fa8",
+            "terminal_turn_id": "9fcd981b-01c1-59b5-a5cd-588015d61b18"
+          },
+          "runtime": {
+            "effort": "high",
+            "model": "gpt-5.6-terra",
+            "permissions": "read-only",
+            "runner": "build-runner"
+          },
+          "task_success": false,
+          "terminal_turn": true,
+          "transport": "accepted"
+        },
+        "repair_attempt": 1,
+        "repair_context": {
+          "diagnosis": {
+            "actionable": true,
+            "conclusion": {
+              "cause": "reproduced bounded defect"
+            },
+            "criteria": [
+              "AC01"
+            ],
+            "execution_evidence": [
+              {
+                "artifact_id": "artifact-diagnosis",
+                "command": "diagnosis-command",
+                "id": "diagnosis-evidence",
+                "result": "pass"
+              }
+            ],
+            "id": "diagnosis-1",
+            "next_experiment": {
+              "approach": "change-one-bounded-cause-1",
+              "finding_id": "failed-worker-op-07c903271319ace1",
+              "id": "experiment-1"
+            },
+            "operation_id": "op-4f0d2d0122e1d5f8",
+            "prior_hypotheses": [],
+            "revisions": {
+              "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+              "head": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            }
+          },
+          "opening": {
+            "criteria": [
+              "AC01"
+            ],
+            "execution_evidence": [
+              {
+                "artifact_id": "op-07c903271319ace1",
+                "command": "conductor session status",
+                "id": "host-failure-op-07c903271319ace1",
+                "result": "pass"
+              }
+            ],
+            "finding": {
+              "capability": "available",
+              "criterion_id": "AC01",
+              "evidence": [
+                {
+                  "artifact_id": "op-07c903271319ace1",
+                  "command": "conductor session status",
+                  "id": "host-failure-op-07c903271319ace1",
+                  "result": "pass"
+                }
+              ],
+              "external_effect": false,
+              "id": "failed-worker-op-07c903271319ace1",
+              "requirement_changed": false,
+              "reversible": true,
+              "scope": "in-scope",
+              "summary": "Exact worker stopped before an acceptable result"
+            },
+            "origin_operation_id": "op-07c903271319ace1",
+            "revisions": {
+              "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+              "head": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            }
+          }
+        },
+        "route": {
+          "effort": "high",
+          "model": "gpt-5.6-terra"
+        },
+        "send_admission": {
+          "at": "2026-09-29T22:45:56.789986Z",
+          "operation_id": "op-0db84315001f704d"
+        },
+        "session_id": "bc423164-f400-5640-bc09-0215c03f4fa8",
+        "slice": "TASK-413",
+        "status": "result",
+        "task": {
+          "attempt": 1,
+          "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "candidate_ref": "candidate-task-413",
+          "commands": {
+            "build": [
+              "unit"
+            ],
+            "ci": [
+              "ci-command"
+            ],
+            "qa": [
+              "qa-command"
+            ],
+            "verify": [
+              "unit"
+            ]
+          },
+          "criteria": [
+            "AC01"
+          ],
+          "id": "build-task-413",
+          "limits": {
+            "max_artifacts": 2,
+            "max_tools": 2,
+            "wall_time_seconds": 60
+          },
+          "runtimes": {
+            "build": {
+              "permissions": "read-only",
+              "runner": "build-runner"
+            },
+            "verify": {
+              "permissions": "read-only",
+              "runner": "verify-runner"
+            }
+          },
+          "slice_id": "TASK-413"
+        },
+        "terminal_turn_id": "9fcd981b-01c1-59b5-a5cd-588015d61b18"
+      },
+      {
+        "elapsed_seconds": 1,
+        "escalated_slot": 1,
+        "escalation_reason": "cumulative ordinary repair failures reached approved trigger",
+        "id": "op-92ca9a350cb88ebe",
+        "issued_at": "2026-09-29T22:45:57.158486Z",
+        "message_id": "ae0db2b0-655a-58df-a143-6200b10ee9e3",
+        "phase": "repair",
+        "prior_hypotheses": [
+          "reproduced bounded defect"
+        ],
+        "purpose": "escalation-1",
+        "receipt": {
+          "artifacts": [
+            "artifact-repair"
+          ],
+          "builder_transcript": false,
+          "candidate": {
+            "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "head": "cccccccccccccccccccccccccccccccccccccccc"
+          },
+          "criteria": {
+            "AC01": "pass"
+          },
+          "diagnosis": {
+            "actionable": true,
+            "conclusion": {
+              "cause": "missing setup"
+            },
+            "criteria": [
+              "AC01"
+            ],
+            "execution_evidence": [
+              {
+                "artifact_id": "artifact-escalated",
+                "command": "unit",
+                "id": "escalated-evidence",
+                "result": "pass"
+              }
+            ],
+            "id": "escalation-1",
+            "next_experiment": {
+              "approach": "fix approved setup 1",
+              "finding_id": "failed-worker-op-07c903271319ace1",
+              "id": "escalation-1"
+            },
+            "operation_id": "op-92ca9a350cb88ebe",
+            "prior_hypotheses": [
+              "reproduced bounded defect"
+            ],
+            "revisions": {
+              "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+              "head": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            }
+          },
+          "elapsed_seconds": 1,
+          "evidence": {
+            "artifact": {
+              "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+              "head": "cccccccccccccccccccccccccccccccccccccccc",
+              "id": "artifact-repair",
+              "operation_id": "op-92ca9a350cb88ebe",
+              "task_id": "build-task-413"
+            },
+            "checks": [
+              {
+                "artifact_id": "artifact-repair",
+                "command": "unit",
+                "criterion_id": "AC01",
+                "operation_id": "op-92ca9a350cb88ebe",
+                "result": "pass"
+              }
+            ],
+            "commands": [
+              {
+                "artifact_id": "artifact-repair",
+                "command": "unit",
+                "operation_id": "op-92ca9a350cb88ebe",
+                "result": "pass"
+              }
+            ]
+          },
+          "executed_checks": [
+            "AC01"
+          ],
+          "execution_evidence": [
+            {
+              "artifact_id": "artifact-repair",
+              "command": "repair-command",
+              "id": "repair-evidence",
+              "result": "pass"
+            }
+          ],
+          "fresh_context": false,
+          "host_counters": {
+            "cost": null,
+            "tokens": null
+          },
+          "nonblocking_findings": [
+            {
+              "id": "retained"
+            }
+          ],
+          "observation": {
+            "id": "op-92ca9a350cb88ebe",
+            "message_id": "ae0db2b0-655a-58df-a143-6200b10ee9e3",
+            "session_id": "a2195d46-0cfd-5eee-a4b0-aab0de17edb2",
+            "terminal_turn_id": "ae0db2b0-655a-58df-a143-6200b10ee9e3"
+          },
+          "runtime": {
+            "effort": "high",
+            "model": "gpt-6-astra",
+            "permissions": "read-only",
+            "runner": "build-runner"
+          },
+          "task_success": true,
+          "terminal_turn": true,
+          "tools": [
+            "unit"
+          ],
+          "transport": "accepted",
+          "verdict": "pass",
+          "wall_time_seconds": 1
+        },
+        "repair_attempt": 2,
+        "repair_context": {
+          "failed_cycles": [
+            {
+              "attempt": 1,
+              "diagnosis_id": "diagnosis-1",
+              "experiment_id": "experiment-1",
+              "finding": {
+                "capability": "available",
+                "criterion_id": "AC01",
+                "evidence": [
+                  {
+                    "artifact_id": "op-07c903271319ace1",
+                    "command": "conductor session status",
+                    "id": "host-failure-op-07c903271319ace1",
+                    "result": "pass"
+                  }
+                ],
+                "external_effect": false,
+                "id": "failed-worker-op-07c903271319ace1",
+                "requirement_changed": false,
+                "reversible": true,
+                "scope": "in-scope",
+                "summary": "Exact worker stopped before an acceptable result"
+              },
+              "id": "cycle-1",
+              "outcome": "incomplete",
+              "repair_operation_id": "op-0db84315001f704d",
+              "verify_operation_id": null
+            }
+          ],
+          "opening": {
+            "criteria": [
+              "AC01"
+            ],
+            "execution_evidence": [
+              {
+                "artifact_id": "op-07c903271319ace1",
+                "command": "conductor session status",
+                "id": "host-failure-op-07c903271319ace1",
+                "result": "pass"
+              }
+            ],
+            "finding": {
+              "capability": "available",
+              "criterion_id": "AC01",
+              "evidence": [
+                {
+                  "artifact_id": "op-07c903271319ace1",
+                  "command": "conductor session status",
+                  "id": "host-failure-op-07c903271319ace1",
+                  "result": "pass"
+                }
+              ],
+              "external_effect": false,
+              "id": "failed-worker-op-07c903271319ace1",
+              "requirement_changed": false,
+              "reversible": true,
+              "scope": "in-scope",
+              "summary": "Exact worker stopped before an acceptable result"
+            },
+            "origin_operation_id": "op-07c903271319ace1",
+            "revisions": {
+              "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+              "head": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            }
+          }
+        },
+        "route": {
+          "effort": "high",
+          "model": "gpt-6-astra"
+        },
+        "route_preflight": {
+          "effort": "high",
+          "model": "gpt-6-astra",
+          "session_id": "a2195d46-0cfd-5eee-a4b0-aab0de17edb2"
+        },
+        "send_admission": {
+          "at": "2026-09-29T22:45:57.500693Z",
+          "operation_id": "op-92ca9a350cb88ebe"
+        },
+        "session_id": "a2195d46-0cfd-5eee-a4b0-aab0de17edb2",
+        "slice": "TASK-413",
+        "status": "result",
+        "task": {
+          "attempt": 1,
+          "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "candidate_ref": "candidate-task-413",
+          "commands": {
+            "build": [
+              "unit"
+            ],
+            "ci": [
+              "ci-command"
+            ],
+            "qa": [
+              "qa-command"
+            ],
+            "verify": [
+              "unit"
+            ]
+          },
+          "criteria": [
+            "AC01"
+          ],
+          "id": "build-task-413",
+          "limits": {
+            "max_artifacts": 2,
+            "max_tools": 2,
+            "wall_time_seconds": 60
+          },
+          "runtimes": {
+            "build": {
+              "permissions": "read-only",
+              "runner": "build-runner"
+            },
+            "verify": {
+              "permissions": "read-only",
+              "runner": "verify-runner"
+            }
+          },
+          "slice_id": "TASK-413"
+        },
+        "terminal_turn_id": "ae0db2b0-655a-58df-a143-6200b10ee9e3"
+      },
+      {
+        "candidate": {
+          "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "head": "cccccccccccccccccccccccccccccccccccccccc"
+        },
+        "elapsed_seconds": 0,
+        "escalated_verify": "op-92ca9a350cb88ebe",
+        "failure_reconciliation": {
+          "branch_head": "cccccccccccccccccccccccccccccccccccccccc",
+          "candidate": {
+            "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "head": "cccccccccccccccccccccccccccccccccccccccc"
+          },
+          "candidate_work": {
+            "digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "head": "cccccccccccccccccccccccccccccccccccccccc",
+            "paths": []
+          },
+          "ceased": true,
+          "effects_complete": true,
+          "observation": {
+            "id": "op-6b3c2aaca9f9b31a",
+            "message_id": "54e21cf7-7c6a-528b-b2c2-8b2d6322854f",
+            "session_id": "596dc27d-51fd-5e86-80a8-1495d067eb0d",
+            "terminal_turn_id": "54e21cf7-7c6a-528b-b2c2-8b2d6322854f"
+          },
+          "pr": null
+        },
+        "id": "op-6b3c2aaca9f9b31a",
+        "issued_at": "2026-09-29T22:45:57.784745Z",
+        "message_id": "54e21cf7-7c6a-528b-b2c2-8b2d6322854f",
+        "phase": "repair-verify",
+        "purpose": "escalation-1",
+        "receipt": {
+          "elapsed_seconds": 0,
+          "observation": {
+            "id": "op-6b3c2aaca9f9b31a",
+            "message_id": "54e21cf7-7c6a-528b-b2c2-8b2d6322854f",
+            "session_id": "596dc27d-51fd-5e86-80a8-1495d067eb0d",
+            "terminal_turn_id": "54e21cf7-7c6a-528b-b2c2-8b2d6322854f"
+          },
+          "transport": "accepted",
+          "worker_state": "error"
+        },
+        "repair_attempt": 2,
+        "route": {
+          "model": "gpt-6-sol",
+          "effort": "high"
+        },
+        "send_admission": {
+          "at": "2026-09-29T22:45:58.002983Z",
+          "operation_id": "op-6b3c2aaca9f9b31a"
+        },
+        "session_id": "596dc27d-51fd-5e86-80a8-1495d067eb0d",
+        "slice": "TASK-413",
+        "status": "result-unusable",
+        "task": {
+          "attempt": 1,
+          "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "candidate_ref": "candidate-task-413",
+          "commands": {
+            "build": [
+              "unit"
+            ],
+            "ci": [
+              "ci-command"
+            ],
+            "qa": [
+              "qa-command"
+            ],
+            "verify": [
+              "unit"
+            ]
+          },
+          "criteria": [
+            "AC01"
+          ],
+          "id": "build-task-413",
+          "limits": {
+            "max_artifacts": 2,
+            "max_tools": 2,
+            "wall_time_seconds": 60
+          },
+          "runtimes": {
+            "build": {
+              "permissions": "read-only",
+              "runner": "build-runner"
+            },
+            "verify": {
+              "permissions": "read-only",
+              "runner": "verify-runner"
+            }
+          },
+          "slice_id": "TASK-413"
+        },
+        "terminal_turn_id": "54e21cf7-7c6a-528b-b2c2-8b2d6322854f",
+        "validation_error": "InterimDispatchError: terminal host turn lacks a structured terminal result",
+        "verify_attempt": 1,
+        "verify_context": {
+          "artifact_id": "artifact-repair",
+          "build_operation_id": "op-92ca9a350cb88ebe",
+          "candidate": {
+            "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "head": "cccccccccccccccccccccccccccccccccccccccc"
+          },
+          "criteria": [
+            "AC01"
+          ]
+        }
+      },
+      {
+        "candidate": {
+          "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "head": "cccccccccccccccccccccccccccccccccccccccc"
+        },
+        "elapsed_seconds": 1,
+        "escalated_verify": "op-92ca9a350cb88ebe",
+        "id": "op-4e6f536936b3ac53",
+        "issued_at": "2026-09-29T22:45:58.777865Z",
+        "message_id": "0fd9477b-34ec-5595-a944-821918d2968e",
+        "phase": "repair-verify",
+        "purpose": "escalation-1-verify-2",
+        "receipt": {
+          "artifacts": [
+            "artifact-repair-verify"
+          ],
+          "builder_transcript": false,
+          "candidate": {
+            "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "head": "cccccccccccccccccccccccccccccccccccccccc"
+          },
+          "criteria": {
+            "AC01": "pass"
+          },
+          "elapsed_seconds": 1,
+          "evidence": {
+            "artifact": {
+              "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+              "head": "cccccccccccccccccccccccccccccccccccccccc",
+              "id": "artifact-repair-verify",
+              "operation_id": "op-4e6f536936b3ac53",
+              "task_id": "build-task-413"
+            },
+            "checks": [
+              {
+                "artifact_id": "artifact-repair-verify",
+                "command": "unit",
+                "criterion_id": "AC01",
+                "operation_id": "op-4e6f536936b3ac53",
+                "result": "pass"
+              }
+            ],
+            "commands": [
+              {
+                "artifact_id": "artifact-repair-verify",
+                "command": "unit",
+                "operation_id": "op-4e6f536936b3ac53",
+                "result": "pass"
+              }
+            ]
+          },
+          "executed_checks": [
+            "AC01"
+          ],
+          "execution_evidence": [
+            {
+              "artifact_id": "artifact-repair-verify",
+              "command": "repair-verify-command",
+              "id": "repair-verify-evidence",
+              "result": "pass"
+            }
+          ],
+          "fresh_context": true,
+          "host_counters": {
+            "cost": null,
+            "tokens": null
+          },
+          "nonblocking_findings": [
+            {
+              "id": "retained"
+            }
+          ],
+          "observation": {
+            "id": "op-4e6f536936b3ac53",
+            "message_id": "0fd9477b-34ec-5595-a944-821918d2968e",
+            "session_id": "8e23fae5-3b42-58f4-bce4-32365f069a73",
+            "terminal_turn_id": "0fd9477b-34ec-5595-a944-821918d2968e"
+          },
+          "runtime": {
+            "effort": "high",
+            "model": "gpt-6-sol",
+            "permissions": "read-only",
+            "runner": "verify-runner"
+          },
+          "task_success": true,
+          "terminal_turn": true,
+          "tools": [
+            "unit"
+          ],
+          "transport": "accepted",
+          "verdict": "pass",
+          "wall_time_seconds": 1
+        },
+        "repair_attempt": 2,
+        "route": {
+          "effort": "high",
+          "model": "gpt-6-sol"
+        },
+        "send_admission": {
+          "at": "2026-09-29T22:45:58.992666Z",
+          "operation_id": "op-4e6f536936b3ac53"
+        },
+        "session_id": "8e23fae5-3b42-58f4-bce4-32365f069a73",
+        "slice": "TASK-413",
+        "status": "result",
+        "task": {
+          "attempt": 1,
+          "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "candidate_ref": "candidate-task-413",
+          "commands": {
+            "build": [
+              "unit"
+            ],
+            "ci": [
+              "ci-command"
+            ],
+            "qa": [
+              "qa-command"
+            ],
+            "verify": [
+              "unit"
+            ]
+          },
+          "criteria": [
+            "AC01"
+          ],
+          "id": "build-task-413",
+          "limits": {
+            "max_artifacts": 2,
+            "max_tools": 2,
+            "wall_time_seconds": 60
+          },
+          "runtimes": {
+            "build": {
+              "permissions": "read-only",
+              "runner": "build-runner"
+            },
+            "verify": {
+              "permissions": "read-only",
+              "runner": "verify-runner"
+            }
+          },
+          "slice_id": "TASK-413"
+        },
+        "terminal_turn_id": "0fd9477b-34ec-5595-a944-821918d2968e",
+        "verify_attempt": 2,
+        "verify_context": {
+          "artifact_id": "artifact-repair",
+          "build_operation_id": "op-92ca9a350cb88ebe",
+          "candidate": {
+            "base": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "head": "cccccccccccccccccccccccccccccccccccccccc"
+          },
+          "criteria": [
+            "AC01"
+          ]
+        }
+      }
+    ]
+  },
+  "version": 1
+}
