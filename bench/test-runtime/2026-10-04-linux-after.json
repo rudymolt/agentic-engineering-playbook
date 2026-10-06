@@ -1,0 +1,121 @@
+{
+  "revision": "df35c6499eea75903c0cbb27bb682a9bf77ca066",
+  "dirty": false,
+  "python": "3.12.14",
+  "platform": "Linux",
+  "set": "K4.1",
+  "selected_tests": [
+    "test_interim_recovery.RecoveryBoundaryTests.test_unknown_active_queued_and_terminal_are_distinct",
+    "test_interim_host_continuation.RepairHostContinuationTests.test_async_three_failure_diagnosis_and_stagnation_with_and_without_caps",
+    "test_interim_recovery.RecoveryBoundaryTests.test_truthful_stop_proof_still_gates_validation_persist_reload_and_resume"
+  ],
+  "recorded_at": "2026-10-04T01:52:36.074625+00:00",
+  "privileged": false,
+  "test_sources": {
+    "control_ref_test_support.py": "aeccfed7d187d91d59e70d2e83ce229f0da233f7ad4e6f526c7fd37ed7cf050c",
+    "test_checker_monitor.py": "a3f92339d3f38ea658c3d23326b07275df21a40b8b769fe7e67b9c78ea34e8ea",
+    "test_cloud.py": "d05f972e577796b33170c84eeff7ee2be5d1f96ee2885692c6a63f5c3841b174",
+    "test_continuation.py": "4e45cbf0609c6ebc3615ab16547bfbe6128fd492d9b2907219adbb26579500da",
+    "test_core.py": "68067f8ce650a14ec1d1765bc0376356c1e15571208779a2903165109aac4f22",
+    "test_interim.py": "9d7dea5db96260689f7c4003cf9ef881510c9419fe6f3bae29d412db55af661c",
+    "test_interim_advance.py": "fb7998f1a115dee1b023d26432395f0c76e5c2ef204054b2327af0e05a0e383e",
+    "test_interim_conductor_host.py": "b7a905b0a1c481e6bb7ce9085cfea0cae2d60a14608aba9a83394566f57db2c4",
+    "test_interim_coordinator.py": "0679abf3ed4a0f092f818bc959580416c5d62deb0265d66235f0394a57dda2ef",
+    "test_interim_host_continuation.py": "6f490229c0ce352f6e0da044e6f0a0a3ba653c32cf8b7b6c59c5be7c80d25801",
+    "test_interim_monitor.py": "f7d3bfbcd22b3d0d3872e0d69a9ec025ad84b037d4f2a4c1d5ba3498bd077d7a",
+    "test_interim_recovery.py": "4558b03eeb97f51697f248ec595677829577468aad56d347e507adfef076f2e7",
+    "test_interim_repair.py": "ea1a770693a8d68a0ae33339a56e171f669824a0a31642a172a97e1a2e9efb9b",
+    "test_interim_stack.py": "3c0c22ca14aed6b9af722835663b47a2946b8d204896fa2fc8838efa31f25f13",
+    "test_interim_watchdog.py": "78cbb62bc5e1b2fe8f78a502a8cb2a08dee41797e08cfe7c6d08d3bbad95e156",
+    "test_pack_lifecycle.py": "308a18a85400f3ca47cdf8a965cde922f174ade3afdfd388a999c08c00cd3eda"
+  },
+  "repetitions": [
+    [
+      {
+        "pattern": "selected",
+        "seconds": 20.205833188000014,
+        "successful": true,
+        "tests": [
+          {
+            "id": "test_interim_recovery.RecoveryBoundaryTests.test_unknown_active_queued_and_terminal_are_distinct",
+            "seconds": 7.3930752329999905,
+            "outcome": "passed"
+          },
+          {
+            "id": "test_interim_host_continuation.RepairHostContinuationTests.test_async_three_failure_diagnosis_and_stagnation_with_and_without_caps",
+            "seconds": 6.778863309000002,
+            "outcome": "passed"
+          },
+          {
+            "id": "test_interim_recovery.RecoveryBoundaryTests.test_truthful_stop_proof_still_gates_validation_persist_reload_and_resume",
+            "seconds": 6.033545759999981,
+            "outcome": "passed"
+          }
+        ],
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    ],
+    [
+      {
+        "pattern": "selected",
+        "seconds": 19.061661180000016,
+        "successful": true,
+        "tests": [
+          {
+            "id": "test_interim_recovery.RecoveryBoundaryTests.test_unknown_active_queued_and_terminal_are_distinct",
+            "seconds": 7.0762717019999855,
+            "outcome": "passed"
+          },
+          {
+            "id": "test_interim_host_continuation.RepairHostContinuationTests.test_async_three_failure_diagnosis_and_stagnation_with_and_without_caps",
+            "seconds": 6.423067553999999,
+            "outcome": "passed"
+          },
+          {
+            "id": "test_interim_recovery.RecoveryBoundaryTests.test_truthful_stop_proof_still_gates_validation_persist_reload_and_resume",
+            "seconds": 5.562024085000019,
+            "outcome": "passed"
+          }
+        ],
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    ],
+    [
+      {
+        "pattern": "selected",
+        "seconds": 19.15666631099998,
+        "successful": true,
+        "tests": [
+          {
+            "id": "test_interim_recovery.RecoveryBoundaryTests.test_unknown_active_queued_and_terminal_are_distinct",
+            "seconds": 6.930759574999996,
+            "outcome": "passed"
+          },
+          {
+            "id": "test_interim_host_continuation.RepairHostContinuationTests.test_async_three_failure_diagnosis_and_stagnation_with_and_without_caps",
+            "seconds": 6.377550421999985,
+            "outcome": "passed"
+          },
+          {
+            "id": "test_interim_recovery.RecoveryBoundaryTests.test_truthful_stop_proof_still_gates_validation_persist_reload_and_resume",
+            "seconds": 5.848035789000022,
+            "outcome": "passed"
+          }
+        ],
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    ]
+  ],
+  "timing": "perf_counter; setup, method, cleanup included",
+  "sample_recorded_at": [
+    "2026-10-04T01:52:36.074625+00:00",
+    "2026-10-04T01:53:20.769246+00:00",
+    "2026-10-04T01:54:03.719309+00:00"
+  ]
+}
