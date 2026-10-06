@@ -1,18 +1,8 @@
 # S8 — human host-qualification checklist
 
-Status: live qualification in progress. The initial Direct Codex and Codex
-through Conductor walkthroughs ran against `d5964de` on 2026-10-04. Scoped
-repairs are independently accepted at `b99b2d9`, and that exact candidate's full
-canonical Linux verification passed. Separate custom-source qualification used
-its approved two attempts and was admitted. The direct post-recovery walkthrough
-and isolated Linux portability replay passed within the bounds below. Conductor's
-post-recovery cold/Configure walkthrough remains pending. A compliant fresh
-ordinary stage-08 custom review passed at `c987205`, independently accepting the
-test-only fixture-clock repair. Its full canonical run passed all 43 public
-shards and delivery/readiness checks, with no omitted commands or unittest skips. The first ordinary review
-remains rejected for protocol failures. S8 is incomplete; automated fixtures and the approved
-mockup do not establish host support. This checklist grants no merge, release
-or deployment authority.
+Status: S8 is incomplete. S7a is technically accepted at `52e713a559b8dd70b271899671ea3355330b7720`, tree `f3b92ef195ef6b76e0d62c615c32740c20ff1c38`, on 2026-10-06. Fresh independent review passed 253 selected tests per Python 3.11/3.14 and independent probes; full Linux canonical verification passed 44 public shards and delivery/readiness checks; three non-root tests passed with zero skips. Documentation reconciliation changes the candidate and requires fresh final checks.
+
+The matrix below records historical walkthroughs at `d5964de`, `b99b2d9` and `c987205`. “Observed” applies only to those retained runs, never to an unexecuted current desktop run. A later bounded Conductor helper-CLI admission demonstrated preset/cancellation and saved-file preservation, retaining the earlier ordinary invocation without a new native tab or sidecar. Current Mac Conductor cold/Configure/custom-preset and ordinary adopted-lane handoff remain pending. Positive replacement acceptance remains pending on Direct Codex and Mac Conductor. Linux cloud evidence cannot certify Mac desktop support. This checklist grants no merge, release or deployment authority.
 
 ## Evidence envelope
 
@@ -20,7 +10,7 @@ Before either walkthrough, record privately: candidate SHA, edition/tag used for
 
 Use disposable consumer projects and the existing bootstrap/upgrade preview gates. Preserve an independent before-copy of execution state and approvals for exact byte comparison. Experimental qualification requires its own human-scoped decision. The approved custom-source qualification has used both of its two attempts; no third attempt or paid model comparison is allowed. Normal owning-stage execution remains a separate gate with fresh identity, source admission and command evidence.
 
-## Typed walkthrough
+## Historical typed walkthrough
 
 Run each row twice: once in Codex directly and once through Conductor. Use typed choices only, including every nested editor and recovery choice. Native controls, if present, must have an immediate text alternative.
 
@@ -112,9 +102,9 @@ Run each row twice: once in Codex directly and once through Conductor. Use typed
 
 ## Automated preparation and final review
 
-- [x] S1–S7 each have a tested exact candidate accepted by a fresh independent verifier.
+- [x] S1–S7a each have a tested exact candidate accepted by a fresh independent verifier.
 - [ ] Independent final whole-diff review maps AC01–AC23 to code, test and guidance evidence and names any remaining gaps.
-- [ ] Consumer inventory includes every default reader and stage-owned skill invocation, with no competing adopted-default source.
+- [x] Public consumer inventory and AC01–AC23 evidence mapping are prepared; independent final completeness review remains pending.
 - [ ] Two-project/two-machine adoption, upgrade, preset and recovery fixtures pass; no private path/billing leakage appears in shared files.
 - [ ] Run `python3 v0.5/delivery/scripts/generate.py` before `python3 v0.5/scripts/generate-manifest.py`, then `python3 v0.5/scripts/verify-playbook.py` and changed-surface tests.
 - [ ] Human and agent guidance agree; third-party notices are preserved; changelog includes a process-change Why line.
@@ -122,3 +112,19 @@ Run each row twice: once in Codex directly and once through Conductor. Use typed
 - [ ] Feature PR targets `main`, reports pending live checks honestly, and remains draft where qualification/CI/review gates require it.
 
 Record outcomes and evidence only after execution. If either host or account-specific proof is unavailable, leave its rows pending, document the missing proof and stop at the human gate. Qualification approval still does not authorise merge, release or deployment.
+
+## Remaining exact-candidate human walkthrough
+
+Use one admitted candidate per run. Before starting, privately bind full commit/tree, production parser digest, source-integration/admission receipts, consumer source pointer and actual model/effort/runner/thread/permission metadata. An absent or nonpassing admission blocks execution. After documentation changes, record the new candidate and compare production hashes with `52e713a`; do not reuse its whole-tree acceptance as a new pass. Keep global preferences, real project records and qualification stores outside the write boundary. Full-access runs are manually bounded, not filesystem-enforced read-only.
+
+1. **Mac Conductor cold and Configure/preset:** use the existing approved disposable consumer and genuine external preferences/custom store. Complete cold prerequisites in the actual Mac desktop session; reopen Configure with typed choices, display observed Coordinator and adopted defaults, select/reopen the already qualified custom review binding, save/reload the complete model-plus-skill preset through explicit previews, cancel the draft-only load and verify byte preservation. Perform any separately authorised project Apply through its own preview/reopen comparison. Do not reset adoption, alter source pins or create a new qualification.
+2. **Ordinary adopted lane:** run the existing owning-stage model gate and `job-route`, using the adopted Verify choice and exact already admitted custom source. A descriptor alone is preparation. Retain authoritative fresh worker identity, source read, actual report-only invocation, commands/results and independent verdict. Configure grants no launch authority. Record whether a real Conductor tab/sidecar handoff occurred; the older invocation cannot stand in for it.
+3. **Positive replacement, separately on both hosts:** use the production CLI with a genuine request-bound live availability adapter; no fixture discovery, evidence fixture or clock override. Keep context goal `S8 disposable qualification`, task `coding`, risk `ordinary`, billing `unknown`. Label the controlled role-eligibility fault: remove only planning eligibility from the exact saved Sol/high/Codex route, retain the real unfiltered catalogue and recompute the filtered revision. Do not manufacture account unavailability or insert a replacement route. Typed Refresh must retrieve current official evidence; missing reviewed fit blocks rather than changing the task or inventing advice.
+4. Display the actual unavailable choice, affected role, alternative, sources, successful dates/fingerprints and uncertainty. Typed **Accept replacement** must freshly retrieve the original reviewed source once and produce a complete preview changing only the planning draft. Cancel that preview with **Not now**. Separately prove **Choose another model** opens only the planning editor and cancellation preserves bytes; also cancel directly from the replacement proposal. Reopen using genuine unfiltered discovery and prove the original saved route, all other roles/jobs, local defaults/presets, execution history and approvals remain unchanged. This positive-replacement run performs no project Apply or model dispatch.
+5. Retain exact typed inputs, command/exit/output receipts, before/after inventories at each boundary, reopened results and additive private report/summary artifacts. Identify advisory cache changes separately. Scripted typed inputs are authorised walkthrough inputs, not new human replies. Independently admit the artifacts before updating the matrix or declaring any gate satisfied.
+
+The two qualification attempts are exhausted. Carry cumulative failure accounting into each handoff; stop on another matching guarded failure, independent rejection, explicit Stop, unavailable identity/admission or ambiguous evidence. Retain failures and interrupted commands without pass credit. No paid comparison, custom audit/pin changes, publication, merge, release, deployment or closeout occurs in this walkthrough.
+
+## Final review and PR gates
+
+[AC01–AC23 mapping](acceptance-evidence.md) records code, test and guidance locators and unresolved host proof. The final verifier must independently assess that mapping and the [consumer inventory](consumer-inventory.md), then execute fresh candidate checks. Regenerate delivery artifacts before the release manifest; run the canonical verifier and changed-surface tests, public-content/privacy and notice checks. CI must pass on the actual PR head: edition verification and the delivery scope classifier/required delivery suite in `.github/workflows/playbook-ci.yml`. Historical canonical results are not current-head CI. Keep the single feature PR to `main` draft while required gates remain pending; no archive or closeout while S8 is open.

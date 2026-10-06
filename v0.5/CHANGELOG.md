@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+- Reconcile configuration acceptance evidence, consumer ownership and the
+  remaining candidate-bound Direct Codex/Mac Conductor walkthrough gates.
+
+*Why — process lane:* retained technical and helper-CLI proof must stay tied
+  to its tested candidate and environment. Public status now distinguishes
+  historical results from remaining desktop and fresh replacement acceptance
+  proof, so cloud preparation cannot imply completed S8 or shipping.
+
 - Preserve forbidden deleted, struck-through and quoted descendants when
   filtering hidden content from reviewed headings, paragraphs and model links.
   Keep raw/inert fragments excluded and clean visible successors usable.
