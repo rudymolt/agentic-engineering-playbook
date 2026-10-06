@@ -208,7 +208,7 @@
     },
     {
       "path": "delivery/MANIFEST.yml",
-      "sha256": "4bda742644127c3e3ebc8fb1734681237c26cc2aaaa622f4c7bbc503f2cc6d8e",
+      "sha256": "79ad9d6a682d2af9bb2c7ff0e35c14f025bd6d61aef2fc38d3bf1dfc0b5a3721",
       "size": 36947
     },
     {
@@ -973,8 +973,8 @@
     },
     {
       "path": "delivery/tests/test_interim_coordinator.py",
-      "sha256": "0679abf3ed4a0f092f818bc959580416c5d62deb0265d66235f0394a57dda2ef",
-      "size": 48221
+      "sha256": "3c8b4fac168dbd8e011dead68d7bee35bc2be2063ed02db18130beaf1f31be94",
+      "size": 48248
     },
     {
       "path": "delivery/tests/test_interim_host_continuation.py",
@@ -988,8 +988,8 @@
     },
     {
       "path": "delivery/tests/test_interim_recovery.py",
-      "sha256": "4558b03eeb97f51697f248ec595677829577468aad56d347e507adfef076f2e7",
-      "size": 54444
+      "sha256": "27b6c0b74356819f02ca25c1e76c0b7a702284e1e5c33e15109b8e76b593637c",
+      "size": 54498
     },
     {
       "path": "delivery/tests/test_interim_repair.py",
