@@ -22,6 +22,12 @@ the JSON include CLI checks and shell/log overhead, not just test time.
 | 2026-10-03 / `d1a3214dad9b` | 762 | 803.053 s | -134.284 s (-20.08%) | +332.810 s (+29.30%) | 791.679 s | [run 37086875919](https://github.com/rudymolt/agentic-engineering-playbook/actions/runs/37086875919) |
 | 2026-10-04 / `157a6c7c5ef0` | 762 | 991.362 s | -188.309 s (-23.45%) | +144.501 s (+12.72%) | 975.898 s | [run 37169647763](https://github.com/rudymolt/agentic-engineering-playbook/actions/runs/37169647763) |
 
+Comparison baseline: `parallel_unittest:3+3` (separate from serial durations).
+
+| Date / revision | Executions | Summed tests | Observed saved vs previous | Observed saved vs original | Parallel jobs log span | Evidence |
+| --- | ---: | ---: | ---: | ---: | ---: | --- |
+| 2026-10-03 / `a89fd242ae2e` | 1153 | 2218.484 s | — | — | 561.266 s | [run 37138186128](https://github.com/rudymolt/agentic-engineering-playbook/actions/runs/37138186128) |
+
 Execution-count changes remain part of the observed totals. No duration is
 subtracted for suite growth; per-test averages do not establish equivalence.
 Counts are canonical executions, not unique IDs: imported tests can be
@@ -40,33 +46,8 @@ delta is the daily batch comparison only while one representative completed
 run is retained per batch. Keep selection consistent (final successful head);
 do not pick the fastest retry. Retain additional runs as separate evidence.
 
-## Supplemental parallel feature observation — October 4 collection
-
-This separate observation was collected with the unchanged PR 15 collector at
-`2c7f4528884a21756c4e126d410d671eef86e766`, from ordinary PR 14 CI. It is stored
-under `supplemental_evidence` in [history](suite-history.json), outside the serial
-`records` above so the main collector cannot produce cross-concurrency deltas.
-Its [exact-head discovery manifest](manifests/fb86bc0511fe32d40f872517c0d261c02f42e0b8.json)
-was independently generated from source; no expected count came from these logs.
-PR 15 remains independent; this batch does not copy its parser implementation.
-
-| Parallel checkpoint (`--jobs 3` in both jobs) | Executions | Summed overlapping test seconds | API edition / delivery seconds | API job gate envelope | Evidence |
-| --- | ---: | ---: | ---: | ---: | --- |
-| Prior `a89fd242ae2e` (PR 15 reviewed history) | 1153 | 2218.484 | 563 / 457 | 563 | [run 37138186128](https://github.com/rudymolt/agentic-engineering-playbook/actions/runs/37138186128) |
-| Latest `fb86bc0511fe` | 1154 | 2432.901 | 513 / 630 | 630 | [run 37150936632](https://github.com/rudymolt/agentic-engineering-playbook/actions/runs/37150936632) |
-
-The same-concurrency observation increased by 214.417 summed seconds (9.67%)
-and 67 API gate-envelope seconds (11.90%). Edition grew by one execution;
-delivery stayed at 537. Counts are executions, including intentionally imported
-cases, across 41 edition and 15 delivery groups. No duration was normalized away.
-Runner: hosted Ubuntu 24.04 image 20260927.320.1, Python 3.12.14, Git 2.55.0;
-physical hardware and shared load are unknown. Different source and load prevent
-causal attribution to a feature or to this independent optimization batch.
-
-Latest verification command spans are 507.376812 / 625.435697 seconds;
-overall job-log span is 627.618063 seconds. These differ from summed tests and
-API elapsed durations. API job time includes setup/cleanup; queue time and exact
-workflow elapsed time remain unknown. PR 15's successful scope-skipped delivery
-run 37141141959 is collector correctness evidence, not a full-suite observation.
-Do not compare parallel summed durations to original serial `a57af6de259d` or
-claim a serial-to-parallel speedup from these heterogeneous observations.
+With concurrent unittest workers, summed durations overlap. They are not
+suite, job, or gate elapsed time and cannot measure speedup against the
+serial baseline. Cross-concurrency duration deltas are intentionally blank.
+The supplemental concurrency baseline does not replace the original daily
+observation; retain suite growth and runner changes when interpreting it.

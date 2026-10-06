@@ -5,6 +5,7 @@ import sys
 import tempfile
 import unittest
 import os
+import json
 from copy import deepcopy
 from dataclasses import replace
 from pathlib import Path
@@ -46,6 +47,7 @@ def approval(fetch_url: str = "https://example.invalid/approved.git", push_url: 
             "build": {"model": "gpt-5.6-terra", "effort": "high", "fallback": None},
             "verify": {"model": "gpt-5.6-sol", "effort": "medium", "fallback": "same-runner-human-override"},
             "diagnosis": {"model": "gpt-5.6-terra", "effort": "high", "fallback": None},
+            "escalated_verify": {"model": "gpt-6.1-sol", "effort": "high", "fallback": None},
         },
         "forecast": {"work_units": 1, "verification_units": 1},
         "progress_checkpoint_policy": "worker-result-and-forecast-exceeded",
@@ -57,6 +59,45 @@ def approval(fetch_url: str = "https://example.invalid/approved.git", push_url: 
 
 
 class InterimApprovalTests(unittest.TestCase):
+    def test_frozen_public_base_history_is_readable_without_byte_rewrites(self) -> None:
+        fixture = PACK / "tests/fixtures/legacy-escalated-history.json"
+        original = fixture.read_bytes()
+        record = json.loads(original)
+        approved_bytes = canonical_bytes(record["approval"])
+        validated = validate_record(record)
+        self.assertEqual(fixture.read_bytes(), original)
+        self.assertEqual(canonical_bytes(validated["approval"]), approved_bytes)
+        operations = [item for item in record["usage"]["operations"] if "escalated_verify" in item]
+        self.assertTrue(operations)
+        from delivery_pilot.interim_routes import route_for_operation, configured_route
+        for operation in operations:
+            self.assertEqual(operation["route"], {"model": "gpt-6-sol", "effort": "high"})
+            self.assertEqual(route_for_operation(record["approval"], operation), operation["route"])
+            self.assertEqual(configured_route(record["approval"]["routes"], operation), operation["route"])
+            for forged_route in ({"model": "gpt-6.1-sol", "effort": "high"}, {"model": "gpt-6-sol", "effort": "medium"}):
+                forged = deepcopy(record)
+                next(item for item in forged["usage"]["operations"] if item["id"] == operation["id"])["route"] = forged_route
+                with self.assertRaises(InterimError):
+                    validate_record(forged)
+
+    def test_new_verify_seed_is_explicit_and_immutable_not_inferred_from_operations(self) -> None:
+        from delivery_pilot.interim_routes import route_for_operation, configured_route
+        selected = approval()
+        operation = {"phase": "repair-verify", "escalated_verify": "repair-1"}
+        expected = {"model": "gpt-6.1-sol", "effort": "high"}
+        record = initial_record(selected)
+        self.assertEqual(route_for_operation(selected, operation), expected)
+        self.assertEqual(configured_route(selected["routes"], operation), expected)
+        changed = deepcopy(record)
+        del changed["approval"]["routes"]["escalated_verify"]
+        with self.assertRaisesRegex(InterimError, "immutable"):
+            validate_record(changed)
+        for model, effort in (("gpt-6.1-sol", "medium"), ("arbitrary-model", "high"), ("gpt-6-sol", "high")):
+            bad = deepcopy(selected)
+            bad["routes"]["escalated_verify"].update(model=model, effort=effort)
+            with self.assertRaises(InterimError):
+                initial_record(bad)
+
     def test_explicit_escalation_policy_is_immutable_and_legacy_has_no_authority(self) -> None:
         selected = approval()
         selected["escalation_policy"] = {"route": {"model": "gpt-6-astra", "effort": "high"},

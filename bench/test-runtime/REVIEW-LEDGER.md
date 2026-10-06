@@ -807,6 +807,45 @@ outputs contain no raw fixture diagnostics, personal paths or private addresses.
 Both author and committer identities are GitHub noreply. Final-head CI remains
 separate from these local and implementation-head results; consult draft PR 12.
 
+
+## October 3 supplemental parallel CI observation
+
+Diagnosis: the serial collector rejected the exact `--jobs 3` command and assumed
+one edition summary. PR14's runner buffers each module output and labels its
+index, module name and exit status. The compatibility fix accepts only the
+reviewed jobs suffix with a revision-bound complete module/count manifest.
+Why: ordinary feature CI changed its output shape; tracking must follow that
+shape without accepting partial suites or changing the tests being measured.
+
+Run 37138186128 at `a89fd242ae2e87caed987359e65e7a454203c5cf` succeeded:
+616 edition + 537 delivery = 1,153 executions, with 41 + 15 clean groups.
+Independent discovery (count only, no execution) confirmed every module/count
+against that head's inventory and K4.1 selection. Full raw logs supplied the
+history row; minimal excerpts supply regression fixtures. The source hashes and
+public evidence links remain in the history/totals outputs.
+
+The 2,218.484 summed unittest seconds overlap under three workers per suite.
+GitHub job metadata gives 563 seconds edition and 457 seconds delivery; their
+start/end envelope is 563 seconds, excluding queue time. Verification-command
+and job-log spans are separate fields in the history. These measures cannot be
+substituted for one another or compared causally with serial durations.
+
+Preserve the original October 3 daily 803.053-second observation and all earlier
+rows. This additional row begins a separate concurrency baseline. Coverage grew
+from 762 to 1,153 executions (+391); runner image is ubuntu-24.04 version
+20260927.320.1, Python 3.12.14 and Git 2.55.0. Both actions now use major v7;
+those are action versions, not playbook editions. Hardware is unreported.
+No per-test normalization, causal 43% claim, or parallel speedup is established.
+
+Run 37135602912 is excluded: the edition job failed (614 tests, 12 failures).
+Its successful delivery job and elapsed times do not make it a successful full
+baseline. Retain that failed-run excerpt only as negative regression evidence.
+
+Validation scope: collector regressions, actual-log extraction, independent
+source inventory/count checks, public-content and aggregate static correctness
+checks, plus the tracking PR's normal exact-head CI. No timing-only full-suite
+rerun or live model qualification is part of this change.
+
 ## 2026-10-04 — batch 5 (UTC)
 
 Fresh fetch and GitHub metadata verified main at

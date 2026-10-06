@@ -22,6 +22,31 @@ Before touching code for a non-trivial slice, confirm the work is on a feature b
 
 ## What to run
 
+For new choices, resolve the saved primary binding at this stage-owned invocation
+point. Resume with the retained `approved_binding`, not current defaults; older
+active routes without a binding remain unchanged:
+
+```sh
+printf '%s' '{"job":"implementation","owner":"07"}' | python3 {playbook-path}/v0.5/scripts/configure-playbook.py --project . job-route
+```
+
+A configured manual/Playbook adapter performs this stage's approved-seam
+vertical red→green loop instead of automatically invoking `/tdd` or incompatible
+`/implement`. `configured: false` retains the route below. Blocked means stop
+and explicitly edit/preview a fallback. Approved Build/delivery choices, slice
+confirmation, tests, fresh Verify, commits, launches, permissions and failure/
+stop rules remain stage-owned. See the [job contract](../scripts/skill-bindings.md).
+
+For a custom-retained-audit route, immediately before invoking call
+`catalog.invocation_source(saved, "implementation", "07", route["source_id"])`
+on this stage's local catalog and load the returned private `SKILL.md` through
+the host's skill reader. Use the same saved selection or authenticated retained
+Build execution and external local store as `job-route`; follow the
+[custom invocation recipe](../scripts/skill-bindings.md#stage-owned-custom-invocation).
+A portable identity is not a path; resolution failure blocks rather than
+falling back. Real independent qualification, approved inputs and all Build
+authority remain stage-owned, not conferred by local JSON or the resolver.
+
 `/tdd` (Matt). Enforces red → green with **vertical slices** — one failing test, one piece of implementation, repeat. As of upstream v1.1.0 the loop is **red → green only**: the refactor step moved out of `/tdd` and into the stage-08 standards/spec pass (compatible `/code-review` or the same manual axes), so refactoring happens under review discipline, not mid-implementation. Tests go only at **pre-agreed seams** — the ones sketched by `/to-spec` at stage 03 and confirmed with the user — never at seams the agent invents mid-slice.
 
 When stages 01–06 have produced an approved delivery envelope and the human
@@ -64,7 +89,7 @@ After committing, stop and report the outcome. Do not automatically continue int
 
 ## The build choice (V0.3.16)
 
-When the user asks to build slices, combine the Build model announcement with the existing autonomy choice instead of adding a separate model ceremony. Read [`../93-model-routing-track.md`](../93-model-routing-track.md). The default is GPT-5.6 Terra; `models` changes the route and returns to this menu without starting work. A feature-scoped `openai defaults` policy announces Terra without asking another model question. Pace is separate from model and reasoning: standard speed is the default, while appending `fast` to a build action requests Codex fast mode for a run where the human is waiting.
+When the user asks to build slices, combine the Build model announcement with the existing autonomy choice instead of adding a separate model ceremony. Read [`../93-model-routing-track.md`](../93-model-routing-track.md). Resolve the project/feature preference and show its origin (edition fallback: GPT-6.1 Sol/medium); `models` changes the route and returns to this menu without starting work. A feature-scoped `openai defaults` policy announces GPT-6.1 Sol/medium without asking another model question or changing project settings. Pace is separate from model and reasoning: standard speed is the default, while appending `fast` to a build action requests Codex fast mode for a run where the human is waiting.
 
 Offer the autonomy level as a typed choice instead of assuming it:
 

@@ -305,7 +305,8 @@ class ConductorHostAdapter:
                       "and execution evidence. Do not launch another worker or return to ordinary repair. "
                       "Use only the compact retained evidence in this operation; no prior reasoning transcript.")
         if "escalated_verify" in operation:
-            brief += (" Run fresh GPT-6 Sol/high Verify on the operation's exact candidate SHA using its "
+            verify_route = configured_route(self.routes, operation)
+            brief += (" Run fresh " + verify_route["model"] + "/" + verify_route["effort"] + " Verify on the operation's exact candidate SHA using its "
                       "approved task, commands, criteria and verify_context artifact ID. Read the candidate "
                       "and report independently executed evidence and pass/fail findings. Do not include or "
                       "request the escalated worker's diagnosis or reasoning transcript; builder_transcript must be false.")
