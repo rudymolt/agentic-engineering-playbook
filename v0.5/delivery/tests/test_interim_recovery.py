@@ -420,6 +420,7 @@ class RecoveryBoundaryTests(unittest.TestCase):
         self.reload(result)
         return result
 
+    @memoized_control_refs
     def test_shared_boundary_red_matrix(self):
         wrong_id = lambda result: {**result, "observation": {**result["observation"], "message_id": "wrong"}}
         cases = [
@@ -564,6 +565,7 @@ class RecoveryBoundaryTests(unittest.TestCase):
                     result = self.check_fault(path, boundary, fault, occurrence, **options)
                     self.assertIn("malformed", result.value["state"]["handback"]["reason"])
 
+    @memoized_control_refs
     def test_consumed_elapsed_is_validated_before_accounting(self):
         for path, occurrence in (("wake", 1), ("recover", 2), ("recover-wake", 2)):
             for elapsed in (-1, True, 1.5, "1", None, [], {}):
@@ -596,6 +598,7 @@ class RecoveryBoundaryTests(unittest.TestCase):
                     self.preserved(snapshot.value, result.value, path)
                     self.reload(result)
 
+    @memoized_control_refs
     def test_explicit_uncertain_stop_retry_retains_confirmed_progress(self):
         for boundary in ("cancel", "observe", "owned_workers"):
             with self.subTest(boundary=boundary):

@@ -1,0 +1,121 @@
+{
+  "revision": "fb1836b4cd2424507824d43974aec0fef72ab28f",
+  "dirty": false,
+  "python": "3.12.14",
+  "platform": "Linux",
+  "set": "K4.1",
+  "selected_tests": [
+    "test_interim_monitor.MonitoringTests.test_repair_worker_errors_keep_one_monitored_failed_operation",
+    "test_interim_recovery.RecoveryBoundaryTests.test_explicit_uncertain_stop_retry_retains_confirmed_progress",
+    "test_interim_coordinator.CoordinatorTests.test_receipt_acceptance_parity_diagnosed_cases"
+  ],
+  "recorded_at": "2026-10-06T01:10:18.439522+00:00",
+  "privileged": false,
+  "test_sources": {
+    "control_ref_test_support.py": "aeccfed7d187d91d59e70d2e83ce229f0da233f7ad4e6f526c7fd37ed7cf050c",
+    "test_checker_monitor.py": "a3f92339d3f38ea658c3d23326b07275df21a40b8b769fe7e67b9c78ea34e8ea",
+    "test_cloud.py": "d05f972e577796b33170c84eeff7ee2be5d1f96ee2885692c6a63f5c3841b174",
+    "test_continuation.py": "4e45cbf0609c6ebc3615ab16547bfbe6128fd492d9b2907219adbb26579500da",
+    "test_core.py": "68067f8ce650a14ec1d1765bc0376356c1e15571208779a2903165109aac4f22",
+    "test_interim.py": "9d7dea5db96260689f7c4003cf9ef881510c9419fe6f3bae29d412db55af661c",
+    "test_interim_advance.py": "fb7998f1a115dee1b023d26432395f0c76e5c2ef204054b2327af0e05a0e383e",
+    "test_interim_conductor_host.py": "b7a905b0a1c481e6bb7ce9085cfea0cae2d60a14608aba9a83394566f57db2c4",
+    "test_interim_coordinator.py": "9bbee64ad49b9d4d0975346e0683520a6273896f9197df2c8a3489c9f8000ea8",
+    "test_interim_host_continuation.py": "42f69a88a39b996c9bc987587a8ce393da1e26a3494552d7d71380be104bd61e",
+    "test_interim_monitor.py": "343a3654f59418004cc99badc8b531095fe3cf70a28394b17a435f972fd1330a",
+    "test_interim_recovery.py": "7e9f2d31ef427777ac4da195328fd81c2456406d463ff13b671a265fa3fc3ddc",
+    "test_interim_repair.py": "ea1a770693a8d68a0ae33339a56e171f669824a0a31642a172a97e1a2e9efb9b",
+    "test_interim_stack.py": "3c0c22ca14aed6b9af722835663b47a2946b8d204896fa2fc8838efa31f25f13",
+    "test_interim_watchdog.py": "78cbb62bc5e1b2fe8f78a502a8cb2a08dee41797e08cfe7c6d08d3bbad95e156",
+    "test_pack_lifecycle.py": "308a18a85400f3ca47cdf8a965cde922f174ade3afdfd388a999c08c00cd3eda"
+  },
+  "repetitions": [
+    [
+      {
+        "pattern": "selected",
+        "seconds": 11.08359221500001,
+        "successful": true,
+        "tests": [
+          {
+            "id": "test_interim_monitor.MonitoringTests.test_repair_worker_errors_keep_one_monitored_failed_operation",
+            "seconds": 3.9810245719999955,
+            "outcome": "passed"
+          },
+          {
+            "id": "test_interim_recovery.RecoveryBoundaryTests.test_explicit_uncertain_stop_retry_retains_confirmed_progress",
+            "seconds": 3.8333473510000005,
+            "outcome": "passed"
+          },
+          {
+            "id": "test_interim_coordinator.CoordinatorTests.test_receipt_acceptance_parity_diagnosed_cases",
+            "seconds": 3.2688897649999973,
+            "outcome": "passed"
+          }
+        ],
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    ],
+    [
+      {
+        "pattern": "selected",
+        "seconds": 10.954556656999983,
+        "successful": true,
+        "tests": [
+          {
+            "id": "test_interim_monitor.MonitoringTests.test_repair_worker_errors_keep_one_monitored_failed_operation",
+            "seconds": 3.929957889999997,
+            "outcome": "passed"
+          },
+          {
+            "id": "test_interim_recovery.RecoveryBoundaryTests.test_explicit_uncertain_stop_retry_retains_confirmed_progress",
+            "seconds": 3.6711634600000025,
+            "outcome": "passed"
+          },
+          {
+            "id": "test_interim_coordinator.CoordinatorTests.test_receipt_acceptance_parity_diagnosed_cases",
+            "seconds": 3.353150849000002,
+            "outcome": "passed"
+          }
+        ],
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    ],
+    [
+      {
+        "pattern": "selected",
+        "seconds": 11.055578191999984,
+        "successful": true,
+        "tests": [
+          {
+            "id": "test_interim_monitor.MonitoringTests.test_repair_worker_errors_keep_one_monitored_failed_operation",
+            "seconds": 3.956206578000007,
+            "outcome": "passed"
+          },
+          {
+            "id": "test_interim_recovery.RecoveryBoundaryTests.test_explicit_uncertain_stop_retry_retains_confirmed_progress",
+            "seconds": 3.7419769759999895,
+            "outcome": "passed"
+          },
+          {
+            "id": "test_interim_coordinator.CoordinatorTests.test_receipt_acceptance_parity_diagnosed_cases",
+            "seconds": 3.357168607999995,
+            "outcome": "passed"
+          }
+        ],
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    ]
+  ],
+  "timing": "perf_counter; setup, method, cleanup included",
+  "recorded_at_each_pair": [
+    "2026-10-06T01:10:18.439522+00:00",
+    "2026-10-06T01:10:43.775034+00:00",
+    "2026-10-06T01:11:08.745510+00:00"
+  ]
+}
