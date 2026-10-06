@@ -179,27 +179,28 @@ def comparison_cohort(record):
 
 
 def annotate(records):
-    """Positive saved seconds mean faster; raw changes are not causal estimates."""
+    """Compare each run with its cohort; keep cross-record growth separate."""
     if not records:
         return []
     result = []
     originals = {}
     previous = None
+    previous_by_cohort = {}
     for record in records:
         row = dict(record)
         cohort = comparison_cohort(record)
         original = originals.setdefault(cohort, record)
-        for name, base in (("daily", previous), ("cumulative", original)):
-            count_base = base
-            if base is not None and comparison_cohort(base) != cohort:
-                base = None
+        for name, base in (("daily", previous_by_cohort.get(cohort)), ("cumulative", original)):
             if name == "cumulative" and original is record and previous is not None:
                 base = None
+            count_base = base
             row[name + "_observed_saved_seconds"] = None if base is None else round(base["summed_test_seconds"] - record["summed_test_seconds"], 6)
             row[name + "_observed_reduction_percent"] = None if base is None else round(100 * (1 - record["summed_test_seconds"] / base["summed_test_seconds"]), 4)
             row[name + "_execution_count_change"] = None if count_base is None else record["executions"] - count_base["executions"]
+        row["cross_record_execution_count_change"] = None if previous is None else record["executions"] - previous["executions"]
         result.append(row)
         previous = record
+        previous_by_cohort[cohort] = record
     return result
 
 
@@ -215,19 +216,20 @@ def render(records):
         "the JSON include CLI checks and shell/log overhead, not just test time.", "",
         "| Date / revision | Executions | Summed tests | Observed saved vs previous | Observed saved vs original | Parallel jobs log span | Evidence |",
         "| --- | ---: | ---: | ---: | ---: | ---: | --- |"]
-    cohort = "serial_unittest"
+    cohorts = {}
     for row in annotate(records):
-        current_cohort = comparison_cohort(row)
-        if current_cohort != cohort:
+        cohorts.setdefault(comparison_cohort(row), []).append(row)
+    for cohort_index, (current_cohort, rows) in enumerate(cohorts.items()):
+        if cohort_index:
             lines += ["", f"Comparison baseline: `{current_cohort}` (separate from serial durations).", "",
                       "| Date / revision | Executions | Summed tests | Observed saved vs previous | Observed saved vs original | Parallel jobs log span | Evidence |",
                       "| --- | ---: | ---: | ---: | ---: | ---: | --- |"]
-            cohort = current_cohort
-        validate_run_url(row)
-        def delta(kind):
-            value = row[kind + "_observed_saved_seconds"]
-            return "—" if value is None else f'{value:+.3f} s ({row[kind + "_observed_reduction_percent"]:+.2f}%)'
-        lines.append(f'| {row["observed_date"]} / `{row["head_sha"][:12]}` | {row["executions"]} | {row["summed_test_seconds"]:.3f} s | {delta("daily")} | {delta("cumulative")} | {row["parallel_jobs_log_span_seconds"]:.3f} s | [run {row["run_id"]}]({row["run_url"]}) |')
+        for row in rows:
+            validate_run_url(row)
+            def delta(kind):
+                value = row[kind + "_observed_saved_seconds"]
+                return "—" if value is None else f'{value:+.3f} s ({row[kind + "_observed_reduction_percent"]:+.2f}%)'
+            lines.append(f'| {row["observed_date"]} / `{row["head_sha"][:12]}` | {row["executions"]} | {row["summed_test_seconds"]:.3f} s | {delta("daily")} | {delta("cumulative")} | {row["parallel_jobs_log_span_seconds"]:.3f} s | [run {row["run_id"]}]({row["run_url"]}) |')
     lines += ["", "Execution-count changes remain part of the observed totals. No duration is",
         "subtracted for suite growth; per-test averages do not establish equivalence.",
         "Counts are canonical executions, not unique IDs: imported tests can be",

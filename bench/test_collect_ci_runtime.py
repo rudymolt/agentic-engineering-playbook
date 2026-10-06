@@ -190,7 +190,19 @@ class ParallelRuntimeTests(unittest.TestCase):
         daily = next(r for r in records if r["run_id"] == 37086875919)
         self.assertEqual(daily["summed_test_seconds"], 803.053)
         self.assertFalse(any(r["run_id"] == 37135602912 for r in records))
-        self.assertEqual(annotate(records)[-1]["daily_execution_count_change"], 391)
+        parallel = next(r for r in annotate(records) if r["run_id"] == 37138186128)
+        self.assertIsNone(parallel["daily_execution_count_change"])
+        self.assertEqual(parallel["cross_record_execution_count_change"], 391)
+
+    def test_serial_comparison_survives_interleaved_parallel_record(self):
+        records = json.loads((self.root / "suite-history.json").read_text())["records"]
+        rows = annotate(records)
+        oct4 = next(r for r in rows if r["run_id"] == 37169647763)
+        self.assertEqual(oct4["daily_observed_saved_seconds"], -188.309)
+        self.assertEqual(oct4["daily_execution_count_change"], 0)
+        self.assertEqual(oct4["cross_record_execution_count_change"], -391)
+        report = render(records)
+        self.assertLess(report.index("[run 37169647763]"), report.index("[run 37138186128]"))
 
     def test_concurrency_starts_separate_comparison_baseline(self):
         serial = collect(HEAD, 10, log("edition"), log("delivery"), 1)
@@ -198,7 +210,8 @@ class ParallelRuntimeTests(unittest.TestCase):
         rows = annotate([serial, parallel])
         self.assertIsNone(rows[1]["daily_observed_saved_seconds"])
         self.assertIsNone(rows[1]["cumulative_observed_reduction_percent"])
-        self.assertEqual(rows[1]["daily_execution_count_change"], 1149)
+        self.assertIsNone(rows[1]["daily_execution_count_change"])
+        self.assertEqual(rows[1]["cross_record_execution_count_change"], 1149)
 
 
 if __name__ == "__main__":

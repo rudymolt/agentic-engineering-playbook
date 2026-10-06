@@ -20,6 +20,7 @@ the JSON include CLI checks and shell/log overhead, not just test time.
 | 2026-10-02 / `ba48cfde9288` | 762 | 840.121 s | +93.967 s (+10.06%) | +295.742 s (+26.04%) | 825.421 s | [run 37060591883](https://github.com/rudymolt/agentic-engineering-playbook/actions/runs/37060591883) |
 | 2026-10-03 / `7828c463f807` | 762 | 668.769 s | +171.352 s (+20.40%) | +467.094 s (+41.12%) | 657.017 s | [run 37085960489](https://github.com/rudymolt/agentic-engineering-playbook/actions/runs/37085960489) |
 | 2026-10-03 / `d1a3214dad9b` | 762 | 803.053 s | -134.284 s (-20.08%) | +332.810 s (+29.30%) | 791.679 s | [run 37086875919](https://github.com/rudymolt/agentic-engineering-playbook/actions/runs/37086875919) |
+| 2026-10-04 / `157a6c7c5ef0` | 762 | 991.362 s | -188.309 s (-23.45%) | +144.501 s (+12.72%) | 975.898 s | [run 37169647763](https://github.com/rudymolt/agentic-engineering-playbook/actions/runs/37169647763) |
 
 Comparison baseline: `parallel_unittest:3+3` (separate from serial durations).
 
