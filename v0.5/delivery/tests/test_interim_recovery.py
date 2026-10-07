@@ -278,6 +278,7 @@ class RecoveryTests(unittest.TestCase):
         with self.assertRaisesRegex(Exception, "intent_at|confirmed"):
             self.coordinator.resume(type(self.snapshot)(corrupt, self.snapshot.digest, self.snapshot.commit_sha), "human resume", RecoveryFixture(observed_state="terminal"))
 
+    @memoized_control_refs
     def test_stopped_receipt_wrappers_and_timestamps_must_be_truthful_utc(self):
         def mutate(kind, record):
             cancellation = record["recovery"]["stop"]["cancellations"][0]
@@ -631,6 +632,7 @@ class RecoveryBoundaryTests(unittest.TestCase):
                 self.preserved(snapshot.value, resumed.value, "resume")
                 self.reload(resumed)
 
+    @memoized_control_refs
     def test_exhausted_ceiling_enumeration_failure_does_not_invent_a_wake(self):
         for limits, now in (({"dispatch_max": 5}, self.clock()), ({"deadline_at": "2030-01-01T00:00:00Z"}, datetime(2031, 1, 1, tzinfo=timezone.utc))):
             with self.subTest(limits=limits):
