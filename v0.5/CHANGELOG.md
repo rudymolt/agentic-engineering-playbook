@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+- Reconcile independently admitted S8 Mac Conductor and Direct Codex
+  walkthroughs, including a differing-Plan local preset's draft-load
+  cancellation, the fresh ordinary adopted Verify handoff and both-host
+  positive replacement. Keep historical failures and current-tree PR gates
+  distinct; preserve private evidence and exhausted qualification limits.
+
+*Why — evidence lane:* historical observations and cloud fixtures could not
+  establish current desktop support or a changed preset draft's cancellation.
+  Actual host artifacts close those gaps without conferring shipping authority
+  or transferring an older tree's verification to later documentation changes.
+
 - Reconcile configuration acceptance evidence, consumer ownership and the
   remaining candidate-bound Direct Codex/Mac Conductor walkthrough gates.
 
