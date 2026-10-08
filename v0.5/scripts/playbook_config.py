@@ -500,8 +500,23 @@ class Configuration:
             return {"origin": "feature", "choice": deepcopy(feature_choice)}
         return {"origin": origins[role], "choice": deepcopy(config["models"][role])}
 
-    def _recommend(self, routes, context, evidence, lane=False):
-        from model_recommendations import recommendations
+    def _official_reviewed_guidance(self):
+        from model_recommendations import OfficialSources
+        adapter = getattr(self.recommendation_sources, '__self__', None)
+        return self.evidence_cache.current_reviewed_entries(adapter.reviewed_entries()) if isinstance(adapter, OfficialSources) else None
+
+    def _recommend(self, routes, context, evidence, lane=False, fresh=False):
+        from model_recommendations import matches_reviewed_guidance, recommendations
+        reviewed = self._official_reviewed_guidance()
+        if reviewed is not None:
+            adapter = self.recommendation_sources.__self__
+            if fresh:
+                # Acceptance uses this attempt's confirmation, independently
+                # of whether the advisory cache could publish it.
+                reviewed = adapter.reviewed_entries()
+            evidence = {**evidence, 'reviewed_models': [entry['model_id'] for entry in adapter.reviewed_entries()],
+                        'guidance': [record for record in evidence.get('guidance', [])
+                                               if matches_reviewed_guidance(record, reviewed)]}
         runtime = self._bytes(self.state_path)
         routing = legacy_routing(runtime.decode()) if runtime else {}
         allowed = routing.get("allowed_runners", ["codex", "claude-code", "cursor", "opencode"])
@@ -512,12 +527,12 @@ class Configuration:
         except (ValueError, TypeError, AttributeError) as error:
             raise ConfigError("Invalid local recommendation context; supply task, risk and structured evidence without changing defaults.") from None
 
-    def _recommendation_evidence(self, discovery, force=False):
+    def _recommendation_evidence(self, discovery, force=False, urls=None):
         if self.recommendation_sources is None:
             return {}
         try:
             self.evidence_cache.clock = self.clock
-            evidence = self.evidence_cache.retrieve(self.recommendation_sources, discovery, force)
+            evidence = self.evidence_cache.retrieve(self.recommendation_sources, discovery, force, urls=urls)
             if not isinstance(evidence, dict):
                 raise ValueError("Invalid source result")
             encoded(evidence)
@@ -751,7 +766,7 @@ class Configuration:
 
     def _seal(self, proposal):
         if self._has_advice_claims(proposal):
-            self._project_advice(proposal, self.clock())
+            self._project_advice(proposal, self.clock(), self._official_reviewed_guidance())
         proposal["proposal_revision"] = self._revision(proposal)
         return proposal
 
@@ -797,7 +812,7 @@ class Configuration:
                    for record in records) or Configuration._has_advice_claims(proposal.get("retained_proposal"))
 
     @staticmethod
-    def _project_advice(proposal, now):
+    def _project_advice(proposal, now, reviewed=None):
         from model_recommendations import project_advice
         context = proposal.get("context")
         workload = context.get("workload") if isinstance(context, dict) else None
@@ -818,7 +833,7 @@ class Configuration:
                 withheld.setdefault("guidance", deepcopy(record.get("guidance")) or
                                     {"checked_at": None, "status": "incomplete"})
                 record["withheld_evidence"] = withheld
-            return project_advice(record, now, requested_workload=workload, requested_context=context)
+            return project_advice(record, now, requested_workload=workload, requested_context=context, reviewed=reviewed)
 
         records = proposal.get("recommendations")
         records = records if isinstance(records, dict) else {}
@@ -845,7 +860,7 @@ class Configuration:
                 proposal["choices"] = [choice for choice in proposal["choices"] if choice != "Accept replacement"]
         retained = proposal.get("retained_proposal")
         if isinstance(retained, dict):
-            Configuration._project_advice(retained, now)
+            Configuration._project_advice(retained, now, reviewed)
             retained["proposal_revision"] = Configuration._revision(retained)
 
     def _discovery_revision(self, evidence):
@@ -871,10 +886,10 @@ class Configuration:
             result = self._blocked(error)
         retained = proposal.get("retained_proposal", proposal) if isinstance(proposal, dict) else None
         now = self.clock() if result.get("state") in {"blocked", "recovery_required"} and self._has_advice_claims(retained) else None
-        return self.retain_proposal(result, proposal, now=now)
+        return self.retain_proposal(result, proposal, now=now, reviewed=self._official_reviewed_guidance())
 
     @staticmethod
-    def retain_proposal(result, proposal, now=None):
+    def retain_proposal(result, proposal, now=None, reviewed=None):
         retained = proposal
         if isinstance(proposal, dict) and proposal.get("state") in {"blocked", "recovery_required"}:
             retained = proposal.get("retained_proposal")
@@ -891,7 +906,7 @@ class Configuration:
             result["retained_proposal"] = deepcopy(retained)
             if Configuration._has_advice_claims(retained):
                 Configuration._project_advice(result["retained_proposal"],
-                                             now if now is not None else datetime.now(timezone.utc))
+                                             now if now is not None else datetime.now(timezone.utc), reviewed)
                 result["retained_proposal"]["proposal_revision"] = Configuration._revision(result["retained_proposal"])
             result.setdefault("choices", ["Reload", "Not now"]).append("Back")
         return result
@@ -928,8 +943,12 @@ class Configuration:
         except (ConfigError, KeyError, TypeError) as error:
             return self._blocked(error)
         draft = deepcopy(proposal)
-        if not self._advice_mapping_valid(draft) or draft.get("advice_recovery_required"):
-            self._project_advice(draft, self.clock())
+        official_accept = reply == 'accept replacement' and self._official_reviewed_guidance() is not None
+        reviewed = (self.recommendation_sources.__self__.reviewed_entries() if official_accept
+                    else self._official_reviewed_guidance())
+        if (self._official_reviewed_guidance() is not None
+                or not self._advice_mapping_valid(draft) or draft.get("advice_recovery_required")):
+            self._project_advice(draft, self.clock(), reviewed)
         if reply in {'accept replacement', 'choose another model'} and draft.get('step') == 'replacement':
             role = draft['replacement']['role']
             if reply == 'choose another model':
@@ -938,13 +957,30 @@ class Configuration:
             choice = selected.get('choice')
             routes, availability = self._available()
             changed = self._discovery_revision(availability) != self._discovery_revision(draft['discovery'])
-            # Validate the exact proposed route and its original suitability claim.
-            # Do not retrieve sources or replace it with a newly ranked candidate.
+            # Recheck only the original reviewed entry's source at this explicit
+            # acceptance boundary. A cached fallback cannot confirm this attempt.
+            fresh_guidance, fresh_evidence = None, {}
+            if official_accept:
+                from model_recommendations import SOURCES, matches_reviewed_guidance, valid_claim
+                original = proposal.get('recommendations', {}).get(role, {}).get('guidance')
+                if (isinstance(original, dict) and isinstance(original.get('entry_fingerprint'), str)
+                        and original.get('source_url') in SOURCES):
+                    fresh_evidence = self._recommendation_evidence(availability, force=True, urls=[original['source_url']])
+                    fresh_guidance = next((record for record in fresh_evidence.get('guidance', [])
+                                          if record.get('entry_fingerprint') == original['entry_fingerprint']
+                                          and matches_reviewed_guidance(record, reviewed)
+                                          and valid_claim(record, 'guidance', now=self.clock())
+                                          and any(source.get('source_url') == record['source_url']
+                                                  and source.get('status') == 'retrieved'
+                                                  for source in fresh_evidence.get('sources', []))), None)
+            # Validate the exact route and original claim; never rerank.
             proposed_routes = {role: [choice] if choice in routes[role] else []}
             original_guidance = selected.get('guidance')
             same_original = draft['replacement'].get('advice') == selected
+            guidance = fresh_guidance if official_accept else original_guidance
             suitability = self._recommend(proposed_routes, draft['context'],
-                                          {'guidance': [original_guidance] if same_original and isinstance(original_guidance, dict) else []})[role]
+                                          {'guidance': [guidance] if same_original and isinstance(guidance, dict) else []},
+                                          fresh=official_accept)[role]
             if changed or not same_original or choice is None or suitability['choice'] != choice:
                 draft.update(role_alternatives=routes, discovery=availability)
                 # The selected root owns evidence, even when the rejected
@@ -955,7 +991,13 @@ class Configuration:
                         advice['guidance']['status'] = 'incomplete'
                 self._preview(draft)
                 self._replacement(draft)
-                draft['message'] = ('Replacement guidance is no longer valid for this task/risk, or current discovery changed. '
+                reason = 'Replacement guidance is no longer valid for this task/risk, or current discovery changed. '
+                if official_accept and fresh_guidance is None:
+                    reason = ('Fresh official source unavailable; acceptance requires a new confirmation. '
+                              if not any(source.get('status') == 'retrieved' for source in fresh_evidence.get('sources', [])
+                                         if source.get('source_url') == (original or {}).get('source_url')) else
+                              'Original reviewed entry no longer confirmed: provider wording changed since review. ')
+                draft['message'] = (reason +
                                     'Draft retained; use Refresh to check official evidence and review a new proposal, '
                                     'or Choose another model for ordinary role editing. Nothing saved or launched.')
                 return self._seal(draft)

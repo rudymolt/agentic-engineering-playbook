@@ -15,6 +15,22 @@ from model_recommendations import OfficialSources, cost
 NOW = "2026-10-01T12:00:00Z"
 GUIDANCE = "https://developers.openai.com/api/docs/models"
 PRICING = "https://developers.openai.com/api/docs/pricing"
+ANTHROPIC_GUIDANCE = "https://platform.claude.com/docs/en/about-claude/models/choosing-a-model"
+
+
+def reviewed(model_id, label, paragraph, tasks, provider="openai", heading="Choosing a model", risks=("ordinary", "high")):
+    """A reviewed guidance entry and the official page block that confirms it."""
+    url, link = ((GUIDANCE, "/api/docs/models/" + model_id) if provider == "openai"
+                 else (ANTHROPIC_GUIDANCE, "/docs/en/about-claude/models/" + model_id))
+    entry = dict(model_id=model_id, provider=provider, label=label, tasks=list(tasks), risks=list(risks), source_url=url,
+                 heading=heading, paragraph=paragraph, link=link, reviewed_at="2026-10-01")
+    return entry, "<h2>" + heading + "</h2><p>" + paragraph.replace(label, '<a href="' + link + '">' + label + "</a>", 1) + "</p>"
+
+
+REVIEWED_CODE, REVIEWED_PAGE = reviewed("fixture-code", "Fixture Code", "Use Fixture Code for complex reasoning and coding.", ["coding"])
+REVIEWED_CLAUDE, REVIEWED_CLAUDE_PAGE = reviewed("claude-fixture-1-0", "Claude Fixture 1.0",
+                                                 "Claude Fixture 1.0 is built for complex coding and research.",
+                                                 ["coding", "analysis"], provider="anthropic")
 
 
 def claim(url, **values):
@@ -128,11 +144,11 @@ class RecommendationTests(unittest.TestCase):
         def fetch(url):
             calls.append(url)
             if url == GUIDANCE:
-                return '<main><a href="/api/docs/models/fixture-code">fixture-code Suitable for coding tasks</a></main>'
+                return '<main>' + REVIEWED_PAGE + '</main>'
             if url == PRICING:
                 return '<main><p>Prices in USD per 1M tokens</p><h2>Standard</h2><table><caption>Short context</caption><tr><th>Model</th><th>Input</th><th>Cached input</th><th>Output</th></tr><tr><td>fixture-code</td><td>$2.00</td><td>$0.20</td><td>$6.00</td></tr></table></main>'
             return '<main>General guidance only</main>'
-        evidence = OfficialSources(lambda: NOW, fetch=fetch).retrieve()
+        evidence = OfficialSources(lambda: NOW, fetch=fetch, reviewed=[REVIEWED_CODE]).retrieve()
         self.assertEqual(len(calls), 5)
         self.assertEqual(evidence["rates"][0]["input"], 2)
         self.assertEqual(evidence["guidance"][0]["model_id"], "fixture-code")
@@ -252,15 +268,16 @@ class RecommendationTests(unittest.TestCase):
     def test_anthropic_rates_require_exact_official_identity_and_table_shape(self):
         def fetch(url):
             if url.endswith("choosing-a-model"):
-                return '<p>Claude Fixture 1.0 (claude-fixture-1-0) is built for complex coding and research.</p>'
+                return REVIEWED_CLAUDE_PAGE
             if url == "https://platform.claude.com/docs/en/about-claude/pricing":
                 return '<p>All prices are in USD.</p><h2>Model pricing</h2><table><tr><th>Name</th><th>Input</th><th>Output</th><th>5m writes</th><th>1h writes</th><th>Hits and refreshes</th></tr><tr><td>Claude Fixture 1.0 For coding</td><td>$3 / MTok</td><td>$8 / MTok</td><td>$4 / MTok</td><td>$6 / MTok</td><td>$1 / MTok</td></tr></table>'
             return '<p>No model-specific records.</p>'
-        evidence = OfficialSources(lambda: NOW, fetch=fetch).retrieve()
+        evidence = OfficialSources(lambda: NOW, fetch=fetch, reviewed=[REVIEWED_CLAUDE]).retrieve()
         self.assertEqual(evidence["rates"][0]["model_id"], "claude-fixture-1-0")
         self.assertEqual(evidence["rates"][0]["input"], 3)
         self.assertEqual(evidence["rates"][0]["source_url"], "https://platform.claude.com/docs/en/about-claude/pricing")
-        broken = OfficialSources(lambda: NOW, fetch=lambda url: fetch(url).replace("<th>Input</th>", "<th>Unknown</th>")).retrieve()
+        broken = OfficialSources(lambda: NOW, fetch=lambda url: fetch(url).replace("<th>Input</th>", "<th>Unknown</th>"),
+                                 reviewed=[REVIEWED_CLAUDE]).retrieve()
         self.assertEqual(broken["rates"], [])
 
     def test_anthropic_base_context_is_required_for_table_and_each_row(self):
@@ -289,7 +306,7 @@ class RecommendationTests(unittest.TestCase):
                     if restriction and location == 'cache_cell':
                         html = html.replace('$4 / MTok', '$4 / MTok ' + restriction)
                     evidence = OfficialSources(lambda: NOW, fetch=lambda url: html if url == pricing else
-                        '<p>Claude Fixture 1.0 (claude-fixture-1-0) is built for complex coding.</p>').retrieve()
+                        REVIEWED_CLAUDE_PAGE, reviewed=[REVIEWED_CLAUDE]).retrieve()
                     self.assertTrue(evidence['guidance'])
                     advice = cost(dict(model_id='claude-fixture-1-0', provider='anthropic', runner='codex',
                         reasoning='high'), {**self.context, 'workload': dict(input_tokens=4000,
@@ -380,11 +397,11 @@ class RecommendationTests(unittest.TestCase):
             with self.assertRaises(URLError):
                 OfficialRedirect().redirect_request(Request(GUIDANCE), None, 302, "redirect", {}, target)
 
-    def test_catalogue_descriptions_outside_links_remain_model_specific(self):
-        sample = ('<p>Use <a href="/api/docs/models/fixture-code">Fixture Code</a> for complex reasoning and coding. '
-                  'Choose <a href="/api/docs/models/fixture-small">Fixture Small</a> for high-volume workloads.</p>'
+    def test_reviewed_guidance_remains_model_specific(self):
+        sample = (REVIEWED_PAGE + '<p>Choose <a href="/api/docs/models/fixture-small">Fixture Small</a> for high-volume workloads.</p>'
                   '<p><a href="/api/docs/models/fixture-audio">Fixture Audio</a> Advanced reasoning for audio and voice.</p>')
-        evidence = OfficialSources(lambda: NOW, fetch=lambda url: sample if url == GUIDANCE else '<p>Unknown</p>').retrieve()
+        evidence = OfficialSources(lambda: NOW, fetch=lambda url: sample if url == GUIDANCE else '<p>Unknown</p>',
+                                   reviewed=[REVIEWED_CODE]).retrieve()
         self.assertEqual([record["model_id"] for record in evidence["guidance"]], ["fixture-code"])
         self.assertEqual(evidence["guidance"][0]["tasks"], ["coding"])
         self.assertEqual(evidence["guidance"][0]["risks"], ["ordinary", "high"])
@@ -404,9 +421,11 @@ class RecommendationTests(unittest.TestCase):
         self.assertIsNone(self.service().read()["recommendations"]["implementation"]["choice"])
 
     def test_analysis_requires_explicit_model_task_fit_not_the_word_reasoning(self):
-        sample = ('<p>Use <a href="/api/docs/models/fixture-code">Fixture Code</a> for complex reasoning and coding.</p>'
-                  '<p>Use <a href="/api/docs/models/fixture-analysis">Fixture Analysis</a> for research and data analysis.</p>')
-        evidence = OfficialSources(lambda: NOW, fetch=lambda url: sample if url == GUIDANCE else '<p>Unknown</p>').retrieve()
+        analysis, analysis_page = reviewed("fixture-analysis", "Fixture Analysis", "Use Fixture Analysis for research and data analysis.",
+                                           ["analysis"], heading="Analysis models", risks=["ordinary"])
+        sample = REVIEWED_PAGE + analysis_page
+        evidence = OfficialSources(lambda: NOW, fetch=lambda url: sample if url == GUIDANCE else '<p>Unknown</p>',
+                                   reviewed=[REVIEWED_CODE, analysis]).retrieve()
         records = {record["model_id"]: record for record in evidence["guidance"]}
         self.assertEqual(records["fixture-code"]["tasks"], ["coding"])
         self.assertEqual(records["fixture-analysis"]["tasks"], ["analysis"])
@@ -497,11 +516,11 @@ class RecommendationTests(unittest.TestCase):
     def test_affirmative_sample_and_exact_standard_table_have_public_evidence(self):
         def fetch(url):
             if url == GUIDANCE:
-                return '<p>Use <a href="/api/docs/models/fixture-code">Fixture Code</a> for complex coding.</p>'
+                return REVIEWED_PAGE
             if url == PRICING:
                 return self.pricing_sample('<h2>Standard</h2>')
             return '<p>Unknown</p>'
-        evidence = OfficialSources(lambda: NOW, fetch=fetch).retrieve()
+        evidence = OfficialSources(lambda: NOW, fetch=fetch, reviewed=[REVIEWED_CODE]).retrieve()
         service = self.service({**self.context, "workload": {"input_tokens": 3000, "output_tokens": 1000, "retries": 2,
                                                            "billing_route": "standard-short-context-uncached"}},
                                sources=lambda: evidence)
@@ -562,16 +581,17 @@ class RecommendationTests(unittest.TestCase):
                 self.assert_unknown_official_advice(
                     '<p><a href="/api/docs/models/fixture-code">Fixture Code ' + description + '</a></p>')
 
-    def test_affirmative_predicates_supply_exact_public_task_evidence(self):
+    def test_only_reviewed_statements_supply_public_task_evidence(self):
         for description in ("Suitable for coding.", "Is well-suited for complex coding.",
                             "Recommended for software development.", "Built for coding tasks.",
                             "Designed for code generation.", "Optimized for programming.",
                             "Our most advanced cybersecurity model for authorized vulnerability research and security testing."):
             with self.subTest(description=description):
                 task = "analysis" if "research" in description else "coding"
-                evidence = OfficialSources(lambda: NOW, fetch=lambda url:
-                    '<p><a href="/api/docs/models/fixture-code">Fixture Code ' + description + '</a></p>'
-                    if url == GUIDANCE else '<p>Unknown</p>').retrieve()
+                entry, page = reviewed("fixture-code", "Fixture Code", "Fixture Code " + description, [task])
+                fetch = lambda url: page if url == GUIDANCE else '<p>Unknown</p>'
+                self.assertEqual(OfficialSources(lambda: NOW, fetch=fetch, reviewed=[]).retrieve()["guidance"], [])
+                evidence = OfficialSources(lambda: NOW, fetch=fetch, reviewed=[entry]).retrieve()
                 self.assertEqual(len(evidence["guidance"]), 1)
                 service = self.service({**self.context, "task": task}, sources=lambda: evidence)
                 draft = service.read()

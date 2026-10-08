@@ -13,8 +13,8 @@
     },
     {
       "path": "10-process/00-prereqs.md",
-      "sha256": "e9fdd36a0bde0f889eb377ff5afa8537efd54f2381bf0ec72fbbf13113f49b33",
-      "size": 12407
+      "sha256": "995d58d28d0de28ff58de4e70c76b3998f17a493f844a0e2b7e5f4a510d4c3e5",
+      "size": 12806
     },
     {
       "path": "10-process/01-align.html",
@@ -178,13 +178,13 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "3067d62189bccedbe51c292c31dd933805f88b25d00bfc097eba215010040458",
-      "size": 29248
+      "sha256": "0bc29a66efae41df38834256cb6f7a978af1c2d454904a333d8c0e882ae81feb",
+      "size": 46895
     },
     {
       "path": "MAINTENANCE.md",
-      "sha256": "cca17341b7f81fd1f3fc371186cfcd18d8dfcc60357edb8c30a0384caef691fe",
-      "size": 5318
+      "sha256": "c940d5ea84158c15d6d42e2ef0cc424d92ce275f2cdece7a804060dfb3821eab",
+      "size": 6149
     },
     {
       "path": "README.md",
@@ -1017,14 +1017,19 @@
       "size": 3329
     },
     {
+      "path": "model-guidance.json",
+      "sha256": "53b0b9aab1e5e34a56f72e009614dba978e2fe1c59f21783d265e73eac38a4ae",
+      "size": 636
+    },
+    {
       "path": "scripts/audit-upstream-installed.py",
       "sha256": "e2b336b21c8896d07af2f53cb4b88e12bfb47a6d685291ed457bf7ae097cd79e",
       "size": 12750
     },
     {
       "path": "scripts/bootstrap-project.py",
-      "sha256": "2c2a5818e063f4f0428c20f1b8d3b6104da520866d5d6a897ee9baa4b56a5d9f",
-      "size": 20154
+      "sha256": "5b77bb77822440c6ea3ca190f336b79aa006557bdb49ad470f425fe1736b48f6",
+      "size": 20300
     },
     {
       "path": "scripts/bootstrap_seed.py",
@@ -1050,6 +1055,11 @@
       "path": "scripts/check-md-conventions.py",
       "sha256": "24c900ea45cef70706b12eab5f657bc923cd2463e9c29aa96e9f2c594fbcedf2",
       "size": 28793
+    },
+    {
+      "path": "scripts/check-model-guidance.py",
+      "sha256": "2ed48d1ff8fb9700b3be02791b483e0e530d021ebdf920754d12395d6df7bdd6",
+      "size": 2290
     },
     {
       "path": "scripts/check-public-content.py",
@@ -1078,8 +1088,8 @@
     },
     {
       "path": "scripts/configure-playbook.py",
-      "sha256": "138fbc035ff709c20ee3c7dd8814a360520553fd3fddafecbf85a45a760ab70b",
-      "size": 5466
+      "sha256": "2a44571c29fb7fccff3cd0311e84ad3b400a53262120d0a6e5d10497c91d494c",
+      "size": 5784
     },
     {
       "path": "scripts/convention_checks.py",
@@ -1128,13 +1138,13 @@
     },
     {
       "path": "scripts/model_evidence_cache.py",
-      "sha256": "6b663bfd6e9adaff643322113a7e820e50f21b6071ff8f3c6b08d1ab48a6393f",
-      "size": 11190
+      "sha256": "e88258d830994664a5466f7e60e97bc40576be3e1ceafbe518dc766063715984",
+      "size": 14273
     },
     {
       "path": "scripts/model_recommendations.py",
-      "sha256": "a4faa61cdad60f252fd80f24894a1c2fdf8a9288360f00810252e8e42548462f",
-      "size": 37169
+      "sha256": "90595418813ad2282067f1a3f375d6b300bae865067f1c326bc7b4f6d15b1b0e",
+      "size": 74708
     },
     {
       "path": "scripts/parallel_verification.py",
@@ -1143,13 +1153,13 @@
     },
     {
       "path": "scripts/playbook-config.md",
-      "sha256": "058ce8a57dd18f3d5e61bc26ff31cea02671ddf7704ffe0c1ec33aef03124b27",
-      "size": 40008
+      "sha256": "1240fb0cf849a80658ff621e24e78634020eedd6d350135be9cb3a20e88bbc9f",
+      "size": 52900
     },
     {
       "path": "scripts/playbook_config.py",
-      "sha256": "5864ea70b04c44e719c012954306f9706c89d2f5fdaf86d16a68d09b97b69480",
-      "size": 102134
+      "sha256": "2a59564d05ea77165752f4c8b0b0f5e46caa21216a6bc3883029fda0477e8a12",
+      "size": 105683
     },
     {
       "path": "scripts/playbook_state.py",
@@ -1187,6 +1197,11 @@
       "size": 10700
     },
     {
+      "path": "scripts/test_apply_recovery_gitignore.py",
+      "sha256": "f269986833cd44618de3c5cc7af2010932e0d722179808ae45e27eed3c42a77c",
+      "size": 14866
+    },
+    {
       "path": "scripts/test_audit_upstream_installed.py",
       "sha256": "ed64a1ede9c746955d1913c4f9a8aa1e2a5d2072946d81c3acf4dabc9d00892a",
       "size": 7944
@@ -1203,8 +1218,8 @@
     },
     {
       "path": "scripts/test_bootstrap_seed_routes.py",
-      "sha256": "8b00b158d1e90c509e46d9fb5dd7d2ac715a09dfca33a9c79c286662b42309be",
-      "size": 11539
+      "sha256": "b40978bcb41646ea0cda1ff29f7f02847a66be96a6e95642c175d01ba64e5abc",
+      "size": 12664
     },
     {
       "path": "scripts/test_check_glossary.py",
@@ -1273,18 +1288,23 @@
     },
     {
       "path": "scripts/test_model_recommendations.py",
-      "sha256": "dea7346c3384c0cf060378bb9942754c1141453ed6b08594a9089c60d133b482",
-      "size": 46863
+      "sha256": "0bb00b9301ce45697f4ca93066862f6e501ea5c26cbd09a0ee87a99f8eab8c3a",
+      "size": 48232
     },
     {
       "path": "scripts/test_model_refresh.py",
-      "sha256": "3a8438f0448fdf7ba91f342a4c7bbbdb1affb147c0e82fdef76c209ec25b28ce",
-      "size": 23587
+      "sha256": "bb850cbdd569463f68aa65f0f9f9fd346552706fe5c2bab63ad9120011b74dcf",
+      "size": 23491
     },
     {
       "path": "scripts/test_model_replacement.py",
       "sha256": "aa22bf37bf56cb78f4f66a5d78ee9638f5e4d258e13109873b715da2428574a2",
       "size": 14234
+    },
+    {
+      "path": "scripts/test_model_reviewed_guidance.py",
+      "sha256": "e9d272332cc8da7dc6d4e9c25cc8cb94f48591188cb6065ab6fb5d5ab4cee1e6",
+      "size": 182707
     },
     {
       "path": "scripts/test_model_subtotal_projection.py",
@@ -1403,8 +1423,8 @@
     },
     {
       "path": "scripts/upgrade-project.py",
-      "sha256": "c77837a69deefdc79e7e8e2a8186e619f5a4d56a7138591890149dedd5f81dba",
-      "size": 58676
+      "sha256": "eb3fb9eaae1fc3ae71303ea2aa89d88bd5fbff7b61c5fc3dce80c32ee626b9c9",
+      "size": 58832
     },
     {
       "path": "scripts/upstream_registry.py",
@@ -1513,8 +1533,8 @@
     },
     {
       "path": "skills/ai-playbook-upgrade-project/SKILL.md",
-      "sha256": "2da822ba9e2312cf9a6132abed9e636dadc21db652bc41dc6df9247a3d86102d",
-      "size": 3259
+      "sha256": "dec545e2e5f54ec0f5e2276476065870c9999991f7d30e703076d57715cb5b0d",
+      "size": 3521
     },
     {
       "path": "skills/ai-playbook-upgrade-project/agents/openai.yaml",

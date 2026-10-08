@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "entries": [
+    {
+      "model_id": "gpt-6-astra",
+      "provider": "openai",
+      "label": "GPT-6 Astra",
+      "tasks": ["coding"],
+      "risks": ["ordinary", "high"],
+      "source_url": "https://developers.openai.com/api/docs/models",
+      "heading": "Choosing a model",
+      "paragraph": "If you're not sure where to start, use GPT-6 Astra, our flagship model for complex reasoning and coding. Choose GPT-6.1 Sol to balance intelligence and cost, or GPT-6 Luna for cost-sensitive, high-volume workloads.",
+      "link": "/api/docs/models/gpt-6-astra",
+      "reviewed_at": "2026-10-05"
+    }
+  ]
+}

@@ -35,3 +35,7 @@ The assignment of an eligible skill to a specific playbook job, such as alignmen
 ## Model recommendation
 
 A suggested model choice with an explanation of its suitability and expected cost trade-offs. It is distinct from the model selection the user has approved.
+
+## Reviewed guidance
+
+A provider statement about a model's task fit that a maintainer has reviewed and shipped with the edition. A live official page can confirm or withdraw it but never creates it; the playbook does not infer task fit from provider prose.
