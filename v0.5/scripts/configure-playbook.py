@@ -10,6 +10,7 @@ import sys
 import subprocess
 
 from playbook_config import Configuration, ConfigError, RecoveryRequired, public_error_message, strict_json
+from model_recommendations import OfficialSources
 
 
 def main():
@@ -44,11 +45,12 @@ def main():
 
     clock = (lambda: args.now) if args.now else None
     request = None
+    sources = None
+    service = None
     try:
         request = strict_json(sys.stdin.read() or "{}")
         if not isinstance(request, dict):
             raise ConfigError("Request must be a JSON object; use the documented helper contract.")
-        from model_recommendations import OfficialSources
         if args.evidence_fixture and not args.now:
             raise ConfigError("Evidence fixtures require the controlled fixture clock; never present them as live current facts.")
         sources = ((lambda: strict_json(args.evidence_fixture.read_text())) if args.evidence_fixture else
@@ -83,7 +85,10 @@ def main():
     except (ConfigError, OSError, KeyError, TypeError, AttributeError, UnicodeError) as error:
         result = {"state": "recovery_required" if isinstance(error, RecoveryRequired) else "blocked", "message": public_error_message(error), "launched": False}
         if isinstance(request, dict):
-            result = Configuration.retain_proposal(result, request.get("proposal"), now=args.now)
+            adapter = getattr(sources, '__self__', None)
+            result = Configuration.retain_proposal(result, request.get("proposal"), now=args.now,
+                                                  reviewed=service._official_reviewed_guidance() if service is not None else
+                                                  ([] if isinstance(adapter, OfficialSources) else None))
     print(json.dumps(result, sort_keys=True, indent=2))
     return 2 if result.get("state") in {"blocked", "recovery_required"} else 0
 

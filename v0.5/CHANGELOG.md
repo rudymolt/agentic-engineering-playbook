@@ -2,6 +2,255 @@
 
 ## Unreleased
 
+- Reconcile independently admitted S8 Mac Conductor and Direct Codex
+  walkthroughs, including a differing-Plan local preset's draft-load
+  cancellation, the fresh ordinary adopted Verify handoff and both-host
+  positive replacement. Keep historical failures and current-tree PR gates
+  distinct; preserve private evidence and exhausted qualification limits.
+
+*Why — evidence lane:* historical observations and cloud fixtures could not
+  establish current desktop support or a changed preset draft's cancellation.
+  Actual host artifacts close those gaps without conferring shipping authority
+  or transferring an older tree's verification to later documentation changes.
+
+- Reconcile configuration acceptance evidence, consumer ownership and the
+  remaining candidate-bound Direct Codex/Mac Conductor walkthrough gates.
+
+*Why — process lane:* retained technical and helper-CLI proof must stay tied
+  to its tested candidate and environment. Public status now distinguishes
+  historical results from remaining desktop and fresh replacement acceptance
+  proof, so cloud preparation cannot imply completed S8 or shipping.
+
+- Preserve forbidden deleted, struck-through and quoted descendants when
+  filtering hidden content from reviewed headings, paragraphs and model links.
+  Keep raw/inert fragments excluded and clean visible successors usable.
+
+*Why — correctness lane:* hidden forbidden markup lost its structural evidence
+  and falsely confirmed reviewed guidance, authorizing fresh draft replacement.
+  Visibility filtering must preserve the separate containing-markup exclusion
+  without supplying hidden text, links or adjacency. Advisory caching and
+  cycle 9 acceptance and byte-preservation rules remain unchanged.
+
+- Finalize native HTML EOF text and character references before reviewed
+  guidance confirmation and pricing extraction, including release checks.
+  Preserve valid unclosed visible elements without exposing discarded
+  incomplete markup or raw/inert, hidden, foreign and select descendants.
+
+*Why — correctness lane:* dropping a literal `<` at EOF erased changed
+  reviewed paragraph text and falsely authorized fresh draft replacement.
+  EOF must retain visible text while preserving incomplete-markup exclusion,
+  the reviewed list, advisory cache and cycle 9 byte-preserving acceptance.
+
+- Preserve rendered word separators from native HTML `</br>` tokens, using
+  the same boundary as `br` starts in reviewed headings, paragraphs and links.
+  Retain between-word whitespace positives, hidden self-closing starts,
+  raw/inert exclusions, select/foreign barriers and pricing discrimination.
+
+*Why — correctness lane:* dropping an unmatched native `</br>` joined
+  separate rendered words and falsely confirmed changed reviewed wording,
+  including fresh draft replacement. The repair preserves the reviewed list,
+  advisory cache and cycle 9 acceptance and byte-preservation rules.
+
+- Keep declaration context native when select ignores an unrelated end token,
+  including a foreign integration ancestor. Respect option/optgroup ends and
+  genuine select/template closes; preserve visible guidance and pricing after
+  native bogus declarations while foreign CDATA keeps close-like copies inert.
+
+*Why — correctness lane:* a premature foreign ancestor end removed a native
+  select from declaration tracking, so foreign CDATA swallowed genuine closes
+  and visible reviewed guidance. Fresh draft acceptance wrongly refused the
+  unchanged statement. The repair preserves the existing reviewed list,
+  advisory cache, ambiguity barriers and cycle 9 acceptance rules.
+
+- Distinguish native declaration boundaries from actual SVG/MathML CDATA
+  inside withheld/inert scopes. Preserve genuine template closes and usable
+  visible successors; foreign CDATA keeps close-like confirming copies inert.
+  Foreign own closes and duplicate integration encodings retain this boundary.
+  Cover nested, malformed, integration, raw, hidden and self-closing contexts
+  through fresh draft acceptance and release checking on both interpreters.
+
+*Why — correctness lane:* treating every withheld scope as foreign consumed a
+  genuine native template close and refused unchanged visible guidance.
+  Foreign names entering HTML raw-text mode could instead release inert copies.
+  Declaration context must preserve both boundaries without changing the
+  reviewed list, advisory cache or cycle 9 acceptance rules.
+
+- Preserve visible native HTML text after the first `>` of CDATA-shaped and
+  marked bogus declarations, and honor abrupt empty comment closes before later
+  full closes. Genuine comments and harmless closed declarations
+  leave visible guidance and pricing usable; raw/inert and foreign scopes
+  remain withheld. Cover fresh acceptance and release checking on both supported
+  interpreters with independent proposal/project/approval byte assertions.
+
+*Why — correctness lane:* inherited CDATA and comment handling consumed visible
+  text past native boundaries, falsely confirmed reviewed wording and authorized a fresh
+  draft replacement. Native bogus-comment boundaries must preserve that text;
+  the reviewed list, advisory cache and cycle 9 acceptance rules are unchanged.
+
+- Traverse official-page elements, block classification, rendered text and
+  reviewed-unit order iteratively. Preserve usable deeply nested visible
+  wrappers and inline text, empty-block adjacency, leaf semantics and all
+  existing visibility and ambiguity exclusions.
+
+*Why — correctness lane:* a small official page with deeply nested visible
+  layout wrappers previously raised an unhandled recursion error instead of
+  confirming unchanged reviewed wording. Tree traversal must not depend on
+  the interpreter's recursion limit; the reviewed list, 24-hour advisory cache
+  and fresh draft-only acceptance rules remain unchanged.
+
+- Normalize native HTML `image` starts to void `img` before visibility
+  filtering; recognize void legacy metadata `basefont`/`bgsound`, the void
+  legacy control `keygen` and ignored `frame` starts outside a frameset. Preserve visible text successors, actual
+  hidden ancestors/containers, foreign/integration and raw/inert exclusions,
+  genuine usable guidance and pricing.
+
+*Why — correctness lane:* a hidden legacy image token previously suppressed a
+  visible conditional qualifier, falsely confirmed reviewed wording and
+  authorized a fresh draft replacement. Native void and ignored starts cannot
+  hide following text; the reviewed list, 24-hour advisory cache and cycle 9
+  fresh acceptance/byte-preservation rules remain unchanged.
+
+- Preserve inline ruby and annotation descendants in reviewed headings,
+  paragraphs and model links. Exclude hidden annotations, retain visible
+  qualifiers and apply bounded implied annotation ends before visibility
+  filtering, with existing structural and ambiguity barriers unchanged.
+
+*Why — correctness lane:* a hidden ruby annotation previously made unchanged
+  reviewed wording look like a nested block and withdrew usable advice. Inline
+  classification and annotation ends must preserve visible text together;
+  the reviewed list, advisory cache and fresh draft-only acceptance are unchanged.
+
+- Respect native end-tag scope before releasing hidden ancestors, including
+  tables, cells, captions and generic closes across structural boundaries.
+  Preserve genuine closes and visible successors, including implied table
+  ends that release cell/caption formatting markers. Ambiguous partial ancestor
+  closes cannot confirm reviewed text, model links or pricing.
+
+*Why — correctness lane:* an unrelated div close inside a hidden ancestor's
+  table previously exposed nonrendered guidance and authorized a fresh draft
+  replacement. Scope barriers must survive ignored closes; the reviewed list,
+  24-hour advisory cache and cycle 9 fresh acceptance rules remain unchanged.
+
+- Retain visibility ambiguity when active HTML formatting survives structural
+  ends or is adopted through misnesting, including nested anchors and `nobr`.
+  Affected reviewed text, model links and pricing cannot confirm. Preserve
+  genuine closed hidden-inline additions, formatting boundaries and visible
+  successors; raw/inert and withheld native/foreign children remain excluded.
+
+*Why — correctness lane:* an unclosed hidden formatting element previously
+  disappeared at paragraph closure, falsely confirming later reviewed guidance
+  and authorizing a fresh draft replacement. Formatting reconstruction must not
+  escape visibility checks; the reviewed list and cycle 9 cache/acceptance
+  rules remain unchanged.
+
+- Retain ambiguity barriers for ignored table structural tokens, nested forms
+  and misplaced document tokens under apparent hidden or closed ancestors.
+  A visible qualifier cannot disappear from reviewed headings, paragraphs,
+  required links or pricing context. Preserve hidden inline additions, ordinary
+  forms, raw-text/inert exclusions and correctly closed visible successors.
+
+*Why — correctness lane:* an ignored table token inside an apparent hidden span
+  previously erased a visible heading qualifier and authorized a fresh draft
+  replacement. Every ambiguous scope needs the same fail-closed barrier;
+  the reviewed list and 24-hour advisory cache/fresh acceptance rules are unchanged.
+
+- Preserve native/foreign ambiguity barriers even when a scope or apparent
+  ancestor has a literal `hidden` attribute. Nested selects/buttons, implicit
+  control closes, ignored starts and foreign breakouts cannot erase qualifiers
+  in reviewed headings, paragraphs, model links or pricing context. Ordinary
+  hidden inline additions and correctly closed visible successors remain usable.
+  Fresh refusal preserves draft, project, approval and original proposal bytes.
+
+*Why — correctness lane:* a hidden nested select previously erased a visible
+  heading qualifier and falsely confirmed reviewed guidance. Literal hidden
+  markup cannot establish visibility for ambiguous native content models.
+
+- Withhold native control/fallback and SVG/MathML content-model scopes from
+  reviewed guidance and pricing confirmation, including foreign HTML
+  integration points. Keep ambiguous barriers for ignored document/table
+  tokens and nested forms; preserve raw-text/inert boundaries through native
+  nesting, foreign breakouts and self-closing syntax. Correctly closed visible
+  successors, ordinary forms and hidden inline additions remain usable.
+  Fresh refusal preserves draft, project, approval and original proposal bytes.
+
+*Why — correctness lane:* apparent headings and links inside a native select
+  previously confirmed reviewed guidance and authorized a fresh draft edit.
+  Only actual rendered confirming blocks may authorize guidance; ambiguous
+  content models must fail closed without erasing visible qualifiers.
+
+- Preserve implied paragraph, heading, list-item and table-cell boundaries
+  before excluding hidden HTML starts, including nonvoid self-closing syntax.
+  Withdraw interrupted source paragraphs and ambiguous guidance in table
+  contexts outside cells or captions.
+  Preserve empty structural barriers from stray paragraph closes.
+  Keep valid visible successors and hidden inline content usable; fresh
+  replacement refusal preserves draft, project and approval bytes.
+
+*Why — correctness lane:* removing a hidden block previously joined text
+  across a paragraph boundary and falsely confirmed reviewed guidance during
+  a fresh acceptance check. Hidden content must not erase structural ends.
+
+- Exclude HTML `hidden` elements and descendants, closed dialogs and closed
+  details content outside the first direct summary from guidance and pricing
+  evidence. Ignore `datalist` content, nonrendered metadata, image-map areas
+  and hidden inputs in block adjacency.
+  Preserve visible text, links and successors through nested and nonvoid
+  self-closing scopes. Fresh acceptance refuses hidden copies without draft,
+  project or approval mutation; the 24-hour advisory cache is unchanged.
+
+*Why — correctness lane:* a hidden copy of a reviewed statement previously
+  confirmed as usable guidance. Evidence must come from the visible matched
+  block and link, including inline content, rather than nonrendered HTML.
+
+- Keep literal HTML raw-text/RCDATA bodies, conditional `noscript` content and
+  `plaintext` out of reviewed guidance and pricing-table confirmation. Respect
+  nonvoid self-closing syntax, script escaped/double-escaped transitions and
+  `plaintext` through EOF consistently on supported Python versions. Retained
+  visible proposals refuse fresh hidden copies without draft, project or
+  approval mutation; genuine visible entries after closes remain usable.
+
+*Why — correctness lane:* markup-shaped script and other raw-text content has
+  no actual heading, leaf paragraph or model link. A fresh source fetch must
+  not turn literal HTML text into affirmative provider guidance or prices.
+
+- Take model task-fit guidance only from a reviewed list shipped with the edition
+  (`model-guidance.json`). A live official page confirms an entry only when its
+  section heading is immediately followed by the exact reviewed paragraph and
+  model link, outside deleted, struck-through or quoted markup and inert
+  template descendants; otherwise the
+  entry is withdrawn as "provider wording changed since review". Models without
+  an entry show "no reviewed guidance yet". `check-model-guidance.py` reports
+  unconfirmed entries before a release. Task fit is no longer inferred from
+  provider prose; pricing-table parsing is unchanged. Official cached claims and
+  retained advice carry a canonical fingerprint of every reviewed entry field
+  and must match the current list and latest successful source check. Known
+  withdrawals refuse retained replacement acceptance, including recovery drafts.
+  Accept replacement retrieves the original reviewed entry's official source
+  once before editing the draft, independently of the 24-hour advisory cache
+  and cache publication success. Saved confirmation and stale fallback cannot
+  authorize acceptance; source failure or withdrawal preserves draft, project
+  and approval bytes without reranking. Fresh confirmation still requires all
+  existing route gates. CLI regressions pin configuration and source clocks
+  and require a usable confirmed baseline before withdrawal or replay tests.
+  Legacy claims without a valid fingerprint are dropped and refreshed. Semantic
+  claim changes are reported even when only the list changes; equal claims yield
+  no notice. Duplicate HTML attributes cannot confirm, and duplicate JSON keys
+  or provider labels invalidate the whole list. Withdrawn entries and unlisted
+  models have distinct rationale and limitation notices. Empty intervening
+  blocks withdraw entries; inline spacing and Unicode default-ignorable
+  characters preserve equivalent text. The list requires integer schema 1.
+
+*Why — correctness lane:* five independently reviewed parser designs each
+  admitted negated, conditional or misattributed provider prose as replacement
+  advice. Interpreting free-form provider pages is unbounded, so the owner chose
+  reviewed statements that live pages can only confirm or withdraw. Cache reuse
+  must preserve that authority across list changes and later withdrawals, and
+  confirmation must reject ambiguous identity and respect rendered text
+  equivalence and immediate block adjacency. A fresh check at acceptance keeps
+  an unpublished withdrawal from replaying older confirmation across CLI
+  processes without adding a durability subsystem; inert fragments cannot
+  stand in for rendered provider statements.
+
 - Supply the existing synthetic fixture clock to custom-binding privacy CLI
   calls and the installed-source diagnostic fixture.
 
