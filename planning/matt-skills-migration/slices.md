@@ -8,7 +8,9 @@
    fresh independent review, fixes and renewed verification. Leave a reviewable
    branch; publication and host rollout are separate endpoints.
 
-Status: slices 1 and 2 implemented; slice 3 canonical verification in progress.
+Status: slices 1 and 2 implemented; slice 3 verification results and final PR-head
+CI are recorded on [PR #27](https://github.com/rudymolt/agentic-engineering-playbook/pull/27).
+The feature remains active through human review and release.
 Independent Astra review passed after three mapped-project/recovery corrections;
 all were independently reverified. Focused results: glossary migration 11 tests,
 bootstrap 11 tests, public transition 3 tests and template provenance 12 tests.

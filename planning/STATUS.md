@@ -4,9 +4,10 @@ active_features: 2
 
 ## Active features
 
-[Matt skills migration](matt-skills-migration/slices.md) — approved migration implementation in progress.
+[Matt skills migration](matt-skills-migration/slices.md) — implemented;
+independent review passed, verification and human review tracked in PR #27.
 
-1 active feature: [Apply recovery artifact visibility](apply-recovery-gitignore/slices.md)
+Other active feature: [Apply recovery artifact visibility](apply-recovery-gitignore/slices.md)
 — approved single fix slice implemented; repair cycle 2 corrects a baseline
 bytecode-race test assertion without changing production source. Product PR #23
 merged as `5d5265c`; this feature's remaining closeout stays separately owned.
