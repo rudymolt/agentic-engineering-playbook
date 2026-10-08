@@ -106,5 +106,7 @@ uses it. Product code changes are now separately authorised in the product cloud
 
 Monthly upstream drift became due on 2026-10-08. The maintainer chose to keep
 that comparison separate from this PR; the maintenance cloud follow-up on
-`conductor/october-upstream-drift` owns the authorised follow-up. No audit, pin or
+`conductor/october-upstream-drift` owned the authorised follow-up, now completed
+in PR #25 (`b55e02c`). See the [October comparison](../../analysis/2026-10-08-upstream-drift.md);
+next due 2026-11-08. No audit, pin or
 cadence reset is claimed here.

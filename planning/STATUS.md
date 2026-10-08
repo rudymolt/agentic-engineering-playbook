@@ -40,6 +40,8 @@ the dated initial deferral, final gate receipts, historical limits and candidate
 - Apply recovery gitignore: separately authorised product cloud follow-up, branch
   `conductor/apply-recovery-gitignore`; preserve recovery semantics and tracked
   configuration. No product completion is claimed by this retro.
-- Monthly upstream-drift comparison fell due 2026-10-08; maintainer requested
-  separate maintenance under [MAINTENANCE.md](../v0.5/MAINTENANCE.md), maintenance cloud follow-up branch
-  `conductor/october-upstream-drift`. No comparison or date reset here.
+- October upstream-drift comparison completed separately in PR #25, merged
+  as `b55e02c` on 2026-10-08. The [comparison](../analysis/2026-10-08-upstream-drift.md)
+  and maintainer state retain ownership under [MAINTENANCE.md](../v0.5/MAINTENANCE.md);
+  next due 2026-11-08. This retro reconciles that landed state without rerunning
+  the comparison or changing its pins or dates.
