@@ -27,7 +27,7 @@ split suite and drift, while the weekly maintenance cron keeps the strict set.
 
 ## Upstream maintenance
 
-- Last verified 2026-09-08; next due 2026-10-08 (monthly cadence, procedure: [`v0.5/MAINTENANCE.md`](v0.5/MAINTENANCE.md)).
+- Last verified 2026-10-08; next due 2026-11-08 (monthly cadence, procedure: [`v0.5/MAINTENANCE.md`](v0.5/MAINTENANCE.md)).
 - Upstream versions: matt_pocock_skills v1.2.3; gstack 1.62.0.0 (d078622); pstack 93b00b8; claude_code_docs 2026-07-09; codex_docs 2026-07-09; cursor_docs 2026-07-09.
 
 ## Upstream packages
