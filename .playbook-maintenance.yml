@@ -1,9 +1,11 @@
 schema_version: 1
 owner: repository-maintainer
 procedure: v0.5/MAINTENANCE.md
-last_verified: 2026-09-08
-next_due: 2026-10-08
+last_verified: 2026-10-08
+next_due: 2026-11-08
 cadence: monthly
+# Completed comparison: analysis/2026-10-08-upstream-drift.md
+# Below are retained pins/historical host-doc dates, not candidate adoption.
 
 upstreams:
   matt_pocock_skills: v1.2.3
