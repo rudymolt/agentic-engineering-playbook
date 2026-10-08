@@ -1,10 +1,15 @@
 # Planning status
 
-active_features: 0
+active_features: 1
 
 ## Active features
 
-0 active features. Playbook configuration UI: S8 accepted on `05de2a0` and shipped
+1 active feature: [Apply recovery artifact visibility](apply-recovery-gitignore/slices.md)
+— approved single fix slice implemented; repair cycle 2 corrects a baseline
+bytecode-race test assertion without changing production source. Verification
+receipts belong in the product PR and cloud artifacts; review/merge pending.
+
+Playbook configuration UI: S8 accepted on `05de2a0` and shipped
 in PR #20 as `0a3770e` on 2026-10-08. Planning artifacts archived; durable feature
 entry points are [Configure](../v0.5/skills/ai-playbook-configure/SKILL.md),
 [configuration boundary](../v0.5/scripts/playbook-config.md) and
@@ -37,9 +42,10 @@ the dated initial deferral, final gate receipts, historical limits and candidate
 
 ## Separate follow-ups
 
-- Apply recovery gitignore: separately authorised product cloud follow-up, branch
-  `conductor/apply-recovery-gitignore`; preserve recovery semantics and tracked
-  configuration. No product completion is claimed by this retro.
+- Product follow-up approved and in progress:
+  [Apply recovery artifact visibility](apply-recovery-gitignore/alignment.md).
+  Bootstrap and supported upgrades preserve recovery semantics and the tracked
+  configuration; no merged or shipped outcome is claimed yet.
 - October upstream-drift comparison completed separately in PR #25, merged
   as `b55e02c` on 2026-10-08. The [comparison](../analysis/2026-10-08-upstream-drift.md)
   and maintainer state retain ownership under [MAINTENANCE.md](../v0.5/MAINTENANCE.md);

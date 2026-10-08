@@ -14,6 +14,17 @@
   recovery-artifact omission warrants its bounded product follow-up. Shipment
   does not erase failed reviews, privacy failures or exhausted qualification.
 
+- Ignore retained Apply recovery artifacts through bootstrap and supported
+  existing-project upgrades using anchored `/.playbook-config-*`. Preserve
+  user ignore content, disclose additions in planning, and keep
+  `.playbook-config.json` trackable. Retain receipts, completion seals and
+  conflict reconciliation unchanged.
+
+*Why — correctness lane:* successful Apply retains evidence needed for later
+  reconciliation; missing managed ignores exposed it as untracked project
+  content. Safe additive updates keep that evidence out of Git without deleting
+  it or hiding the reusable configuration.
+
 - Complete the 2026-10-08 monthly upstream comparison with tagged Matt
   `v1.3.1` and immutable versioned gstack/pstack fallback sources, plus a
   separately attributed supplied Mac audit. Record command behavior, source
