@@ -23,3 +23,17 @@ Two preliminary reproduction harness attempts failed due to missing discovery
 and an incorrect expectation for the public read state; the corrected harness
 reproduced both paths. These were distinct setup failures, not passing tests.
 No product remediation failure or repeated no-progress signature occurred.
+
+Fresh independent QA rejected candidate `84da53b`: bare carriage returns and
+Unicode separators inside user comments made `splitlines()` falsely recognise
+a rule that Git did not recognise. Eight new regression subcases reproduced
+that defect. The correction uses LF-anchored matching with optional trailing
+CR for CRLF entries; it preserves all user bytes. This is repair cycle 1, and
+requires a new fresh independent verifier before PR readiness.
+
+The first unbounded canonical run was interrupted because its candidate was
+superseded by that defect; partial output is retained and is not a pass. The
+99-test broader bootstrap/transition/configuration suite did finish and pass
+on the earlier candidate. The corrected candidate must run canonical checks
+again. Default cloud Python 3.9 also failed a conventions import; verification
+now uses Python 3.12 without changing the repository's version requirement.

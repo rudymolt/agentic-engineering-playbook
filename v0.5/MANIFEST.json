@@ -1028,8 +1028,8 @@
     },
     {
       "path": "scripts/bootstrap-project.py",
-      "sha256": "eaa5a37f7e7afb0061ffe2981a1be6aabd464466772e23d7d9333ca378ea43ea",
-      "size": 20256
+      "sha256": "5b77bb77822440c6ea3ca190f336b79aa006557bdb49ad470f425fe1736b48f6",
+      "size": 20300
     },
     {
       "path": "scripts/bootstrap_seed.py",
@@ -1198,8 +1198,8 @@
     },
     {
       "path": "scripts/test_apply_recovery_gitignore.py",
-      "sha256": "e3e26db7031187a25b837c42ece06e55d27b775d3ec021a8f6265c96ca45d6b8",
-      "size": 11445
+      "sha256": "dcde2e4adab8c3a89abad2ca938566613a2b71f78f74431d664067f24a38af2d",
+      "size": 13613
     },
     {
       "path": "scripts/test_audit_upstream_installed.py",
@@ -1423,8 +1423,8 @@
     },
     {
       "path": "scripts/upgrade-project.py",
-      "sha256": "fccd911eeff950c8222f8abb43fe607358051b7e135f47c8fd9b00f90adad71c",
-      "size": 58810
+      "sha256": "eb3fb9eaae1fc3ae71303ea2aa89d88bd5fbff7b61c5fc3dce80c32ee626b9c9",
+      "size": 58832
     },
     {
       "path": "scripts/upstream_registry.py",

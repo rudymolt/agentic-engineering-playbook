@@ -5,7 +5,8 @@ active_features: 1
 ## Active features
 
 1 active feature: [Apply recovery artifact visibility](apply-recovery-gitignore/slices.md)
-— approved single fix slice; regression green, fresh review and QA pending.
+— approved single fix slice implemented after repair cycle 1. Verification
+receipts belong in the product PR and cloud artifacts; review/merge pending.
 
 Playbook configuration UI: S8 accepted on `05de2a0` and shipped
 in PR #20 as `0a3770e` on 2026-10-08. Planning artifacts archived; durable feature

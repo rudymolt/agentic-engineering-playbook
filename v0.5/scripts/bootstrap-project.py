@@ -330,7 +330,7 @@ def bootstrap_project(
     gitignore_path = project / ".gitignore"
     gitignore = gitignore_path.read_bytes().decode() if gitignore_path.exists() else ""
     for rule in (".playbook-routing/", "/.playbook-config-*"):
-        if rule not in gitignore.splitlines():
+        if not re.search(rf"(?m)^{re.escape(rule)}\r?$", gitignore):
             gitignore += ("\n" if gitignore and not gitignore.endswith("\n") else "") + rule + "\n"
     record_write(gitignore_path, gitignore.encode(), report)
 
@@ -401,7 +401,7 @@ def print_plan(project: Path, playbook_root: Path, *, ui: str, ci: str) -> None:
     gitignore_path = project / ".gitignore"
     gitignore = gitignore_path.read_bytes().decode() if gitignore_path.exists() else ""
     for rule in (".playbook-routing/", "/.playbook-config-*"):
-        if rule in gitignore.splitlines():
+        if re.search(rf"(?m)^{re.escape(rule)}\r?$", gitignore):
             print(f"Gitignore: {rule} already ignored")
         else:
             print(f"Gitignore: add {rule} to .gitignore")

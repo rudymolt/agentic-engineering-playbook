@@ -182,6 +182,37 @@ class ApplyRecoveryGitignoreTests(unittest.TestCase):
             self.assertIn("no changes made", result.stderr)
             self.assertEqual(transition.PublicTransitionTest.snapshot(project), before)
 
+    def test_git_rule_boundaries_do_not_split_user_comments(self):
+        for mode in ("bootstrap", "upgrade"):
+            for separator in ("\r", "\v", "\u0085", "\u2028"):
+                with self.subTest(mode=mode, separator=separator), tempfile.TemporaryDirectory() as tmp:
+                    if mode == "bootstrap":
+                        project = Path(tmp) / "project"
+                        project.mkdir()
+                        run = self.bootstrap
+                    else:
+                        project, _ = transition.PublicTransitionTest().fixture(Path(tmp))
+                        run = transition.PublicTransitionTest().run_upgrade
+                    original = ("# user note" + separator + ".playbook-routing/\n"
+                                "# user note" + separator + "/.playbook-config-*\n").encode()
+                    ignore = project / ".gitignore"
+                    ignore.write_bytes(original)
+                    if mode == "bootstrap":
+                        preview = self.bootstrap(project, apply=False)
+                        self.assertIn("Gitignore: add .playbook-routing/", preview.stdout)
+                        self.assertIn("Gitignore: add /.playbook-config-*", preview.stdout)
+                        self.assertEqual(ignore.read_bytes(), original)
+                    result = run(project)
+                    self.assertEqual(result.returncode, 0, result.stderr)
+                    self.assertEqual(ignore.read_bytes(), original + b".playbook-routing/\n/.playbook-config-*\n")
+                    self.assertEqual(self.git(project, "init", "-q").returncode, 0)
+                    self.assertEqual(self.git(project, "check-ignore", "-q", ".playbook-config-evidence").returncode, 0)
+                    self.assertEqual(self.git(project, "check-ignore", "-q", ".playbook-routing/evidence").returncode, 0)
+                    repeated = run(project)
+                    self.assertEqual(repeated.returncode, 0, repeated.stderr)
+                    self.assertNotIn("changed:", repeated.stdout)
+                    self.assertEqual(ignore.read_bytes(), original + b".playbook-routing/\n/.playbook-config-*\n")
+
 
 if __name__ == "__main__":
     unittest.main()

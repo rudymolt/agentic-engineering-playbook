@@ -1194,7 +1194,7 @@ def upgrade_project(
     gitignore = gitignore_path.read_bytes().decode() if gitignore_path.exists() else ""
     original_gitignore = gitignore
     for rule in (".playbook-routing/", "/.playbook-config-*"):
-        if rule not in gitignore.splitlines():
+        if not re.search(rf"(?m)^{re.escape(rule)}\r?$", gitignore):
             gitignore += ("\n" if gitignore and not gitignore.endswith("\n") else "") + rule + "\n"
     if gitignore != original_gitignore:
         write_if_changed(gitignore_path, gitignore, report)
