@@ -208,7 +208,7 @@
     },
     {
       "path": "delivery/MANIFEST.yml",
-      "sha256": "004644bc253b7b42c48b5d2050f1924674f416949af1a145a9a7e7919351cd50",
+      "sha256": "b486ced5641a8a003ff25ff3888de386e031862a005dc1a0c5299a79889ae081",
       "size": 36947
     },
     {
@@ -988,8 +988,8 @@
     },
     {
       "path": "delivery/tests/test_interim_recovery.py",
-      "sha256": "913ee21d25bb032912d276d39ff9b983b64678663cbfb9f793076034c02e5344",
-      "size": 54525
+      "sha256": "07550030bbae4d7273530e2852c14ef568dd9a420e67934a96ed2583b1a58006",
+      "size": 54579
     },
     {
       "path": "delivery/tests/test_interim_repair.py",

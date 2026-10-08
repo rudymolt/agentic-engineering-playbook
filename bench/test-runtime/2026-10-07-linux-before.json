@@ -1,0 +1,105 @@
+{
+  "revision": "e60b2efc7fbf8cbd09b929d2b6fa2607aab1bb49",
+  "dirty": false,
+  "python": "3.12.14",
+  "platform": "Linux",
+  "set": "K4.1",
+  "selected_tests": [
+    "test_interim_recovery.RecoveryTests.test_stopped_receipt_wrappers_and_timestamps_must_be_truthful_utc",
+    "test_interim_recovery.RecoveryBoundaryTests.test_exhausted_ceiling_enumeration_failure_does_not_invent_a_wake"
+  ],
+  "recorded_at": "2026-10-07T01:06:37.489290+00:00",
+  "privileged": false,
+  "test_sources": {
+    "control_ref_test_support.py": "aeccfed7d187d91d59e70d2e83ce229f0da233f7ad4e6f526c7fd37ed7cf050c",
+    "test_checker_monitor.py": "a3f92339d3f38ea658c3d23326b07275df21a40b8b769fe7e67b9c78ea34e8ea",
+    "test_cloud.py": "d05f972e577796b33170c84eeff7ee2be5d1f96ee2885692c6a63f5c3841b174",
+    "test_continuation.py": "4e45cbf0609c6ebc3615ab16547bfbe6128fd492d9b2907219adbb26579500da",
+    "test_core.py": "68067f8ce650a14ec1d1765bc0376356c1e15571208779a2903165109aac4f22",
+    "test_interim.py": "396f67f1d8776401c3e49519f5949af4f84db5eda53878fd1dd5e3ffd49a5962",
+    "test_interim_advance.py": "c8cf8edaaa7d46052fb2302321cd4d62d03143a0e6431d925cf75bfdfe13e3c5",
+    "test_interim_conductor_host.py": "d43569b438cfca13fbd8008b0066a28d78dbb800cb573b6acf7768b48392a14a",
+    "test_interim_coordinator.py": "2a404885a1577c77c6c660e1ee17e1aefadaadb208ffee690912e26bcd24cbab",
+    "test_interim_host_continuation.py": "6f490229c0ce352f6e0da044e6f0a0a3ba653c32cf8b7b6c59c5be7c80d25801",
+    "test_interim_monitor.py": "343a3654f59418004cc99badc8b531095fe3cf70a28394b17a435f972fd1330a",
+    "test_interim_recovery.py": "913ee21d25bb032912d276d39ff9b983b64678663cbfb9f793076034c02e5344",
+    "test_interim_repair.py": "ea1a770693a8d68a0ae33339a56e171f669824a0a31642a172a97e1a2e9efb9b",
+    "test_interim_stack.py": "3c0c22ca14aed6b9af722835663b47a2946b8d204896fa2fc8838efa31f25f13",
+    "test_interim_watchdog.py": "78cbb62bc5e1b2fe8f78a502a8cb2a08dee41797e08cfe7c6d08d3bbad95e156",
+    "test_pack_lifecycle.py": "308a18a85400f3ca47cdf8a965cde922f174ade3afdfd388a999c08c00cd3eda"
+  },
+  "repetitions": [
+    [
+      {
+        "pattern": "selected",
+        "seconds": 12.330907008000011,
+        "successful": true,
+        "tests": [
+          {
+            "id": "test_interim_recovery.RecoveryTests.test_stopped_receipt_wrappers_and_timestamps_must_be_truthful_utc",
+            "seconds": 6.112165633000004,
+            "outcome": "passed"
+          },
+          {
+            "id": "test_interim_recovery.RecoveryBoundaryTests.test_exhausted_ceiling_enumeration_failure_does_not_invent_a_wake",
+            "seconds": 6.218442339000006,
+            "outcome": "passed"
+          }
+        ],
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    ],
+    [
+      {
+        "pattern": "selected",
+        "seconds": 12.743419754000001,
+        "successful": true,
+        "tests": [
+          {
+            "id": "test_interim_recovery.RecoveryTests.test_stopped_receipt_wrappers_and_timestamps_must_be_truthful_utc",
+            "seconds": 6.427343243999985,
+            "outcome": "passed"
+          },
+          {
+            "id": "test_interim_recovery.RecoveryBoundaryTests.test_exhausted_ceiling_enumeration_failure_does_not_invent_a_wake",
+            "seconds": 6.315805355000009,
+            "outcome": "passed"
+          }
+        ],
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    ],
+    [
+      {
+        "pattern": "selected",
+        "seconds": 12.020140104999996,
+        "successful": true,
+        "tests": [
+          {
+            "id": "test_interim_recovery.RecoveryTests.test_stopped_receipt_wrappers_and_timestamps_must_be_truthful_utc",
+            "seconds": 6.12596118099998,
+            "outcome": "passed"
+          },
+          {
+            "id": "test_interim_recovery.RecoveryBoundaryTests.test_exhausted_ceiling_enumeration_failure_does_not_invent_a_wake",
+            "seconds": 5.893947026999996,
+            "outcome": "passed"
+          }
+        ],
+        "failures": 0,
+        "errors": 0,
+        "skipped": 0
+      }
+    ]
+  ],
+  "timing": "perf_counter; setup, method, cleanup included",
+  "recorded_at_each_pair": [
+    "2026-10-07T01:06:37.489290+00:00",
+    "2026-10-07T01:07:00.824331+00:00",
+    "2026-10-07T01:07:24.108409+00:00"
+  ]
+}

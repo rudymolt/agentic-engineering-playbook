@@ -1,0 +1,83 @@
+{
+  "baseline_revision": "e60b2efc7fbf8cbd09b929d2b6fa2607aab1bb49",
+  "candidate_revision": "8c6bc5e922f43399001473170b741bba271fe298",
+  "method": "Three alternating baseline/candidate pairs; fresh process per selected set; no concurrent workspace tests",
+  "python": "3.12.14",
+  "platform": "Linux",
+  "git": "git version 2.52.0",
+  "successful_executions": 12,
+  "failed_or_skipped_executions": 0,
+  "scope": "selected test setup, method and cleanup; not full-suite timing",
+  "rows": [
+    {
+      "id": "test_interim_recovery.RecoveryTests.test_stopped_receipt_wrappers_and_timestamps_must_be_truthful_utc",
+      "before_samples": [
+        6.112165633000004,
+        6.427343243999985,
+        6.12596118099998
+      ],
+      "before_median": 6.12596118099998,
+      "before_range": [
+        6.112165633000004,
+        6.427343243999985
+      ],
+      "after_samples": [
+        4.807095809999993,
+        5.101761093999983,
+        4.962746833000011
+      ],
+      "after_median": 4.962746833000011,
+      "after_range": [
+        4.807095809999993,
+        5.101761093999983
+      ],
+      "reduction_percent": 18.98827487852428
+    },
+    {
+      "id": "test_interim_recovery.RecoveryBoundaryTests.test_exhausted_ceiling_enumeration_failure_does_not_invent_a_wake",
+      "before_samples": [
+        6.218442339000006,
+        6.315805355000009,
+        5.893947026999996
+      ],
+      "before_median": 6.218442339000006,
+      "before_range": [
+        5.893947026999996,
+        6.315805355000009
+      ],
+      "after_samples": [
+        5.406359797000022,
+        4.890687759000002,
+        5.9696422840000025
+      ],
+      "after_median": 5.406359797000022,
+      "after_range": [
+        4.890687759000002,
+        5.9696422840000025
+      ],
+      "reduction_percent": 13.059259823105096
+    }
+  ],
+  "excluded_prior_test_ids": [
+    "test_interim_advance.AdvanceTests.test_bound_candidate_symlink_cannot_escape_shared_workspace_root",
+    "test_interim_advance.AdvanceTests.test_bound_host_brief_names_candidate_checkout_and_implementation_paths",
+    "test_interim_advance.AdvanceTests.test_bound_verify_send_includes_pr_helper_before_worker_done",
+    "test_interim_coordinator.CoordinatorTests.test_handoff_acceptance_parity_matrix",
+    "test_interim_coordinator.CoordinatorTests.test_operation_binding_parity_matrix",
+    "test_interim_coordinator.CoordinatorTests.test_receipt_acceptance_parity_diagnosed_cases",
+    "test_interim_coordinator.CoordinatorTests.test_worker_acceptance_parity_build_matrix",
+    "test_interim_coordinator.CoordinatorTests.test_worker_acceptance_parity_verify_matrix",
+    "test_interim_host_continuation.RepairHostContinuationTests.test_async_three_failure_diagnosis_and_stagnation_with_and_without_caps",
+    "test_interim_monitor.MonitoringTests.test_repair_worker_errors_keep_one_monitored_failed_operation",
+    "test_interim_recovery.RecoveryBoundaryTests.test_consumed_elapsed_is_validated_before_accounting",
+    "test_interim_recovery.RecoveryBoundaryTests.test_coordinator_and_prefix_malformed_matrix",
+    "test_interim_recovery.RecoveryBoundaryTests.test_explicit_uncertain_stop_retry_retains_confirmed_progress",
+    "test_interim_recovery.RecoveryBoundaryTests.test_malformed_observation_and_cancellation_matrix",
+    "test_interim_recovery.RecoveryBoundaryTests.test_owned_inventory_malformed_matrix",
+    "test_interim_recovery.RecoveryBoundaryTests.test_provider_programmer_and_storage_exceptions_are_not_conflated",
+    "test_interim_recovery.RecoveryBoundaryTests.test_shared_boundary_red_matrix",
+    "test_interim_recovery.RecoveryBoundaryTests.test_transport_failures_at_every_call_site",
+    "test_interim_recovery.RecoveryBoundaryTests.test_truthful_stop_proof_still_gates_validation_persist_reload_and_resume",
+    "test_interim_recovery.RecoveryBoundaryTests.test_unknown_active_queued_and_terminal_are_distinct"
+  ]
+}

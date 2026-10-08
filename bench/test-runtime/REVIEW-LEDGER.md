@@ -1313,3 +1313,173 @@ configured; canonical conventions and Python execution cover the relevant lanes.
 No production, workflow or security changes. These are partial local correctness
 results; final normal CI owns complete privileged integration. The next evidence
 checkpoint is the frozen PR description, not another evidence-only commit.
+
+
+## 2026-10-07 — batch 8 (UTC)
+
+Fresh fetch and GitHub inspection confirmed main at
+`e60b2efc7fbf8cbd09b929d2b6fa2607aab1bb49`, with all twenty earlier optimizations,
+feature PR14 and collector PR15 included. Final stack `ff3233c` is an ancestor:
+`ff3233c...main` is zero left / three right, with identical trees. PR19 recovery
+is already integrated; no recovery work is repeated. The starting checkout was
+clean. Fresh branch `perf/test-runtime-2026-10-07` starts from this main and targets
+main directly. PR20 remains the only pre-existing open draft, at
+`0e81f471981ca3b48522608cf14c0d775b2fdd0b`, with main as its actual merge base.
+Its delivery-test and bench diff is empty; its live feature work is untouched.
+
+All twenty prior IDs were excluded before selection; the complete exact list is
+retained in [today's comparison](2026-10-07-linux-comparison.json).
+Two NEW reviewed IDs:
+
+- `test_interim_recovery.RecoveryTests.test_stopped_receipt_wrappers_and_timestamps_must_be_truthful_utc`
+- `test_interim_recovery.RecoveryBoundaryTests.test_exhausted_ceiling_enumeration_failure_does_not_invent_a_wake`
+
+Baseline: `e60b2efc7fbf8cbd09b929d2b6fa2607aab1bb49`.
+Measured implementation: `8c6bc5e922f43399001473170b741bba271fe298`.
+Only two existing-helper decorators change executable source. Repeated identical
+successful `git check-ref-format REF` probes are reused within each selected
+method invocation. Validators still execute, invalid probes and every other Git
+command remain real. Neither selected flow changes Git/environment or injects
+syntax-subprocess failures. The cache/helper itself is unchanged.
+
+All method bodies, assertions and isolated fixtures remain. Five receipt cases
+cover cancellation/observation disagreement and malformed stop/observation/resume
+UTC timestamps. Two separately approved ceiling cases (dispatch and deadline)
+each exercise both coordinator-enumeration failures, no invented wake, explicit
+wake refusal, stopping, resume refusal and clean reload. Real corrupt remote
+injection, checkpoint publication/CAS, deep copies, fresh clones, per-case
+tearDown/setUp and no-provider-effects assertions remain. No mutable fixture or
+snapshot is shared. The existing four cache guards cover distinct refs, invalid
+refs, changed options, uncached commands, reset and restoration after exceptions.
+
+Three alternating baseline/candidate pairs ran on clean pinned checkouts in the
+saved Linux x86_64 cloud environment, Python 3.12.14, Git 2.52.0, non-root.
+Each pair used `python3 bench/profile_delivery_tests.py --root CHECKOUT --repeat 1
+--output REPORT`, with both exact IDs supplied via `--test`; fresh subprocesses,
+identical canonical Git maintenance settings, no concurrent workspace tests.
+Setup, method and cleanup are included; no samples were discarded.
+All twelve executions passed, zero failures/errors/skips.
+
+| Test suffix | Before median (range), s | After median (range), s | Median reduction |
+| --- | --- | --- | --- |
+| truthful receipt wrappers / UTC | 6.126 (6.112–6.427) | 4.963 (4.807–5.102) | 18.99% |
+| exhausted ceiling enumeration | 6.218 (5.894–6.316) | 5.406 (4.891–5.970) | 13.06% |
+
+Receipt ranges are disjoint. Ceiling ranges overlap; its third pair regressed
+from 5.894s to 5.970s (+1.28%). Retain that regression and all samples: the median
+improvement is an observation with weaker separation, not a guaranteed gain.
+Shared-host load and ordering remain uncontrolled; neither targeted comparison
+establishes a causal full-suite saving.
+Evidence: [before](2026-10-07-linux-before.json),
+[after](2026-10-07-linux-after.json), [comparison](2026-10-07-linux-comparison.json).
+Reports bind exact revisions and all sixteen delivery test-source hashes.
+
+The installed-preflight screening lead was inspected but not changed or counted
+as an optimized ID: its separate installed CLI, isolation wrappers and negative
+launcher coverage must remain real; a safe speedup was not established. No
+forced change or unsupported speed claim. Twenty-two IDs are now reviewed.
+
+October 6's final serial record, ordinary run 37398212209, is recovered into
+[history](suite-history.json) with the unchanged current collector. Verified
+successful associated edition/delivery jobs 112059148412 / 112059148217,
+complete commands, all sixteen groups and both normalized input hashes reproduce
+the PR18 final JSON field-for-field: 228 + 534 = 762 executions,
+949.131 summed seconds. Synthetic checkout is
+`5c393cc77d92dcd91e592edc5ba0edfd7391ecca` at head
+`0d2fa2fef8f060c5a6a711e64e94064acfada08b`. October 5 remains
+970.447s / 762, original `a57af6de259d34e9b772105e0ad0610290797cfa`
+1135.863s / 756. The serial October 6 observation is 21.316s lower (2.20%)
+than October 5 and 186.732s lower (16.44%) than original; these independent
+historical branches did not contain the same optimized sets and are not
+cumulative causal gains. Nothing is relabeled as a parallel measurement.
+
+Current CI uses `--jobs 3` in both edition and delivery. Cohort-aware duration
+AND execution-count comparisons remain intact. Summed parallel unittest seconds
+overlap and exclude interpreter startup/standalone CLI checks. Command spans
+include shell/check overhead. Job-log envelope includes logged setup/cleanup,
+excludes queue/pre-log setup and must not be added across parallel jobs.
+Exact queue/setup/workflow elapsed and actual hosted hardware/load remain unknown.
+
+PR20's current successful run 37538657561 is partial CI: edition command uses
+`--skip-drift --skip-delivery --jobs 3`, and the separate delivery job scope-skips
+K4.1. Its 794 edition executions across 44 shards are not a full-suite row;
+the separate 917 independent review executions have a different scope. Feature
+reviewed-guidance 154 tests / 810.373s, roles 231.482s and presets 192.799s are
+historical screening observations, not main baselines or causal comparisons.
+No S8 live qualification, paid model comparisons or replacement acceptance ran.
+
+Repository AGENTS/digest and manual stage-08/09 routes apply. No relevant installed
+project/user `.agents/skills/SKILL.md` exists; source-repository maintenance does
+not bootstrap an application. Browser QA is n/a for this test-only edit. No new
+behavior needs a new regression test; existing cache guards and preserved real
+integration assertions verify the seam. No dependency, input boundary,
+credential, production, workflow or security change. Both author and committer
+use GitHub noreply identities. CLI API Forbidden uses the already connected
+GitHub app; no credential changes. Privileged watchers remain assigned to normal
+Actions CI, not a local permissions workaround. No timing-only full suite.
+
+Next unreviewed screening candidates (measure afresh, inspect purity first):
+
+- `test_interim_host_continuation.OrdinaryHostContinuationTests.test_repaired_first_slice_admits_second_queued_build_without_rewriting_failure`
+- `test_interim_host_continuation.OrdinaryHostContinuationTests.test_two_dependent_repaired_slices_survive_checkpoint_restart`
+- `test_interim_watchdog.InterimWatchdogTests.test_intermediate_repair_completion_remains_eligible_but_whole_run_terminal_refuses`
+
+Four fanotify IDs remain excluded from local performance claims and require
+privileged correctness CI. Final frozen SHA, terminal ordinary CI, fresh
+source inventory and final collector JSON belong in the draft PR description,
+avoiding evidence-only commit/CI cycles. No merge or deployment is authorized.
+
+Fresh-context independent review passed whole-module AST equality after removing
+exactly the two decorators. Six tests (selected two plus four cache guards)
+passed with seven instrumented subcases, zero failures/errors/skips, in 13.694s.
+That run is correctness-only under concurrent edition-check load, not another
+benchmark sample. The reviewer independently reconstructed all twenty exclusions,
+verified 128 raw/aggregate source-hash checks representing 32 revision/file
+bindings, all twelve samples, alternating timestamps and every statistic.
+Report-only behavior was followed; filesystem-enforced read-only isolation is
+not claimed. No blocking findings. The ceiling regression/range overlap above
+is explicitly retained as an informational high-confidence finding.
+
+The prior green integration run 37461176026 is now admitted only after fresh
+source-only inventory and complete log validation, at exact recovery head
+`825a92ace5f6311f7232d72fde0423624442e411` (same suite sources as main).
+Verified successful associated jobs 112260836374 / 112260836628 and full delivery
+step supply 640 edition + 537 delivery = 1,177 executions in 43 + 15 modules.
+The [integration inventory](manifests/825a92ace5f6311f7232d72fde0423624442e411.json)
+binds every module/count/hash and both verifiers, parallel runner and edition
+manifest. The collector requires every schedule, zero-exit shard and clean
+summary; expected counts came from source discovery, never admitted logs.
+Synthetic checkout: `0c2b41e513ca98ce79a985bb1d37af2c2a2ffdcf`.
+
+Integration summed unittest seconds: **2371.400** (1211.832 edition + 1159.568
+delivery). Edition/delivery command spans: **498.439630 / 631.852632s**;
+parallel job-log envelope: **637.158670s**. Runner: Python 3.12.14, Git 2.55.0,
+Ubuntu 24.04 image 20260927.320.1; hardware/load unknown. Against the latest
+previously recorded same-concurrency supplement (run 37243478663, 2628.000s /
+1177), the observed sum is 256.600s lower (9.76%), counts unchanged, while the
+job-log envelope is 22.280145s longer (3.62%). These differing directions show
+why overlapping sums and elapsed proxies must stay separate. The rendered
+primary history compares to its prior primary parallel row (1153 / 2218.484),
+while the intervening 1154 and 1177 observations remain preserved as original
+supplemental records; no history row is erased or silently replaced.
+All are ordinary CI observations with suite-content and load caveats, not causal
+speedups. The historical serial cohort is never used as today's parallel baseline.
+
+Independent evidence review confirmed both source inventories: integration and
+measured candidate each have 43 edition modules / 640 executions plus 15 delivery
+modules / 537 executions. All 62 module/provenance hashes per manifest match
+exact Git blobs. All 144 Python source files in edition scripts and delivery
+are byte-identical between recovery head and current main. Separate fresh-process
+count-only discovery executes no test methods; its reviewed import-time Linux
+DAC probe was permitted only for the exact local readability check.
+The reviewer independently reproduced the integration collector row field-for-field,
+verified both log hashes and current cohort-aware duration AND count calculations,
+and confirmed the October 6 published record's exact equality. No collector,
+workflow or security change was needed; eighteen collector guards passed.
+
+Local canonical edition verification is running with `--skip-delivery --jobs 3`;
+its terminal outcome and the final frozen-head normal CI record will be retained
+on the draft PR. This is a correctness run, not a new full-suite timing baseline.
+Public-content, link-integrity and whitespace checks pass for the evidence;
+delivery and edition manifests are regenerated. No separate lint/type runner is
+configured. No measured executable source changed after the pinned implementation.
