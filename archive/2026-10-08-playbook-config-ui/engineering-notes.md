@@ -1,5 +1,10 @@
 # Configuration planning — current integration evidence
 
+> Archived feature record: S8 accepted on 2026-10-08; shipped in PR #20 as
+> `0a3770e7306ec80fdf6b07aab88008cf2897aa77`. Earlier pending gates and failures
+> below are dated history, not current instructions. See [closeout](closeout.md)
+> for final candidate evidence, durable source pointers and remaining closeout.
+
 These are source locators inspected while drafting the specification, not promises that the present code already supports configuration. Subsequent build-all approval and current progress are recorded in [execution status](execution.md).
 
 | Surface | Current source | Consequence for the feature |

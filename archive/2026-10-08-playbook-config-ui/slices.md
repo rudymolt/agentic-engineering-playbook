@@ -1,5 +1,10 @@
 # Configuration UI — proposed implementation slices
 
+> Archived feature record: S8 accepted on 2026-10-08; shipped in PR #20 as
+> `0a3770e7306ec80fdf6b07aab88008cf2897aa77`. Earlier pending gates and failures
+> below are dated history, not current instructions. See [closeout](closeout.md)
+> for final candidate evidence, durable source pointers and remaining closeout.
+
 Status: approved eight-slice breakdown. Build-all S1–S7 is subsequently approved; see [execution status](execution.md) for current progress. S8 live host qualification is a human stop gate, not an automated completion claim.
 
 Contract: [specification](spec.md). Interaction reference: [chat flow](chat-flow.md). Source locators: [engineering notes](engineering-notes.md).
@@ -206,17 +211,18 @@ Each slice crosses the conversation, configuration behaviour and verification ne
 
 **What it delivers:** a user can install/adopt the complete feature and finish the approved configuration experience in either supported host, with readable guidance and honest support claims.
 
-**Blocked by:** S4, S7a (which transitively include S1–S7).
+**Dependencies:** S4 and S7a accepted (including S1–S7).
+**Status:** accepted 2026-10-08 at `05de2a0`; shipped in PR #20 as `0a3770e`. Final gates and historical limits are recorded in [closeout](closeout.md).
 **Mode:** HITL — final live-host walkthrough and any account-specific access require the maintainer; implementation and automated checks remain agent work.
 **Acceptance coverage:** AC01–AC23, with emphasis on integration and actual host behaviour.
 
-- [ ] Run the complete typed-only first-run, edit, source-labelled skill/preset, Explain, unavailable-model and failed-Apply scenarios in Codex and Codex through Conductor. Verify optional host controls fall back to text.
-- [ ] Confirm the actual observed Coordinator identity and available routes. Show adopted defaults at the existing lane gate without launching a paid comparison or claiming model output as identity proof.
-- [ ] Exercise new bootstrap and an existing customised-project upgrade, including all role-default consumers, skill-job dispatch, personal presets and recovery. Complete the consumer inventory and resolve any remaining legacy readers.
-- [ ] Demonstrate a model-plus-skill preset across two projects/machines, preserving privacy and active selections. No unsupported host is described as verified.
-- [ ] Update human and agent guidance together, including first use, migration, skill attribution, freshness/replacements and troubleshooting. Preserve third-party notices and include the required process-change Why entry.
-- [ ] Regenerate release manifests and pass the canonical Playbook verifier and relevant changed-surface tests. Obtain independent final verification. Record any unavailable live proof explicitly instead of claiming completion.
-- [ ] Any billable execution beyond normal configuration discovery requires a separately scoped qualification decision. No release, push, merge or deployment is authorised by this ticket alone.
+- [x] Run the complete typed-only first-run, edit, source-labelled skill/preset, Explain, unavailable-model and failed-Apply scenarios in Codex and Codex through Conductor. Verify optional host controls fall back to text.
+- [x] Confirm the actual observed Coordinator identity and available routes. Show adopted defaults at the existing lane gate without launching a paid comparison or claiming model output as identity proof.
+- [x] Exercise new bootstrap and an existing customised-project upgrade, including all role-default consumers, skill-job dispatch, personal presets and recovery. Complete the consumer inventory and resolve any remaining legacy readers.
+- [x] Demonstrate a model-plus-skill preset across two projects/machines, preserving privacy and active selections. No unsupported host is described as verified.
+- [x] Update human and agent guidance together, including first use, migration, skill attribution, freshness/replacements and troubleshooting. Preserve third-party notices and include the required process-change Why entry.
+- [x] Regenerate release manifests and pass the canonical Playbook verifier and relevant changed-surface tests. Obtain independent final verification. Record any unavailable live proof explicitly instead of claiming completion.
+- [x] Any billable execution beyond normal configuration discovery requires a separately scoped qualification decision. No release, push, merge or deployment is authorised by this ticket alone.
 
 **Verification target:** retain redacted transcript/check evidence from both real hosts, migration and recovery fixtures, independent review results, manifest validation and privacy checks. Mockup screenshots alone cannot satisfy host qualification.
 
