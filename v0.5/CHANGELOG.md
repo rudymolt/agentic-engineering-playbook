@@ -7,13 +7,15 @@
   content, pristine bases and provenance with interruption recovery. Preserve
   user-owned maps and collisions for reviewed migration. Add glossary delivery
   protection, retire the removed conflict skill, and integrate optional PR and
-  environment-retro practices under existing stage authority.
+  environment-retro practices under existing stage authority. Ship Matt's full
+  pinned workflow as `/matt-retro`, preserving gstack's separate `/retro` command.
 
 *Why — correctness lane:* newer Matt consumers read only the glossary filenames.
 A pin-only upgrade could hide existing vocabulary. Coordinated migration keeps
 project definitions and recorded bases intact; changed reviewer sources retain
 manual adapters until separately qualified. gstack qualification remains a
-separate batch.
+separate batch. Distinct retro entry names make both workflows available without
+installer-order collisions; managed upgrades preserve local customizations.
 
 - Complete the explicitly deferred Playbook configuration UI feature retro and
   field report; audit shipped slices and learning coverage, retain observational

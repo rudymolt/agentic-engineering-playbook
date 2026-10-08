@@ -13,8 +13,8 @@
     },
     {
       "path": "10-process/00-prereqs.md",
-      "sha256": "92eac5024976d85c7942133cc25edf12c108cff258802747bc6ff938b7fe8597",
-      "size": 13634
+      "sha256": "8010fdb309c3749b0b1dd137d00a30c1589d7ccaa38b56a7b0af4d51ddbb810c",
+      "size": 14085
     },
     {
       "path": "10-process/01-align.html",
@@ -83,8 +83,8 @@
     },
     {
       "path": "10-process/12-retro-and-learn.md",
-      "sha256": "76d9e910feeb94c32a9941d9c63b03efc5ef6b91e09567d6aa4a5514cb65e595",
-      "size": 10124
+      "sha256": "0062e7eb694252300dcfabe64e8e868bebc94d47d07b5957cada4cd65db4c74b",
+      "size": 10879
     },
     {
       "path": "10-process/README.md",
@@ -178,8 +178,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "3fc90a38a3ef774d5572a02f7c9032ad920c91f811e02911c7c6fabc3f7c2ce0",
-      "size": 48473
+      "sha256": "9ba015aebf9c190695debb38ed962dc194b4ce1d9b4e6fa6b3221a6c48ed3a00",
+      "size": 48714
     },
     {
       "path": "MAINTENANCE.md",
@@ -1382,6 +1382,11 @@
       "size": 4572
     },
     {
+      "path": "scripts/test_retro_skills.py",
+      "sha256": "decb64c161e052d2f90cc7036bc56e4e764357024c4b5785508026c96f48e4fa",
+      "size": 2602
+    },
+    {
       "path": "scripts/test_skill_bindings.py",
       "sha256": "bfe95aeb12fd995045f2bdec9603ec7a6b4785ddefa578c67fdcc060a48a3e27",
       "size": 27676
@@ -1458,8 +1463,8 @@
     },
     {
       "path": "skills/README.md",
-      "sha256": "1a8ba350539c0b9335310c2b8511bf86272162f3cbdb6a871d54bf1b3668ba0d",
-      "size": 9718
+      "sha256": "9cf305d2382292be980107629bb2c99dc2bb5ec3890564305c9b34519fe6e386",
+      "size": 10540
     },
     {
       "path": "skills/ai-playbook-blast-radius/NOTICE",
@@ -1538,8 +1543,8 @@
     },
     {
       "path": "skills/ai-playbook-upgrade-project/MIGRATIONS.md",
-      "sha256": "dcb5f578f041707778dae734a7a4ca9fba260cae00e06aaa303dc5dd8d503e66",
-      "size": 5758
+      "sha256": "b2878972d0e9a5c76bfe1554b1013d7c4a1fcd48125344f294c1f70e480449b7",
+      "size": 6645
     },
     {
       "path": "skills/ai-playbook-upgrade-project/SKILL.md",
@@ -1580,6 +1585,26 @@
       "path": "skills/ai-playbook-why/agents/openai.yaml",
       "sha256": "4ca2c413bc515e5e170b9fa1ef6295df07047a5d27ccd6b6ea962ca3ecb101dd",
       "size": 254
+    },
+    {
+      "path": "skills/matt-retro/NOTICE",
+      "sha256": "8943b4d49eff1e83bf49cb012d0878bbdb7faca06652245bf5f67739bab848dd",
+      "size": 1360
+    },
+    {
+      "path": "skills/matt-retro/SKILL.md",
+      "sha256": "4eb9ba2d85849fa56952f9410aa0cd14b2485fc6e2bad0d51a5848f4fd752094",
+      "size": 3526
+    },
+    {
+      "path": "skills/matt-retro/agents/openai.yaml",
+      "sha256": "636e3bfc63a1d8f9e63f643dd71a4368673398bf8e01d41250948a7fa0ddaf96",
+      "size": 275
+    },
+    {
+      "path": "skills/matt-retro/references/upstream-retro.md",
+      "sha256": "33fbc28568e3146f20fd908b12998bc0ab30aa4f4c87288199a40793efa94696",
+      "size": 4369
     },
     {
       "path": "skills/model-router/SKILL.md",
@@ -1738,8 +1763,8 @@
     },
     {
       "path": "upstream-skills.json",
-      "sha256": "d6f8d89e6401ee82712c7a19eb9c979b7d9d2e1f02703a9294c74065d1ee5528",
-      "size": 26342
+      "sha256": "5aa8864b7bee8184cf8327685980de1e99f8fcac7888523d94958ae28ce79179",
+      "size": 26782
     }
   ],
   "schema_version": 1,

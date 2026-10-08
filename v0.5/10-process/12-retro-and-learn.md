@@ -15,7 +15,19 @@
 
 ## What to run
 
-`/retro` (gstack). For a weekly view across all your projects, `/retro global`.
+Both retros are independently callable:
+
+| Purpose | Claude command | Codex command |
+|---|---|---|
+| gstack delivery/team retrospective | `/retro` | `$gstack-retro` |
+| Matt Pocock agent-environment retrospective | `/matt-retro` | `$matt-retro` |
+
+Use gstack for the usual weekly or shipped-feature discussion; `/retro global`
+provides a weekly view across projects. Offer Matt's command for a deeper look
+at session friction, checks, instructions and tooling. The human invokes it;
+a stage or another skill must not silently start this explicit-only command.
+Either command can run independently; when both are selected for one stage-12
+retro, combine their findings into one retro record.
 
 **`/retro` is the facilitator, not the output.** The gstack skill runs the discussion; it knows nothing about this playbook's files. The stage is complete only when the discussion has been written to `planning/retros/{YYYY-MM-DD}.md` using the project's `retro-template.md` — including its §8 checklist, which carries the eval and field-report checks. An agent that runs `/retro` and stops has held a conversation, not run stage 12.
 
@@ -44,8 +56,10 @@ identify navigation friction, missing checks, confusing instructions and wasted
 tool calls from actual session evidence. Prefer a deterministic check for a
 mechanical mistake; keep judgement calls in review guidance. Propose changes
 through this stage's promotion rules rather than editing settings automatically.
-The bare `/retro` route remains gstack's; Matt's same-named skill is not installed
-as a second default command.
+For the complete Matt workflow, the independently callable
+[`matt-retro` adapter](../skills/matt-retro/SKILL.md) includes the exact pinned
+source and license. Bootstrap/upgrade install it under its distinct name.
+The bare `/retro` route remains gstack's.
 
 Use `templates/retro-template.md` as the structure. Sections:
 

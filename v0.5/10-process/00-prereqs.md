@@ -71,8 +71,14 @@ If a Matt skill is unavailable, name the manual route from the capability profil
 
 The installer command above pins both CLI 1.7.1 and Matt's v1.3.1 tag. Select
 only the registered skills needed by the project; optional `/pr` is extended.
-Do not select Matt's `retro` alongside gstack's bare `/retro` without an explicit
-naming plan, or select `implement-spec` as the playbook build controller.
+Matt's full retro is provided by the default-installed local `/matt-retro`
+adapter (`$matt-retro` in Codex); gstack keeps `/retro` (`$gstack-retro`). Exclude
+Matt's bare `retro` from this upstream installer selection. Before rollout, check
+the active project/user skill roots and runtime discovery for existing duplicate
+`retro` entries. If Matt's bare entry is already installed, preserve customized
+content and reconcile its scope with the human before removing or renaming it;
+verify each resolved command points to the intended provider. Do not select
+`implement-spec` as the playbook build controller.
 Preview with `--list` before installing, preserve customized installed files and
 record per-skill bytes against commit `24fe0ef7737efae15c87225755e9f6f5965e4888`.
 Avoid a generic update command that advances the installation beyond this pin.

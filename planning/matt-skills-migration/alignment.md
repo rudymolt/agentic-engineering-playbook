@@ -21,3 +21,11 @@ Future changes: recheck released sources monthly (next due 2026-11-08) and befor
 an upstream-contract release. Re-audit installed sources on host, skill, model
 profile or settings changes; preserve customizations and retain manual routes
 until the exact changed dependencies have been qualified.
+
+## Dual-retro refinement
+
+The maintainer explicitly requested that both retros be callable. Preserve
+existing gstack commands and ship a default-installed `matt-retro` local adapter
+that loads Matt's complete pinned workflow. Use separate discovery names on
+both hosts; preserve explicit invocation and stage-owned completion. Preserve
+customized installations through the existing bootstrap/upgrade review path.

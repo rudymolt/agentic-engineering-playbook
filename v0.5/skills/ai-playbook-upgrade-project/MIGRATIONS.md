@@ -84,3 +84,19 @@ After a clean run, verify that project `CLAUDE.md` and project `AGENTS.md` point
 ## Development checkout
 
 Use a second checkout of public `main` for changes. Keep application projects pointed at the stable release checkout until a later upgrade is deliberately run. Do not retarget a project to the moving development checkout.
+
+
+## Independent retro commands
+
+Upgrade installs the local `matt-retro` adapter, its pinned full workflow and
+MIT notice through the existing managed-skill mechanism. It exposes
+`/matt-retro` in Claude and `$matt-retro` in Codex. gstack's existing `/retro`
+(or `$gstack-retro`) stays separately callable. Customized local adapter files
+use ordinary base-aware merge/review; preserve any pre-existing unowned skill.
+
+If Matt's upstream bare `retro` was installed independently, inventory all
+active project/user roots and runtime-advertised entries before rollout. Resolve
+which provider each command loads; review customized content before explicitly
+reconciling duplicate entries. The playbook upgrader does not rewrite upstream
+installer lockfiles or remove user-owned skill directories. Re-run stage 00 cold
+and confirm both distinct commands after the host reloads skill discovery.

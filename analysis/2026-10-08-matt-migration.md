@@ -14,7 +14,10 @@ not receipts from a user's installed skills or permission to invoke a reviewer.
 
 The three newly added skills relative to v1.2.3 are implement-spec, pr and retro.
 Adopt optional pr at stage 10 and the environment-improvement practices from
-Matt's retro at stage 12, retaining gstack's existing bare retro name. Direct
+Matt's retro at stage 12. The independently callable `matt-retro` local adapter
+ships the complete unchanged retro source and MIT license, retaining gstack's
+existing bare retro name. Both commands have distinct discovery identities;
+Matt's explicit-only invocation remains intact. Direct
 implement-spec orchestration remains unadopted. The release removes the conflict
 skill with no replacement; stage-owned conflict handling keeps intent inspection,
 tests and required fresh review.

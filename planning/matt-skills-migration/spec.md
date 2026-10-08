@@ -17,7 +17,11 @@
    metadata remains available for migration, but no live route requires it.
 5. Stage-owned conflict resolution preserves intent and verification. PR and
    environment-retro practices retain attribution, stage authority and existing
-   gstack retro naming. New orchestration remains optional future work.
+   gstack retro naming. Both retros are independently callable: gstack retains
+   `/retro` (Codex `$gstack-retro`); the default-installed Matt adapter exposes
+   `/matt-retro` (Codex `$matt-retro`) with the complete pinned source, license
+   and explicit-only metadata. Bootstrap/upgrade preserve existing customized
+   skills. New orchestration remains optional future work.
 6. Exact inspected reviewer source digests and evidence advance without granting
    embedded permission. Host-install qualification dates are not invented.
 7. Focused regression tests, independent review, privacy checks, generated
