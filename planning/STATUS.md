@@ -16,31 +16,30 @@ This maintainer checkout intentionally has no root `.playbook-state.yml`.
 The stage-10 closeout state is mirrored here; no consumer runtime state is created.
 
 ```yaml
-last_updated: 2026-10-08
+last_updated: 2026-10-08T11:05:59Z
 counters:
   features_shipped_total: 1
 last_run:
   ship: 2026-10-08T04:26:06Z
   feature_ship: 2026-10-08T04:26:06Z
   doc_close: 2026-10-08
-pending_closeouts:
-  - feature_slug: playbook-config-ui
-    title: Playbook configuration UI
-    shipped_at: 2026-10-08T04:26:06Z
-    production_verified: true
-    doc_close: complete
-    retro: pending
+  retro: 2026-10-08T11:05:59Z
+pending_closeouts: []
 ```
 
-Main Playbook CI `37727464514` passed at `0a3770e`. Production verification
-and doc-close are complete. The maintainer explicitly deferred the feature retro;
-stage 12 remains the required next action. [Archived closeout record](../archive/2026-10-08-playbook-config-ui/closeout.md)
-retains the final gate receipts, historical limits and promotion candidates.
+Main Playbook CI `37727464514` passed at `0a3770e`. Production verification,
+doc-close and the [feature retro](retros/2026-10-08.md) are complete on this branch.
+The `playbook-config-ui` retro was marked complete, then its entry removed because
+all three closeout conditions are satisfied. This mirrored update reaches main
+only after human merge of the retro PR. No other feature closeout is cleared.
+[Archived closeout](../archive/2026-10-08-playbook-config-ui/closeout.md) preserves
+the dated initial deferral, final gate receipts, historical limits and candidates.
 
 ## Separate follow-ups
 
-- Product proposal: ignore retained Apply recovery files in bootstrap and
-  supported upgrades; preserve recovery semantics and the tracked configuration.
-  Product code is outside this documentation closeout.
+- Apply recovery gitignore: separately authorised product cloud follow-up, branch
+  `conductor/apply-recovery-gitignore`; preserve recovery semantics and tracked
+  configuration. No product completion is claimed by this retro.
 - Monthly upstream-drift comparison fell due 2026-10-08; maintainer requested
-  separate maintenance under [MAINTENANCE.md](../v0.5/MAINTENANCE.md).
+  separate maintenance under [MAINTENANCE.md](../v0.5/MAINTENANCE.md), maintenance cloud follow-up branch
+  `conductor/october-upstream-drift`. No comparison or date reset here.

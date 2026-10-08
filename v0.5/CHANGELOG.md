@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+- Complete the explicitly deferred Playbook configuration UI feature retro and
+  field report; audit shipped slices and learning coverage, retain observational
+  evidence gaps, assess the three approved candidates and clear only this
+  feature's mirrored pending closeout. Keep product recovery ignores and monthly
+  upstream comparison in their separately authorised cloud follow-ups.
+
+*Why — process lane:* PR #20 shipped the feature and PR #22 closed planning, but
+  the deferred retro still needed durable incident evidence and candidate decisions.
+  Existing evidence-boundary and verifier-route rules cover two candidates; the
+  recovery-artifact omission warrants its bounded product follow-up. Shipment
+  does not erase failed reviews, privacy failures or exhausted qualification.
+
 - Close the shipped Playbook configuration UI feature (PR #20, `0a3770e`):
   record final S8 acceptance on `05de2a0`, correct the admitted native Mac
   handoff, archive planning and keep the stage-12 retro visible in closeout state.

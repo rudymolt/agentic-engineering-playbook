@@ -73,14 +73,22 @@ admission; upgrades use preview and compatibility/qualification checks while
 preserving customisations and active approvals. Monthly released-source drift
 comparison stays separately owned by MAINTENANCE.md.
 
-## Pending closeout and promotion candidates
+## Completed retro and candidate dispositions — 2026-10-08
 
-The maintainer explicitly deferred the feature retro; it remains pending. Do not clear `pending_closeouts` until stage 12
-records its outcome. Candidate lessons: preserve exact-candidate and actual-host
-boundaries when reconciling evidence; record unavailable verifier routes and
-explicit substitutions; keep successful recovery artifacts private without
-weakening completion/conflict evidence. Existing rules already cover the first
-two; further promotion needs stage-12 assessment and human input.
+The maintainer initially chose “Record candidates; defer retro” at doc-close.
+That dated deferral remains historical; the later explicit authorisation completed
+[stage 12](../../planning/retros/2026-10-08.md), with a
+[field report](../../analysis/field-reports/2026-10-08-playbook-config-ui.md).
+`planning/STATUS.md` now mirrors `last_run.retro` and removes only this feature's
+pending-closeout entry after all three conditions were met. This change reaches
+main through the human merge of the retro PR; no root runtime state is created.
+
+Exact-candidate/actual-host boundaries and explicit unavailable-route/substitution
+handling are already covered by owning rules; no duplicate process promotion.
+Private recovery artifacts are a supported bounded product candidate owned by the
+separate authorised Apply recovery gitignore cloud follow-up. No product fix,
+maintenance comparison or new qualification is claimed by this retro. Historical
+failures, two exhausted attempts and provider/cost/permission limits remain intact.
 
 ## Separate product follow-up proposal
 
@@ -93,7 +101,10 @@ existing-project upgrade path, preserving user ignore entries and repeat
 idempotence. Keep `.playbook-config.json` tracked. Test a successful Apply and
 reopen, completion/conflict recovery, old-project migration, and Git's ignored
 versus tracked paths. Do not delete retained evidence: receipt reconciliation
-uses it. Product code changes require separate approval and review.
+uses it. Product code changes are now separately authorised in the product cloud follow-up on
+`conductor/apply-recovery-gitignore`; this retro neither edits nor claims that work.
 
 Monthly upstream drift became due on 2026-10-08. The maintainer chose to keep
-that comparison separate from this PR; no audit, pin or cadence reset is claimed.
+that comparison separate from this PR; the maintenance cloud follow-up on
+`conductor/october-upstream-drift` owns the authorised follow-up. No audit, pin or
+cadence reset is claimed here.
