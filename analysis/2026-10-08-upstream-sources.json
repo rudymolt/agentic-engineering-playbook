@@ -531,16 +531,18 @@
       "invocation": "user",
       "sources": {
         "matt-retained": {
-          "path": "skills//SKILL.md",
+          "path": null,
           "sha256": null,
-          "directory_digest_sha256": "59ec65c9d8ffb0e92df3cc14e48343beeafdf24883596ca21e6b137e6ad8ef0d",
-          "directory_files": 101
+          "directory_digest_sha256": null,
+          "directory_files": 0,
+          "absence_evidence": "Historical removed registry entry has no upstream_path; no matching skill directory exists anywhere in this authoritative snapshot skill tree."
         },
         "matt-released": {
-          "path": "skills//SKILL.md",
+          "path": null,
           "sha256": null,
-          "directory_digest_sha256": "238832c68c2c863b43709f270389fdfce93849ee6349f54b4acc9fce79de4a93",
-          "directory_files": 106
+          "directory_digest_sha256": null,
+          "directory_files": 0,
+          "absence_evidence": "Historical removed registry entry has no upstream_path; no matching skill directory exists anywhere in this authoritative snapshot skill tree."
         }
       }
     },
@@ -551,16 +553,18 @@
       "invocation": "user",
       "sources": {
         "matt-retained": {
-          "path": "skills//SKILL.md",
+          "path": null,
           "sha256": null,
-          "directory_digest_sha256": "59ec65c9d8ffb0e92df3cc14e48343beeafdf24883596ca21e6b137e6ad8ef0d",
-          "directory_files": 101
+          "directory_digest_sha256": null,
+          "directory_files": 0,
+          "absence_evidence": "Historical removed registry entry has no upstream_path; no matching skill directory exists anywhere in this authoritative snapshot skill tree."
         },
         "matt-released": {
-          "path": "skills//SKILL.md",
+          "path": null,
           "sha256": null,
-          "directory_digest_sha256": "238832c68c2c863b43709f270389fdfce93849ee6349f54b4acc9fce79de4a93",
-          "directory_files": 106
+          "directory_digest_sha256": null,
+          "directory_files": 0,
+          "absence_evidence": "Historical removed registry entry has no upstream_path; no matching skill directory exists anywhere in this authoritative snapshot skill tree."
         }
       }
     },

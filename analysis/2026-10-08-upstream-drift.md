@@ -25,7 +25,10 @@ The [portable source ledger](2026-10-08-upstream-sources.json) records full
 commit identities, every registered upstream command (including removals), five
 pstack-derived routes, exact SKILL.md SHA-256 digests, skill-directory dependency
 digests, all 22 compatibility-check decisions, and eight supplied host digest
-observations. Missing files have null digests. These are source observations,
+observations. Missing files have null digests. Historical removed entries with
+no registry source path have null paths, zero directory files and explicit
+whole-skill-tree absence evidence, rather than a guessed path or parent hash.
+These are source observations,
 not execution approval. Registry `pin.verified`, integration `last_verified`,
 and original stage-00 host claims remain **2026-09-08**; their historical
 installed-source qualification was not rerun. Only the separate monthly
