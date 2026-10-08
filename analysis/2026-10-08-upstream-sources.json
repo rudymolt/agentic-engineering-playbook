@@ -1,0 +1,2033 @@
+{
+  "schema_version": 1,
+  "comparison_date": "2026-10-08",
+  "next_due": "2026-11-08",
+  "digest_algorithm": "SHA-256 of exact SKILL.md bytes; directory digest: compact sorted-key JSON list of sorted {path, sha256} records, UTF-8, no final newline",
+  "snapshots": {
+    "matt-retained": {
+      "repository": "mattpocock/skills",
+      "commit": "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e",
+      "version": "v1.2.3",
+      "authority": "retained tag"
+    },
+    "matt-released": {
+      "repository": "mattpocock/skills",
+      "commit": "24fe0ef7737efae15c87225755e9f6f5965e4888",
+      "version": "v1.3.1",
+      "authority": "released tag"
+    },
+    "gstack-retained": {
+      "repository": "garrytan/gstack",
+      "commit": "d078622b73539fc1a7a27e709861e9b6b058ae98",
+      "version": "1.62.0.0",
+      "authority": "retained immutable versioned source"
+    },
+    "gstack-host": {
+      "repository": "garrytan/gstack",
+      "commit": "943105f1099c058b34c4bffb9ed78730b856bbef",
+      "version": "1.91.8.0",
+      "authority": "supplied Mac revision, fetched upstream"
+    },
+    "gstack-candidate": {
+      "repository": "garrytan/gstack",
+      "commit": "9a1dc81a2b96e7b74a15e5911175bc04de7659e9",
+      "version": "1.91.54.0",
+      "authority": "unreleased immutable versioned source fallback"
+    },
+    "pstack-retained": {
+      "repository": "cursor/plugins",
+      "commit": "93b00b89ef425a9c1bac0d0b317dfc49c930ac99",
+      "version": null,
+      "authority": "retained source pin"
+    },
+    "pstack-candidate": {
+      "repository": "cursor/plugins",
+      "commit": "df581122cde17e6e27686b5a448bde23e4ad4318",
+      "version": "0.15.15",
+      "authority": "unreleased immutable latest pstack path commit fallback"
+    }
+  },
+  "commands": [
+    {
+      "name": "grill-with-docs",
+      "package": "mattpocock-skills",
+      "stages": [
+        "01",
+        "02",
+        "10-process/README"
+      ],
+      "invocation": "user",
+      "sources": {
+        "matt-retained": {
+          "path": "skills/engineering/grill-with-docs/SKILL.md",
+          "sha256": "610d091047bcfb9db0f75c057d15538481a721111579fc5ec7f83ad9131a2165",
+          "directory_digest_sha256": "845e8fa7f285aaf79a9cafeaf016081054084c3622a592c4ba8d705a4779df61",
+          "directory_files": 2
+        },
+        "matt-released": {
+          "path": "skills/engineering/grill-with-docs/SKILL.md",
+          "sha256": "7de372c13488f1ee96cc11cd8907b56b6809cc93eef776eeddd37de6b6cbe3fe",
+          "directory_digest_sha256": "b4d457a00562d5b1f9f157f40f440857803ef1738f07335e856baa8e0bd6c641",
+          "directory_files": 2
+        }
+      }
+    },
+    {
+      "name": "setup-matt-pocock-skills",
+      "package": "mattpocock-skills",
+      "stages": [
+        "00",
+        "03",
+        "05",
+        "10-process/README"
+      ],
+      "invocation": "user",
+      "sources": {
+        "matt-retained": {
+          "path": "skills/engineering/setup-matt-pocock-skills/SKILL.md",
+          "sha256": "310fb1a73c0467e617e17d7c41d4a2278b5405c4a27f36d7cd22bb4599aee6bb",
+          "directory_digest_sha256": "9177211f4cac54bec53c331ba2c6c377591083ad56f8cc60abac9ff0397c088b",
+          "directory_files": 7
+        },
+        "matt-released": {
+          "path": "skills/engineering/setup-matt-pocock-skills/SKILL.md",
+          "sha256": "9a0c21694be19fa3eefc39343355d3af7414716ba364882c7432c2f821eac3e9",
+          "directory_digest_sha256": "96fbb9d84b1fecae2eef089cb1c213d4920d8c0db0e20b3ce4218968462ba3ca",
+          "directory_files": 7
+        }
+      }
+    },
+    {
+      "name": "to-spec",
+      "package": "mattpocock-skills",
+      "stages": [
+        "03",
+        "07",
+        "10-process/README",
+        "templates/planning-template/README"
+      ],
+      "invocation": "user",
+      "sources": {
+        "matt-retained": {
+          "path": "skills/engineering/to-spec/SKILL.md",
+          "sha256": "5d26479544b08048d3a8f79d937b39bc613a617f026b3fd083bafc1e99a7b811",
+          "directory_digest_sha256": "4aad0461c0fd02e3bc72fbd2c872f73d5e900f5e73c02e98098e786602d31279",
+          "directory_files": 2
+        },
+        "matt-released": {
+          "path": "skills/engineering/to-spec/SKILL.md",
+          "sha256": "43ad9cf318e5e7d3d1fa360253a37021796dc87a0c2e595ad262661a10f85088",
+          "directory_digest_sha256": "6457c6a2732c9b49e04784b2fe0bd5a3e724b983afa3e34c8cd9b6bc3b1ac6c9",
+          "directory_files": 2
+        }
+      }
+    },
+    {
+      "name": "to-tickets",
+      "package": "mattpocock-skills",
+      "stages": [
+        "04",
+        "00-foundations",
+        "10-process/README",
+        "templates/planning-template/README"
+      ],
+      "invocation": "user",
+      "sources": {
+        "matt-retained": {
+          "path": "skills/engineering/to-tickets/SKILL.md",
+          "sha256": "5ecdf1d4df8a360ed39df21a2347f97ba177afd449a577da4f6b6ea8e1ebb808",
+          "directory_digest_sha256": "20992ac8726a91616b1314d303bea7a844d206fa531d1b14fc702bdabf7dfe26",
+          "directory_files": 2
+        },
+        "matt-released": {
+          "path": "skills/engineering/to-tickets/SKILL.md",
+          "sha256": "5c9fba69845c2519b9b35b9af42ae5142c21f8ca15ac2123dc2722002c8058ae",
+          "directory_digest_sha256": "5b77fd9d08b549aab0dcfbfd4feb4a775402b79cc983707523f2e0925db39380",
+          "directory_files": 2
+        }
+      }
+    },
+    {
+      "name": "implement",
+      "package": "mattpocock-skills",
+      "stages": [
+        "07",
+        "10-process/README"
+      ],
+      "invocation": "user",
+      "sources": {
+        "matt-retained": {
+          "path": "skills/engineering/implement/SKILL.md",
+          "sha256": "6d3fd9e83b8f36e5213854779db49b256a457a7ebb4a503e53fa7dcff696adc3",
+          "directory_digest_sha256": "99d90840363149d300192a6570160b5d101cb6d7328836e1ab08ed669856927a",
+          "directory_files": 2
+        },
+        "matt-released": {
+          "path": "skills/engineering/implement/SKILL.md",
+          "sha256": "6d3fd9e83b8f36e5213854779db49b256a457a7ebb4a503e53fa7dcff696adc3",
+          "directory_digest_sha256": "99d90840363149d300192a6570160b5d101cb6d7328836e1ab08ed669856927a",
+          "directory_files": 2
+        }
+      }
+    },
+    {
+      "name": "triage",
+      "package": "mattpocock-skills",
+      "stages": [
+        "05",
+        "10-process/README"
+      ],
+      "invocation": "user",
+      "sources": {
+        "matt-retained": {
+          "path": "skills/engineering/triage/SKILL.md",
+          "sha256": "91e2817ecb688c4df4e2444eab472d1d79d2a0a57abf9f6726967664c460ff2e",
+          "directory_digest_sha256": "abb44087406c0bded267e23b8646885194404eaae9a1212327602ef60767b02f",
+          "directory_files": 4
+        },
+        "matt-released": {
+          "path": "skills/engineering/triage/SKILL.md",
+          "sha256": "917b0baf74be583e74f110857ed45df2766617f75c00baf61fd136d7af515edf",
+          "directory_digest_sha256": "088e7f4875d2b44863af7033cf2a41fbbaf1a60035d76137e0a1c5d66935eb39",
+          "directory_files": 4
+        }
+      }
+    },
+    {
+      "name": "tdd",
+      "package": "mattpocock-skills",
+      "stages": [
+        "04",
+        "07",
+        "08",
+        "10-process/README",
+        "prereqs-capability-profiles"
+      ],
+      "invocation": "model",
+      "sources": {
+        "matt-retained": {
+          "path": "skills/engineering/tdd/SKILL.md",
+          "sha256": "5e6b9c16b547113e90afbb946489d1c1384be5c2128f0159bd0bee57251ecf08",
+          "directory_digest_sha256": "d00cb352cbe54ef7fb9e8ab625479e5f046f6e3dfdfa952f88d669d5921f5574",
+          "directory_files": 4
+        },
+        "matt-released": {
+          "path": "skills/engineering/tdd/SKILL.md",
+          "sha256": "93ea419b76e9caaf26153b828e984f7c3fb136f4caa67b14af95f32ea965a1cc",
+          "directory_digest_sha256": "58b25426359c655865522d728680230a42595f3e5ea387cdd01bfaea3f97d9d0",
+          "directory_files": 4
+        }
+      }
+    },
+    {
+      "name": "diagnosing-bugs",
+      "package": "mattpocock-skills",
+      "stages": [
+        "11",
+        "10-process/README",
+        "prereqs-capability-profiles"
+      ],
+      "invocation": "model",
+      "sources": {
+        "matt-retained": {
+          "path": "skills/engineering/diagnosing-bugs/SKILL.md",
+          "sha256": "b9339b09ee3980808d8c5a35c7251b891b8b1e0036ec4ca37812b976ebddf6b6",
+          "directory_digest_sha256": "ea0a8c6606ec12eb05e8fae5e0f28c217dfa6e7e99b7a7096922fd1f20728740",
+          "directory_files": 3
+        },
+        "matt-released": {
+          "path": "skills/engineering/diagnosing-bugs/SKILL.md",
+          "sha256": "9168404abda0967a5d32977e3498cd95fda6807018852f3de736a78357c82b40",
+          "directory_digest_sha256": "a4825364ea5b3aff4bec6e8d64aabaa0d04d9825bf19c00a76e265cb6b83d355",
+          "directory_files": 3
+        }
+      }
+    },
+    {
+      "name": "improve-codebase-architecture",
+      "package": "mattpocock-skills",
+      "stages": [
+        "04",
+        "06",
+        "10-process/README",
+        "templates/playbook-cadences"
+      ],
+      "invocation": "user",
+      "sources": {
+        "matt-retained": {
+          "path": "skills/engineering/improve-codebase-architecture/SKILL.md",
+          "sha256": "7b76f01b0eefe49a127754c9027a6235a036a21348df5dad988893d8b2f384d6",
+          "directory_digest_sha256": "59676c8977d78decf4a6456d3d0de459b2f090a9c654988ab241b2ed1caffdc2",
+          "directory_files": 3
+        },
+        "matt-released": {
+          "path": "skills/engineering/improve-codebase-architecture/SKILL.md",
+          "sha256": "552240a5ab5cec6b67c15dd1ad6e9f6962b1bca6ce870059a8c2713760c20392",
+          "directory_digest_sha256": "302432fa9d01f9a0cf0933cdb4b29154ccd13a8068e5771817cbc2af9344d723",
+          "directory_files": 3
+        }
+      }
+    },
+    {
+      "name": "prototype",
+      "package": "mattpocock-skills",
+      "stages": [
+        "20-frontend-track",
+        "92-wayfinder-track",
+        "AGENT-DIGEST"
+      ],
+      "invocation": "model",
+      "sources": {
+        "matt-retained": {
+          "path": "skills/engineering/prototype/SKILL.md",
+          "sha256": "2579ecf89a7fb7e73345117405c7ba9b9fb5ab22a78ecb08b0ce68b73f0148c2",
+          "directory_digest_sha256": "083cfff8ff530d0ee1e5a844556557e8c32d164ed5b721637363e9446803a984",
+          "directory_files": 4
+        },
+        "matt-released": {
+          "path": "skills/engineering/prototype/SKILL.md",
+          "sha256": "714de632d116bb73f65cdb5a882db15b9369a6713b9a47c0fad827848f0bfbe3",
+          "directory_digest_sha256": "a2e190e771daedb329588e33a344dab35edef26a3bbca14a989ebb158a02b499",
+          "directory_files": 4
+        }
+      }
+    },
+    {
+      "name": "domain-modeling",
+      "package": "mattpocock-skills",
+      "stages": [
+        "02",
+        "10-process/README"
+      ],
+      "invocation": "model",
+      "sources": {
+        "matt-retained": {
+          "path": "skills/engineering/domain-modeling/SKILL.md",
+          "sha256": "152e2c97239affb12a60c5f4a7e74ab546a49ae169688c81f4e2ccc42dafa579",
+          "directory_digest_sha256": "ef1f45da32129d15a748ba3f952476e5de91d970c4c123c7ff219016f17559bb",
+          "directory_files": 4
+        },
+        "matt-released": {
+          "path": "skills/engineering/domain-modeling/SKILL.md",
+          "sha256": "7b925d7b1e341a2eeae33ad68a8a8c0ab889a38ddd22a7598e4c240e5a7556a3",
+          "directory_digest_sha256": "1be69230081d807669a3ff9be12a82861fdf5a769c3a43f4ba39c938048b8207",
+          "directory_files": 4
+        }
+      }
+    },
+    {
+      "name": "codebase-design",
+      "package": "mattpocock-skills",
+      "stages": [
+        "06",
+        "00-foundations"
+      ],
+      "invocation": "model",
+      "sources": {
+        "matt-retained": {
+          "path": "skills/engineering/codebase-design/SKILL.md",
+          "sha256": "a8d50abac5a4018f60e1d911d4b6f4e36454ca14d6c390c0695a578c7de65dad",
+          "directory_digest_sha256": "f4db9e075876cc5073ffeb3d303df52d41b1a26f2e86654bb990d37ee81ea4c8",
+          "directory_files": 4
+        },
+        "matt-released": {
+          "path": "skills/engineering/codebase-design/SKILL.md",
+          "sha256": "2c20617f87ec8af6a434859f381b2f061a69b530444e74eb39e78bb016a6d1e2",
+          "directory_digest_sha256": "e9752af681816135c428729f287cee48f330601a5d3e97e71a2183407fb93da3",
+          "directory_files": 4
+        }
+      }
+    },
+    {
+      "name": "code-review",
+      "package": "mattpocock-skills",
+      "stages": [
+        "07",
+        "08"
+      ],
+      "invocation": "model",
+      "sources": {
+        "matt-retained": {
+          "path": "skills/engineering/code-review/SKILL.md",
+          "sha256": "9cf46653dd9c710ea1e6c22423caf31a794c88773bc94bdaa23140277f470442",
+          "directory_digest_sha256": "3c03de368559904cf9693b988d16aae870b846835adb717b8b8266f263998b8f",
+          "directory_files": 2
+        },
+        "matt-released": {
+          "path": "skills/engineering/code-review/SKILL.md",
+          "sha256": "47f4e52c21694def9c7c11cbfbf891ca35eac7a93e395797515be3c8a409ae50",
+          "directory_digest_sha256": "b3e102b8f3ee6740544c268d3d2327291ef955660bc9df65c0ed70df77b1e2e7",
+          "directory_files": 2
+        }
+      }
+    },
+    {
+      "name": "research",
+      "package": "mattpocock-skills",
+      "stages": [
+        "03",
+        "92-wayfinder-track",
+        "10-process/README"
+      ],
+      "invocation": "model",
+      "sources": {
+        "matt-retained": {
+          "path": "skills/engineering/research/SKILL.md",
+          "sha256": "af378829f015775a3bcd65ff466826722e99359017ae6bae227ca4c9bd14049c",
+          "directory_digest_sha256": "282a47a98d1e089950bc7a603d1dc6d8013b772c347681dfd9084e7bc7a4964c",
+          "directory_files": 2
+        },
+        "matt-released": {
+          "path": "skills/engineering/research/SKILL.md",
+          "sha256": "985569f15739c713d6784887c3d186d4ef9ac85bec5ad9c068d25bf0739928e4",
+          "directory_digest_sha256": "304c375d7a8f41309d3d60031ee1abb3ca5cb78ac5b5c35f22e97bee9d8861ec",
+          "directory_files": 2
+        }
+      }
+    },
+    {
+      "name": "resolving-merge-conflicts",
+      "package": "mattpocock-skills",
+      "stages": [
+        "91-delegation-track"
+      ],
+      "invocation": "model",
+      "sources": {
+        "matt-retained": {
+          "path": "skills/engineering/resolving-merge-conflicts/SKILL.md",
+          "sha256": "c7c9ba81362a786aac05d2223123bf1bd2f8a99c3243a72882ede9c68bedfb24",
+          "directory_digest_sha256": "af6daa1f1db5c1ac7acd3d48b48b284596461c76cba6a5f600ca51bc0e973e89",
+          "directory_files": 2
+        },
+        "matt-released": {
+          "path": "skills/engineering/resolving-merge-conflicts/SKILL.md",
+          "sha256": null,
+          "directory_digest_sha256": null,
+          "directory_files": 0
+        }
+      }
+    },
+    {
+      "name": "wayfinder",
+      "package": "mattpocock-skills",
+      "stages": [
+        "01",
+        "12",
+        "92-wayfinder-track",
+        "10-process/README",
+        "AGENT-DIGEST"
+      ],
+      "invocation": "user",
+      "sources": {
+        "matt-retained": {
+          "path": "skills/engineering/wayfinder/SKILL.md",
+          "sha256": "d33e2141f7c8bbfd137fef0213cbec465820e4680e67da5d0f0815d6742d26c2",
+          "directory_digest_sha256": "7439abf5d2305143716acdb77dee0bc1d86d855fc7c28f872471cf570c00e4f8",
+          "directory_files": 2
+        },
+        "matt-released": {
+          "path": "skills/engineering/wayfinder/SKILL.md",
+          "sha256": "fee6e1d0c50f0e736b4ef8a599060c959afae904c9a97d82c97f049fcc3aa0f1",
+          "directory_digest_sha256": "644e997339b2b58a854f83f6863a8d02b5c98073a2ebf9dbfb038b7d823082de",
+          "directory_files": 2
+        }
+      }
+    },
+    {
+      "name": "grill-me",
+      "package": "mattpocock-skills",
+      "stages": [
+        "prereqs-capability-profiles"
+      ],
+      "invocation": "user",
+      "sources": {
+        "matt-retained": {
+          "path": "skills/productivity/grill-me/SKILL.md",
+          "sha256": "6189dfceb7304a6e5558f75d87e68fa3bc7fcf7ba120e44f21f8a61fe01eba54",
+          "directory_digest_sha256": "2b71c5ebf7a834967c516a124f1133c5c94849d396cfb417e0de140cd1675740",
+          "directory_files": 2
+        },
+        "matt-released": {
+          "path": "skills/productivity/grill-me/SKILL.md",
+          "sha256": "caaf8b8de1684f96e26b28f3c29189db5c89cce4b73e1c93d86164f66ef88637",
+          "directory_digest_sha256": "f361b774d1c0950b44897ec46be74879667e74147229bbe9477668d251626b72",
+          "directory_files": 2
+        }
+      }
+    },
+    {
+      "name": "handoff",
+      "package": "mattpocock-skills",
+      "stages": [
+        "12",
+        "91-delegation-track"
+      ],
+      "invocation": "user",
+      "sources": {
+        "matt-retained": {
+          "path": "skills/productivity/handoff/SKILL.md",
+          "sha256": "57c9f1f392d7352cdc85b1e39ca49eddc70ce1dc278bd9653fb4f23dfc2560fc",
+          "directory_digest_sha256": "9cc3280bc4ef51b39345c8a285188ad58555d9eb1283ab703dd4e4b92bacfe23",
+          "directory_files": 2
+        },
+        "matt-released": {
+          "path": "skills/productivity/handoff/SKILL.md",
+          "sha256": "7c62de979fdc7ac32fb5ddb2146156c917f80ee070d30fadc9d40343c4b6ed25",
+          "directory_digest_sha256": "224d9cf9c3e5b0864276e76627937256b60077bfe9614f107dad3fbdbab9adef",
+          "directory_files": 2
+        }
+      }
+    },
+    {
+      "name": "grilling",
+      "package": "mattpocock-skills",
+      "stages": [
+        "01"
+      ],
+      "invocation": "model",
+      "sources": {
+        "matt-retained": {
+          "path": "skills/productivity/grilling/SKILL.md",
+          "sha256": "fa5c1e5ee76b1c8f1ae56101f52c9e239de75d5c578adc61227b92d10b7e52ef",
+          "directory_digest_sha256": "486d4b68f2bb97df76979fae0101e93d3d0bfb2065432bdb9a25cc9307b91391",
+          "directory_files": 2
+        },
+        "matt-released": {
+          "path": "skills/productivity/grilling/SKILL.md",
+          "sha256": "10ff989e7498b23b5acb49d5048f11dcd906757d2f79c5cdf8a00001381296f2",
+          "directory_digest_sha256": "64d041e23fc99e79ce4d6b1518b10324f6134f6211a2529bd6ababb41d845f32",
+          "directory_files": 2
+        }
+      }
+    },
+    {
+      "name": "writing-for-agents",
+      "package": "mattpocock-skills",
+      "stages": [
+        "00",
+        "00-foundations",
+        "skills/README"
+      ],
+      "invocation": "model",
+      "sources": {
+        "matt-retained": {
+          "path": "skills/productivity/writing-for-agents/SKILL.md",
+          "sha256": "a842323e664e5af104eac5c97ad22fda929ebeb62d81c501161ac1f6f482db58",
+          "directory_digest_sha256": "e1b721fa3fd9dfa0a09949572009a6aa398d628636298b8884fe5f397387e324",
+          "directory_files": 3
+        },
+        "matt-released": {
+          "path": "skills/productivity/writing-for-agents/SKILL.md",
+          "sha256": "551adca942227b44192edba88acd4e8db911f0121ce58ad16944ccf6a896a74a",
+          "directory_digest_sha256": "94248f2fbe524f8fcc9c0146276ffa36a37200e6d57fa8bf9eef85b17881db11",
+          "directory_files": 3
+        }
+      }
+    },
+    {
+      "name": "caveman",
+      "package": "mattpocock-skills",
+      "stages": [],
+      "invocation": "user",
+      "sources": {
+        "matt-retained": {
+          "path": "skills//SKILL.md",
+          "sha256": null,
+          "directory_digest_sha256": "59ec65c9d8ffb0e92df3cc14e48343beeafdf24883596ca21e6b137e6ad8ef0d",
+          "directory_files": 101
+        },
+        "matt-released": {
+          "path": "skills//SKILL.md",
+          "sha256": null,
+          "directory_digest_sha256": "238832c68c2c863b43709f270389fdfce93849ee6349f54b4acc9fce79de4a93",
+          "directory_files": 106
+        }
+      }
+    },
+    {
+      "name": "zoom-out",
+      "package": "mattpocock-skills",
+      "stages": [],
+      "invocation": "user",
+      "sources": {
+        "matt-retained": {
+          "path": "skills//SKILL.md",
+          "sha256": null,
+          "directory_digest_sha256": "59ec65c9d8ffb0e92df3cc14e48343beeafdf24883596ca21e6b137e6ad8ef0d",
+          "directory_files": 101
+        },
+        "matt-released": {
+          "path": "skills//SKILL.md",
+          "sha256": null,
+          "directory_digest_sha256": "238832c68c2c863b43709f270389fdfce93849ee6349f54b4acc9fce79de4a93",
+          "directory_files": 106
+        }
+      }
+    },
+    {
+      "name": "office-hours",
+      "package": "gstack",
+      "stages": [
+        "01",
+        "10-process/README"
+      ],
+      "invocation": "model",
+      "sources": {
+        "gstack-retained": {
+          "path": "office-hours/SKILL.md",
+          "sha256": "780688071e043b4179bc38a753fbe68cd39a1744e2dbc15286d1d40a61859be1",
+          "directory_digest_sha256": "34b7c459484195a60bbbf916c13ba7ecdad6b898197286ec546b8c1e6205e134",
+          "directory_files": 5
+        },
+        "gstack-host": {
+          "path": "office-hours/SKILL.md",
+          "sha256": "7f3da2f67e93fb6b42e2a28d9a0239d19529feeb7f582358d3c8409c775faf0f",
+          "directory_digest_sha256": "050a982b4c3f73257ff31e1ddf3929d1bdc9b1abda8a5d6886cb3f3ce5ed15b6",
+          "directory_files": 9
+        },
+        "gstack-candidate": {
+          "path": "office-hours/SKILL.md",
+          "sha256": "4858cd3337192eb3094199b3cd8f814b262da0974255b0d364b66a24eea8c938",
+          "directory_digest_sha256": "c97ffb83c3b3a221613182041706f87243e1264cb5823efe26e5985fefee1d1a",
+          "directory_files": 9
+        }
+      }
+    },
+    {
+      "name": "plan-ceo-review",
+      "package": "gstack",
+      "stages": [
+        "01",
+        "10-process/README"
+      ],
+      "invocation": "model",
+      "sources": {
+        "gstack-retained": {
+          "path": "plan-ceo-review/SKILL.md",
+          "sha256": "dc42629184bb3592f7f3f8468a26fcf7745d088969ca38c84d05dcd4902ee399",
+          "directory_digest_sha256": "ddcd67a03a8aa8fcb82efb2d68fce93aa8e489a2df1617dc6f3c47cef99c5806",
+          "directory_files": 5
+        },
+        "gstack-host": {
+          "path": "plan-ceo-review/SKILL.md",
+          "sha256": "100bccfaf430efe623724c8d84ffcef4eb04b0aac8020299fd1edf97ecd7adb1",
+          "directory_digest_sha256": "f9f7eb902f6258a35d283337b660efc0ef76a71b8765b80fea2fa0b5bffa12d8",
+          "directory_files": 5
+        },
+        "gstack-candidate": {
+          "path": "plan-ceo-review/SKILL.md",
+          "sha256": "cf7c34006c6d59fb7d4ffb903346ca1836f43ae15b174188d57a97ae6ab55b31",
+          "directory_digest_sha256": "7eda8ec4358c081763132e7e271b404c26706c1709d67fed987ef86299b59026",
+          "directory_files": 7
+        }
+      }
+    },
+    {
+      "name": "plan-eng-review",
+      "package": "gstack",
+      "stages": [
+        "01",
+        "03",
+        "08",
+        "10-process/README"
+      ],
+      "invocation": "model",
+      "sources": {
+        "gstack-retained": {
+          "path": "plan-eng-review/SKILL.md",
+          "sha256": "ad8a0332be24eaed1504ea0cc123387e2da072561a490a795f60d0fe00c01b70",
+          "directory_digest_sha256": "652f9a2aa59af0d13b0b878546ee9b648a31218bb2a5b8bd03fb6e9f702ecf73",
+          "directory_files": 5
+        },
+        "gstack-host": {
+          "path": "plan-eng-review/SKILL.md",
+          "sha256": "cc996f5f016e9ae93f1fc5e94823b0b5e80b63641824d571599b97f441b96479",
+          "directory_digest_sha256": "ac6429a28dc29c2cdb77b073230a4d95b80741a124be515b06abdb82b3bef80c",
+          "directory_files": 5
+        },
+        "gstack-candidate": {
+          "path": "plan-eng-review/SKILL.md",
+          "sha256": "c609d220f868d2031d2f15837de76a4d5157c72aeb9eb2158f1f33ed3e96f74b",
+          "directory_digest_sha256": "512b26656ed4fb830bb131e851f3b6ae49517de96b5f3d739e1382d3a675a11f",
+          "directory_files": 5
+        }
+      }
+    },
+    {
+      "name": "plan-design-review",
+      "package": "gstack",
+      "stages": [
+        "01",
+        "08",
+        "10-process/README"
+      ],
+      "invocation": "model",
+      "sources": {
+        "gstack-retained": {
+          "path": "plan-design-review/SKILL.md",
+          "sha256": "f12a4437f1c77483456e4521df680071b313f9b6ff9c9bf658723afaf23ddadf",
+          "directory_digest_sha256": "d3b35418886a954f8f7dcc320e23c39f9fd6f284f6b1a814d0b1c37fbbd0aa53",
+          "directory_files": 5
+        },
+        "gstack-host": {
+          "path": "plan-design-review/SKILL.md",
+          "sha256": "92e06101dd46fe5a637d278578f2cc3f359959ffbe5401b1d0f2e66358a17a8e",
+          "directory_digest_sha256": "ed815343cefeea83b235332274b6a536fb5b323fa499ef0338d9bf96b0af8069",
+          "directory_files": 5
+        },
+        "gstack-candidate": {
+          "path": "plan-design-review/SKILL.md",
+          "sha256": "4b260d88baab6692bc4fff4ff6de543e38827441a1f392ed7034a6696a40a7ca",
+          "directory_digest_sha256": "e8d530f3c2c9a92d124df86e473e246662e5bda48e377963bd5fa4359e2d85a5",
+          "directory_files": 5
+        }
+      }
+    },
+    {
+      "name": "plan-devex-review",
+      "package": "gstack",
+      "stages": [
+        "01",
+        "08"
+      ],
+      "invocation": "model",
+      "sources": {
+        "gstack-retained": {
+          "path": "plan-devex-review/SKILL.md",
+          "sha256": "4f75aef004d02eee20831c76a1c95fcfe9f1849818bdf5b5442ab3b992f0eb20",
+          "directory_digest_sha256": "695df4cf21454b8264a6ff7dd18ff8df2cbe0642135c91f9ec66bbbefcf6ae32",
+          "directory_files": 6
+        },
+        "gstack-host": {
+          "path": "plan-devex-review/SKILL.md",
+          "sha256": "84c9bfe68cc79fff184f1735a5b4f6f43c538c3a75afd68eafde002dbd457cf7",
+          "directory_digest_sha256": "6300bd898f95d0b19eaedb2a89b3d4c932ce648c6f36bbeb5b2e0eeebdad40f3",
+          "directory_files": 6
+        },
+        "gstack-candidate": {
+          "path": "plan-devex-review/SKILL.md",
+          "sha256": "8406171834887f94b0a763ec0a5c92d5c7b03bfbf933173360fef772e557a4a3",
+          "directory_digest_sha256": "97b1f368df0e70e5a04a760de7aec313a1a69bf0469ebe93fecb6989e7249ac4",
+          "directory_files": 6
+        }
+      }
+    },
+    {
+      "name": "autoplan",
+      "package": "gstack",
+      "stages": [
+        "01",
+        "08"
+      ],
+      "invocation": "model",
+      "sources": {
+        "gstack-retained": {
+          "path": "autoplan/SKILL.md",
+          "sha256": "62ab1505273b7100ac61140c811bd980792411229ca71308778c6078cb57bec3",
+          "directory_digest_sha256": "0a1bf71432d9f8afab2925257fdc5c7700c51fa3d16c068fe7b4d2e081b0b6b1",
+          "directory_files": 2
+        },
+        "gstack-host": {
+          "path": "autoplan/SKILL.md",
+          "sha256": "6b1a2b64a9f52d4d4d4f9ce7bc68744af8073b68efacc895cb7ef73b489fbddb",
+          "directory_digest_sha256": "e8e19ebae494cbd9c2c0ceebfea59053c026ef04b0cf7f51cbebf05c63d0a788",
+          "directory_files": 17
+        },
+        "gstack-candidate": {
+          "path": "autoplan/SKILL.md",
+          "sha256": "2615fbdb931007cbf69f0f9653a046793874895446a21e05c5d125ff3e68f387",
+          "directory_digest_sha256": "06caa38d198f3851543c47bea8c1f1d9c9987dd0fafde01cc734f0639907abdb",
+          "directory_files": 20
+        }
+      }
+    },
+    {
+      "name": "design-consultation",
+      "package": "gstack",
+      "stages": [
+        "20-frontend-track"
+      ],
+      "invocation": "model",
+      "sources": {
+        "gstack-retained": {
+          "path": "design-consultation/SKILL.md",
+          "sha256": "045f0f12899448a713f533687eb2f48acc8d5ba1a00cf506334bae8aa9352e56",
+          "directory_digest_sha256": "5dcc8f51598d8d5235cebdad76c180d765e727a2e3486cefff1328308eeadc5d",
+          "directory_files": 5
+        },
+        "gstack-host": {
+          "path": "design-consultation/SKILL.md",
+          "sha256": "50140489f105d0cb0605ed6f177e218b9a571c0d3f05316e23c4956faf43ceec",
+          "directory_digest_sha256": "5b6a8eb5950103b8b20fcf4e14a0ca3d6c3695a7aab4034e5bbabd9e23798647",
+          "directory_files": 5
+        },
+        "gstack-candidate": {
+          "path": "design-consultation/SKILL.md",
+          "sha256": "10c2d905483507ed488d4936fa5a9571d5b451f0b88eb632aa5c503442c445ac",
+          "directory_digest_sha256": "74357924bacb900b5f5eec1fa97c20732b61c8dbc649017d237f6b81a36fbc13",
+          "directory_files": 5
+        }
+      }
+    },
+    {
+      "name": "design-shotgun",
+      "package": "gstack",
+      "stages": [
+        "20-frontend-track"
+      ],
+      "invocation": "model",
+      "sources": {
+        "gstack-retained": {
+          "path": "design-shotgun/SKILL.md",
+          "sha256": "23cffe51fd5da6c9d21a50df2000599146f30950bf196eb5d8881572cb6d5c41",
+          "directory_digest_sha256": "3d4d11d4c6803ac4f5d388846fb2acfac6ac5c3d8e5434be80916d31731060c1",
+          "directory_files": 2
+        },
+        "gstack-host": {
+          "path": "design-shotgun/SKILL.md",
+          "sha256": "5a56e1934e6b39c9b3eaf8b7d5728b71d1fb8ab71e959388856a9d0f5d63efa6",
+          "directory_digest_sha256": "b639299df220ffc1f412a918a9ed2cc906e8f38dff982e03a74f85a8b037f2d4",
+          "directory_files": 5
+        },
+        "gstack-candidate": {
+          "path": "design-shotgun/SKILL.md",
+          "sha256": "a178ce89290a24993b62cc672d08abc7b2ec5fa27dcdb8daa4030115802180d1",
+          "directory_digest_sha256": "2ceb1f41f13ed23890e2f1ec576999ba8a708e6b9db5e63d3929e66a39f5610b",
+          "directory_files": 5
+        }
+      }
+    },
+    {
+      "name": "design-html",
+      "package": "gstack",
+      "stages": [
+        "20-frontend-track"
+      ],
+      "invocation": "model",
+      "sources": {
+        "gstack-retained": {
+          "path": "design-html/SKILL.md",
+          "sha256": "5f3c20d6efdba20d8240033f056835368607ba1ce0f8ca09904d38d1b04a61d0",
+          "directory_digest_sha256": "7b68c90a50f2e3560bd088514990fee32a223d0f5f35ba00896cebad20609530",
+          "directory_files": 3
+        },
+        "gstack-host": {
+          "path": "design-html/SKILL.md",
+          "sha256": "1771087bcc9bc50f75c8d5d7ac75cfa5f51c718b21e2862fdf3afeab2b3e5936",
+          "directory_digest_sha256": "f632af9580a2eabbecdc32fc302fe38f28ea34c976a663e73c252b85acc601c0",
+          "directory_files": 10
+        },
+        "gstack-candidate": {
+          "path": "design-html/SKILL.md",
+          "sha256": "5a80fd42a1846bedd450fbf832be5327309a438c664e34804db82b3f7c37d877",
+          "directory_digest_sha256": "afd39c1d68fff30f4632c1ae3cfa711ff8a7f7421972734da7a15fde4fcddaeb",
+          "directory_files": 10
+        }
+      }
+    },
+    {
+      "name": "design-review",
+      "package": "gstack",
+      "stages": [
+        "01",
+        "20-frontend-track"
+      ],
+      "invocation": "model",
+      "sources": {
+        "gstack-retained": {
+          "path": "design-review/SKILL.md",
+          "sha256": "0426f4fcaae787ea80c8f3a6eb5019e82e3419908e69a695decbfb10e6e19187",
+          "directory_digest_sha256": "021e110c21d80ca6f1414166d7f884e82d1cbf5126853641f16a6e6fee9cbfd0",
+          "directory_files": 2
+        },
+        "gstack-host": {
+          "path": "design-review/SKILL.md",
+          "sha256": "9b380659f9f7eb820d8997e405e4327dac8544a5ee0fd6a49ca3e26b4ed6fbf5",
+          "directory_digest_sha256": "c37bee70db1be1c7b31948eda048efcdcac45fdd8b63bd58df3f54150f6e0ac4",
+          "directory_files": 2
+        },
+        "gstack-candidate": {
+          "path": "design-review/SKILL.md",
+          "sha256": "fe56e06f72a9e2d78cfba70e6bf6fa4086a0b4701a1000a225c7606f94c746e6",
+          "directory_digest_sha256": "21833528344e904d6d93ac84d66ed25c09f8793d762656c46c85792c182b9995",
+          "directory_files": 2
+        }
+      }
+    },
+    {
+      "name": "review",
+      "package": "gstack",
+      "stages": [
+        "08"
+      ],
+      "invocation": "model",
+      "sources": {
+        "gstack-retained": {
+          "path": "review/SKILL.md",
+          "sha256": "3af0c6de4eb89460de5f2a9e6f31e60d852a7f5da770785554f7b7d98280fcd9",
+          "directory_digest_sha256": "bc179064a7041145726727831ed7002d9bd38058f8d1b83b9a67576eeaf00476",
+          "directory_files": 13
+        },
+        "gstack-host": {
+          "path": "review/SKILL.md",
+          "sha256": "891442ebf4b50fd46e4b6348ee6654fc55bddcd8fb754f858ac0cec44b769873",
+          "directory_digest_sha256": "0aaac33b689dd9ac4b493dc19ff07c95e558352bc14e8c2c57a672069950d9b3",
+          "directory_files": 23
+        },
+        "gstack-candidate": {
+          "path": "review/SKILL.md",
+          "sha256": "d62d1345e7d9f38997bd49e4d8e78be1668d06aebc4f4919a397b36e854eeb58",
+          "directory_digest_sha256": "528808f66d972fd3b9f7d5d7fdc54772dc6308d28fec09243452e2627045d0dd",
+          "directory_files": 23
+        }
+      }
+    },
+    {
+      "name": "devex-review",
+      "package": "gstack",
+      "stages": [
+        "08"
+      ],
+      "invocation": "model",
+      "sources": {
+        "gstack-retained": {
+          "path": "devex-review/SKILL.md",
+          "sha256": "374bf2019c95a242b006c2ee5e09224aee1b07d57169d5064be76ef33bacfea9",
+          "directory_digest_sha256": "ebf2a555ee3f011459317c48f3c2ebccf3c6faf055b877805f0832e206b864ab",
+          "directory_files": 2
+        },
+        "gstack-host": {
+          "path": "devex-review/SKILL.md",
+          "sha256": "79640ac56792286fa6695438c57414262303cc16b640e9a83db1c4cb569d5833",
+          "directory_digest_sha256": "70604e2b972f0e9954a6e28815c176190ffe5c61d7631d7d6a8bf0be224d3f7b",
+          "directory_files": 2
+        },
+        "gstack-candidate": {
+          "path": "devex-review/SKILL.md",
+          "sha256": "d960426b1874bcb00c0815df340ad4ea0eccea2a13773c53a8a287af872c98c9",
+          "directory_digest_sha256": "416070d44d45d6ec22e26bcc5bed4e70e7ebb97d5dada81cfc2aa95dbfb28951",
+          "directory_files": 2
+        }
+      }
+    },
+    {
+      "name": "cso",
+      "package": "gstack",
+      "stages": [
+        "08"
+      ],
+      "invocation": "model",
+      "sources": {
+        "gstack-retained": {
+          "path": "cso/SKILL.md",
+          "sha256": "d4d4408db9e87addf182c69ebb11e23c88481342273425d3ff991cc708303205",
+          "directory_digest_sha256": "000c6c7d27d02760a4a19b1d66ef85abc9789f8093e5389591710f548fa31e08",
+          "directory_files": 6
+        },
+        "gstack-host": {
+          "path": "cso/SKILL.md",
+          "sha256": "14a16ce06c46b2cc539b5e689cbe59d16b1e9bd49a9bfe8da9dc7d3a6a378ab2",
+          "directory_digest_sha256": "e3928c6039b46c3e9540c54019040a4386b11fc54ec74e484c5fb93a0d7374e3",
+          "directory_files": 6
+        },
+        "gstack-candidate": {
+          "path": "cso/SKILL.md",
+          "sha256": "fec2a0e9bfbe06fe05241f85d4daff3039038defb9b683621289a6b06aabc05c",
+          "directory_digest_sha256": "8d80d10c2bbc2d130d9c823946b3a73dd01569799d981cc1fd68da1a0b3519e8",
+          "directory_files": 6
+        }
+      }
+    },
+    {
+      "name": "qa",
+      "package": "gstack",
+      "stages": [
+        "09"
+      ],
+      "invocation": "model",
+      "sources": {
+        "gstack-retained": {
+          "path": "qa/SKILL.md",
+          "sha256": "f021b50bd6b462ca9bda5611ed11d0a03f13a2b91a253ef2d65063962cc33eed",
+          "directory_digest_sha256": "fa4b0df063083768ab391df986160ae6ac6bd38c1c9c71160077548a1d11835d",
+          "directory_files": 4
+        },
+        "gstack-host": {
+          "path": "qa/SKILL.md",
+          "sha256": "1606c90dc7b5ac38a12072b1e20a067223d84ec0118cdc26c177abae8c3e207d",
+          "directory_digest_sha256": "10b13ac8c6647909a3bd4a6cbb0e8eae967b5f5a356f2e5422f92fbbfce22a2a",
+          "directory_files": 20
+        },
+        "gstack-candidate": {
+          "path": "qa/SKILL.md",
+          "sha256": "acd07b73785f33f229a2566f5f8b507f6c3a0aa3f9d1e958f22d2807ba48576f",
+          "directory_digest_sha256": "14458d7fd7613ddd0ff0a4b7329171b3b873e917f3f97750d107f7e79bf6b057",
+          "directory_files": 20
+        }
+      }
+    },
+    {
+      "name": "qa-only",
+      "package": "gstack",
+      "stages": [
+        "09",
+        "10-process/README"
+      ],
+      "invocation": "model",
+      "sources": {
+        "gstack-retained": {
+          "path": "qa-only/SKILL.md",
+          "sha256": "3dae1e5884ba0de86daa99e125daa5841e9e1ec89a7f56c0b4300e57564a7005",
+          "directory_digest_sha256": "07df95d9505ec7d694926a1e8ee95da24154f0dd8abe9f2c2448ea1f16627b37",
+          "directory_files": 2
+        },
+        "gstack-host": {
+          "path": "qa-only/SKILL.md",
+          "sha256": "8a6741911a08ce2774883ac3ea9f0198e085331a40106b1021a439ae23799b96",
+          "directory_digest_sha256": "3f99b8e286d0c7d6bb70c344e427d0d772fc1de50c76b0f7ebc33cf8334249ab",
+          "directory_files": 7
+        },
+        "gstack-candidate": {
+          "path": "qa-only/SKILL.md",
+          "sha256": "a61641bbfec8ca9b61e45ad3542aaf51e40a7ddfe8b29af4a2919ed4900a18fe",
+          "directory_digest_sha256": "6ce32bd6a77957b7f5651de986615f6709e6f5c8c1bb4382abc8a71c7de90e04",
+          "directory_files": 7
+        }
+      }
+    },
+    {
+      "name": "ship",
+      "package": "gstack",
+      "stages": [
+        "10",
+        "10-process/README"
+      ],
+      "invocation": "model",
+      "sources": {
+        "gstack-retained": {
+          "path": "ship/SKILL.md",
+          "sha256": "b64834fad9766c36ac231d5e4acd6e23e2576911fafe60b0087cacab993e72ec",
+          "directory_digest_sha256": "e5468f6bfeca9f22b0418eba1888108e5fe80d791da038266ff0ed71a7679be7",
+          "directory_files": 19
+        },
+        "gstack-host": {
+          "path": "ship/SKILL.md",
+          "sha256": "d3f629d302d3bf3f666d2668e654b6e699a67fd25bdafa74e8f1da9b9c580fa7",
+          "directory_digest_sha256": "f063d14b841ce288ae9749ec2b2e268e6cf368c53e103f99ee2ede951bcad710",
+          "directory_files": 25
+        },
+        "gstack-candidate": {
+          "path": "ship/SKILL.md",
+          "sha256": "063829bb447326dc5c1a10859faba825debf0ae6287c5f73b9beee846355b299",
+          "directory_digest_sha256": "959eab756e047e31fc20ff2e0b07fcc29d823eea0229436a5fd865221c256f66",
+          "directory_files": 29
+        }
+      }
+    },
+    {
+      "name": "land-and-deploy",
+      "package": "gstack",
+      "stages": [
+        "10",
+        "10-process/README"
+      ],
+      "invocation": "model",
+      "sources": {
+        "gstack-retained": {
+          "path": "land-and-deploy/SKILL.md",
+          "sha256": "70b05e59598ab0469c1579450d35b9101adad63be407a2b3adc66683162691b5",
+          "directory_digest_sha256": "478d9ac6552a0433369e63ab4e8d0522efb1adbd5af7dbe61a3cf0dcaca0aa57",
+          "directory_files": 2
+        },
+        "gstack-host": {
+          "path": "land-and-deploy/SKILL.md",
+          "sha256": "176641dba128a3705c8310a3d77982eb57a8f4309560bc1a9dfd9688ab84a308",
+          "directory_digest_sha256": "f21e16b6ab1cc33af68983cb58db9097928b3173ee46e5c900ed83c00357933d",
+          "directory_files": 9
+        },
+        "gstack-candidate": {
+          "path": "land-and-deploy/SKILL.md",
+          "sha256": "78d61598214dfbe2a1bd9a2f1bd0f90b9ad739b98f1db58e6359c291da87c2c6",
+          "directory_digest_sha256": "edd2a7de6f81df34438ddae7e3a5a57b3d0eebaef98b8acf2f16b0755a5b14c8",
+          "directory_files": 9
+        }
+      }
+    },
+    {
+      "name": "canary",
+      "package": "gstack",
+      "stages": [
+        "10",
+        "00-foundations",
+        "10-process/README"
+      ],
+      "invocation": "model",
+      "sources": {
+        "gstack-retained": {
+          "path": "canary/SKILL.md",
+          "sha256": "2c7f98c59db98c4e331323c30fb8590bf46a7d3c6b9275a17986243bd05756d4",
+          "directory_digest_sha256": "9d43a59779d936418cd60be5ce5df28d0a8580dcbe4401abbf1bb54d98996cd6",
+          "directory_files": 2
+        },
+        "gstack-host": {
+          "path": "canary/SKILL.md",
+          "sha256": "b87f199bc718a4bdcc50812dd57d5cac443c476d8b5f2a720925cc20129e2df2",
+          "directory_digest_sha256": "5e04146e133289166718f426e9425054e0208eb8c3cfbb29654706ba09486a3a",
+          "directory_files": 2
+        },
+        "gstack-candidate": {
+          "path": "canary/SKILL.md",
+          "sha256": "9b4d6526cf1bc60ee7a24a2815519cb8a28a3dcddc8a8e3cbd1c82e943ea5b7e",
+          "directory_digest_sha256": "64a578bf16c5ae779b0ff1658dde8f70dff15c0ec481cc31187e3bba1d3d6680",
+          "directory_files": 2
+        }
+      }
+    },
+    {
+      "name": "benchmark",
+      "package": "gstack",
+      "stages": [
+        "10",
+        "10-process/README"
+      ],
+      "invocation": "model",
+      "sources": {
+        "gstack-retained": {
+          "path": "benchmark/SKILL.md",
+          "sha256": "9f369a62caf57b4a27e7ee7e8770c1351ceacf9e5269df9e9b08fb19685c4494",
+          "directory_digest_sha256": "051dc9684ce5871fdbb248bb7b1c5ac29845e04ed7693958351413327838d88c",
+          "directory_files": 2
+        },
+        "gstack-host": {
+          "path": "benchmark/SKILL.md",
+          "sha256": "3e9679a97951df280c75bb73cebb0c4604d99b8db72ce950e4b0022677a5b49d",
+          "directory_digest_sha256": "4eab6d5088c881b6a1351aa649403276e6980f433826f0dfbca748a5b99601c7",
+          "directory_files": 2
+        },
+        "gstack-candidate": {
+          "path": "benchmark/SKILL.md",
+          "sha256": "58730bb2131131732a6b2c6546e2bb4eaf872192c007973ba8e22cd956d3afa5",
+          "directory_digest_sha256": "16010e74e12a1a082057125a4aae3744f1ef74f82dce8fef229cb2c2c2963fe0",
+          "directory_files": 2
+        }
+      }
+    },
+    {
+      "name": "browse",
+      "package": "gstack",
+      "stages": [
+        "11",
+        "10-process/README"
+      ],
+      "invocation": "model",
+      "sources": {
+        "gstack-retained": {
+          "path": "browse/SKILL.md",
+          "sha256": "6a2d05e5e53b3c34509e63b6440b4f34038246a784eb9239834c9a073fcc461c",
+          "directory_digest_sha256": "034a56017f7a4bdacff769c0c9742254cdd35ef1c0ddb9bdf8f80002b3e8249f",
+          "directory_files": 218
+        },
+        "gstack-host": {
+          "path": "browse/SKILL.md",
+          "sha256": "6b3efbf1b38fab4349e5bbca7baec9a67b6d20bbc2f8c5b2b5a75bcfb6b9ebb3",
+          "directory_digest_sha256": "8e4d81775321f47674430ae375053241a3ef32abcffa2655d6a8b4579792b7db",
+          "directory_files": 285
+        },
+        "gstack-candidate": {
+          "path": "browse/SKILL.md",
+          "sha256": "6de90d5f820f76cf1f5d74daa6a540292085b3fa0d9fef57297830d0b0fba65b",
+          "directory_digest_sha256": "00ad322e3be855634472ff09e010f831ea5285627fecb902026fd1c05a6c30ff",
+          "directory_files": 312
+        }
+      }
+    },
+    {
+      "name": "connect-chrome",
+      "package": "gstack",
+      "stages": [
+        "00"
+      ],
+      "invocation": "model",
+      "sources": {
+        "gstack-retained": {
+          "path": "connect-chrome/SKILL.md",
+          "sha256": "d8a1d9dbb99dbe7e6fb05bfc0f62e808ab68975300b45c130423d076ff179a51",
+          "directory_digest_sha256": "d939a0e1cf79904dab308dc381232d18d8f00bb079f9afbd40275231f188a197",
+          "directory_files": 2
+        },
+        "gstack-host": {
+          "path": "connect-chrome/SKILL.md",
+          "sha256": "9f812b69a4908ca25d90941904480450af3a6558200bdec15641c5183ba2de1c",
+          "directory_digest_sha256": "c88a10cee05da0f4f8ca144cf44608c3940c9f611512dd2cd540aeb7bcd01754",
+          "directory_files": 2
+        },
+        "gstack-candidate": {
+          "path": "connect-chrome/SKILL.md",
+          "sha256": "6b1508433c9e3c2acf3db8c645c78ea9dd64996903d2c0bc9246c96952971483",
+          "directory_digest_sha256": "149903dee0327877a06295238673b8de74e5113370ca6971c2af26c066fc6127",
+          "directory_files": 2
+        }
+      }
+    },
+    {
+      "name": "setup-browser-cookies",
+      "package": "gstack",
+      "stages": [
+        "00",
+        "09",
+        "11"
+      ],
+      "invocation": "model",
+      "sources": {
+        "gstack-retained": {
+          "path": "setup-browser-cookies/SKILL.md",
+          "sha256": "e32ca7e061444c0ace6360e64e178199db681c1dc0b7deb03404a39807975196",
+          "directory_digest_sha256": "3853f2342e126296d61a15c1e9675b694eb607c27ca97aa7f49ae1d8d2d3af75",
+          "directory_files": 2
+        },
+        "gstack-host": {
+          "path": "setup-browser-cookies/SKILL.md",
+          "sha256": "26c44067792b0e11b190bd6f36198f4a2513be08d006e6d8158df0aee787b8c8",
+          "directory_digest_sha256": "ecc40e61c9ad5fee590f46cd63bb75597074e503caf80e8ade5d3ab2791b19ca",
+          "directory_files": 2
+        },
+        "gstack-candidate": {
+          "path": "setup-browser-cookies/SKILL.md",
+          "sha256": "e577130b6db2b6496a80771ddfe32a1527d280300607a06a745046799d37fd02",
+          "directory_digest_sha256": "b1fd3ad96a84f0db61ad1b9a045906e6733e44e068d3a552de4277c3e5f0718c",
+          "directory_files": 2
+        }
+      }
+    },
+    {
+      "name": "setup-deploy",
+      "package": "gstack",
+      "stages": [
+        "00"
+      ],
+      "invocation": "model",
+      "sources": {
+        "gstack-retained": {
+          "path": "setup-deploy/SKILL.md",
+          "sha256": "4fc9b4ab512225fd2b29f4a4d2f9f612ca58ba038dcee19c7dd85154a0eeaf0e",
+          "directory_digest_sha256": "6758ff2081cc03104f73247215b35d4d644b0bf59111e7cf80f144eb63878de7",
+          "directory_files": 2
+        },
+        "gstack-host": {
+          "path": "setup-deploy/SKILL.md",
+          "sha256": "d9752d1d3c8e483db769c5faa9d8ccdf48bc60cf9cd14158e4e96539858d7e9e",
+          "directory_digest_sha256": "284e73eaab9f30b5f5df6f2704fd6626a79dd33cd05d9e6e87564524fbd54348",
+          "directory_files": 2
+        },
+        "gstack-candidate": {
+          "path": "setup-deploy/SKILL.md",
+          "sha256": "e2ad9e6afe2b1ce9c50f8331d3afccef6b38010450e548ca90af6471b36af29e",
+          "directory_digest_sha256": "ebd2838506351c2670ae8eed8d5ed14bcebac934b80d1aee3942135a31f759f9",
+          "directory_files": 2
+        }
+      }
+    },
+    {
+      "name": "setup-gbrain",
+      "package": "gstack",
+      "stages": [
+        "00"
+      ],
+      "invocation": "model",
+      "sources": {
+        "gstack-retained": {
+          "path": "setup-gbrain/SKILL.md",
+          "sha256": "3d70c810476d694cdf32e988abb760709bcba136ba5eff20ba3bd6ac4a9803c9",
+          "directory_digest_sha256": "bf09266dc52e998cdfb137e6383bd6772469fb0a3b1b468492c703e48706929f",
+          "directory_files": 3
+        },
+        "gstack-host": {
+          "path": "setup-gbrain/SKILL.md",
+          "sha256": "4e771635c02bc7c507253da4c3584358b6a145ceb9fd965c07b62e05e4abb157",
+          "directory_digest_sha256": "d68b1c142d1ab198264b8580d33b5c313ddefa968fd496addc2bd270eb19d4e9",
+          "directory_files": 12
+        },
+        "gstack-candidate": {
+          "path": "setup-gbrain/SKILL.md",
+          "sha256": "95fc42faf0857530b78c5f2be7071ee8cab12ba41b7f8bca28a6fb4275939633",
+          "directory_digest_sha256": "79beb70b7b990335da99702ea316498e043e786a82e0563790037117e47771fa",
+          "directory_files": 12
+        }
+      }
+    },
+    {
+      "name": "retro",
+      "package": "gstack",
+      "stages": [
+        "12",
+        "10-process/README",
+        "templates/playbook-cadences"
+      ],
+      "invocation": "model",
+      "sources": {
+        "gstack-retained": {
+          "path": "retro/SKILL.md",
+          "sha256": "02cb12ff56ed088a7df456311bb5dee4e0ea6f110e517def6fb2e7893d7e459f",
+          "directory_digest_sha256": "93d1a3c58251f529078d417008070d01fd7719ecd9d9851be2e07db8251c2273",
+          "directory_files": 2
+        },
+        "gstack-host": {
+          "path": "retro/SKILL.md",
+          "sha256": "0dd76d4cfa71f48541811a32488856d182e3dd4ad6fd66fe5da6068e462bdfcd",
+          "directory_digest_sha256": "b080a820b30ec5c9b4b4af62253306006c452281c89ad5d9444ed5fb0e88d174",
+          "directory_files": 5
+        },
+        "gstack-candidate": {
+          "path": "retro/SKILL.md",
+          "sha256": "778284679083360035e23b6eecbf0e732a18aac0f37dcef07b0ebd4b70bbddbf",
+          "directory_digest_sha256": "9ad75dcace2968293fe8a15d2f6c8afbd7f32835261f4eb7d620af728f4b6449",
+          "directory_files": 5
+        }
+      }
+    },
+    {
+      "name": "investigate",
+      "package": "gstack",
+      "stages": [
+        "11",
+        "10-process/README",
+        "prereqs-capability-profiles"
+      ],
+      "invocation": "model",
+      "sources": {
+        "gstack-retained": {
+          "path": "investigate/SKILL.md",
+          "sha256": "715d8a3e2b5007b8009ecdcad228a3f83e00b15b34cd7db31318d1704a2ffa9c",
+          "directory_digest_sha256": "1123e83771403eaf83362108c2bc092a056f9639c37cac543751e544791ab7ac",
+          "directory_files": 2
+        },
+        "gstack-host": {
+          "path": "investigate/SKILL.md",
+          "sha256": "c19623c1638b0acc07e5801d614e063d23bafc907b45d097bdecee143d596ab7",
+          "directory_digest_sha256": "675969465493bb3147fc1113844530bb1015fdef0c03b2c5a886daaf46faedcb",
+          "directory_files": 2
+        },
+        "gstack-candidate": {
+          "path": "investigate/SKILL.md",
+          "sha256": "449cef6ba3c320469a1e2d8acd233bb632d9e24ec2ce218e6be2faeb5bbc13eb",
+          "directory_digest_sha256": "602561eaf021538502df0e278fcb0681ab156d09ffcfa351f5f6f6f00ea9256d",
+          "directory_files": 2
+        }
+      }
+    },
+    {
+      "name": "document-release",
+      "package": "gstack",
+      "stages": [
+        "10-process/README",
+        "prereqs-capability-profiles"
+      ],
+      "invocation": "model",
+      "sources": {
+        "gstack-retained": {
+          "path": "document-release/SKILL.md",
+          "sha256": "cddae31c73f5bc47c48ebbc90a6290eb36b11825fe8ab2af1a46d47a022f2b0d",
+          "directory_digest_sha256": "91f2816e6446024cfc285d4cfee8c4fe32a3a8b2d09b751dea9348c83b39d238",
+          "directory_files": 5
+        },
+        "gstack-host": {
+          "path": "document-release/SKILL.md",
+          "sha256": "6e572f16a88a0c92dccbfa364c4a8124e8a1910f10073aaac1bf02682778df71",
+          "directory_digest_sha256": "f74df209672f225035755c57dd569ee01af23200eb12d3f04381b301a015eece",
+          "directory_files": 7
+        },
+        "gstack-candidate": {
+          "path": "document-release/SKILL.md",
+          "sha256": "e350d4e05f1268efb5d4a7b524840d5b15fe03d7400c094be35d5d51560896f6",
+          "directory_digest_sha256": "0b78282d2ba137d734428afdb525a06a2cb8dedd52c4bc2e959bcbe7bb04e49f",
+          "directory_files": 7
+        }
+      }
+    },
+    {
+      "name": "document-generate",
+      "package": "gstack",
+      "stages": [],
+      "invocation": "model",
+      "sources": {
+        "gstack-retained": {
+          "path": "document-generate/SKILL.md",
+          "sha256": "51e8410c7c6621c283a1c6c27d1f36d98e1d0b9d0f1e7fd51ff663b2e183df20",
+          "directory_digest_sha256": "7bc8f873e2950b999621951d71491aa5eca6eb8742fb14543a91a79703cb4cf9",
+          "directory_files": 2
+        },
+        "gstack-host": {
+          "path": "document-generate/SKILL.md",
+          "sha256": "8d9eac9a59cde180f7ae1f7641199299a2c3ae91f943af35cbc5bff17cfcffd0",
+          "directory_digest_sha256": "dc544522602530739abf1c7bb5665a5a2c01d33631ccdb0f55bf93082cdb2620",
+          "directory_files": 2
+        },
+        "gstack-candidate": {
+          "path": "document-generate/SKILL.md",
+          "sha256": "b8fba9b8c50b8f041a4809130d4949dc1160a9bdf01e325ae30a801608b67381",
+          "directory_digest_sha256": "4f5cddd26f068a83c0fc06c4816c3f6a77f36e93efca88623e4ea00d1caa811f",
+          "directory_files": 2
+        }
+      }
+    },
+    {
+      "name": "codex",
+      "package": "gstack",
+      "stages": [
+        "06",
+        "08",
+        "11",
+        "10-process/README"
+      ],
+      "invocation": "model",
+      "sources": {
+        "gstack-retained": {
+          "path": "codex/SKILL.md",
+          "sha256": "9eebabed52550a37b5e44e8daea5fb8a1512846a5351f558e564a2441e3eb8e5",
+          "directory_digest_sha256": "58eb979b5995d5f7e2f3bdcd7ad4901221daf0a8fed6e4e4cd8766e0fe18d1d6",
+          "directory_files": 2
+        },
+        "gstack-host": {
+          "path": "codex/SKILL.md",
+          "sha256": "908e9451655ad4b1f2ccf84fc0279a9e0aefbe4914f23343cea372b0f220eb26",
+          "directory_digest_sha256": "5e10b9dd276d3583c7a94571e60f0077e817abaa9d1ca7978d669182c4b40b14",
+          "directory_files": 9
+        },
+        "gstack-candidate": {
+          "path": "codex/SKILL.md",
+          "sha256": "5b68bb4c7c462532764646cafee88fbe314a029442b06308628978a06ccf868b",
+          "directory_digest_sha256": "19f6df596d67aaafbbcb8783b6e460476a34bd3ee4e75d010a1df7c92801e493",
+          "directory_files": 9
+        }
+      }
+    },
+    {
+      "name": "careful",
+      "package": "gstack",
+      "stages": [
+        "00"
+      ],
+      "invocation": "model",
+      "sources": {
+        "gstack-retained": {
+          "path": "careful/SKILL.md",
+          "sha256": "64adcd299248c118b330d8d192b274ba608c1029405b0fd8bfa4d717b759a756",
+          "directory_digest_sha256": "73aa927a9021539a2ac2be9f43a45f7b71e58f20c6af5426244d8ed0558020d2",
+          "directory_files": 3
+        },
+        "gstack-host": {
+          "path": "careful/SKILL.md",
+          "sha256": "51c821326dde69174dc62a6e5faa8b399a90a8a2d2a02cea8220935fba04dfc4",
+          "directory_digest_sha256": "1440fe0b24d1942a5719764685fee0a8e51870db9e40568d1fcff31ba8767751",
+          "directory_files": 4
+        },
+        "gstack-candidate": {
+          "path": "careful/SKILL.md",
+          "sha256": "8e8e918b4f53ba7ece7373da8f33ed65a669532918068a046d9300e2a2b325fc",
+          "directory_digest_sha256": "684a24064463102b6e3b5e7179765bed9cca02d1905c9b80d3ce3071499ec32b",
+          "directory_files": 4
+        }
+      }
+    },
+    {
+      "name": "freeze",
+      "package": "gstack",
+      "stages": [
+        "00"
+      ],
+      "invocation": "model",
+      "sources": {
+        "gstack-retained": {
+          "path": "freeze/SKILL.md",
+          "sha256": "f8cb02804952392dc966954e089e3f934b148eddade4327ead3d1aa1af8229cb",
+          "directory_digest_sha256": "7597da7a977e477320a38bc5f7fce6093b619156c692aaf9916c004c7b992a3b",
+          "directory_files": 3
+        },
+        "gstack-host": {
+          "path": "freeze/SKILL.md",
+          "sha256": "79ea86cf0777bb00d740fc5082ff5fb88b9a3e34921e4cdbdb03975aa6c1d586",
+          "directory_digest_sha256": "7917fe5b57671f4cdf4d2f254397bff25d6eca5f8c7dc736c9d975dcc0440a91",
+          "directory_files": 4
+        },
+        "gstack-candidate": {
+          "path": "freeze/SKILL.md",
+          "sha256": "a77914316a0df19eac7bfe65e38b94e7ecababe0d86161a16c585ea28523c403",
+          "directory_digest_sha256": "960a824b9bc2a805f94b83b74252347bdd4c0e6472db6fa9d23069b1cb660015",
+          "directory_files": 4
+        }
+      }
+    },
+    {
+      "name": "guard",
+      "package": "gstack",
+      "stages": [
+        "00"
+      ],
+      "invocation": "model",
+      "sources": {
+        "gstack-retained": {
+          "path": "guard/SKILL.md",
+          "sha256": "ab22714e84c096eed506f314aa49f44161f08eb37a4b4651fb2725bab6ca07ff",
+          "directory_digest_sha256": "572a1f5dba234c6f8792cff055864fa375b5eda3e23b3ae8ca03eba31e1e4694",
+          "directory_files": 2
+        },
+        "gstack-host": {
+          "path": "guard/SKILL.md",
+          "sha256": "7d110c484b77b27a86ec95940fec9bb1276a4a188a9357608d41dd282584eca0",
+          "directory_digest_sha256": "94070ddeb4022240d6356beba345eb2d893fa8569a8dfc60e9d60ae2c38c8f3f",
+          "directory_files": 2
+        },
+        "gstack-candidate": {
+          "path": "guard/SKILL.md",
+          "sha256": "d9bd6607fb7c4a299a37dabe987a7c7790b326604311dfd0dcd93343301fcc1b",
+          "directory_digest_sha256": "7dc130e0b8b66ec2c47cefb7680a48cebcd23b12de09bb88b2462f39d831160e",
+          "directory_files": 2
+        }
+      }
+    },
+    {
+      "name": "unfreeze",
+      "package": "gstack",
+      "stages": [
+        "00"
+      ],
+      "invocation": "model",
+      "sources": {
+        "gstack-retained": {
+          "path": "unfreeze/SKILL.md",
+          "sha256": "e0a396b1304d002e83880a780cf17e0704c3ada205f6f3f0d6e5e7cf5d15f340",
+          "directory_digest_sha256": "f568b6ad88d3b0a14d73fa28af45620d99ecc57d682424f43d821cf9e37c0924",
+          "directory_files": 2
+        },
+        "gstack-host": {
+          "path": "unfreeze/SKILL.md",
+          "sha256": "60435b4e060a9bdca9583ad4c4f7320e3f459a1cfc452012a6a8ddca95fdf36f",
+          "directory_digest_sha256": "8450371d21f2adcb5f660604f95ef1b8676a5e6da4fef8cfb3c49da8a58119ef",
+          "directory_files": 2
+        },
+        "gstack-candidate": {
+          "path": "unfreeze/SKILL.md",
+          "sha256": "27c34a53b0bed4afe832b62cf8e81bb7285b7ee0b92c6c2cc4debe64fd676e4e",
+          "directory_digest_sha256": "23bd276fca049bca6e80f861fb8b3942773ef3dc7c0af12b59053452b9f1784b",
+          "directory_files": 2
+        }
+      }
+    },
+    {
+      "name": "gstack-upgrade",
+      "package": "gstack",
+      "stages": [
+        "00"
+      ],
+      "invocation": "model",
+      "sources": {
+        "gstack-retained": {
+          "path": "gstack-upgrade/SKILL.md",
+          "sha256": "aa78f4af40338c0dc27f2eb6049a6eb6af23781fd88ff250d46aa3144fc2f0e4",
+          "directory_digest_sha256": "85d77b9431452c01fa20363c2e33eb0b01d43ec674595c06cff99201f37691cf",
+          "directory_files": 12
+        },
+        "gstack-host": {
+          "path": "gstack-upgrade/SKILL.md",
+          "sha256": "4c4b9265aef441011d0ed074c30815c099a821d2c1b50c6ec05817979c0853c3",
+          "directory_digest_sha256": "7f1f755cbf70d1fb966f2ba880c054476b75a6f35d3691152c2558294a38304e",
+          "directory_files": 16
+        },
+        "gstack-candidate": {
+          "path": "gstack-upgrade/SKILL.md",
+          "sha256": "10519b684f50d7cf07c7ab48cf384604e69eaf6f6483dcfa4f20f0fab31af994",
+          "directory_digest_sha256": "6246fe359ee3044385ac3302c2eab4e9d705eb39ae8c1493a767e0cd89fa72df",
+          "directory_files": 17
+        }
+      }
+    },
+    {
+      "name": "learn",
+      "package": "gstack",
+      "stages": [
+        "12",
+        "10-process/README",
+        "templates/retro-template"
+      ],
+      "invocation": "model",
+      "sources": {
+        "gstack-retained": {
+          "path": "learn/SKILL.md",
+          "sha256": "79e2681a4745992d95b20ea098d4dc3200e803654b7c09d1bfcf33c2a5b40438",
+          "directory_digest_sha256": "68897830213b3e1c437469f12ea27c89b6defef470f1e0a888a486152f100c38",
+          "directory_files": 2
+        },
+        "gstack-host": {
+          "path": "learn/SKILL.md",
+          "sha256": "aafd52fec24fbe1a4218521106dc910d9b97fce52f417fdf550195eb6206485d",
+          "directory_digest_sha256": "ca57895b268c99cf08ebfbfcfac2b3e27523480e18eb25790a74bbd151c868d4",
+          "directory_files": 2
+        },
+        "gstack-candidate": {
+          "path": "learn/SKILL.md",
+          "sha256": "78efcf6cf20c09842f6f79b53d3bb83a643c53426d8c8ef4048116cddc7e6f9a",
+          "directory_digest_sha256": "f6e78ae1a1d7745d2cf0539a6f1dbd77168da95804bb6826241907bc52cbc4bf",
+          "directory_files": 2
+        }
+      }
+    },
+    {
+      "name": "ai-playbook-verification-harness",
+      "package": "pstack-derived-playbook",
+      "stages": [
+        "00",
+        "09",
+        "11"
+      ],
+      "invocation": "model",
+      "sources": {
+        "pstack-retained": {
+          "path": "pstack/skills/create-verification-skill/SKILL.md",
+          "sha256": "644f2551403c1bca01a2855b34611b6e7be0ce0dc5b204514c376c0f6a6e6ac4",
+          "directory_digest_sha256": "955256bc76746f91deef95acf8957ba24c26362e17213b0c3e7e6e563239eed4",
+          "directory_files": 4
+        },
+        "pstack-candidate": {
+          "path": "pstack/skills/create-verification-skill/SKILL.md",
+          "sha256": "644f2551403c1bca01a2855b34611b6e7be0ce0dc5b204514c376c0f6a6e6ac4",
+          "directory_digest_sha256": "955256bc76746f91deef95acf8957ba24c26362e17213b0c3e7e6e563239eed4",
+          "directory_files": 4
+        }
+      }
+    },
+    {
+      "name": "ai-playbook-maintain-verification-harness",
+      "package": "pstack-derived-playbook",
+      "stages": [
+        "08",
+        "09",
+        "30-document-lifecycle"
+      ],
+      "invocation": "model",
+      "sources": {
+        "pstack-retained": {
+          "path": "pstack/skills/maintain-verification-skill/SKILL.md",
+          "sha256": "515c0eaa054b3f6be1b1fb06f2c2f173c80fddb58bbcac57576f89c479bc68e8",
+          "directory_digest_sha256": "e4abeda9c9defba83b7fed86ef41ecda61338ddf757cec46b892fefb1fe40991",
+          "directory_files": 1
+        },
+        "pstack-candidate": {
+          "path": "pstack/skills/maintain-verification-skill/SKILL.md",
+          "sha256": "515c0eaa054b3f6be1b1fb06f2c2f173c80fddb58bbcac57576f89c479bc68e8",
+          "directory_digest_sha256": "e4abeda9c9defba83b7fed86ef41ecda61338ddf757cec46b892fefb1fe40991",
+          "directory_files": 1
+        }
+      }
+    },
+    {
+      "name": "ai-playbook-why",
+      "package": "pstack-derived-playbook",
+      "stages": [
+        "02",
+        "06",
+        "08",
+        "11"
+      ],
+      "invocation": "model",
+      "sources": {
+        "pstack-retained": {
+          "path": "pstack/skills/why/SKILL.md",
+          "sha256": "a9423bb7bab7c3280d17478ebe97bb283ea6ed12d9dcae590fc2f81f41660990",
+          "directory_digest_sha256": "00b23158c7911eb70fecbd3a379db697c81846c4f85bf4a31e5347f291286258",
+          "directory_files": 13
+        },
+        "pstack-candidate": {
+          "path": "pstack/skills/why/SKILL.md",
+          "sha256": "442215bf70e491d4d31bd200c197f2ec447445df38e074c40880fc4bf30a1f9e",
+          "directory_digest_sha256": "719c17a4a89d33b269d9b4c1853f9f1059152c65e0be5a2d82c6c54918e75818",
+          "directory_files": 13
+        }
+      }
+    },
+    {
+      "name": "ai-playbook-how",
+      "package": "pstack-derived-playbook",
+      "stages": [
+        "06",
+        "08",
+        "11"
+      ],
+      "invocation": "model",
+      "sources": {
+        "pstack-retained": {
+          "path": "pstack/skills/how/SKILL.md",
+          "sha256": "3a554ff564d66a4200a07e20164558e820ea7a9795beb98a4a06546146c98f5f",
+          "directory_digest_sha256": "7f11a924c6ab68a976ec79b97f3af3b0c8ca5b6546f3a3ea3e63afb47bfe86d1",
+          "directory_files": 5
+        },
+        "pstack-candidate": {
+          "path": "pstack/skills/how/SKILL.md",
+          "sha256": "7e0d902484a90eba73dcf518bff478dc5b962b456d23c3d0a188c2ce36b236d8",
+          "directory_digest_sha256": "df18aa503223c40b7e6ba74dffd5abaa6ed52f47467cdd4fbf8d4e03a1ce2fba",
+          "directory_files": 3
+        }
+      }
+    },
+    {
+      "name": "ai-playbook-blast-radius",
+      "package": "pstack-derived-playbook",
+      "stages": [
+        "08"
+      ],
+      "invocation": "model",
+      "sources": {
+        "pstack-retained": {
+          "path": "pstack/skills/blast-radius/SKILL.md",
+          "sha256": "b060df3ca85803eabbce9fab53f5cc024ca8d784bdde5513c1c1a784947523f8",
+          "directory_digest_sha256": "dc45e5f9776c90200b19fffc31e2a362c1c610c85b9efe3c6c5d64ca87ee06fa",
+          "directory_files": 1
+        },
+        "pstack-candidate": {
+          "path": "pstack/skills/blast-radius/SKILL.md",
+          "sha256": "2e10745b97f5862323dcda3b29ca60d56b5c3c98e37020085d26b48efbe0a436",
+          "directory_digest_sha256": "a57274bbbbb62ec4832f13edd138df4ba2d87f975109e4890428c21efe0970a6",
+          "directory_files": 1
+        }
+      }
+    }
+  ],
+  "compatibility": [
+    {
+      "actual_sha256": "9cf46653dd9c710ea1e6c22423caf31a794c88773bc94bdaa23140277f470442",
+      "embedded_invocation": null,
+      "expected_sha256": "9cf46653dd9c710ea1e6c22423caf31a794c88773bc94bdaa23140277f470442",
+      "fallback": "manual: v0.5/10-process/08-review.md standards/spec axes",
+      "may_invoke": false,
+      "reason": "tested source does not provide the required embedded report-only mode",
+      "skill": "code-review",
+      "status": "incompatible",
+      "tested_version": "v1.2.3",
+      "source_snapshot": "matt-retained",
+      "exit_code": 2
+    },
+    {
+      "actual_sha256": "47f4e52c21694def9c7c11cbfbf891ca35eac7a93e395797515be3c8a409ae50",
+      "embedded_invocation": null,
+      "expected_sha256": "9cf46653dd9c710ea1e6c22423caf31a794c88773bc94bdaa23140277f470442",
+      "fallback": "manual: v0.5/10-process/08-review.md standards/spec axes",
+      "may_invoke": false,
+      "reason": "installed skill is outside tested source",
+      "skill": "code-review",
+      "status": "drifted",
+      "tested_version": "v1.2.3",
+      "source_snapshot": "matt-released",
+      "exit_code": 2
+    },
+    {
+      "actual_sha256": "6d3fd9e83b8f36e5213854779db49b256a457a7ebb4a503e53fa7dcff696adc3",
+      "embedded_invocation": null,
+      "expected_sha256": "6d3fd9e83b8f36e5213854779db49b256a457a7ebb4a503e53fa7dcff696adc3",
+      "fallback": "manual: v0.5/10-process/07-implementation-tdd.md",
+      "may_invoke": false,
+      "reason": "tested source does not provide the required embedded report-only mode",
+      "skill": "implement",
+      "status": "incompatible",
+      "tested_version": "v1.2.3",
+      "source_snapshot": "matt-retained",
+      "exit_code": 2
+    },
+    {
+      "actual_sha256": "6d3fd9e83b8f36e5213854779db49b256a457a7ebb4a503e53fa7dcff696adc3",
+      "embedded_invocation": null,
+      "expected_sha256": "6d3fd9e83b8f36e5213854779db49b256a457a7ebb4a503e53fa7dcff696adc3",
+      "fallback": "manual: v0.5/10-process/07-implementation-tdd.md",
+      "may_invoke": false,
+      "reason": "tested source does not provide the required embedded report-only mode",
+      "skill": "implement",
+      "status": "incompatible",
+      "tested_version": "v1.2.3",
+      "source_snapshot": "matt-released",
+      "exit_code": 2
+    },
+    {
+      "actual_sha256": "0426f4fcaae787ea80c8f3a6eb5019e82e3419908e69a695decbfb10e6e19187",
+      "embedded_invocation": null,
+      "expected_sha256": "0426f4fcaae787ea80c8f3a6eb5019e82e3419908e69a695decbfb10e6e19187",
+      "fallback": "tool: /ai-playbook-design-review",
+      "may_invoke": false,
+      "reason": "tested source does not provide the required embedded report-only mode",
+      "skill": "design-review",
+      "status": "incompatible",
+      "tested_version": "1.62.0.0 (d078622b73539fc1a7a27e709861e9b6b058ae98)",
+      "source_snapshot": "gstack-retained",
+      "exit_code": 2
+    },
+    {
+      "actual_sha256": "9b380659f9f7eb820d8997e405e4327dac8544a5ee0fd6a49ca3e26b4ed6fbf5",
+      "embedded_invocation": null,
+      "expected_sha256": "0426f4fcaae787ea80c8f3a6eb5019e82e3419908e69a695decbfb10e6e19187",
+      "fallback": "tool: /ai-playbook-design-review",
+      "may_invoke": false,
+      "reason": "installed skill is outside tested source",
+      "skill": "design-review",
+      "status": "drifted",
+      "tested_version": "1.62.0.0 (d078622b73539fc1a7a27e709861e9b6b058ae98)",
+      "source_snapshot": "gstack-host",
+      "exit_code": 2
+    },
+    {
+      "actual_sha256": "fe56e06f72a9e2d78cfba70e6bf6fa4086a0b4701a1000a225c7606f94c746e6",
+      "embedded_invocation": null,
+      "expected_sha256": "0426f4fcaae787ea80c8f3a6eb5019e82e3419908e69a695decbfb10e6e19187",
+      "fallback": "tool: /ai-playbook-design-review",
+      "may_invoke": false,
+      "reason": "installed skill is outside tested source",
+      "skill": "design-review",
+      "status": "drifted",
+      "tested_version": "1.62.0.0 (d078622b73539fc1a7a27e709861e9b6b058ae98)",
+      "source_snapshot": "gstack-candidate",
+      "exit_code": 2
+    },
+    {
+      "actual_sha256": "3af0c6de4eb89460de5f2a9e6f31e60d852a7f5da770785554f7b7d98280fcd9",
+      "embedded_invocation": null,
+      "expected_sha256": "3af0c6de4eb89460de5f2a9e6f31e60d852a7f5da770785554f7b7d98280fcd9",
+      "fallback": "manual: v0.5/10-process/08-review.md adversarial lens",
+      "may_invoke": false,
+      "reason": "tested source does not provide the required embedded report-only mode",
+      "skill": "review",
+      "status": "incompatible",
+      "tested_version": "1.62.0.0 (d078622b73539fc1a7a27e709861e9b6b058ae98)",
+      "source_snapshot": "gstack-retained",
+      "exit_code": 2
+    },
+    {
+      "actual_sha256": "891442ebf4b50fd46e4b6348ee6654fc55bddcd8fb754f858ac0cec44b769873",
+      "embedded_invocation": null,
+      "expected_sha256": "3af0c6de4eb89460de5f2a9e6f31e60d852a7f5da770785554f7b7d98280fcd9",
+      "fallback": "manual: v0.5/10-process/08-review.md adversarial lens",
+      "may_invoke": false,
+      "reason": "installed skill is outside tested source",
+      "skill": "review",
+      "status": "drifted",
+      "tested_version": "1.62.0.0 (d078622b73539fc1a7a27e709861e9b6b058ae98)",
+      "source_snapshot": "gstack-host",
+      "exit_code": 2
+    },
+    {
+      "actual_sha256": "d62d1345e7d9f38997bd49e4d8e78be1668d06aebc4f4919a397b36e854eeb58",
+      "embedded_invocation": null,
+      "expected_sha256": "3af0c6de4eb89460de5f2a9e6f31e60d852a7f5da770785554f7b7d98280fcd9",
+      "fallback": "manual: v0.5/10-process/08-review.md adversarial lens",
+      "may_invoke": false,
+      "reason": "installed skill is outside tested source",
+      "skill": "review",
+      "status": "drifted",
+      "tested_version": "1.62.0.0 (d078622b73539fc1a7a27e709861e9b6b058ae98)",
+      "source_snapshot": "gstack-candidate",
+      "exit_code": 2
+    },
+    {
+      "actual_sha256": "374bf2019c95a242b006c2ee5e09224aee1b07d57169d5064be76ef33bacfea9",
+      "embedded_invocation": null,
+      "expected_sha256": "374bf2019c95a242b006c2ee5e09224aee1b07d57169d5064be76ef33bacfea9",
+      "fallback": "manual: v0.5/10-process/08-review.md developer review",
+      "may_invoke": false,
+      "reason": "tested source does not provide the required embedded report-only mode",
+      "skill": "devex-review",
+      "status": "incompatible",
+      "tested_version": "1.62.0.0 (d078622b73539fc1a7a27e709861e9b6b058ae98)",
+      "source_snapshot": "gstack-retained",
+      "exit_code": 2
+    },
+    {
+      "actual_sha256": "79640ac56792286fa6695438c57414262303cc16b640e9a83db1c4cb569d5833",
+      "embedded_invocation": null,
+      "expected_sha256": "374bf2019c95a242b006c2ee5e09224aee1b07d57169d5064be76ef33bacfea9",
+      "fallback": "manual: v0.5/10-process/08-review.md developer review",
+      "may_invoke": false,
+      "reason": "installed skill is outside tested source",
+      "skill": "devex-review",
+      "status": "drifted",
+      "tested_version": "1.62.0.0 (d078622b73539fc1a7a27e709861e9b6b058ae98)",
+      "source_snapshot": "gstack-host",
+      "exit_code": 2
+    },
+    {
+      "actual_sha256": "d960426b1874bcb00c0815df340ad4ea0eccea2a13773c53a8a287af872c98c9",
+      "embedded_invocation": null,
+      "expected_sha256": "374bf2019c95a242b006c2ee5e09224aee1b07d57169d5064be76ef33bacfea9",
+      "fallback": "manual: v0.5/10-process/08-review.md developer review",
+      "may_invoke": false,
+      "reason": "installed skill is outside tested source",
+      "skill": "devex-review",
+      "status": "drifted",
+      "tested_version": "1.62.0.0 (d078622b73539fc1a7a27e709861e9b6b058ae98)",
+      "source_snapshot": "gstack-candidate",
+      "exit_code": 2
+    },
+    {
+      "actual_sha256": "d4d4408db9e87addf182c69ebb11e23c88481342273425d3ff991cc708303205",
+      "embedded_invocation": null,
+      "expected_sha256": "d4d4408db9e87addf182c69ebb11e23c88481342273425d3ff991cc708303205",
+      "fallback": "manual: v0.5/10-process/08-review.md security pass",
+      "may_invoke": false,
+      "reason": "tested source does not provide the required embedded report-only mode",
+      "skill": "cso",
+      "status": "incompatible",
+      "tested_version": "1.62.0.0 (d078622b73539fc1a7a27e709861e9b6b058ae98)",
+      "source_snapshot": "gstack-retained",
+      "exit_code": 2
+    },
+    {
+      "actual_sha256": "14a16ce06c46b2cc539b5e689cbe59d16b1e9bd49a9bfe8da9dc7d3a6a378ab2",
+      "embedded_invocation": null,
+      "expected_sha256": "d4d4408db9e87addf182c69ebb11e23c88481342273425d3ff991cc708303205",
+      "fallback": "manual: v0.5/10-process/08-review.md security pass",
+      "may_invoke": false,
+      "reason": "installed skill is outside tested source",
+      "skill": "cso",
+      "status": "drifted",
+      "tested_version": "1.62.0.0 (d078622b73539fc1a7a27e709861e9b6b058ae98)",
+      "source_snapshot": "gstack-host",
+      "exit_code": 2
+    },
+    {
+      "actual_sha256": "fec2a0e9bfbe06fe05241f85d4daff3039038defb9b683621289a6b06aabc05c",
+      "embedded_invocation": null,
+      "expected_sha256": "d4d4408db9e87addf182c69ebb11e23c88481342273425d3ff991cc708303205",
+      "fallback": "manual: v0.5/10-process/08-review.md security pass",
+      "may_invoke": false,
+      "reason": "installed skill is outside tested source",
+      "skill": "cso",
+      "status": "drifted",
+      "tested_version": "1.62.0.0 (d078622b73539fc1a7a27e709861e9b6b058ae98)",
+      "source_snapshot": "gstack-candidate",
+      "exit_code": 2
+    },
+    {
+      "actual_sha256": "f021b50bd6b462ca9bda5611ed11d0a03f13a2b91a253ef2d65063962cc33eed",
+      "embedded_invocation": null,
+      "expected_sha256": "f021b50bd6b462ca9bda5611ed11d0a03f13a2b91a253ef2d65063962cc33eed",
+      "fallback": "manual: v0.5/10-process/09-qa.md",
+      "may_invoke": false,
+      "reason": "tested source does not provide the required embedded report-only mode",
+      "skill": "qa",
+      "status": "incompatible",
+      "tested_version": "1.62.0.0 (d078622b73539fc1a7a27e709861e9b6b058ae98)",
+      "source_snapshot": "gstack-retained",
+      "exit_code": 2
+    },
+    {
+      "actual_sha256": "1606c90dc7b5ac38a12072b1e20a067223d84ec0118cdc26c177abae8c3e207d",
+      "embedded_invocation": null,
+      "expected_sha256": "f021b50bd6b462ca9bda5611ed11d0a03f13a2b91a253ef2d65063962cc33eed",
+      "fallback": "manual: v0.5/10-process/09-qa.md",
+      "may_invoke": false,
+      "reason": "installed skill is outside tested source",
+      "skill": "qa",
+      "status": "drifted",
+      "tested_version": "1.62.0.0 (d078622b73539fc1a7a27e709861e9b6b058ae98)",
+      "source_snapshot": "gstack-host",
+      "exit_code": 2
+    },
+    {
+      "actual_sha256": "acd07b73785f33f229a2566f5f8b507f6c3a0aa3f9d1e958f22d2807ba48576f",
+      "embedded_invocation": null,
+      "expected_sha256": "f021b50bd6b462ca9bda5611ed11d0a03f13a2b91a253ef2d65063962cc33eed",
+      "fallback": "manual: v0.5/10-process/09-qa.md",
+      "may_invoke": false,
+      "reason": "installed skill is outside tested source",
+      "skill": "qa",
+      "status": "drifted",
+      "tested_version": "1.62.0.0 (d078622b73539fc1a7a27e709861e9b6b058ae98)",
+      "source_snapshot": "gstack-candidate",
+      "exit_code": 2
+    },
+    {
+      "actual_sha256": "3dae1e5884ba0de86daa99e125daa5841e9e1ec89a7f56c0b4300e57564a7005",
+      "embedded_invocation": null,
+      "expected_sha256": "3dae1e5884ba0de86daa99e125daa5841e9e1ec89a7f56c0b4300e57564a7005",
+      "fallback": "manual: v0.5/10-process/09-qa.md",
+      "may_invoke": false,
+      "reason": "tested source does not provide the required embedded report-only mode",
+      "skill": "qa-only",
+      "status": "incompatible",
+      "tested_version": "1.62.0.0 (d078622b73539fc1a7a27e709861e9b6b058ae98)",
+      "source_snapshot": "gstack-retained",
+      "exit_code": 2
+    },
+    {
+      "actual_sha256": "8a6741911a08ce2774883ac3ea9f0198e085331a40106b1021a439ae23799b96",
+      "embedded_invocation": null,
+      "expected_sha256": "3dae1e5884ba0de86daa99e125daa5841e9e1ec89a7f56c0b4300e57564a7005",
+      "fallback": "manual: v0.5/10-process/09-qa.md",
+      "may_invoke": false,
+      "reason": "installed skill is outside tested source",
+      "skill": "qa-only",
+      "status": "drifted",
+      "tested_version": "1.62.0.0 (d078622b73539fc1a7a27e709861e9b6b058ae98)",
+      "source_snapshot": "gstack-host",
+      "exit_code": 2
+    },
+    {
+      "actual_sha256": "a61641bbfec8ca9b61e45ad3542aaf51e40a7ddfe8b29af4a2919ed4900a18fe",
+      "embedded_invocation": null,
+      "expected_sha256": "3dae1e5884ba0de86daa99e125daa5841e9e1ec89a7f56c0b4300e57564a7005",
+      "fallback": "manual: v0.5/10-process/09-qa.md",
+      "may_invoke": false,
+      "reason": "installed skill is outside tested source",
+      "skill": "qa-only",
+      "status": "drifted",
+      "tested_version": "1.62.0.0 (d078622b73539fc1a7a27e709861e9b6b058ae98)",
+      "source_snapshot": "gstack-candidate",
+      "exit_code": 2
+    }
+  ],
+  "supplied_mac_manifest_observations": [
+    {
+      "key": "code-review",
+      "actual_sha256": "47f4e52c21694def9c7c11cbfbf891ca35eac7a93e395797515be3c8a409ae50",
+      "status": "drifted",
+      "fallback": "manual: v0.5/10-process/08-review.md standards/spec axes"
+    },
+    {
+      "key": "cso",
+      "actual_sha256": "14a16ce06c46b2cc539b5e689cbe59d16b1e9bd49a9bfe8da9dc7d3a6a378ab2",
+      "status": "drifted",
+      "fallback": "manual: v0.5/10-process/08-review.md security pass"
+    },
+    {
+      "key": "design-review",
+      "actual_sha256": "9b380659f9f7eb820d8997e405e4327dac8544a5ee0fd6a49ca3e26b4ed6fbf5",
+      "status": "drifted",
+      "fallback": "tool: /ai-playbook-design-review"
+    },
+    {
+      "key": "devex-review",
+      "actual_sha256": "79640ac56792286fa6695438c57414262303cc16b640e9a83db1c4cb569d5833",
+      "status": "drifted",
+      "fallback": "manual: v0.5/10-process/08-review.md developer review"
+    },
+    {
+      "key": "implement",
+      "actual_sha256": "6d3fd9e83b8f36e5213854779db49b256a457a7ebb4a503e53fa7dcff696adc3",
+      "status": "incompatible",
+      "fallback": "manual: v0.5/10-process/07-implementation-tdd.md"
+    },
+    {
+      "key": "qa",
+      "actual_sha256": "1606c90dc7b5ac38a12072b1e20a067223d84ec0118cdc26c177abae8c3e207d",
+      "status": "drifted",
+      "fallback": "manual: v0.5/10-process/09-qa.md"
+    },
+    {
+      "key": "qa-only",
+      "actual_sha256": "8a6741911a08ce2774883ac3ea9f0198e085331a40106b1021a439ae23799b96",
+      "status": "drifted",
+      "fallback": "manual: v0.5/10-process/09-qa.md"
+    },
+    {
+      "key": "review",
+      "actual_sha256": "891442ebf4b50fd46e4b6348ee6654fc55bddcd8fb754f858ac0cec44b769873",
+      "status": "drifted",
+      "fallback": "manual: v0.5/10-process/08-review.md adversarial lens"
+    }
+  ],
+  "release_pages_rechecked_at_utc": "2026-10-08T11:03:13.469607+00:00"
+}
