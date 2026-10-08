@@ -4,6 +4,12 @@ The playbook's local skills use the invocation mechanics from `/writing-for-agen
 
 Provenance: [Matt Pocock's `writing-for-agents`](https://github.com/mattpocock/skills/tree/v1.2.3/skills/productivity/writing-for-agents), its skill-mechanics reference, and the locally installed skill were reviewed on 2026-08-08. The dual-harness metadata mechanics are the source contract; the reach analysis and authority framing below are this playbook's synthesis. `writing-great-skills` is the removed pre-v1.2 name and remains valid only in explicit upgrade history.
 
+Upstream v1.3.1 dependent skills explicitly request a skill loader. Use the host's
+actual loader; where none exists, read the resolved installed SKILL.md and its
+selected references. Merely mentioning a skill does not load its instructions.
+Missing user-owned tracker setup asks the human to run setup; it never authorizes
+an implicit setup interview or replacement of customized tracker files.
+
 ## Taxonomy
 
 - **Model-invoked:** `description` is present, `disable-model-invocation` is absent, and `agents/openai.yaml` omits `policy.allow_implicit_invocation: false`. The agent may discover the skill from a natural-language trigger, and another skill may reach it. Discovery does not expand authority: external writes, releases, upgrades, and other consequential actions still require the user's request or the skill's own approval gate.

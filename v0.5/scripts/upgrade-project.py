@@ -17,6 +17,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import template_base  # noqa: E402
+import glossary_migration  # noqa: E402
 from playbook_state import (  # noqa: E402
     insert_after_line,
     insert_before,
@@ -1122,6 +1123,17 @@ def upgrade_project(
             "use the explicit file-by-file migration plan for older editions"
         )
     current_patch = 41
+    try:
+        glossary_changes = glossary_migration.migrate(
+            project, accept_renamed="GLOSSARY.md" in (adopt_current or set())
+        )
+    except (glossary_migration.MigrationReview, ValueError) as error:
+        report.add_provenance_review(f"domain glossary migration: {error}")
+        return report
+    report.changed_files.extend(glossary_changes)
+    if glossary_changes:
+        report.notes.append("Domain glossary renamed with its pristine base and provenance; definitions preserved.")
+        original_state = state_path.read_text()
     playbook_root = Path(__file__).resolve().parents[2]
     prior_root = recorded_playbook_root(project, original_state, playbook_root) if previous_version else None
     state_for_migration = original_state
@@ -1189,6 +1201,14 @@ def upgrade_project(
         playbook_root if previous_version else None,
     )
     install_or_upgrade_delivery(project, report)
+
+    for relative in ("AGENTS.md", "CLAUDE.md", "docs/agents/domain.md", "GLOSSARY.md", "GLOSSARY-MAP.md"):
+        path = project / relative
+        if path.is_file() and re.search(r"(?<![\w-])CONTEXT(?:-MAP)?\.md\b", path.read_text()):
+            report.add_provenance_review(
+                f"{relative}: review remaining legacy domain-file references; point live consumers "
+                "at GLOSSARY.md/GLOSSARY-MAP.md before certifying the migration"
+            )
 
     gitignore_path = project / ".gitignore"
     gitignore = gitignore_path.read_bytes().decode() if gitignore_path.exists() else ""
@@ -1307,6 +1327,7 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("project", type=Path)
     parser.add_argument("--apply-safe", action="store_true", help="apply deterministic V0.5 changes or a V0.4 transition")
+    parser.add_argument("--plan-glossary", action="store_true", help="preview the domain glossary rename without writing")
     parser.add_argument(
         "--adopt-current",
         action="append",
@@ -1316,6 +1337,19 @@ def main(argv: list[str] | None = None) -> int:
         "base to the current render (use after resolving a reported merge conflict by hand)",
     )
     args = parser.parse_args(argv)
+    if args.plan_glossary:
+        try:
+            planned = glossary_migration.migrate(
+                args.project.resolve(), apply=False,
+                accept_renamed="GLOSSARY.md" in args.adopt_current,
+            )
+        except ValueError as error:
+            print(f"manual review: {error}")
+            return 2
+        for relative in planned:
+            print(f"glossary migration: {relative}")
+        print("Review glossary content, references and any custom domain maps before --apply-safe.")
+        return 0
     if not args.apply_safe:
         parser.error("no changes made; pass --apply-safe after the user approves tiers 1 and 2")
 

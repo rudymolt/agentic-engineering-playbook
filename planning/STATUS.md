@@ -1,8 +1,10 @@
 # Planning status
 
-active_features: 1
+active_features: 2
 
 ## Active features
+
+[Matt skills migration](matt-skills-migration/slices.md) — approved migration implementation in progress.
 
 1 active feature: [Apply recovery artifact visibility](apply-recovery-gitignore/slices.md)
 — approved single fix slice implemented; repair cycle 2 corrects a baseline

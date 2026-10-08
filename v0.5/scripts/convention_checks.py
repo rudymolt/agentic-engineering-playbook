@@ -270,7 +270,7 @@ UPSTREAM_BEHAVIOUR_CONTRACTS = (
     (
         "delegation track",
         Path("91-delegation-track.md"),
-        ("/resolving-merge-conflicts",),
+        ("merge base", "both sides' intent", "phase's verification commands"),
     ),
 )
 

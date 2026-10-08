@@ -8,7 +8,7 @@ V0.5 is a human-led, agent-assisted engineering process with 13 stages, optional
 
 Pin a public release tag in a stable local checkout. Ask an agent to invoke [`/ai-playbook-bootstrap-project`](skills/ai-playbook-bootstrap-project/SKILL.md), which runs a read-only plan before writing project files. The deterministic helper is `python3 v0.5/scripts/bootstrap-project.py PROJECT --playbook-path PLAYBOOK_CHECKOUT --project-name NAME --ui no --ci existing`; use the skill to choose options and inspect changes before applying them.
 
-The bootstrap installs `CLAUDE.md`, `AGENTS.md`, `CONTEXT.md`, state and cadence files, planning/archive scaffolding, and selected local skills. It records the absolute path to the pinned checkout. Application projects should not point at a development checkout, since changes there can alter the instructions they read before their recorded version changes.
+The bootstrap installs `CLAUDE.md`, `AGENTS.md`, `GLOSSARY.md`, state and cadence files, planning/archive scaffolding, and selected local skills. It records the absolute path to the pinned checkout. Application projects should not point at a development checkout, since changes there can alter the instructions they read before their recorded version changes.
 
 ## Use and maintain the playbook
 

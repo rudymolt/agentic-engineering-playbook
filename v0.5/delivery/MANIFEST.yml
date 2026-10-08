@@ -486,7 +486,7 @@
       "source": "skill/references/k41-merge-agent.md"
     },
     {
-      "digest": "sha256:157c02d26a94c4b40b9a255e2f8a804d20297527d35d876df9ea23ee5ef4a2f7",
+      "digest": "sha256:b5d5e3a968dc3fb3bb9ba076500092d1890c5f9a6b202d8472c4f75bb744d4e5",
       "install_path": "references/k41-policy.json",
       "source": "skill/references/k41-policy.json"
     },
@@ -741,7 +741,7 @@
       "source": "tests/test_continuation.py"
     },
     {
-      "digest": "sha256:68067f8ce650a14ec1d1765bc0376356c1e15571208779a2903165109aac4f22",
+      "digest": "sha256:a1b6123f2b4f427f8736529a4240268a2345c4ba95d4b51eea91a085539df900",
       "install_path": null,
       "source": "tests/test_core.py"
     },
@@ -803,5 +803,5 @@
   ],
   "manifest_schema_version": 1,
   "manifest_self_rule": "pack_digest covers the complete non-manifest source inventory",
-  "pack_digest": "sha256:3cee39f1830e6aff480bfa963bdf0f58db2dd2c0d87331f3f69391959bdce047"
+  "pack_digest": "sha256:c6546118c27e53c693bb8973a9679227152ee79f10840091d376377eb84d3ae5"
 }

@@ -81,7 +81,7 @@ Here is how they map to the specific parts of the workflow.
 
 **Matt Pocock's skills and gstack are separate installations.** Cloning this playbook or running its bootstrap does not automatically install either collection. If you already have them installed, setup checks whether the required skills are discoverable and compatible with the playbook's procedures.
 
-- **Matt Pocock's skills:** follow the [upstream installation guide](https://github.com/mattpocock/skills#installation-30-second-setup). The playbook documents `npx skills@latest add mattpocock/skills`; the installer lets you choose skills and coding-agent environments. The upstream guide also offers a managed Claude Code plugin. Choose one installation method to avoid duplicate skills. The optional `setup-matt-pocock-skills` skill helps configure project-specific tracker and documentation choices.
+- **Matt Pocock's skills:** the playbook targets released v1.3.1. Use `npx skills@1.7.1 add https://github.com/mattpocock/skills/tree/v1.3.1` and select the skills and agent environments you need. Follow [stage 00](v0.5/10-process/00-prereqs.md) for selection and installed-source checks; existing projects first complete the [glossary migration](v0.5/skills/ai-playbook-upgrade-project/MIGRATIONS.md). Preserve local skill customizations and avoid automatic updates beyond the tested pin. The optional `setup-matt-pocock-skills` skill helps configure tracker and documentation choices.
 - **gstack:** follow its [installation guide](https://github.com/garrytan/gstack#install--30-seconds) for your coding-agent environment. It has its own setup script and prerequisites, including Bun for its tooling. The guide covers Claude Code and other supported agents, including Codex.
 - **pstack adaptations and playbook-local skills:** the selected adaptations are already included in this repository and installed into the target project by the playbook bootstrap. You do not need the full upstream pstack package to use those adaptations.
 - **Autonomous delivery:** full project bootstrap installs the delivery runtime and `/ai-playbook-deliver`. Installation alone does not authorise unattended work: the [delivery workflow](v0.5/10-process/delivery-mission.md) still requires capability checks and approval of the mission's scope, limits, and stopping conditions.
@@ -166,7 +166,7 @@ This prompt points directly to the bootstrap instructions, so the skill does not
 
 Bootstrap presents a dry-run before writing files. It helps you choose UI and CI options and checks whether the project qualifies for the smaller [lite workflow](v0.5/70-lite-mode.md).
 
-Full setup adds or proposes safe merges for project instructions (`AGENTS.md` and `CLAUDE.md`), shared context (`CONTEXT.md`), planning and archive folders, progress and cadence files, and selected local skills. Existing project content is preserved for review.
+Full setup adds or proposes safe merges for project instructions (`AGENTS.md` and `CLAUDE.md`), domain vocabulary (`GLOSSARY.md`), planning and archive folders, progress and cadence files, and selected local skills. Existing project content is preserved for review.
 
 Once setup passes, describe the work in ordinary language:
 

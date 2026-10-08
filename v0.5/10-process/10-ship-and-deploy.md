@@ -1,6 +1,6 @@
 # 10 · Ship and deploy
 
-> Matt's process ends at "the code works"; gstack ships it. This stage covers the steps from green-slice to verified-in-production.
+> This stage owns the steps from a green slice to verified production, including PR evidence and release closeout.
 
 **This stage in one breath:** Take the green slice from merge to verified-in-production, then close out the feature's planning docs. Output: shipped, release-noted, doc-closed.
 
@@ -44,6 +44,13 @@ Commit messages and PR descriptions lead with the value or why, then the what. N
 After `/ship` opens the PR, the human project owner reviews and merges it manually in GitHub. See `../50-how-to-write-code-with-ai.html` (interactive HTML — open in a browser) for the human-side workflow.
 
 An agent-authored PR body carries a short structured trail: risk assessment, what was tested (commands/flows), and findings fixed plus how each was verified — not just a summary.
+
+Optional `/pr` (Matt, v1.3.1) helps describe the change: choose a small visual
+when useful, show before/after evidence, and explain rollback difficulty and
+affected consumers. Preserve the repository's PR template and required review
+trail; stage 10 owns publication and merge authority. This presentation practice
+comes from [Matt's pr skill](https://github.com/mattpocock/skills/blob/v1.3.1/skills/engineering/pr/SKILL.md),
+whose visual guidance credits Dex Horthy / Humanlayer's `show-me`.
 
 ### 2. `/land-and-deploy` — Release Engineer
 

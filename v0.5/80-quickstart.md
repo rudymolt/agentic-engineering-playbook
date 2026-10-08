@@ -8,7 +8,7 @@
 
 ## The project
 
-MeetTrack records athletics results (athlete, event, mark, meet date), ranks results tables per event, and answers personal bests. Pure Python, no UI (`decisions.no_ui: true`), tests via `python3 -m unittest`. Bootstrapped from this playbook: `CLAUDE.md` (with the first rule), `AGENTS.md`, `CONTEXT.md`, `.playbook-state.yml`, `playbook-cadences.yml`, `planning/` + `archive/` with `STATUS.md` files. One feature (`results-entry`) has already shipped and been archived.
+MeetTrack records athletics results (athlete, event, mark, meet date), ranks results tables per event, and answers personal bests. Pure Python, no UI (`decisions.no_ui: true`), tests via `python3 -m unittest`. Bootstrapped from this playbook: `CLAUDE.md` (with the first rule), `AGENTS.md`, `GLOSSARY.md`, `.playbook-state.yml`, `playbook-cadences.yml`, `planning/` + `archive/` with `STATUS.md` files. One feature (`results-entry`) has already shipped and been archived.
 
 ## The request
 
@@ -34,7 +34,7 @@ The first rule fires: this is a feature request, so no code. The agent grills:
 
 ### 02 · Context and ADRs — record while it's fresh
 
-`CONTEXT.md` gains the term (this is a side-effect of 01, not a separate session):
+`GLOSSARY.md` gains the term (this is a side-effect of 01, not a separate session):
 
 > **history view** — A chronological listing of one athlete's results in one event, oldest first, showing progression toward their personal best. **Not the same as** results table — the table ranks everyone; the history view follows one athlete.
 
@@ -92,7 +92,7 @@ One pass before the PR lands: correctness against the spec, no invented vocabula
 
 ### 10 · Ship and deploy — and close the docs
 
-After slice 3 lands, the feature ships. The doc-close ritual fires **now, at feature ship — not per slice**: surviving decisions promoted (none beyond the CONTEXT.md term, already recorded), release note written to `docs/releases/`, `planning/results-history-view/` moved to `archive/2026-06-19-results-history-view/`, both `STATUS.md` files updated, state stamped, status block recomputed.
+After slice 3 lands, the feature ships. The doc-close ritual fires **now, at feature ship — not per slice**: surviving decisions promoted (none beyond the GLOSSARY.md term, already recorded), release note written to `docs/releases/`, `planning/results-history-view/` moved to `archive/2026-06-19-results-history-view/`, both `STATUS.md` files updated, state stamped, status block recomputed.
 
 ### 11 · Debug — didn't fire
 

@@ -39,7 +39,7 @@ The skill reproduces the bug first. No fix without reproduction.
 
 ## For `ready-for-agent` issues
 
-The skill writes a self-contained agent brief assuming the next agent has no context — what file to read first, what `CONTEXT.md` terms apply, what the verification expectations are.
+The skill writes a self-contained agent brief assuming the next agent has no context — what file to read first, what `GLOSSARY.md` terms apply, what the verification expectations are.
 
 ## Triage comments
 

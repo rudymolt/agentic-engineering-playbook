@@ -45,12 +45,12 @@ Optionally: `/codex` (gstack) for a second-opinion review from OpenAI Codex CLI 
 Before accepting an architecture proposal or ADR update, run both checks:
 
 - **scope-guardian:** challenge unjustified complexity, scope creep, and premature abstraction.
-- **Coherence:** check for internal contradictions and terminology drift against `CONTEXT.md`.
+- **Coherence:** check for internal contradictions and terminology drift against `GLOSSARY.md`.
 
 ## What the skill enforces
 
 - Invokes the shared `/codebase-design` vocabulary (module, interface, depth, seam, adapter, leverage, locality); the vocabulary no longer lives in an `improve-codebase-architecture/LANGUAGE.md` file.
-- Uses domain vocabulary from `CONTEXT.md`.
+- Uses domain vocabulary from `GLOSSARY.md`.
 - Flags any proposal that contradicts an existing ADR — explicitly, so you can decide whether the ADR needs revisiting or the proposal needs rejecting.
 - Dispatches exploration and design-it-twice through the host's available subagent mechanism, without requiring Claude Code's `Agent` tool or a named agent type.
 

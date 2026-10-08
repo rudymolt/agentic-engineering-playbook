@@ -8,13 +8,13 @@
       "adoption_level": "accelerator",
       "pin": {
         "kind": "tag",
-        "value": "v1.2.3",
-        "commit": "6acc160e4e0cd062dbbbd7a1b26ae92855edf07e",
-        "verified": "2026-09-08"
+        "value": "v1.3.1",
+        "commit": "24fe0ef7737efae15c87225755e9f6f5965e4888",
+        "verified": "2026-10-08"
       },
       "install": {
         "method": "skills-cli",
-        "command": "npx skills@latest add mattpocock/skills",
+        "command": "npx skills@1.7.1 add https://github.com/mattpocock/skills/tree/v1.3.1",
         "lock_file": "~/.agents/.skill-lock.json",
         "roots": [
           ".claude/skills",
@@ -320,7 +320,7 @@
     },
     "resolving-merge-conflicts": {
       "package": "mattpocock-skills",
-      "status": "current",
+      "status": "removed",
       "invocation": "model",
       "tier": "accelerated",
       "lanes": [],
@@ -328,7 +328,8 @@
         "91-delegation-track"
       ],
       "upstream_path": "engineering/resolving-merge-conflicts",
-      "previous_names": []
+      "previous_names": [],
+      "removed_in": "v1.3.1"
     },
     "wayfinder": {
       "package": "mattpocock-skills",
@@ -1100,8 +1101,14 @@
       "status": "current",
       "invocation": "user",
       "tier": "core",
-      "lanes": ["state_lifecycle"],
-      "stages": ["AGENT-DIGEST", "README", "93-model-routing-track"],
+      "lanes": [
+        "state_lifecycle"
+      ],
+      "stages": [
+        "AGENT-DIGEST",
+        "README",
+        "93-model-routing-track"
+      ],
       "install_by_default": true,
       "previous_names": [],
       "provenance": null
@@ -1120,6 +1127,18 @@
       "install_by_default": true,
       "previous_names": [],
       "provenance": null
+    },
+    "pr": {
+      "package": "mattpocock-skills",
+      "status": "current",
+      "invocation": "model",
+      "tier": "extended",
+      "lanes": [],
+      "stages": [
+        "10"
+      ],
+      "upstream_path": "engineering/pr",
+      "previous_names": []
     }
   },
   "borrowed_ideas": []

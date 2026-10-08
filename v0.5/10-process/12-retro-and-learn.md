@@ -38,6 +38,15 @@ These values are observational. Collect a three-period baseline for sample appli
 
 ## The retro template
 
+Include an environment-improvement pass, drawing on
+[Matt's v1.3.1 retro](https://github.com/mattpocock/skills/blob/v1.3.1/skills/engineering/retro/SKILL.md):
+identify navigation friction, missing checks, confusing instructions and wasted
+tool calls from actual session evidence. Prefer a deterministic check for a
+mechanical mistake; keep judgement calls in review guidance. Propose changes
+through this stage's promotion rules rather than editing settings automatically.
+The bare `/retro` route remains gstack's; Matt's same-named skill is not installed
+as a second default command.
+
 Use `templates/retro-template.md` as the structure. Sections:
 
 1. **What worked.** Specific, ideally with evidence.
@@ -48,7 +57,7 @@ Use `templates/retro-template.md` as the structure. Sections:
 5. **Learning coverage and observational eval.** Do the captured `/learn` entries reflect the shipped work, and does the retro contain the required eval row or explicit evidence-gap explanation?
 6. **Promotion candidates.** Which learnings should become:
    - A new rule in this project's `CLAUDE.md`?
-   - A new entry in `CONTEXT.md`?
+   - A new entry in `GLOSSARY.md`?
    - A new ADR?
    - A change to this playbook?
    - A new skill?
@@ -61,7 +70,7 @@ A learning earns promotion to the playbook when **any** of:
 - It would have prevented a real incident.
 - It changes a stage's invariants (not just its parameters).
 
-Lower-bar things stay in `CLAUDE.md` or `CONTEXT.md`. The playbook is the shared bedrock — it should change slowly and deliberately.
+Lower-bar things stay in `CLAUDE.md` or `GLOSSARY.md`. The playbook is the shared bedrock — it should change slowly and deliberately.
 
 ## When a cadence is wrong
 
@@ -89,7 +98,7 @@ This review is the accountability backstop for open maps, which `/whats-next` su
 - A learning coverage note that names the shipped-work evidence checked and any new lessons captured.
 - An observational eval row for periods with shipped slices or independent verification, or an explicit reason the required evidence was unavailable.
 - **A field-report decision (v0.5 evidence loop).** Explicitly check the four proof events (independent-verifier catch, budget-ceiling trip, acceptance-criteria refusal, structured escalation) and the friction signals against this period. If any occurred, complete the project's `field-report.md` and copy it to the playbook repo's `analysis/field-reports/{YYYY-MM-DD}-{project-slug}.md`. If none occurred, record "no proof events this period" in the retro — that line is the evidence the check happened.
-- Updates to `CLAUDE.md`, `CONTEXT.md`, `playbook-cadences.yml`, or this playbook if any candidates were promoted.
+- Updates to `CLAUDE.md`, `GLOSSARY.md`, `playbook-cadences.yml`, or this playbook if any candidates were promoted.
 - Updates to MEMORY.md if any cross-project lessons emerged.
 - For every delivery mission, a denominator-preserving disposition:
   qualifying, nonqualifying, cancelled, or externally completed. Keep product

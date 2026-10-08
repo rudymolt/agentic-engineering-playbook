@@ -28,7 +28,7 @@ planning/
 ## Rules
 
 - **One folder per active feature.** Slug matches `active_features[].slug` in `.playbook-state.yml`.
-- **Tier 1 — ephemeral.** Everything in here is build-time scratch. Decisions that should survive are promoted to ADRs or `CONTEXT.md` at the doc-close ritual.
+- **Tier 1 — ephemeral.** Everything in here is build-time scratch. Decisions that should survive are promoted to ADRs or `GLOSSARY.md` at the doc-close ritual.
 - **Move to `archive/` on ship.** Renamed to `{YYYY-MM-DD}-{feature-slug}/` and moved out of agent reach.
 - **Agents must not read planning folders for features not in `active_features`.** This is enforced by the rule in `CLAUDE.md`.
 - **Calibrate document length.** Size every file here to what its task needs — cover the substance, then stop; no filler sections, redundant summaries, or boilerplate. Planning documents are read back as agent context, so inflation compounds.
@@ -44,5 +44,5 @@ planning/
 
 - ADRs — those live at `docs/adr/`.
 - Release notes — those live at `docs/releases/`.
-- Domain vocabulary — that lives in `CONTEXT.md`.
+- Domain vocabulary — that lives in `GLOSSARY.md`.
 - Project-wide rules — those live in `CLAUDE.md`.

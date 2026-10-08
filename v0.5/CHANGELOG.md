@@ -2,6 +2,19 @@
 
 ## Unreleased
 
+- Adopt Matt's released v1.3.1 source contract and a pinned installer recipe.
+  Rename the domain glossary convention to GLOSSARY.md; migrate managed project
+  content, pristine bases and provenance with interruption recovery. Preserve
+  user-owned maps and collisions for reviewed migration. Add glossary delivery
+  protection, retire the removed conflict skill, and integrate optional PR and
+  environment-retro practices under existing stage authority.
+
+*Why — correctness lane:* newer Matt consumers read only the glossary filenames.
+A pin-only upgrade could hide existing vocabulary. Coordinated migration keeps
+project definitions and recorded bases intact; changed reviewer sources retain
+manual adapters until separately qualified. gstack qualification remains a
+separate batch.
+
 - Complete the explicitly deferred Playbook configuration UI feature retro and
   field report; audit shipped slices and learning coverage, retain observational
   evidence gaps, assess the three approved candidates and clear only this

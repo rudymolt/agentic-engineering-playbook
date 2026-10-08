@@ -28,7 +28,7 @@ Specific, with the underlying reason — not just "we ran out of time".
 
 Each item is a candidate for promotion. Mark candidates with the proposed destination.
 
-- {learning} → {`CLAUDE.md` | `CONTEXT.md` | new ADR | playbook V0.X | new skill}
+- {learning} → {`CLAUDE.md` | `GLOSSARY.md` | new ADR | playbook V0.X | new skill}
 - {learning} → {…}
 
 ## 4. Cadence review
@@ -69,7 +69,7 @@ Definitions: rework happens after a slice passed stage 08/09; time-to-merge runs
 For each learning marked for promotion above, decide now:
 
 - **Promote to `CLAUDE.md`** — project-wide rule.
-- **Promote to `CONTEXT.md`** — new domain term.
+- **Promote to `GLOSSARY.md`** — new domain term.
 - **Promote to new ADR** — hard-to-reverse decision.
 - **Promote to playbook V0.X** — has appeared in 3+ projects, or would have prevented a real incident, or changes a stage's invariants.
 - **Promote to new skill** — a procedure that should run identically every time, invoked often, well-defined inputs/outputs.

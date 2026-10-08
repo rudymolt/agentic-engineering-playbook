@@ -407,7 +407,7 @@
     <div class="toc-grid">
       <a href="#why">Why process<span>The failure modes it prevents</span></a>
       <a href="#align">Align<span>Which grill to run</span></a>
-      <a href="#language">Shared language<span>CONTEXT.md and ADRs</span></a>
+      <a href="#language">Shared language<span>GLOSSARY.md and ADRs</span></a>
       <a href="#slices">Slicing<span>Vertical, not horizontal</span></a>
       <a href="#tdd">TDD<span>Red, green — then review</span></a>
       <a href="#architecture">Architecture<span>Deep modules and source of truth</span></a>
@@ -474,7 +474,7 @@
 
         <rect x="540" y="124" width="340" height="56" rx="8" fill="#e3efe7" stroke="#2a6e4f" stroke-width="1.2"/>
         <text x="558" y="148" class="label-md ink">Keep a shared glossary</text>
-        <text x="558" y="168" class="label-mono" fill="#2a6e4f">CONTEXT.md</text>
+        <text x="558" y="168" class="label-mono" fill="#2a6e4f">GLOSSARY.md</text>
 
         <rect x="540" y="196" width="340" height="56" rx="8" fill="#e3efe7" stroke="#2a6e4f" stroke-width="1.2"/>
         <text x="558" y="220" class="label-md ink">Build test-first, debug with method</text>
@@ -585,7 +585,7 @@
 
     <div class="concept">
       <p class="what">Concept</p>
-      <h3><button class="term" type="button" data-def="contextmd"><code>CONTEXT.md</code></button> — the project's glossary</h3>
+      <h3><button class="term" type="button" data-def="contextmd"><code>GLOSSARY.md</code></button> — the project's glossary</h3>
       <p>
         A living list of the project's real-world nouns, in the words you
         actually use. Once it exists, the agent uses those same words in the
@@ -729,7 +729,7 @@
       <li>Tests are written only at pre-agreed seams, so effort lands on the critical public boundaries rather than every internal detail.</li>
       <li>Expected values come from an independent source such as a known literal, worked example, or the specification — never by repeating the implementation's calculation inside the test.</li>
       <li>No sneaking in features nobody asked for.</li>
-      <li>The names in the tests use the <code>CONTEXT.md</code> vocabulary, so the shared language reaches all the way down.</li>
+      <li>The names in the tests use the <code>GLOSSARY.md</code> vocabulary, so the shared language reaches all the way down.</li>
     </ul>
     <div class="callout">
       <strong>The horizontal anti-pattern, again.</strong> Writing every test up
@@ -1160,8 +1160,8 @@
   "failure-language": {
     "group": "why",
     "title": "Different words, same thing",
-    "body": "Jargon drift compounds because code, tests, docs, and UI labels start describing the same domain in competing ways. CONTEXT.md keeps one shared vocabulary.",
-    "action": "Promote stable domain terms into CONTEXT.md as alignment settles."
+    "body": "Jargon drift compounds because code, tests, docs, and UI labels start describing the same domain in competing ways. GLOSSARY.md keeps one shared vocabulary.",
+    "action": "Promote stable domain terms into GLOSSARY.md as alignment settles."
   },
   "failure-working": {
     "group": "why",

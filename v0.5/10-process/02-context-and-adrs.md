@@ -2,28 +2,28 @@
 
 > A *side-effect* of stage 01. As alignment decisions crystallise, they get written to two living docs.
 
-**This stage in one breath:** Capture crystallising decisions into `CONTEXT.md` and ADRs as a side-effect of alignment — never speculatively. Output: durable decisions recorded where future sessions will find them.
+**This stage in one breath:** Capture crystallising decisions into `GLOSSARY.md` and ADRs as a side-effect of alignment — never speculatively. Output: durable decisions recorded where future sessions will find them.
 
 ---
 
 ## Primary skill
 
-`/domain-modeling` (Matt, model-invoked — new in upstream v1.0.0). `/grill-with-docs` invokes it inline during alignment, but it can also be reached directly whenever the domain model is being *changed* rather than merely consumed: challenging a term against the glossary, sharpening fuzzy or overloaded language, stress-testing concept boundaries with edge-case scenarios, and cross-referencing claims against the code. Merely reading `CONTEXT.md` for vocabulary is not this skill.
+`/domain-modeling` (Matt, model-invoked — new in upstream v1.0.0). `/grill-with-docs` invokes it inline during alignment, but it can also be reached directly whenever the domain model is being *changed* rather than merely consumed: challenging a term against the glossary, sharpening fuzzy or overloaded language, stress-testing concept boundaries with edge-case scenarios, and cross-referencing claims against the code. Merely reading `GLOSSARY.md` for vocabulary is not this skill.
 
-Its rules match this stage's: update `CONTEXT.md` inline the moment a term resolves (never batched), keep `CONTEXT.md` a pure glossary with no implementation detail, create files lazily, and offer ADRs only when the three-part test below passes.
+Its rules match this stage's: update `GLOSSARY.md` inline the moment a term resolves (never batched), keep `GLOSSARY.md` a pure glossary with no implementation detail, create files lazily, and offer ADRs only when the three-part test below passes.
 
 When a current decision's historical rationale is unclear, use
 `/ai-playbook-why` to gather bounded cited evidence before proposing an ADR;
 its inference and unknown labels do not create a decision by themselves.
 
 When a decision-focused session must pause or move hosts, use the conditional
-[pickup brief](pickup-brief.md) to point at the durable `CONTEXT.md` or ADR
+[pickup brief](pickup-brief.md) to point at the durable `GLOSSARY.md` or ADR
 record. Do not turn a chat recap into a decision source or replay it to a fresh
 verifier.
 
 ## Two destinations
 
-**`CONTEXT.md`** — the project's domain glossary. Domain terms only, no implementation jargon. One definition per term. Used in variable names, file names, test descriptions, commit messages. Inventing your own terminology is a tax on every future conversation.
+**`GLOSSARY.md`** — the project's domain glossary. Domain terms only, no implementation jargon. One definition per term. Used in variable names, file names, test descriptions, commit messages. Inventing your own terminology is a tax on every future conversation.
 
 **`docs/adr/NNNN-short-title.md`** — one ADR per decision that is **hard to reverse**, **surprising without context**, and the **result of a real trade-off**. If any of the three is missing, skip the ADR. Don't pollute `docs/adr/` with trivia.
 
@@ -72,7 +72,7 @@ Rebuild the index whenever an ADR is added or its status changes (a natural step
 
 If the repo holds multiple bounded contexts:
 
-- `CONTEXT-MAP.md` at the root points at per-context glossaries.
+- `GLOSSARY-MAP.md` at the root points at per-context glossaries.
 - System-wide ADRs live at `docs/adr/`.
 - Context-specific ADRs live at `{context}/docs/adr/`.
 
@@ -81,7 +81,7 @@ If the repo holds multiple bounded contexts:
 After stage 01:
 
 1. Re-read the planning docs from `planning/{feature-slug}/`.
-2. Extract any new domain terms → append to `CONTEXT.md` (alphabetical within section).
+2. Extract any new domain terms → append to `GLOSSARY.md` (alphabetical within section).
 3. Extract any hard-to-reverse decisions → create new ADRs at `docs/adr/`.
 4. Don't delete the planning docs yet; they're still live for stages 03–10.
 
@@ -89,7 +89,7 @@ After stage 01:
 
 - It doesn't invent vocabulary. Only terms the user has actually used or agreed to.
 - It doesn't write speculative ADRs. Only decisions that have actually been taken.
-- It doesn't replace the planning folder. Planning docs and `CONTEXT.md` / ADRs coexist until ship.
+- It doesn't replace the planning folder. Planning docs and `GLOSSARY.md` / ADRs coexist until ship.
 
 ---
 
