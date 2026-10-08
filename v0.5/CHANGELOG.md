@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+- Ignore retained Apply recovery artifacts through bootstrap and supported
+  existing-project upgrades using anchored `/.playbook-config-*`. Preserve
+  user ignore content, disclose additions in planning, and keep
+  `.playbook-config.json` trackable. Retain receipts, completion seals and
+  conflict reconciliation unchanged.
+
+*Why — correctness lane:* successful Apply retains evidence needed for later
+  reconciliation; missing managed ignores exposed it as untracked project
+  content. Safe additive updates keep that evidence out of Git without deleting
+  it or hiding the reusable configuration.
+
 - Close the shipped Playbook configuration UI feature (PR #20, `0a3770e`):
   record final S8 acceptance on `05de2a0`, correct the admitted native Mac
   handoff, archive planning and keep the stage-12 retro visible in closeout state.
