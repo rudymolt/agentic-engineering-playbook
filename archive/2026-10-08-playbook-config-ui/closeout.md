@@ -90,7 +90,7 @@ publication and receipt evidence, including `.receipt.complete/` seals.
 `.playbook-routing/` to project `.gitignore`. Proposed separate fix: add an
 anchored `/.playbook-config-*` ignore rule through bootstrap and the supported
 existing-project upgrade path, preserving user ignore entries and repeat
-idempotence. Keep `.playbook-config.yml` tracked. Test a successful Apply and
+idempotence. Keep `.playbook-config.json` tracked. Test a successful Apply and
 reopen, completion/conflict recovery, old-project migration, and Git's ignored
 versus tracked paths. Do not delete retained evidence: receipt reconciliation
 uses it. Product code changes require separate approval and review.
