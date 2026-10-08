@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+- Complete the explicitly deferred Playbook configuration UI feature retro and
+  field report; audit shipped slices and learning coverage, retain observational
+  evidence gaps, assess the three approved candidates and clear only this
+  feature's mirrored pending closeout. The product recovery ignore and monthly
+  upstream comparison were reviewed separately in PRs #23 and #25.
+
+*Why — process lane:* PR #20 shipped the feature and PR #22 closed planning, but
+  the deferred retro still needed durable incident evidence and candidate decisions.
+  Existing evidence-boundary and verifier-route rules cover two candidates; the
+  recovery-artifact omission was addressed by separate product PR #23. Shipment
+  does not erase failed reviews, privacy failures or exhausted qualification.
+
 - Ignore retained Apply recovery artifacts through bootstrap and supported
   existing-project upgrades using anchored `/.playbook-config-*`. Preserve
   user ignore content, disclose additions in planning, and keep
