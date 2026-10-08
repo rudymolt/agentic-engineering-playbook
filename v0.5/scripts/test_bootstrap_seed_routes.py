@@ -165,6 +165,19 @@ class BootstrapSeedRouteTests(unittest.TestCase):
                                          text=True, capture_output=True)
                 self.assertEqual(applied.returncode, 0, applied.stdout + applied.stderr)
                 self.assertEqual(json.loads((target / ".playbook-config.json").read_text()), saved)
+                self.assertEqual(subprocess.run(["git", "init", "-q", str(target)]).returncode, 0)
+                self.assertEqual(subprocess.run(["git", "-C", str(target), "check-ignore", "-q",
+                                                 ".playbook-config.json"]).returncode, 1)
+                artifacts = list(target.glob(".playbook-config-*"))
+                self.assertTrue(any(path.name.endswith(".receipt.complete") for path in artifacts))
+                for path in artifacts:
+                    self.assertEqual(subprocess.run(["git", "-C", str(target), "check-ignore", "-q",
+                                                     path.name]).returncode, 0, path.name)
+                self.assertEqual(subprocess.run(["git", "-C", str(target), "add",
+                                                 ".playbook-config.json"]).returncode, 0)
+                tracked = subprocess.run(["git", "-C", str(target), "ls-files", "--",
+                                          ".playbook-config.json"], text=True, capture_output=True)
+                self.assertEqual(tracked.stdout.strip(), ".playbook-config.json")
                 self.intact(personal)
 
     def test_missing_ambiguous_and_unadmitted_routes_block_preview_and_apply(self):

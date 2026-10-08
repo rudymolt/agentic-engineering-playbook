@@ -5,14 +5,25 @@
 - Complete the explicitly deferred Playbook configuration UI feature retro and
   field report; audit shipped slices and learning coverage, retain observational
   evidence gaps, assess the three approved candidates and clear only this
-  feature's mirrored pending closeout. Keep product recovery ignores and monthly
-  upstream comparison in their separately authorised cloud follow-ups.
+  feature's mirrored pending closeout. The product recovery ignore and monthly
+  upstream comparison were reviewed separately in PRs #23 and #25.
 
 *Why — process lane:* PR #20 shipped the feature and PR #22 closed planning, but
   the deferred retro still needed durable incident evidence and candidate decisions.
   Existing evidence-boundary and verifier-route rules cover two candidates; the
-  recovery-artifact omission warrants its bounded product follow-up. Shipment
+  recovery-artifact omission was addressed by separate product PR #23. Shipment
   does not erase failed reviews, privacy failures or exhausted qualification.
+
+- Ignore retained Apply recovery artifacts through bootstrap and supported
+  existing-project upgrades using anchored `/.playbook-config-*`. Preserve
+  user ignore content, disclose additions in planning, and keep
+  `.playbook-config.json` trackable. Retain receipts, completion seals and
+  conflict reconciliation unchanged.
+
+*Why — correctness lane:* successful Apply retains evidence needed for later
+  reconciliation; missing managed ignores exposed it as untracked project
+  content. Safe additive updates keep that evidence out of Git without deleting
+  it or hiding the reusable configuration.
 
 - Complete the 2026-10-08 monthly upstream comparison with tagged Matt
   `v1.3.1` and immutable versioned gstack/pstack fallback sources, plus a
