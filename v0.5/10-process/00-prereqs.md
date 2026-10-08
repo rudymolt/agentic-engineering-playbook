@@ -148,6 +148,12 @@ Set `capability_routes.verified_at` and `last_run.prereqs` to now, set `prereqs_
 The Matt Pocock accelerator inventory and behaviour contracts were verified on 2026-09-08 against the released `mattpocock/skills` v1.2.3 tag and the installation under `~/.agents/skills/`. The gstack inventory was last verified on 2026-09-08 against the installed checkout at 1.62.0.0 (d078622). Embedded reviewer behaviour and exact installed source digests were audited on 2026-09-08; every inspected upstream workflow currently falls back to a playbook-owned route. Host capability claims were verified on 2026-07-09 against the first-party sources linked in `prereqs-capability-profiles.md`. Maintainers re-check released-source inventory through `../MAINTENANCE.md`.
 <!-- /generated: upstream/provenance -->
 
+The separate monthly released-source comparison completed on 2026-10-08;
+next due 2026-11-08. See the [dated maintenance analysis](../../analysis/2026-10-08-upstream-drift.md)
+for candidate-source drift, removed/renamed commands and manual fallbacks.
+The retained-source and historical host-audit dates above are unchanged;
+the comparison does not qualify newer installed skills or upgrade a host.
+
 ---
 
 ## Next

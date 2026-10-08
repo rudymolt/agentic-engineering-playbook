@@ -13,8 +13,8 @@
     },
     {
       "path": "10-process/00-prereqs.md",
-      "sha256": "e9fdd36a0bde0f889eb377ff5afa8537efd54f2381bf0ec72fbbf13113f49b33",
-      "size": 12407
+      "sha256": "995d58d28d0de28ff58de4e70c76b3998f17a493f844a0e2b7e5f4a510d4c3e5",
+      "size": 12806
     },
     {
       "path": "10-process/01-align.html",
@@ -178,8 +178,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "034f45a421f3b546c17c65a424032c741e8341517fbaf5a481306e46e2b0be46",
-      "size": 45583
+      "sha256": "4892abc6b498bd18b0eac333cd4b50a29d25ab249c5dec9d6559be96294a7c11",
+      "size": 46291
     },
     {
       "path": "MAINTENANCE.md",

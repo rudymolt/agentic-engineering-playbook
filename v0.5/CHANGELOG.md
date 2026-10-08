@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+- Complete the 2026-10-08 monthly upstream comparison with tagged Matt
+  `v1.3.1` and immutable versioned gstack/pstack fallback sources, plus a
+  separately attributed supplied Mac audit. Record command behavior, source
+  digests, denied embedded checks, removed post-fix architecture handoff,
+  manual routes and proposed adoption work.
+  Retain pins and historical host qualification; next comparison is 2026-11-08.
+
+*Why — maintenance batch:* newer skill trees change domain-document inputs,
+  remove or rename commands, and alter reviewer dependencies and ownership.
+  A dated behavioral comparison exposes those risks without upgrading hosts
+  or granting compatibility through digest-only changes.
+
 - Close the shipped Playbook configuration UI feature (PR #20, `0a3770e`):
   record final S8 acceptance on `05de2a0`, correct the admitted native Mac
   handoff, archive planning and keep the stage-12 retro visible in closeout state.
