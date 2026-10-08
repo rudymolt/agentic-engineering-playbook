@@ -14,7 +14,8 @@ public privacy gate; regenerated edition manifest; canonical
 `python3 v0.5/scripts/verify-playbook.py` without a short timeout; actual-head
 GitHub CI. Record strict drift and cloud privilege limitations truthfully.
 
-Status: implemented after repair cycle 1, with LF/CRLF matching and regression
-coverage. Record fresh review, QA, canonical and actual-head CI outcomes in the
+Status: implemented with LF/CRLF matching and regression coverage. Repair cycle
+2 corrects a baseline bytecode-race test assertion; production source stays
+unchanged. Record fresh review, QA, canonical and actual-head CI outcomes in the
 product PR and cloud artifacts before the ready-PR handback. Not merged.
 Delivery endpoint: ready PR, never merge.

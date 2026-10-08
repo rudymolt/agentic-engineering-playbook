@@ -2,6 +2,8 @@
 
 import json
 from pathlib import Path
+import py_compile
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -29,9 +31,9 @@ def discover(request):
 
 
 class ApplyRecoveryGitignoreTests(unittest.TestCase):
-    def bootstrap(self, project, apply=True):
+    def bootstrap(self, project, apply=True, playbook_root=ROOT):
         command = [sys.executable, str(SCRIPTS / "bootstrap-project.py"), str(project),
-                   "--playbook-path", str(ROOT), "--project-name", "Example Project",
+                   "--playbook-path", str(playbook_root), "--project-name", "Example Project",
                    "--ui", "no", "--ci", "copy"]
         if apply:
             command.append("--apply")
@@ -152,7 +154,7 @@ class ApplyRecoveryGitignoreTests(unittest.TestCase):
                     before = transition.PublicTransitionTest.snapshot(project)
                     repeated = run(project)
                     self.assertEqual(repeated.returncode, 0, repeated.stderr)
-                    self.assertNotIn("changed:", repeated.stdout)
+                    self.assertNotIn("changed: " + str(ignore), repeated.stdout)
                     self.assertEqual(transition.PublicTransitionTest.snapshot(project), before)
 
     def test_bootstrap_preview_reports_each_managed_rule_without_writes(self):
@@ -210,8 +212,27 @@ class ApplyRecoveryGitignoreTests(unittest.TestCase):
                     self.assertEqual(self.git(project, "check-ignore", "-q", ".playbook-routing/evidence").returncode, 0)
                     repeated = run(project)
                     self.assertEqual(repeated.returncode, 0, repeated.stderr)
-                    self.assertNotIn("changed:", repeated.stdout)
+                    self.assertNotIn("changed: " + str(ignore), repeated.stdout)
                     self.assertEqual(ignore.read_bytes(), original + b".playbook-routing/\n/.playbook-config-*\n")
+
+    def test_ignore_repeat_is_unchanged_when_unrelated_skill_bytecode_appears(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            source = root / "source"
+            shutil.copytree(ROOT / "v0.5", source / "v0.5",
+                            ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
+            project = root / "project"
+            first = self.bootstrap(project, playbook_root=source)
+            self.assertEqual(first.returncode, 0, first.stderr)
+            ignore = project / ".gitignore"
+            before = (ignore.read_bytes(), ignore.stat().st_mtime_ns)
+            # Another verification shard can create this cache between public calls.
+            py_compile.compile(str(source / "v0.5/skills/ship-release/scripts/check-release-state.py"),
+                               doraise=True)
+            repeated = self.bootstrap(project, playbook_root=source)
+            self.assertEqual(repeated.returncode, 0, repeated.stderr)
+            self.assertNotIn("changed: " + str(ignore), repeated.stdout)
+            self.assertEqual((ignore.read_bytes(), ignore.stat().st_mtime_ns), before)
 
 
 if __name__ == "__main__":

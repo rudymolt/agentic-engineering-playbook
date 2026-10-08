@@ -5,7 +5,8 @@ active_features: 1
 ## Active features
 
 1 active feature: [Apply recovery artifact visibility](apply-recovery-gitignore/slices.md)
-— approved single fix slice implemented after repair cycle 1. Verification
+— approved single fix slice implemented; repair cycle 2 corrects a baseline
+bytecode-race test assertion without changing production source. Verification
 receipts belong in the product PR and cloud artifacts; review/merge pending.
 
 Playbook configuration UI: S8 accepted on `05de2a0` and shipped

@@ -37,3 +37,16 @@ superseded by that defect; partial output is retained and is not a pass. The
 on the earlier candidate. The corrected candidate must run canonical checks
 again. Default cloud Python 3.9 also failed a conventions import; verification
 now uses Python 3.12 without changing the repository's version requirement.
+
+Actual-head manual CI at `94f1522` passed all 537 K4.1 tests without skips,
+but its edition shard rejected the new test's whole-bootstrap `changed:`
+assertion when another shard generated an unrelated skill bytecode cache.
+An isolated public-CLI reproduction at both `00445a2` and `94f1522` copied the
+same new `.pyc` file while preserving `.gitignore` bytes. This is baseline
+installer behavior, outside the product fix; no installer change is included.
+
+Repair cycle 2 scopes the report assertion to `.gitignore`, retains the existing
+whole-project content snapshots, and adds a deterministic cache-appearance
+case requiring unchanged ignore bytes and modification time. Production source
+is unchanged. The superseded canonical attempt and failed CI remain retained;
+new fresh review and actual-head CI are required for the corrected test suite.

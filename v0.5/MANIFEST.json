@@ -1198,8 +1198,8 @@
     },
     {
       "path": "scripts/test_apply_recovery_gitignore.py",
-      "sha256": "dcde2e4adab8c3a89abad2ca938566613a2b71f78f74431d664067f24a38af2d",
-      "size": 13613
+      "sha256": "f269986833cd44618de3c5cc7af2010932e0d722179808ae45e27eed3c42a77c",
+      "size": 14866
     },
     {
       "path": "scripts/test_audit_upstream_installed.py",
