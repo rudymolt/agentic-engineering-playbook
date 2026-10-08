@@ -328,10 +328,11 @@ def bootstrap_project(
     install_delivery_skill(project, playbook_root, report)
 
     gitignore_path = project / ".gitignore"
-    gitignore = gitignore_path.read_text() if gitignore_path.exists() else ""
-    if not re.search(r"(?m)^\.playbook-routing/$", gitignore):
-        updated = gitignore.rstrip() + ("\n" if gitignore.strip() else "") + ".playbook-routing/\n"
-        record_write(gitignore_path, updated.encode(), report)
+    gitignore = gitignore_path.read_bytes().decode() if gitignore_path.exists() else ""
+    for rule in (".playbook-routing/", "/.playbook-config-*"):
+        if not re.search(rf"(?m)^{re.escape(rule)}\r?$", gitignore):
+            gitignore += ("\n" if gitignore and not gitignore.endswith("\n") else "") + rule + "\n"
+    record_write(gitignore_path, gitignore.encode(), report)
 
     record_base_snapshots(project, playbook_root, project_name, version, report)
 
@@ -398,11 +399,12 @@ def print_plan(project: Path, playbook_root: Path, *, ui: str, ci: str) -> None:
     print("Optional skills (not installed): " + (", ".join(OPTIONAL_LOCAL_SKILLS) or "none"))
     print("Provenance: record pristine template bases under .playbook-base/ (committed, machine-owned)")
     gitignore_path = project / ".gitignore"
-    gitignore = gitignore_path.read_text() if gitignore_path.exists() else ""
-    if re.search(r"(?m)^\.playbook-routing/$", gitignore):
-        print("Gitignore: .playbook-routing/ already ignored")
-    else:
-        print("Gitignore: add .playbook-routing/ to .gitignore")
+    gitignore = gitignore_path.read_bytes().decode() if gitignore_path.exists() else ""
+    for rule in (".playbook-routing/", "/.playbook-config-*"):
+        if re.search(rf"(?m)^{re.escape(rule)}\r?$", gitignore):
+            print(f"Gitignore: {rule} already ignored")
+        else:
+            print(f"Gitignore: add {rule} to .gitignore")
     print("Finish: initialize status (cadence baselines stamped today), then run stage 00 cold path")
 
 

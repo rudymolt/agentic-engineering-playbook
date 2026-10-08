@@ -1191,10 +1191,13 @@ def upgrade_project(
     install_or_upgrade_delivery(project, report)
 
     gitignore_path = project / ".gitignore"
-    gitignore = gitignore_path.read_text() if gitignore_path.exists() else ""
-    if not re.search(r"(?m)^\.playbook-routing/$", gitignore):
-        gitignore = gitignore.rstrip() + ("\n" if gitignore.strip() else "") + ".playbook-routing/\n"
-    write_if_changed(gitignore_path, gitignore, report)
+    gitignore = gitignore_path.read_bytes().decode() if gitignore_path.exists() else ""
+    original_gitignore = gitignore
+    for rule in (".playbook-routing/", "/.playbook-config-*"):
+        if not re.search(rf"(?m)^{re.escape(rule)}\r?$", gitignore):
+            gitignore += ("\n" if gitignore and not gitignore.endswith("\n") else "") + rule + "\n"
+    if gitignore != original_gitignore:
+        write_if_changed(gitignore_path, gitignore, report)
 
     needs_cold_path = (
         cross_major

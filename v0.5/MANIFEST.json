@@ -178,8 +178,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "4892abc6b498bd18b0eac333cd4b50a29d25ab249c5dec9d6559be96294a7c11",
-      "size": 46291
+      "sha256": "0bc29a66efae41df38834256cb6f7a978af1c2d454904a333d8c0e882ae81feb",
+      "size": 46895
     },
     {
       "path": "MAINTENANCE.md",
@@ -1028,8 +1028,8 @@
     },
     {
       "path": "scripts/bootstrap-project.py",
-      "sha256": "2c2a5818e063f4f0428c20f1b8d3b6104da520866d5d6a897ee9baa4b56a5d9f",
-      "size": 20154
+      "sha256": "5b77bb77822440c6ea3ca190f336b79aa006557bdb49ad470f425fe1736b48f6",
+      "size": 20300
     },
     {
       "path": "scripts/bootstrap_seed.py",
@@ -1197,6 +1197,11 @@
       "size": 10700
     },
     {
+      "path": "scripts/test_apply_recovery_gitignore.py",
+      "sha256": "f269986833cd44618de3c5cc7af2010932e0d722179808ae45e27eed3c42a77c",
+      "size": 14866
+    },
+    {
       "path": "scripts/test_audit_upstream_installed.py",
       "sha256": "ed64a1ede9c746955d1913c4f9a8aa1e2a5d2072946d81c3acf4dabc9d00892a",
       "size": 7944
@@ -1213,8 +1218,8 @@
     },
     {
       "path": "scripts/test_bootstrap_seed_routes.py",
-      "sha256": "8b00b158d1e90c509e46d9fb5dd7d2ac715a09dfca33a9c79c286662b42309be",
-      "size": 11539
+      "sha256": "b40978bcb41646ea0cda1ff29f7f02847a66be96a6e95642c175d01ba64e5abc",
+      "size": 12664
     },
     {
       "path": "scripts/test_check_glossary.py",
@@ -1418,8 +1423,8 @@
     },
     {
       "path": "scripts/upgrade-project.py",
-      "sha256": "c77837a69deefdc79e7e8e2a8186e619f5a4d56a7138591890149dedd5f81dba",
-      "size": 58676
+      "sha256": "eb3fb9eaae1fc3ae71303ea2aa89d88bd5fbff7b61c5fc3dce80c32ee626b9c9",
+      "size": 58832
     },
     {
       "path": "scripts/upstream_registry.py",
@@ -1528,8 +1533,8 @@
     },
     {
       "path": "skills/ai-playbook-upgrade-project/SKILL.md",
-      "sha256": "2da822ba9e2312cf9a6132abed9e636dadc21db652bc41dc6df9247a3d86102d",
-      "size": 3259
+      "sha256": "dec545e2e5f54ec0f5e2276476065870c9999991f7d30e703076d57715cb5b0d",
+      "size": 3521
     },
     {
       "path": "skills/ai-playbook-upgrade-project/agents/openai.yaml",
