@@ -6,8 +6,8 @@ active_features: 1
 
 1 active feature: [Apply recovery artifact visibility](apply-recovery-gitignore/slices.md)
 — approved single fix slice implemented; repair cycle 2 corrects a baseline
-bytecode-race test assertion without changing production source. Verification
-receipts belong in the product PR and cloud artifacts; review/merge pending.
+bytecode-race test assertion without changing production source. Product PR #23
+merged as `5d5265c`; this feature's remaining closeout stays separately owned.
 
 Playbook configuration UI: S8 accepted on `05de2a0` and shipped
 in PR #20 as `0a3770e` on 2026-10-08. Planning artifacts archived; durable feature
@@ -42,10 +42,9 @@ the dated initial deferral, final gate receipts, historical limits and candidate
 
 ## Separate follow-ups
 
-- Product follow-up approved and in progress:
-  [Apply recovery artifact visibility](apply-recovery-gitignore/alignment.md).
-  Bootstrap and supported upgrades preserve recovery semantics and the tracked
-  configuration; no merged or shipped outcome is claimed yet.
+- Apply recovery gitignore: product PR #23 merged as `5d5265c` on 2026-10-08.
+  Its [feature tracking](apply-recovery-gitignore/alignment.md) remains separately
+  owned; this retro clears only the configuration UI closeout.
 - October upstream-drift comparison completed separately in PR #25, merged
   as `b55e02c` on 2026-10-08. The [comparison](../analysis/2026-10-08-upstream-drift.md)
   and maintainer state retain ownership under [MAINTENANCE.md](../v0.5/MAINTENANCE.md);
