@@ -1,5 +1,10 @@
 # Playbook configuration — specification
 
+> Archived feature record: S8 accepted on 2026-10-08; shipped in PR #20 as
+> `0a3770e7306ec80fdf6b07aab88008cf2897aa77`. Earlier pending gates and failures
+> below are dated history, not current instructions. See [closeout](closeout.md)
+> for final candidate evidence, durable source pointers and remaining closeout.
+
 Status: approved specification, test boundary, separate host qualification and 24-hour recommendation-evidence freshness policy. The user subsequently approved build-all S1–S7 and a reviewed feature PR. See [execution status](execution.md); no merge, release or deployment is authorised, and S8 live qualification remains human-owned.
 
 Source of product decisions: [alignment](alignment.md) and [approved chat flow](chat-flow.md). Current integration evidence: [engineering notes](engineering-notes.md).

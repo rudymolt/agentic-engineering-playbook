@@ -1,5 +1,10 @@
 # Default and skill consumer inventory
 
+> Archived feature record: S8 accepted on 2026-10-08; shipped in PR #20 as
+> `0a3770e7306ec80fdf6b07aab88008cf2897aa77`. Earlier pending gates and failures
+> below are dated history, not current instructions. See [closeout](closeout.md)
+> for final candidate evidence, durable source pointers and remaining closeout.
+
 Completed before consumer edits on 2026-09-29. Scope: new project preferences,
 not selection or execution authority. The approved baseline already present in
 this checkout is preserved. The five planning documents and local interaction
@@ -182,4 +187,4 @@ The baseline tables above retain their historical S1/S2 scope. The completed S1â
 
 The pre-existing skill invocation table remains the complete baseline registry inventory; add `/ai-playbook-configure` (Playbook, user invocation) for preference editing and stage-00/bootstrap/lane-navigation references. Existing commands not selected as one of the five bindings retain their owning stages, compatibility/permission gates and invocation transport. Active approvals, pending routes, feature overrides, capabilities, run pace and history remain outside all preference writes. The final reviewer must confirm these boundaries against the final diff and flag any competing reader before a ready claim.
 
-Cloud final verification selects the stage-08 manual fallback explicitly. Historical copied custom-source/store receipts establish prior admission only; no new invocation, pin, audit or qualification occurs here. Native Mac ordinary adopted-lane handoff remains pending.
+Cloud final verification selects the stage-08 manual fallback explicitly. Historical copied custom-source/store receipts establish prior admission only; no new invocation, pin, audit or qualification occurs here. The fresh native Mac ordinary adopted-lane report-only invocation and real Conductor handoff were independently admitted and accepted on 2026-10-07; final S8 gates passed on `05de2a0` on 2026-10-08.

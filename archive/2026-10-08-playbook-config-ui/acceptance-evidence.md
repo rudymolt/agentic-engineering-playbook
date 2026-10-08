@@ -1,5 +1,10 @@
 # Acceptance evidence — AC01–AC23
 
+> Archived feature record: S8 accepted on 2026-10-08; shipped in PR #20 as
+> `0a3770e7306ec80fdf6b07aab88008cf2897aa77`. Earlier pending gates and failures
+> below are dated history, not current instructions. See [closeout](closeout.md)
+> for final candidate evidence, durable source pointers and remaining closeout.
+
 Status: exact walkthrough candidate review and live artifacts independently admitted; owner acceptance recorded 2026-10-07. Final review and exact-head checks must bind the later public reconciliation. This table maps the approved [specification](spec.md), implementation, public tests and guidance; it is not an independent verdict. The [execution ledger](execution.md) records historically accepted S1–S7 candidates and whole-diff review. S7a is accepted at `52e713a559b8dd70b271899671ea3355330b7720`, tree `f3b92ef195ef6b76e0d62c615c32740c20ff1c38`: 253 selected tests per Python 3.11/3.14, independent probes, 44 canonical public shards plus delivery/readiness checks and three non-root tests with zero skips. Later documentation needs fresh final verification.
 
 Common implementation entry points: [Configuration and local preferences](../../v0.5/scripts/playbook_config.py), [CLI](../../v0.5/scripts/configure-playbook.py), [job bindings](../../v0.5/scripts/skill_bindings.py), [recommendations](../../v0.5/scripts/model_recommendations.py), [evidence cache](../../v0.5/scripts/model_evidence_cache.py), [reviewed list](../../v0.5/model-guidance.json), [bootstrap](../../v0.5/scripts/bootstrap-project.py) and [upgrade](../../v0.5/scripts/upgrade-project.py). Guidance is [Configure](../../v0.5/skills/ai-playbook-configure/SKILL.md), [configuration boundary](../../v0.5/scripts/playbook-config.md), [skill contract/invocation](../../v0.5/scripts/skill-bindings.md), [model router](../../v0.5/skills/model-router/SKILL.md) and [lane-selection track](../../v0.5/93-model-routing-track.md). Each guidance topic below refers to these shared documents.
@@ -36,8 +41,12 @@ Historical host evidence remains candidate-bound. The [S8 checklist](host-qualif
 
 Update cadence: first discovery, new model/version and explicit refresh check official evidence; ordinary advice reuses successful claims for up to 24 hours, while acceptance independently fetches the original source once. Skill source/contract drift invalidates admission. Edition/software/host upgrades use preview, exact-source compatibility and the separate qualification gates while preserving customisations and active approvals; no per-turn updater or automatic migration is introduced. Final privacy/notices/manifests/current-head CI and independent review remain separate PR gates. No archive or closeout while S8 is pending.
 
-## Live owner acceptance and final-candidate boundary — 2026-10-07
+## Historical live owner acceptance and final-candidate boundary — 2026-10-07
 
 The five remaining exact-candidate walkthrough items in [host qualification](host-qualification.md#exact-candidate-human-walkthrough--executed-2026-10-07) have independently admitted receipts at `0e81f471981ca3b48522608cf14c0d775b2fdd0b`, tree `9e3b919f8e16040a602e7260211061ce7aee3498`. The maintainer accepted those private artifacts, including the supplementary differing-Plan Mac preset. Cold/custom/preset, fresh ordinary native Verify handoff, both-host positive replacement, all cancellations and unfiltered reopening are executed evidence, with the stated manual permission and provider/cost limits. Historical matrix rows are not silently promoted to current reruns.
 
 The accepted cloud review assessed this AC mapping and consumer inventory, executed 917 tests without skips and found no product defect. Full canonical and actual-head CI also passed on that walkthrough candidate. This public reconciliation produces a later tree; fresh independent review, privacy/notices/manifests, canonical checks and CI must bind that later candidate. PR #20 retains their actual-head results. No new model dispatch from Configure or custom qualification occurred, and these records grant no merge, release or deployment authority.
+
+## Final acceptance and shipment — 2026-10-08
+
+AC01–AC23 and S8 are accepted on final candidate `05de2a0`, after fresh report-only Claude Fable 5.1 whole-diff review, CI `37719224062` (794 edition tests/44 shards and 537 K4.1 delivery tests as root, zero skips) and three Linux non-root permission tests with zero skips. PR #20 explicitly records the substitution for the rejected GPT-6.1 Sol/high login route. The admitted 2026-10-07 native Mac ordinary adopted-lane handoff is complete. PR #20 merged as `0a3770e` on 2026-10-08; [closeout](closeout.md) records main CI verification and remaining retro. Historical results and failures keep their original candidate and environment boundaries.

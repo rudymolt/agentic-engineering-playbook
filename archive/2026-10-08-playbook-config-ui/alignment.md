@@ -1,5 +1,10 @@
 # Playbook configuration UI — alignment
 
+> Archived feature record: S8 accepted on 2026-10-08; shipped in PR #20 as
+> `0a3770e7306ec80fdf6b07aab88008cf2897aa77`. Earlier pending gates and failures
+> below are dated history, not current instructions. See [closeout](closeout.md)
+> for final candidate evidence, durable source pointers and remaining closeout.
+
 Status: approved product decisions and interaction direction. The subsequent specification, breakdown and build-all S1–S7 approval supersede the historical authority statements below. See [execution status](execution.md); S8 live qualification remains human-owned.
 
 ## Confirmed decisions — round 1

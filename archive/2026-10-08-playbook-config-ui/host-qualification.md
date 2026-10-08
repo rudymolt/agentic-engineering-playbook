@@ -1,5 +1,10 @@
 # S8 — human host-qualification checklist
 
+> Archived feature record: S8 accepted on 2026-10-08; shipped in PR #20 as
+> `0a3770e7306ec80fdf6b07aab88008cf2897aa77`. Earlier pending gates and failures
+> below are dated history, not current instructions. See [closeout](closeout.md)
+> for final candidate evidence, durable source pointers and remaining closeout.
+
 Status: the remaining live-host evidence is accepted by the maintainer on 2026-10-07. The walkthrough used commit `0e81f471981ca3b48522608cf14c0d775b2fdd0b`, tree `9e3b919f8e16040a602e7260211061ce7aee3498`, with production parser SHA256 `90595418813ad2282067f1a3f375d6b300bae865067f1c326bc7b4f6d15b1b0e`. Actual Mac Conductor cold prerequisites, custom-source Configure/preset, fresh ordinary adopted Verify handoff, and positive replacement on both Mac Conductor and Direct Codex passed independent parent artifact admission. A supplementary Mac preset with a different Plan proved draft-only load, cancellation and original-route reopening.
 
 The matrix retains historical walkthroughs at `d5964de`, `b99b2d9` and `c987205`; dated additions below identify the new evidence. It does not claim every historical row was rerun. Exact-candidate cloud whole-diff review, full canonical Linux verification and CI passed before the host walkthrough. This public reconciliation creates a later tree: its independent final review and actual-head checks are recorded in draft PR #20, and must pass before readiness. No prior whole-tree acceptance certifies a later tree. Host qualification grants no merge, release or deployment authority.
@@ -111,7 +116,7 @@ Run each row twice: once in Codex directly and once through Conductor. Use typed
 - Failure accounting: original rejections, interrupted runs, privacy-capture failure, capacity retry and offline packaging/audit diagnostics remain retained without pass credit. The selected-field capture repair and its regression were admitted before resumed execution. Two custom qualifications were used historically; zero remain. These ordinary/configuration walkthroughs created no qualification, source audit/pin change, paid comparison, adoption reset or project Apply.
 - Owner gate: the maintainer accepted the private evidence and authorised public reconciliation and final verification. This supersedes the earlier walkthrough-only prohibition on public edits; merge, release, deployment and feature closeout remain separate gates.
 
-## Automated preparation and final review
+## Historical automated preparation and final review
 
 - [x] S1–S7a each have a tested exact candidate accepted by a fresh independent verifier.
 - [x] Exact walkthrough candidate whole-diff review independently assessed AC01–AC23 and consumers: 917 test executions, zero skips and no product findings. The reconciled tree requires a new final review.
@@ -136,6 +141,10 @@ Use one admitted candidate per run. Before starting, privately bind full commit/
 
 The two qualification attempts are exhausted. Carry cumulative failure accounting into each handoff; stop on another matching guarded failure, independent rejection, explicit Stop, unavailable identity/admission or ambiguous evidence. Retain failures and interrupted commands without pass credit. No paid comparison, custom audit/pin changes, publication, merge, release, deployment or closeout occurs in this walkthrough.
 
-## Final review and PR gates
+## Historical final review and PR gates
 
 [AC01–AC23 mapping](acceptance-evidence.md) records code, test and guidance locators and unresolved host proof. The final verifier must independently assess that mapping and the [consumer inventory](consumer-inventory.md), then execute fresh candidate checks. Regenerate delivery artifacts before the release manifest; run the canonical verifier and changed-surface tests, public-content/privacy and notice checks. CI must pass on the actual PR head: edition verification and the delivery scope classifier/required delivery suite in `.github/workflows/playbook-ci.yml`. Historical canonical results are not current-head CI. Keep the single feature PR to `main` draft while required gates remain pending; qualification is accepted only with admitted host evidence and final exact-candidate checks. No feature archive or closeout before actual shipment.
+
+## Final S8 acceptance — 2026-10-08
+
+The reconciled final candidate `05de2a0` passed fresh independent report-only review, full CI `37719224062` (794 edition tests in 44 shards; 537 K4.1 delivery tests as root; no skips) and all three Linux non-root permission tests without skips. Claude Fable 5.1 explicitly substituted for the unavailable GPT-6.1 Sol/high Codex login route, as recorded in PR #20. Public-content, notices and generated manifests passed; pre-merge email privacy and post-merge noreply readback are complete. PR #20 merged as `0a3770e` on 2026-10-08. The unchecked preparation rows above retain their historical timing; they are superseded by these final receipts, not new host executions. See [closeout](closeout.md) for production verification and pending retro. All observed permission, provider, cost and exhausted-qualification limits remain in force.

@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+- Close the shipped Playbook configuration UI feature (PR #20, `0a3770e`):
+  record final S8 acceptance on `05de2a0`, correct the admitted native Mac
+  handoff, archive planning and keep the stage-12 retro visible in closeout state.
+  Record the Apply recovery-artifact ignore proposal and overdue upstream
+  comparison as separate follow-ups.
+
+*Why — process lane:* shipped planning must stop acting as live instructions.
+  Exact-candidate review, full CI and non-root permission evidence now support
+  acceptance while retained failures and outstanding retro remain visible.
+  Product cleanup and monthly maintenance require their own scope decisions.
+
 - Reconcile independently admitted S8 Mac Conductor and Direct Codex
   walkthroughs, including a differing-Plan local preset's draft-load
   cancellation, the fresh ordinary adopted Verify handoff and both-host

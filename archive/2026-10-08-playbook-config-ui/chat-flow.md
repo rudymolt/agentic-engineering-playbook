@@ -1,5 +1,10 @@
 # Configuration chat flow — approved direction
 
+> Archived feature record: S8 accepted on 2026-10-08; shipped in PR #20 as
+> `0a3770e7306ec80fdf6b07aab88008cf2897aa77`. Earlier pending gates and failures
+> below are dated history, not current instructions. See [closeout](closeout.md)
+> for final candidate evidence, durable source pointers and remaining closeout.
+
 Status: ASCII flow confirmed by the user on 2026-09-29; revised interactive mockup approved by the user. This is a chat experience, not a proposed browser settings page. Model placeholders below illustrate the layout rather than recommend a particular model.
 
 ## First setup
