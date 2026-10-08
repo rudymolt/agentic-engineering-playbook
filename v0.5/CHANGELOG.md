@@ -1,6 +1,6 @@
 # Playbook changelog
 
-## Unreleased
+## V0.5.1 — 2026-10-08
 
 - Complete the explicitly deferred Playbook configuration UI feature retro and
   field report; audit shipped slices and learning coverage, retain observational
