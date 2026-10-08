@@ -126,11 +126,13 @@ stages 07/10/12 and gstack names. They are proposed candidates only.
 All 35 registered directories remain in the candidate tree. Most workflow
 files changed, including startup and dependencies. Shared startup now invokes
 `gstack-skill-start` with gated onboarding/consent instruction blocks,
-state/configuration helpers, artifact sync, learning and telemetry. New
+state/configuration helpers, artifact sync, learning and telemetry. Current
 headless/spawned decision rules affect human checkpoints. These dependencies
 must be considered with the core workflow; a report-only title alone cannot
-qualify a reviewer. Candidate README adds team auto-update/routing setup and
-Bun/native-toolchain requirements. No such setup or upgrade ran here.
+qualify a reviewer. Team auto-update/routing setup already exists in the
+retained README. Candidate dependencies change from Bun v1.0+ to a v1.4.2+
+recommendation and 1.3.3 refusal floor, with additional CSO build/native-toolchain
+prerequisites; the routing command list expands. No setup or upgrade ran here.
 
 | Command | Owner / stages | Inputs → outputs; dependencies and verdict |
 |---|---|---|
@@ -154,7 +156,7 @@ Bun/native-toolchain requirements. No such setup or upgrade ran here.
 | `canary` | M / 10 | Deployed URL → monitor/report, possible rollback; browser and deployment access. Optional; production authority prerequisite, manual monitoring. |
 | `benchmark` | M / 10 | URL/baseline → performance comparison; browser and retained measurements. Optional; no measurements executed in this maintenance task. |
 | `browse` | M / 11 | URL/action → live browser observation; now prefers Aside, bundled headless fallback. Optional; do not claim logged-in Mac browser access from cloud. |
-| `connect-chrome` | M / 00 | Browser setup → Chromium/side panel; candidate file frontmatter is `open-gstack-browser`. Renamed route/alias candidate, not compatibility-qualified. Manual artifact/browser capability selection. |
+| `connect-chrome` | M / 00 | Browser setup → Chromium/side panel; retained, Mac and candidate sources already share the `open-gstack-browser` symlink/frontmatter name. Alias relationship retained, implementation changed; command-resolution compatibility remains unqualified. Manual artifact/browser capability selection. |
 | `setup-browser-cookies` | M / 00, 09, 11 | Explicit browser/source scope → cookie import; platform-supported local browser stores and browse runtime. Optional and sensitive; no import or Mac access here. |
 | `setup-deploy` | M / 00 | Repo/platform choices → deployment configuration; provider files/CLI and confirmation. Optional setup remains human-owned. |
 | `setup-gbrain` | M / 00 | Storage/trust/ingest choices → CLI/brain/MCP/routing configuration; PGLite or Supabase, doctor and policy. Optional; installation, sync and transcript consent remain outside scope. |
@@ -180,14 +182,14 @@ unregistered commands are not silently added to the stage-00 generated inventory
 The five borrowed sources remain present. No new pstack installation or routing
 convention is adopted. Current playbook adapters continue to own budgets,
 identity, report-only boundaries and evidence. pstack's internal playbooks
-are now under `skills/poteto-mode/playbooks`; source-only inspection also
+are under `skills/poteto-mode/playbooks`; source-only inspection also
 covered the plugin inventory and these orchestration/permission conventions.
 
 | Playbook route / upstream source | Stages | Inputs → outputs; verdict and fallback |
 |---|---|---|
 | `ai-playbook-verification-harness` / `create-verification-skill` | 00, 09, 11 | Repo/control surface → launch/doctor/drive/evidence/cleanup skill and feature map; requires proving a mapped feature. Exact skill and reference directory unchanged. Keep playbook generator and adoption gate. |
 | `ai-playbook-maintain-verification-harness` / `maintain-verification-skill` | 08, 09, lifecycle | Existing skill/map → complete source/live coverage and at most one proven correction PR; source workers plus serial live driving. Exact source unchanged. Keep playbook complete-coverage and clock rules. |
-| `ai-playbook-why` / `why` | 02, 06, 08, 11 | Code anchor/history/MCP sources → calibrated rationale/constraints; investigator and synthesizer references. Drift: role defaults via `pstack-models.mdc`, agent-mode `readonly: false` for MCP access. Keep local cited-evidence adapter; do not relax verifier permissions or infer model availability. |
+| `ai-playbook-why` / `why` | 02, 06, 08, 11 | Code anchor/history/MCP sources → calibrated rationale/constraints; investigator and synthesizer references. Drift: role/default resolution via `pstack-models.mdc`. Agent-mode `readonly: false` for MCP access is retained. Keep local cited-evidence adapter; do not relax verifier permissions or infer model availability. |
 | `ai-playbook-how` / `how` | 06, 08, 11 | Code question → architectural explanation via explorers/explainer; complexity split and model rule. Drift: critique branch removed and reference set reduced. Keep local interpretation-versus-execution contract. |
 | `ai-playbook-blast-radius` / `blast-radius` | 08 | Diff/safety assumptions → executed proof, risks and cleared facts; `why` and optional multi-model arena. Drift: prose/explicit unproven-risk wording changed. Keep local explicit unproven-evidence floor. |
 
