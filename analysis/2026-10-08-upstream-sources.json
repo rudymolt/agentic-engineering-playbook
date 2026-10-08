@@ -2,7 +2,7 @@
   "schema_version": 1,
   "comparison_date": "2026-10-08",
   "next_due": "2026-11-08",
-  "digest_algorithm": "SHA-256 of exact SKILL.md bytes; directory digest: compact sorted-key JSON list of sorted {path, sha256} records, UTF-8, no final newline",
+  "digest_algorithm": "SHA-256 of exact SKILL.md bytes; directory digest: compact sorted-key JSON list of {path, sha256} records in sorted path-component order, paths relative to the snapshot root, UTF-8, no final newline. Covers each skill directory; shared helpers outside it are bound by the full immutable snapshot commit, not included in this directory digest.",
   "snapshots": {
     "matt-retained": {
       "repository": "mattpocock/skills",

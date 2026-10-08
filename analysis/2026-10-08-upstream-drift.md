@@ -93,13 +93,13 @@ do not rename their customized files automatically.
 | `to-spec` | U / 03, 07 | Conversation/repo/ADRs → tracker spec; human confirms test seams, tracker config required. Current; missing setup asks the human. Manual spec route remains. |
 | `to-tickets` | U / 04 | Spec/conversation → approved vertical tickets with blocking edges; tracker config/native links or local files. Current; missing setup asks the human; stage 04 owns breakdown approval. |
 | `implement` | U / 07 | Spec/tickets → tested code, inline review, commit; `tdd` and `code-review`. Exact SKILL.md unchanged, still incompatible with stage-owned review and commit ownership. |
-| `triage` | U / 05 | Issues and opt-in external PRs → state labels and durable briefs; tracker/config, glossary and ADRs. Current; scope now includes configured external PR handling. Keep stage-05 decisions and publication ownership. |
+| `triage` | U / 05 | Issues and opt-in external PRs → state labels and durable briefs; tracker/config, glossary and ADRs. Current; external PR handling already exists in the retained source, while glossary input and setup dispatch change. Keep stage-05 decisions and publication ownership. |
 | `tdd` | M / 04, 07, 08 | Agreed seams → red/green public-interface tests; glossary, ADRs, `codebase-design`, testing/mocking references. Current; explicit tool calls and glossary input changed, review still owns refactoring. |
-| `diagnosing-bugs` | M / 11 | Symptom → red-capable loop, diagnosis, fix and regression evidence; glossary/ADRs and optional HITL template. Current; setup/invocation and glossary changes need adaptation; stage 11 remains authoritative. |
+| `diagnosing-bugs` | M / 11 | Symptom → red-capable loop, diagnosis, fix and regression evidence; glossary/ADRs and optional HITL template. Current; optional domain lookup changes CONTEXT → GLOSSARY, and the post-fix prevention question/conditional `improve-codebase-architecture` handoff is removed. No setup/invocation change. Retain stage 11's structural-root-cause → stage 06 fallback. |
 | `improve-codebase-architecture` | U / 04, 06 | Scoped churn/source → deepening proposals; glossary/ADRs, `codebase-design`, investigations. Current; new glossary lookup can miss customized CONTEXT vocabulary. |
 | `prototype` | M / alignment, frontend, Wayfinder | One design question → runnable throwaway evidence; UI/logic choice and relevant browser/code tools. Current; keep playbook throwaway-branch and tracker ownership. |
 | `domain-modeling` | M / 02 | Resolved terminology/decisions → glossary and sparing ADRs; new glossary format/map references. Current; expands trigger to direct glossary/ADR edits and changes file names. Manual context route until migration selected. |
-| `codebase-design` | M / 06, foundations | Interface/design question → shared module/depth/seam vocabulary; reference skill. Current; glossary convention changed; no permission to refactor through loading it. |
+| `codebase-design` | M / 06, foundations | Interface/design question → inline module/depth/seam vocabulary; reference skill. Current; SKILL.md changes are prose, while the conditional `DESIGN-IT-TWICE.md` reference changes domain vocabulary input from CONTEXT to GLOSSARY. Loading the reference does not authorize refactoring. |
 | `code-review` | M / 07, 08 | Fixed point, standards and spec → two separate parallel reports; tracker config, ref validation, subagents. Current but source-drifted; now asks for setup instead of invoking it, still lacks the playbook evidence/verdict envelope and explicit ceiling. Manual standards/spec axes. |
 | `research` | M / 03, Wayfinder | Question → primary-source findings with citations. Current; prose changed, stage-owned research branch/evidence policy retained. |
 | `resolving-merge-conflicts` | M / delegation | In-progress conflict → previously dedicated resolution workflow. Removed in `v1.3.1`, no replacement skill. Use ordinary conflict resolution under the delegation stage; retained `v1.2.3` contract stays available. |
@@ -218,8 +218,11 @@ Historical dates in maintenance state and generated provenance stay unchanged.
   now explicitly describe parent permission-mode overrides and ignored plugin
   permission fields. [Settings](https://code.claude.com/docs/en/settings) has
   expanded precedence/merge rules. Risk: a configured child permission mode
-  does not prove an enforced read-only reviewer. Requalify at the next actual
-  host/tool change; preserve local settings and human scope.
+  does not prove an enforced read-only reviewer. Memory docs also add direct
+  AGENTS.md discovery from v2.1.277, conditional on instruction settings,
+  session support and CLAUDE-file precedence. Proposed batch: requalify that
+  discovery on the actual host before updating the historical import/symlink
+  matrix. Preserve local settings and human scope.
 - The recorded Codex AGENTS and CLI URLs redirect to official ChatGPT Learn
   [instruction discovery](https://learn.chatgpt.com/docs/agent-configuration/agents-md)
   and [developer commands](https://learn.chatgpt.com/docs/developer-commands?surface=cli).
@@ -241,7 +244,9 @@ Historical dates in maintenance state and generated provenance stay unchanged.
    repo. Keep `v1.2.3` until that batch is reviewed.
 2. **Removed/renamed skills:** review retirement of conflict-resolution guidance
    and the browser alias; test actual command resolution before changing the
-   registry. Existing installs are not deleted by maintenance.
+   registry. Preserve the stage-11 structural-cause architecture route despite
+   upstream removal of its post-fix handoff. Existing installs are not deleted
+   by maintenance.
 3. **Embedded candidates:** separately qualify gstack CSO v3 and expanded QA
    surfaces, including helper/dependency closure, effects, budgets, output and
    privacy. Exact-source execution plus fresh review precede any digest update.

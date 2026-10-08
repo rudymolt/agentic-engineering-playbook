@@ -5,7 +5,8 @@
 - Complete the 2026-10-08 monthly upstream comparison with tagged Matt
   `v1.3.1` and immutable versioned gstack/pstack fallback sources, plus a
   separately attributed supplied Mac audit. Record command behavior, source
-  digests, denied embedded checks, manual routes and proposed adoption work.
+  digests, denied embedded checks, removed post-fix architecture handoff,
+  manual routes and proposed adoption work.
   Retain pins and historical host qualification; next comparison is 2026-11-08.
 
 *Why — maintenance batch:* newer skill trees change domain-document inputs,
