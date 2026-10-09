@@ -6,8 +6,8 @@ PR CI gate: an overdue upstream review has a different owner and remedy than a
 broken PR, so it must not turn unrelated PRs red. The weekly maintenance cron
 and local release runs keep the strict, full set.
 
---jobs runs the same public unittest files in parallel CI shards. The default
-remains the ordinary single-process release-readiness run.
+--jobs runs the public and delivery unittest files in parallel shards. The
+default remains the ordinary single-process release-readiness run.
 """
 
 from __future__ import annotations
@@ -49,7 +49,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--skip-delivery", action="store_true",
                         help="omit privileged delivery checks (split CI job only)")
     parser.add_argument("--jobs", type=int, default=1,
-                        help="concurrent public unittest file shards (CI only; default: 1)")
+                        help="concurrent public and delivery unittest file shards (default: 1)")
     args = parser.parse_args(argv)
     if not 1 <= args.jobs <= 4:
         parser.error("--jobs must be between 1 and 4")
@@ -70,8 +70,9 @@ def main(argv: list[str] | None = None) -> int:
             if result:
                 return result
             continue
-        print(f"\n$ {' '.join(command)}", flush=True)
-        completed = subprocess.run(command, cwd=ROOT, check=False)
+        run_command = (*command, "--jobs", str(args.jobs)) if args.jobs > 1 and DELIVERY_COMMAND in command else command
+        print(f"\n$ {' '.join(run_command)}", flush=True)
+        completed = subprocess.run(run_command, cwd=ROOT, check=False)
         if completed.returncode:
             return completed.returncode
     print("\nPlaybook release-readiness checks passed.")
