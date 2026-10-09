@@ -14,7 +14,7 @@ from delivery_pilot.interim import InterimCheckpointError, InterimCheckpointSnap
 from delivery_pilot.interim_coordinator import InterimDispatchError, InterimFixtureCoordinator, _success, _handoff  # noqa: E402
 from delivery_pilot.canonical import digest  # noqa: E402
 from delivery_pilot.interim_identity import operation_identities  # noqa: E402
-from test_interim import InterimCheckpointTests  # noqa: E402
+from test_interim import InterimCheckpointFixture  # noqa: E402
 from control_ref_test_support import memoized_control_refs  # noqa: E402
 
 
@@ -138,7 +138,7 @@ class Fixture:
         return {"observation": {key: operation[key] for key in ("id", "session_id", "message_id", "terminal_turn_id")}, "current_coordinator": operation["session_id"], "state": "active", "elapsed_seconds": 0}
 
 
-class CoordinatorTests(InterimCheckpointTests):
+class CoordinatorTests(InterimCheckpointFixture):
     def assert_receipt_parity(self, cases, phase="verify", handoff=False):
         store = self.store(self.first)
         approved = initial_record(self.s2_approval())

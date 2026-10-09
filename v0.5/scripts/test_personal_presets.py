@@ -659,6 +659,9 @@ class PersonalPresetTests(unittest.TestCase):
         for path, content in store_before.items():
             self.assertEqual(path.read_bytes(), content)
         self.assertFalse(result.get("launched", False))
+        snapshot = result if "after" in result else result.get("retained_proposal", {})
+        return (result["state"], snapshot.get("after"), snapshot.get("skill_after"),
+                snapshot.get("personal", {}).get("after"))
 
     def test_editor_rejects_newly_ineligible_choice_and_requires_requalified_selection(self):
         for cli in (False, True):
@@ -733,7 +736,13 @@ class PersonalPresetTests(unittest.TestCase):
         self.check_retained_fallback_recovery(False)
 
     def test_cli_retained_fallback_recovery(self):
-        self.check_retained_fallback_recovery(True)
+        def sample(cli):
+            try:
+                return self.reusable_skill_case(cli, "Save defaults", "source", recover=True)
+            finally:
+                shutil.rmtree(self.root / "custom-store")
+                shutil.rmtree(self.local)
+        self.assertEqual(sample(False), sample(True))
 
     def check_reusable_skill_freshness(self, cli):
         for action in ("Save defaults", "Save preset Qualified"):

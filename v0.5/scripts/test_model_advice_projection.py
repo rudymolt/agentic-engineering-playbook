@@ -18,7 +18,7 @@ class AdviceProjectionTests(unittest.TestCase):
     setUp = fixtures.RecommendationTests.setUp
     discover = fixtures.RecommendationTests.discover
 
-    def conversation(self, surface, kind, keep_source=False):
+    def conversation(self, surface, kind, keep_source=False, cli_sample=True):
         private = tempfile.TemporaryDirectory()
         self.addCleanup(private.cleanup)
         root = Path(private.name)
@@ -63,7 +63,7 @@ class AdviceProjectionTests(unittest.TestCase):
                                "urllib.request.OpenerDirector.open=forbidden\n"
                                "sys.path.insert(0,str(Path(sys.argv[1]).parent))\n"
                                "runpy.run_path(sys.argv.pop(1),run_name='__main__')\n")
-            def invoke(proposal=None, reply=None):
+            def cli_invoke(proposal=None, reply=None):
                 command = [sys.executable, str(wrapper), str(Path(__file__).with_name('configure-playbook.py')),
                            '--project', str(self.project), '--now', now[0], '--evidence-dir', str(cache),
                            '--preferences-dir', str(personal), '--evidence-fixture', str(source),
@@ -76,7 +76,33 @@ class AdviceProjectionTests(unittest.TestCase):
                                  process.stderr + process.stdout)
                 self.assertEqual(process.stderr, '')
                 return result
-        original = invoke()
+            original = cli_invoke()
+            if cli_sample:
+                service = Configuration(self.project, self.discover, lambda: now[0], context=self.context,
+                                        recommendation_sources=lambda: json.loads(source.read_text()),
+                                        evidence_dir=cache, preferences_dir=personal)
+                library_original = service.read()
+                def stable_result(result):
+                    result = deepcopy(result)
+                    result.pop('proposal_revision', None)
+                    result.get('discovery', {}).pop('request_id', None)
+                    result.get('recommendation_evidence', {}).pop('cache_refreshed', None)
+                    result.get('recommendation_evidence', {}).pop('cache_persisted', None)
+                    return result
+                self.assertEqual(stable_result(original), stable_result(library_original))
+                sampled_reply = False
+                def invoke(proposal=None, reply=None):
+                    nonlocal sampled_reply
+                    result = service.read() if proposal is None else service.reply(proposal, reply)
+                    if proposal is not None and not sampled_reply:
+                        cli_result = cli_invoke(proposal, reply)
+                        self.assertEqual(stable_result(cli_result), stable_result(result))
+                        sampled_reply = True
+                    return result
+            else:
+                invoke = cli_invoke
+        if surface == 'library':
+            original = invoke()
         if surface == 'cli' and not keep_source:
             source.unlink()
         before = {str(p): p.read_bytes() for folder in (self.project, cache, personal)

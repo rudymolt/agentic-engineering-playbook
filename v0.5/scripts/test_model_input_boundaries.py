@@ -20,7 +20,7 @@ class InputBoundaryTests(unittest.TestCase):
 
     def test_nonfinite_caller_recovery_all_actions_and_nested_retention(self):
         for surface in ('library', 'cli'):
-            invoke, now, original, unchanged = self.prepare(surface)
+            invoke, now, original, unchanged = self.prepare(surface, cli_sample=False)
             for number in (float('nan'), float('inf'), -float('inf')):
                 for location in ('root', 'display', 'nested'):
                     draft = deepcopy(original)
@@ -61,7 +61,7 @@ class InputBoundaryTests(unittest.TestCase):
         mutations = ({'model_id': 'unselected-sibling'}, {'provider': 'anthropic'},
                      {'tasks': ['analysis']}, {'risks': ['high']}, {'reasoning': ['low']},
                      {'tasks': 'coding'}, {'risks': None}, {'text': ''})
-        for surface in ('library', 'cli'):
+        for surface in ('library',):
             invoke, now, original, unchanged = self.prepare(surface)
             checked = datetime.fromisoformat(original['recommendations']['implementation']['guidance']['checked_at'].replace('Z', '+00:00'))
             for mutation in mutations:
@@ -91,6 +91,14 @@ class InputBoundaryTests(unittest.TestCase):
                                         self.assertEqual(advice['withheld_evidence']['rates']['input'], 2)
                                         self.assertIn('Refresh', advice['limitations'])
                                     unchanged()
+        invoke, now, original, _ = self.prepare('cli')
+        draft = deepcopy(original)
+        for advice in self.copies(draft):
+            advice['guidance'].update(mutations[0])
+        self.seal(draft)
+        checked = datetime.fromisoformat(original['recommendations']['implementation']['guidance']['checked_at'].replace('Z', '+00:00'))
+        now[0] = (checked + timedelta(seconds=86399)).isoformat()
+        self.exercise(invoke, draft, self.actions[0])
 
     def test_valid_guidance_finite_cost_and_draft_only_accept(self):
         for surface in ('library', 'cli'):

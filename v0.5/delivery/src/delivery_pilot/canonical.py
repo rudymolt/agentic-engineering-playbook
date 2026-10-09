@@ -27,26 +27,36 @@ def _reject_constant(value: str) -> None:
     raise CanonicalError(f"non-finite number: {value}")
 
 
-def _validate(value: Any, key: str | None = None) -> None:
+def _validate(value: Any, key: str | None = None) -> bool:
+    """Validate paths and report whether the standard JSON encoder is canonical."""
     if isinstance(value, float) and not math.isfinite(value):
         raise CanonicalError("non-finite number")
+    if isinstance(value, float):
+        return False
     if isinstance(value, dict):
+        fast = True
         for child_key, child in value.items():
             if not isinstance(child_key, str):
                 raise CanonicalError("object keys must be strings")
-            _validate(child, child_key)
+            child_fast = _validate(child, child_key)
+            fast = fast and child_key.isascii() and child_fast
+        return fast
     elif isinstance(value, list):
+        fast = True
         for child in value:
-            _validate(child, key)
+            child_fast = _validate(child, key)
+            fast = fast and child_fast
+        return fast
     elif isinstance(value, str) and key and (key.endswith("_ref") or key.endswith("_path") or key in {"ref", "path", "control_path"}):
         if value.startswith(("tracker:", "registry:", "artifact:", "secret-ref:", "refs/")):
-            return
+            return True
         if key == "path" and value.startswith("/") and ".." not in value.split("/"):
             # JSON Pointer paths are absolute within their record, not host paths.
-            return
+            return True
         candidate = PurePosixPath(value)
         if candidate.is_absolute() or ".." in candidate.parts:
             raise CanonicalError(f"path traversal in {key}")
+    return value is None or isinstance(value, (str, int, bool))
 
 
 def load_strict(raw: bytes | str) -> Any:
@@ -271,8 +281,11 @@ def _load_yaml_subset(text: str) -> Any:
 
 
 def canonical_bytes(value: Any) -> bytes:
-    _validate(value)
+    fast = _validate(value)
     try:
+        if fast:
+            return json.dumps(value, ensure_ascii=False, sort_keys=True,
+                              separators=(",", ":"), allow_nan=False).encode("utf-8")
         return _serialize(value).encode("utf-8")
     except (TypeError, ValueError, UnicodeError) as exc:
         raise CanonicalError(str(exc)) from exc

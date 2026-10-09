@@ -60,7 +60,8 @@ def _task(record: dict[str, Any], operation: dict[str, Any]) -> dict[str, Any]:
     task = operation.get("task")
     task = _bounded_task_shape(task)
     approved = record["approval"].get("tasks", [])
-    if not any(item["id"] == task["id"] and item["slice_id"] == task["slice_id"] and item["spec_revision"] == record["approval"]["tracker"]["spec_revision"] and item["digest"] == digest(task) for item in approved):
+    task_digest = digest(task)
+    if not any(item["id"] == task["id"] and item["slice_id"] == task["slice_id"] and item["spec_revision"] == record["approval"]["tracker"]["spec_revision"] and item["digest"] == task_digest for item in approved):
         _fail("operation task is not bound by immutable approval")
     return task
 

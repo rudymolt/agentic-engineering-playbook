@@ -19,8 +19,8 @@ class SubtotalProjectionTests(unittest.TestCase):
     actions = ('Explain Build', 'Back', 'Presets', ['invalid reply'],
                'caller recovery Back', 'Accept replacement')
 
-    def prepare(self, surface):
-        invoke, now, original, unchanged = self.conversation(surface, None)
+    def prepare(self, surface, cli_sample=True):
+        invoke, now, original, unchanged = self.conversation(surface, None, cli_sample=cli_sample)
         # Independent hand calculation: (1M * $2 + .5M * $4) * 2 = $8.
         original['context']['workload']['output_tokens'] = 500000
         for advice in self.copies(original):

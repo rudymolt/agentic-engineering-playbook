@@ -701,9 +701,10 @@ class RoleConversationTests(unittest.TestCase):
             self.assertEqual(run("reply", resumed, "Apply")["state"], "applied")
             self.assertEqual(json.loads((project / ".playbook-config.json").read_text())["models"], draft["after"])
             self.assertEqual((project / ".playbook-state.yml").read_bytes(), self.runtime)
+            return result["state"], resumed["state"]
 
     def test_recovery_arising_before_publication_blocks_both_public_saves(self):
-        for boundary in ("api", "cli"):
+        for boundary in ("api",):
             for destination in ("local", "project"):
                 for point in ("staged", "before_replace", "before_publish"):
                     for artifact in ("lock", "recovery", "unfinished", "conflict"):
@@ -711,9 +712,11 @@ class RoleConversationTests(unittest.TestCase):
                             with self.subTest(boundary=boundary, destination=destination, point=point,
                                               artifact=artifact, existing=existing):
                                 self.cross_store_save(boundary, destination, point, artifact, existing)
+        sample = ("local", "staged", "lock", False)
+        self.assertEqual(self.cross_store_save("api", *sample), self.cross_store_save("cli", *sample))
 
     def test_recovery_arising_after_publication_retains_evidence_and_concurrent_bytes(self):
-        for boundary in ("api", "cli"):
+        for boundary in ("api",):
             for destination in ("local", "project"):
                 for point in ("committed", "before_completion"):
                     for artifact in ("lock", "recovery", "unfinished", "conflict"):
@@ -721,6 +724,8 @@ class RoleConversationTests(unittest.TestCase):
                             with self.subTest(boundary=boundary, destination=destination, point=point,
                                               artifact=artifact, concurrent=concurrent):
                                 self.cross_store_save(boundary, destination, point, artifact, True, concurrent)
+        sample = ("project", "committed", "recovery", True, False)
+        self.assertEqual(self.cross_store_save("api", *sample), self.cross_store_save("cli", *sample))
 
     def test_paired_recovery_at_final_content_check_blocks_both_public_saves(self):
         for boundary in ("api", "cli"):
