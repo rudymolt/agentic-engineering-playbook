@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- Keep both required PR CI jobs while routing editorial-only README and release
+  metadata changes through focused content and generated-file checks. Run the
+  full edition suite for agent instructions, process/skill docs, code, and CI.
+
+*Why — CI lane:* required checks cannot disappear on a protected branch, but
+  a README or changelog-only PR does not need the entire public test suite.
+  Conservative path classification and fail-closed defaults keep functional
+  playbook changes on the full gate; final releases still run the full verifier.
+
 - Add explicit `playbook_result` mappings to the five pstack-derived skills,
   including qualified explanations, blocked evidence, draft harnesses and
   complete maintenance audits. Park optional prevention and benchmarking ideas
