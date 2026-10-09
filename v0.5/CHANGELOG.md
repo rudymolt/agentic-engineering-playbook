@@ -2,6 +2,46 @@
 
 ## Unreleased
 
+- Reuse one live installed-skill inventory scan and each job's route options
+  during a public configuration read; compute defaults only when no
+  saved skill selection exists. Reuse the validated local
+  checkpoint snapshot and its immutable commit payload when writing
+  the next Git control commit. Use the standard JSON encoder for canonical
+  values with ASCII keys and no floats. Keep fresh scans between calls and
+  fresh admission checks during replies, along with the
+  Git compare-and-set, remote target, and post-push lineage checks.
+
+*Why — verification lane:* repeated inventory walks and a second local Git
+  read and repeat parsing inside checkpoint writes consumed time without adding
+  a new decision boundary. The push lease still rejects remote
+  movement, and the existing checks still guard mutable inputs and
+  concurrent writes; the canonical encoder retains its exact fallback for
+  Unicode key ordering and ECMAScript number rendering.
+
+- Keep the full in-process matrices for model advice, guidance, configuration
+  recovery, personal presets, and skill publication while sampling representative
+  CLI cells with direct library parity checks.
+
+*Why — verification lane:* thousands of subprocess launches repeated the same
+  matrix assertions that already run through the library boundary. Sampling
+  preserves CLI integration checks and error-path coverage while cutting the
+  public verifier's dominant per-cell process cost.
+
+- Forward `--jobs` from the top-level verifier to the delivery verifier when
+  parallel execution is requested; keep the default single-process command.
+
+*Why — verification lane:* the top-level verifier already sharded public tests,
+  but continued to run the delivery suite serially even when the caller asked
+  for concurrent file shards.
+
+- Separate configuration and interim checkpoint fixtures from their test classes
+  so imported subclasses no longer inherit unrelated tests. Keep all existing
+  test method definitions and fixture behavior.
+
+*Why — verification lane:* unittest discovery was running the same public tests
+  111 extra times and delivery tests 14 extra times, inflating gate time and
+  confusing failure reports without adding distinct coverage.
+
 - Split the reviewed guidance tests into three balanced unittest file shards and
   move their shared fixture into a non-test module. Preserve all 154 test methods,
   their assertions, and direct execution of each shard.

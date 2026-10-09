@@ -225,6 +225,13 @@ class CanonicalTests(unittest.TestCase):
         self.assertEqual(canonical_bytes(value), b'{"a":"\xc3\xa9","z":[3,true,null]}')
         self.assertEqual(digest(value), digest(load_strict(canonical_bytes(value))))
 
+    def test_canonical_fast_path_keeps_utf16_order_and_float_fallback(self) -> None:
+        self.assertEqual(canonical_bytes({"z": [1, True], "a": "é"}),
+                         b'{"a":"\xc3\xa9","z":[1,true]}')
+        self.assertEqual(canonical_bytes({"\ue000": 1, "\U00010000": 2}),
+                         '{"\U00010000":2,"\ue000":1}'.encode())
+        self.assertEqual(canonical_bytes({"nested": [1e-6]}), b'{"nested":[0.000001]}')
+
     def test_rfc8785_ecmascript_number_boundaries(self) -> None:
         value = {"negative_zero": -0.0, "fixed_low": 1e-6, "scientific_low": 1e-7, "fixed_high": 1e20, "scientific_high": 1e21}
         self.assertEqual(
@@ -664,6 +671,13 @@ class StateTests(unittest.TestCase):
             value["mission"] = transition(value["mission"], "build")
             updated = store.write(created.commit_sha, created.digest, value)
             self.assertNotEqual(created.commit_sha, updated.commit_sha)
+            cached = store.read()
+            cached.value["mission"]["phase"] = "tampered"
+            self.assertEqual(updated.digest, store.read().digest)
+            self.assertEqual(updated.value, store.read().value)
+            other = GitControlStore(repo, "refs/heads/delivery-control/m1")
+            external = other.write(updated.commit_sha, updated.digest, value)
+            self.assertEqual(external.commit_sha, store.read().commit_sha)
             with self.assertRaises(CasMismatch):
                 store.write(created.commit_sha, created.digest, value)
 

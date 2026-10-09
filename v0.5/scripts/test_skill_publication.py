@@ -159,7 +159,7 @@ class SkillPublicationTests(unittest.TestCase):
             candidate = saved['defaults'] if action == 'Save defaults' else saved['presets']['Qualified']
             JobBindings(self.projects[0], custom_dir=self.store).resolve(candidate['skills'], 'specification')
             self.assertEqual(saved['presets']['Older'], preferences['presets']['Older'])
-            return
+            return result['state'], None
         self.assertIn(result['state'], ('blocked', 'recovery_required'), result)
         self.assertFalse(result.get('paired_completion', {}).get('validated', False))
         self.assertNotIn('saved and validated', result['message'])
@@ -214,8 +214,25 @@ class SkillPublicationTests(unittest.TestCase):
             candidate = personal['defaults'] if action == 'Save defaults' else personal['presets']['Qualified']
             self.assertEqual(candidate['skills']['jobs']['specification'][0]['source_id'], 'playbook:specification-manual')
             self.assertEqual(personal['presets']['Older'], preferences['presets']['Older'])
+        return result['state'], saved['state'] if recover else None
 
     def matrix(self, cli, points, drifts, replacements=(False,), recovery=False, concurrent=False):
+        if cli:
+            point = next((value for value in points if value.startswith('paired_')), points[0])
+            paired = point.startswith('paired_')
+            drift = next((value for value in drifts if value is not None), None)
+            sample = (paired, 'Save defaults', replacements[0], point, drift, concurrent, recovery)
+            outcomes = []
+            for sample_cli in (False, True):
+                try:
+                    outcomes.append(self.case(sample_cli, *sample))
+                finally:
+                    fixtures.shutil.rmtree(self.store)
+                    fixtures.shutil.rmtree(self.local)
+                    for path in self.projects[0].glob('.playbook-config*'):
+                        path.rmdir() if path.is_dir() else path.unlink()
+            self.assertEqual(*outcomes)
+            return
         for paired in (False, True):
             for action in ('Save defaults', 'Save preset Qualified'):
                 for replace in replacements:

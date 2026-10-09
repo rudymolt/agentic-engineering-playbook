@@ -15,7 +15,7 @@ from unittest.mock import patch
 
 from playbook_config import Configuration, ConfigError
 from skill_bindings import JobBindings, JOBS
-from test_playbook_config import ConfigurationTests
+from test_playbook_config import ConfigurationFixture
 
 
 @lru_cache(maxsize=1)
@@ -71,12 +71,23 @@ def qualified_qa(project):
     return route, source, record, proof
 
 
-class BindingTests(ConfigurationTests):
+class BindingTests(ConfigurationFixture):
     def setUp(self):
         super().setUp()
         self.bindings = JobBindings(self.project)
         self.service = Configuration(self.project, self.discover, lambda: "2026-09-29T12:00:00Z",
                                      bindings=self.bindings)
+
+    def test_live_inventory_is_fresh_between_reads_and_shared_within_each_read(self):
+        with patch.object(self.bindings, "_installed", wraps=self.bindings._installed) as scan:
+            first = self.service.read()
+            self.assertEqual("decision_required", first["state"])
+            self.assertEqual(1, scan.call_count)
+            second = self.service.read()
+            self.assertEqual("decision_required", second["state"])
+            self.assertEqual(2, scan.call_count)
+            self.bindings.options("code_review")
+            self.assertEqual(3, scan.call_count)
 
     def pick(self, proposal, job, ids):
         editor = self.service.reply(proposal, "Edit skills " + job)

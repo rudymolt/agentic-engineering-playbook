@@ -17,7 +17,7 @@ import test_playbook_config
 import test_skill_bindings
 
 
-class CustomBindingTests(test_playbook_config.ConfigurationTests):
+class CustomBindingTests(test_playbook_config.ConfigurationFixture):
     pick = test_skill_bindings.BindingTests.pick
 
     def setUp(self):

@@ -193,7 +193,7 @@ class InterimApprovalTests(unittest.TestCase):
             initial_state(initial_record(approval()))
 
 
-class InterimCheckpointTests(unittest.TestCase):
+class InterimCheckpointFixture(unittest.TestCase):
     def setUp(self) -> None:
         self.temp = tempfile.TemporaryDirectory()
         self.root = Path(self.temp.name)
@@ -224,6 +224,25 @@ class InterimCheckpointTests(unittest.TestCase):
 
     def store(self, repository: Path) -> InterimCheckpointStore:
         return InterimCheckpointStore(repository, "origin", self.approval()["checkpoint"]["ref"])
+
+
+class InterimCheckpointTests(InterimCheckpointFixture):
+    def test_rewritten_remote_url_uses_effective_fetch_and_push_target(self) -> None:
+        self.git("config", f"url.{self.root}/.insteadOf", "approved:", cwd=self.first)
+        self.git("remote", "set-url", "origin", "approved:remote.git", cwd=self.first)
+        approved = initial_record(self.approval())
+        published = self.store(self.first).create_and_publish(approved)
+        self.assertEqual(published.value["approval_digest"], approved["approval_digest"])
+
+    def test_persist_uses_one_local_snapshot_and_keeps_remote_cas(self) -> None:
+        store = self.store(self.first)
+        created = store.create_and_publish(initial_record(self.approval()))
+        with patch.object(store._store, "read", wraps=store._store.read) as read:
+            updated = store.persist(created, deepcopy(created.value))
+            self.assertEqual(1, read.call_count)
+        self.assertNotEqual(created.commit_sha, updated.commit_sha)
+        with self.assertRaisesRegex(InterimCheckpointError, "moved"):
+            store.persist(created, deepcopy(created.value))
 
     def test_adapter_refuses_a_remote_not_bound_by_approval(self) -> None:
         wrong_remote = InterimCheckpointStore(self.first, "other", self.approval()["checkpoint"]["ref"])

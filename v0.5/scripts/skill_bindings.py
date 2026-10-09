@@ -1,6 +1,7 @@
 """Versioned job eligibility and report-only resolution, never a launcher."""
 
 from copy import deepcopy
+from contextlib import contextmanager
 import hashlib
 import importlib.util
 import os
@@ -104,10 +105,14 @@ class JobBindings:
         self.registry = registry or load_registry()
         self.manifest = Path(manifest) if manifest else ROOT / "upstream-integrations.json"
         self.live_inventory = installed is None
+        self._inventory_scope_depth = 0
+        self._options_cache = {}
         self.rejections = []
         self.custom_dir = Path(custom_dir) if custom_dir is not None else Path.home() / ".config/ai-playbook/custom-skills"
         try:
-            self.installed = installed if installed is not None else self._installed()
+            # A live inventory is taken at the public operation boundary.
+            # Explicit test/caller inventories remain fixed as supplied.
+            self.installed = installed if installed is not None else {}
             self._check_custom_store()
         except (OSError, RuntimeError) as error:
             raise ConfigError("Cannot inspect skill sources or custom binding/audit storage ("
@@ -178,6 +183,21 @@ class JobBindings:
         return {"contract_version": VERSION, "jobs": {
             job: [self.options(job)[0]["binding"]] for job in JOBS}}
 
+    @contextmanager
+    def inventory_scope(self):
+        """Reuse one live scan during a public configuration operation."""
+        if self.live_inventory and self._inventory_scope_depth == 0:
+            self.installed = self._installed()
+        if self._inventory_scope_depth == 0:
+            self._options_cache = {}
+        self._inventory_scope_depth += 1
+        try:
+            yield
+        finally:
+            self._inventory_scope_depth -= 1
+            if self._inventory_scope_depth == 0:
+                self._options_cache = {}
+
     def _reject(self, identity, reason):
         rejection = {"source_id": identity if portable_identity(identity) else "custom:unresolved", "reason": reason}
         if rejection not in self.rejections:
@@ -186,8 +206,10 @@ class JobBindings:
     def options(self, job):
         if job not in JOBS:
             raise ConfigError("Unknown Playbook job; select one of the five versioned contracts.")
+        if self._inventory_scope_depth and job in self._options_cache:
+            return deepcopy(self._options_cache[job])
         contract = JOBS[job]
-        if self.live_inventory:
+        if self.live_inventory and not self._inventory_scope_depth:
             self.installed = self._installed()
         source = ROOT / "10-process" / contract["stage"]
         manual = self._candidate(f"playbook:{job}-manual", source, "manual",
@@ -216,6 +238,8 @@ class JobBindings:
             if candidate:
                 choices.append(candidate)
         choices.extend(self._custom_options(job))
+        if self._inventory_scope_depth:
+            self._options_cache[job] = deepcopy(choices)
         return choices
 
     def _custom_options(self, job):

@@ -46,7 +46,8 @@ def _task(record: dict[str, Any], slice_id: str) -> dict[str, Any]:
     if len(matches) != 1 or not isinstance(matches[0].get("task"), dict):
         _fail("repair sequence lacks one immutable Build task")
     task = matches[0]["task"]
-    if not any(item["id"] == task.get("id") and item["slice_id"] == slice_id and item["digest"] == digest(task) for item in approved):
+    task_digest = digest(task)
+    if not any(item["id"] == task.get("id") and item["slice_id"] == slice_id and item["digest"] == task_digest for item in approved):
         _fail("repair task is not bound by immutable approval")
     return task
 

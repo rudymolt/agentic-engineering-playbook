@@ -2,10 +2,13 @@
 
 from contextlib import redirect_stdout
 from io import StringIO
+import importlib.util
 from pathlib import Path
+import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 from parallel_verification import run_parallel, test_files
 
@@ -14,6 +17,23 @@ ROOT = Path(__file__).resolve().parents[2]
 
 
 class ParallelVerificationTests(unittest.TestCase):
+    def test_delivery_command_receives_parallel_jobs_only_when_requested(self):
+        script = ROOT / "v0.5/scripts/verify-playbook.py"
+        spec = importlib.util.spec_from_file_location("verify_playbook_under_test", script)
+        verifier = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(verifier)
+        delivery = next(command for command in verifier.COMMANDS if verifier.DELIVERY_COMMAND in command)
+        for jobs in (1, 3):
+            with self.subTest(jobs=jobs), \
+                    patch.object(verifier, "test_files", return_value=("test_fixture.py",)), \
+                    patch.object(verifier, "run_parallel", return_value=0), \
+                    patch.object(verifier.subprocess, "run", return_value=subprocess.CompletedProcess([], 0)) as run, \
+                    redirect_stdout(StringIO()):
+                self.assertEqual(verifier.main(["--skip-drift", "--jobs", str(jobs)]), 0)
+                calls = [call.args[0] for call in run.call_args_list if verifier.DELIVERY_COMMAND in call.args[0]]
+                expected = delivery if jobs == 1 else (*delivery, "--jobs", "3")
+                self.assertEqual(calls, [expected])
+
     def test_file_shards_match_the_whole_public_suite(self):
         directory = ROOT / "v0.5/scripts"
         files = test_files(directory)
