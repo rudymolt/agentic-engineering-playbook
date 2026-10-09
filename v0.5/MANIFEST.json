@@ -178,8 +178,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "48ed910b8e02e9f0214102c5889e78ba57a17fb66a24e265fe9f6a4e87e96af5",
-      "size": 50709
+      "sha256": "c83de73d81504d799df2296e16d477463f5f735af9bd746a80bf277d0889b770",
+      "size": 51134
     },
     {
       "path": "MAINTENANCE.md",
@@ -1192,6 +1192,11 @@
       "size": 10572
     },
     {
+      "path": "scripts/reviewed_guidance_support.py",
+      "sha256": "ea8b01fba40d563f0dddcf435a616b05dfe7f8709128b183424ceaf1e483298b",
+      "size": 15543
+    },
+    {
       "path": "scripts/skill-bindings.md",
       "sha256": "9c55b3882f56a7c2387bebcee5ac51491af86ce75b5ba04d112197a04386970b",
       "size": 17540
@@ -1323,8 +1328,18 @@
     },
     {
       "path": "scripts/test_model_reviewed_guidance.py",
-      "sha256": "e9d272332cc8da7dc6d4e9c25cc8cb94f48591188cb6065ab6fb5d5ab4cee1e6",
-      "size": 182707
+      "sha256": "8bce1c6535648fff60a82e73f5b05874403657a6c069d7fea177742897804a50",
+      "size": 84514
+    },
+    {
+      "path": "scripts/test_model_reviewed_guidance_boundaries.py",
+      "sha256": "59c12a57196ef10f93c922e385b16b856b7f51abf812017575ea79b46f893408",
+      "size": 51007
+    },
+    {
+      "path": "scripts/test_model_reviewed_guidance_declarations.py",
+      "sha256": "7ffaa5c987b8c8ba28b2d3c4f3316905c4e2697aeb193c9864a916fa6d3e4376",
+      "size": 33801
     },
     {
       "path": "scripts/test_model_subtotal_projection.py",
