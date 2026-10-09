@@ -73,8 +73,8 @@
     },
     {
       "path": "10-process/10-ship-and-deploy.md",
-      "sha256": "3daba3a007699040e6f676cbc8c755f63f94b863fe173aa3b632620663ff5bde",
-      "size": 10083
+      "sha256": "f3f81ce007f6cea6dca8015573f1d6d2fae3eb38e9e092125961d1e8efdaf9d8",
+      "size": 10916
     },
     {
       "path": "10-process/11-debug.md",
@@ -173,13 +173,13 @@
     },
     {
       "path": "AGENT-DIGEST.md",
-      "sha256": "f230367180c728cef606a66f5af3f3edddae3674ab2a7a2dce9f54ca9dfb7893",
-      "size": 17046
+      "sha256": "d4c19b0918beaef374d717e7564ef31400e5bee05ecfc88c08189266af2a6934",
+      "size": 17411
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "ab302ef12191f230c662833d5dcc5d34a0c03a565ba5c4cb1daedc346deb6ab6",
-      "size": 49380
+      "sha256": "d4752fd199e55a5b8d1cd4695310480e308719d2aae0c6473563781fe3c97991",
+      "size": 50171
     },
     {
       "path": "MAINTENANCE.md",
@@ -1638,8 +1638,8 @@
     },
     {
       "path": "skills/ship-release/PLAYBOOK-PROFILE.md",
-      "sha256": "23a3cea28de1b4adc4173aa90b328c900559439b82d94a04c64381dd1e759fd0",
-      "size": 521
+      "sha256": "7a2501c77e07cb243d4f4393628a7e5ba7234c8dda920fb1d0ea908e09ca85a9",
+      "size": 827
     },
     {
       "path": "skills/ship-release/SKILL.md",
