@@ -10,6 +10,53 @@ SPEC.loader.exec_module(MODULE)
 
 
 class PublicContentGateTest(unittest.TestCase):
+    def test_exact_merge_privacy_fields_are_allowed_only_in_root_agents(self):
+        record = ("- Repository: rudy" + "molt/agentic-engineering-playbook\n"
+                  "- GitHub login: rudy" + "molt\n")
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "AGENTS.md").write_text(record)
+            self.assertEqual(MODULE.problems(root), [])
+            for relative in ("other.md", "nested/AGENTS.md"):
+                with self.subTest(relative=relative):
+                    path = root / relative
+                    path.parent.mkdir(parents=True, exist_ok=True)
+                    path.write_text(record)
+                    self.assertTrue(any(relative in item for item in MODULE.problems(root)))
+                    path.unlink()
+
+    def test_merge_privacy_fields_do_not_hide_modified_or_appended_content(self):
+        repository = "- Repository: rudy" + "molt/agentic-engineering-playbook"
+        login = "- GitHub login: rudy" + "molt"
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            path = root / "AGENTS.md"
+            for content in (
+                repository + "-private",
+                login + "-other",
+                repository + " ru" + "comps",
+                login + " owner@" + "personal.test",
+                repository + " /" + "home/person/project",
+                repository + "\n" + login + "\nru" + "champs",
+                repository + "\n" + login + "\nowner@" + "personal.test",
+                repository + "\n" + login + "\n/" + "Users/person/project",
+            ):
+                with self.subTest(content=content):
+                    path.write_text(content)
+                    self.assertTrue(MODULE.problems(root))
+
+    def test_email_scan_runs_even_on_an_approved_marker_line(self):
+        # Exercise the independent email scan with a synthetic approved line.
+        line = "- GitHub login: rudy" + "molt owner@" + "personal.test"
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            (root / "AGENTS.md").write_text(line)
+            from unittest.mock import patch
+            with patch.object(MODULE, "PUBLIC_MERGE_PRIVACY_FIELDS", {line}):
+                findings = MODULE.problems(root)
+            self.assertEqual(len(findings), 1)
+            self.assertIn("non-placeholder email", findings[0])
+
     def test_old_tree_and_personal_address_block_publication(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

@@ -1,8 +1,11 @@
 # Planning status
 
-active_features: 4
+active_features: 5
 
 ## Active features
+
+[Merge privacy confirmation](merge-privacy-confirmation/slices.md) — implemented;
+privacy TDD and focused checks pass; independent review and final gates pending.
 
 [Verifier performance](verifier-performance/slices.md) — aligned and specified; five
 ordered slices implemented; the measured slice 5 improvement is accepted,

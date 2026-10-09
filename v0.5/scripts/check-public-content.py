@@ -27,6 +27,11 @@ PUBLIC_RUNTIME_RUN_URL = re.compile(
 )
 ALLOWED_EMAILS = {"git@github.com"}
 ALLOWED_DOMAINS = {"example.com", "example.invalid", "users.noreply.github.com"}
+# The approved public confirmation fields are exact whole lines, root AGENTS only.
+PUBLIC_MERGE_PRIVACY_FIELDS = {
+    "- Repository: " + "rudy" + "molt/agentic-engineering-playbook",
+    "- GitHub login: " + "rudy" + "molt",
+}
 
 
 def problems(root: Path) -> list[str]:
@@ -57,6 +62,8 @@ def problems(root: Path) -> list[str]:
             marker_text = line.replace(PUBLIC_GUIDE_LINK, "") if relative == Path("README.md") else line
             if relative in PUBLIC_RUNTIME_FILES:
                 marker_text = PUBLIC_RUNTIME_RUN_URL.sub("", marker_text)
+            if relative == Path("AGENTS.md") and line in PUBLIC_MERGE_PRIVACY_FIELDS:
+                marker_text = ""
             if PRIVATE_MARKERS.search(marker_text):
                 found.append(f"{relative}:{number}: private marker or personal path")
             for match in EMAIL.finditer(line):
