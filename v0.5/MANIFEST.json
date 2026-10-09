@@ -73,8 +73,8 @@
     },
     {
       "path": "10-process/10-ship-and-deploy.md",
-      "sha256": "aecfe57bcca0432a607fe9490f1cdce2d46ff8cfc6cf3073bcc6fca47cb8415d",
-      "size": 9606
+      "sha256": "f1011486ccc7164d6a1abf79e32865c50dc3adad5061fa0cb881a4fdde80bc80",
+      "size": 10013
     },
     {
       "path": "10-process/11-debug.md",
@@ -178,8 +178,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "4af4861c29cbaeb958fc8461b71a6f467f24884af4c1b4afbdbf5bfebbaa13ae",
-      "size": 47798
+      "sha256": "77281214b2d2e26bf29a9420235fff71fc06bf6c50520bf5a70edb119e915ce6",
+      "size": 48203
     },
     {
       "path": "MAINTENANCE.md",
