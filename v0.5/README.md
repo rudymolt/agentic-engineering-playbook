@@ -2,7 +2,7 @@
 
 > Read [AGENT-DIGEST.md](AGENT-DIGEST.md) first. This folder is the live public edition.
 
-**Current release:** V0.5.1 · [Changes](CHANGELOG.md#v051--2026-10-08)
+**Current release:** V0.5.1 · [Changes](CHANGELOG.md#v051--2026-10-09)
 
 V0.5 is a human-led, agent-assisted engineering process with 13 stages, optional tracks, project templates, local skills, deterministic checks, and an optional delivery runtime. This repository contains one edition and begins with a new public Git history.
 
@@ -61,6 +61,13 @@ slices run before the next handback. An optional `fast` suffix requests Codex
 fast mode for that Build and its returned fixes and fresh Verify when available.
 The [model routing track](93-model-routing-track.md) and
 [build guide](10-process/07-implementation-tdd.md) contain the gates and limits.
+
+Matt's pinned v1.3.1 skills use `GLOSSARY.md`. Existing projects should run
+the [upgrade skill](skills/ai-playbook-upgrade-project/SKILL.md) to preview
+managed glossary migration and preserve local edits; new projects receive the
+current filename at bootstrap. `/matt-retro` and gstack's `/retro` are separate
+commands. The bundled pstack-derived skills return explicit `playbook_result`
+outcomes and next stages for agent handoffs.
 
 Projects already using a private V0.4.2 checkout should use the tested [transition guide](skills/ai-playbook-upgrade-project/MIGRATIONS.md) to adopt a public V0.5 release without overwriting their content. Projects still on V0.3 first use their private migration bridge. No earlier edition source tree is distributed here.
 

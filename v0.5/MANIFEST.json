@@ -178,8 +178,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "1fdebdd0db6680df3b9fdd0f3ee00eab956c1425a484dff05780d4219dcba1c6",
-      "size": 50681
+      "sha256": "48ed910b8e02e9f0214102c5889e78ba57a17fb66a24e265fe9f6a4e87e96af5",
+      "size": 50709
     },
     {
       "path": "MAINTENANCE.md",
@@ -188,8 +188,8 @@
     },
     {
       "path": "README.md",
-      "sha256": "c7d0c6b7b3502f13c3e3a3789d757a4ebfc12c02c33a7afb1f9967e39064f52a",
-      "size": 5655
+      "sha256": "3bd5261018961265627ac0d0667968c1ba687babfa45092f5aa9196829afc8b0",
+      "size": 6089
     },
     {
       "path": "assets/playbook-docs.css",
