@@ -1,11 +1,8 @@
 # Planning status
 
-active_features: 5
+active_features: 4
 
 ## Active features
-
-[Merge privacy confirmation](merge-privacy-confirmation/slices.md) — implemented;
-privacy TDD and focused checks pass; independent review and final gates pending.
 
 [Verifier performance](verifier-performance/slices.md) — aligned and specified; five
 ordered slices implemented; the measured slice 5 improvement is accepted,
@@ -35,14 +32,14 @@ This maintainer checkout intentionally has no root `.playbook-state.yml`.
 The stage-10 closeout state is mirrored here; no consumer runtime state is created.
 
 ```yaml
-last_updated: 2026-10-08T11:05:59Z
+last_updated: 2026-10-09T20:54:02Z
 counters:
-  features_shipped_total: 1
+  features_shipped_total: 2
 last_run:
-  ship: 2026-10-08T04:26:06Z
-  feature_ship: 2026-10-08T04:26:06Z
-  doc_close: 2026-10-08
-  retro: 2026-10-08T11:05:59Z
+  ship: 2026-10-09T20:50:13Z
+  feature_ship: 2026-10-09T20:50:13Z
+  doc_close: 2026-10-09T20:54:02Z
+  retro: 2026-10-09T20:54:02Z
 pending_closeouts: []
 ```
 
@@ -53,6 +50,17 @@ all three closeout conditions are satisfied. This mirrored update reaches main
 only after human merge of the retro PR. No other feature closeout is cleared.
 [Archived closeout](../archive/2026-10-08-playbook-config-ui/closeout.md) preserves
 the dated initial deferral, final gate receipts, historical limits and candidates.
+
+Merge privacy confirmation shipped in PR #39 as `98886bd` on 2026-10-09.
+Main Playbook CI `37989627022` passed both jobs on the merge.
+The post-merge file tree matches verified candidate `9bcba3b`; ten privacy
+tests and public-content verification pass. Noreply author and committer
+readback covers the sole newly added main commit. Doc-close and the
+[feature retro](retros/2026-10-09-merge-privacy-confirmation.md) are complete
+on this closeout branch, awaiting human merge for publication on main.
+Its pending closeout is cleared; no unrelated closeout is changed.
+[Closeout receipts](../archive/2026-10-09-merge-privacy-confirmation/closeout.md)
+preserve verification, provenance and release-scope limits.
 
 ## Separate follow-ups
 
