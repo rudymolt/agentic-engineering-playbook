@@ -6,6 +6,13 @@
 
 Guided configuration, evidence-backed model advice, skill bindings, and safer upgrades.
 
+- Require PR review conversations to be checked and addressed before declaring a
+  merge ready, with evidence for stale findings and resolution of handled threads.
+
+*Why — ship lane:* an unresolved review thread can block an otherwise verified
+  release PR, and a reviewer can cite a commit outside the current PR. Explicit
+  head-bound triage and thread resolution keep the merge decision reviewable.
+
 - Complete the explicitly deferred Playbook configuration UI feature retro and
   field report; audit shipped slices and learning coverage, retain observational
   evidence gaps, assess the three approved candidates and clear only this

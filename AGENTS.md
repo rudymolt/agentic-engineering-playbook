@@ -9,3 +9,5 @@ During planning, account for future updates to software, skills, models and sett
 Do not add personal addresses, machine paths, private-project records, credentials, old edition trees, or historical private repository content. Treat a failed privacy check as a publication blocker.
 
 For maintainer commits, set both Git author and committer to a GitHub `noreply` address in each checkout before committing. Before merging a public PR through GitHub, confirm that the account's “Keep my email addresses private” setting is enabled; afterward, read back every commit newly added to `main` and require `noreply` author and committer addresses.
+
+Before calling a PR ready to merge, inspect its review threads and comments. Fix valid findings and verify the updated head; answer stale or incorrect findings with evidence. Resolve each addressed thread, and leave any thread that needs human action clearly identified.
