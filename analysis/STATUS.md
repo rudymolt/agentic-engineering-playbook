@@ -5,6 +5,12 @@
 - [Matt v1.3.1 adoption](2026-10-08-matt-migration.md) — selected source and
   migration implementation; host rollout and gstack qualification remain separate.
 
+## Deferred exploration
+
+- [Pstack prevention and performance additions](2026-10-09-pstack-future-additions.md)
+  — for further exploration; no implementation selected. Evaluate `correct`
+  and `benchmark-checklist` independently before an adoption decision.
+
 ## Field reports
 
 - [2026-10-08 — Playbook configuration UI](field-reports/2026-10-08-playbook-config-ui.md)

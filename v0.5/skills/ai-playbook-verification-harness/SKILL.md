@@ -108,6 +108,24 @@ generator contract without selecting or modifying a consuming project.
 Completion criterion: executable evidence proves one mapped journey and its
 negative cases, with fixture scope and PILOT-01 limitation explicit.
 
+## Terminal result
+
+On every exit, including an early stop, append a YAML `playbook_result` containing
+`outcome`, `next_stage`, and an ordered `required_actions` list. Choose the row
+that matches the result:
+
+| Harness result | outcome | next_stage | required_actions |
+|---|---|---|---|
+| Proved route with the required execution evidence and fresh independent confirmation | `handoff` | Owning stage id, default `09-qa` | Review/adopt the evidenced route and finish that stage's remaining checks |
+| Draft route ready for its required independent proof | `handoff` | Owning stage id, default `09-qa` | Run the missing proof and obtain independent confirmation before adoption |
+| Target/scope approval missing, unavailable controls or prerequisites, failed proof, or customized-file conflict | `blocked` | Owning stage id, default `09-qa` | Name the decision, prerequisite or scoped repair needed; require fresh proof after repair |
+
+Include the harness's proved/draft/blocked status and evidence class in the report.
+Generated instructions and builder smoke alone remain draft. Emit the actual
+owning stage id (for example `00-prereqs`, `09-qa` or `11-debug`), not a placeholder.
+Carry remaining caller actions forward. The envelope does not authorize adoption,
+state writes, or shipping; those remain with the stage owner.
+
 ## Guardrails
 
 - Generation is optional and does not install a harness in another project or
