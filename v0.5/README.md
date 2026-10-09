@@ -2,6 +2,8 @@
 
 > Read [AGENT-DIGEST.md](AGENT-DIGEST.md) first. This folder is the live public edition.
 
+**Current release:** V0.5.1 · [Changes](CHANGELOG.md#v051--2026-10-08)
+
 V0.5 is a human-led, agent-assisted engineering process with 13 stages, optional tracks, project templates, local skills, deterministic checks, and an optional delivery runtime. This repository contains one edition and begins with a new public Git history.
 
 ## Start a project
@@ -31,6 +33,15 @@ and explicit Apply. QA inherits Verify; Coordinator is display-only. Configure k
 escalation constraints and active work unchanged. Presentation, billing,
 reusable personal defaults and named presets save only to an explicitly
 previewed local destination; no model launches.
+
+Use `Edit skills` to review the five stage-owned job bindings for alignment,
+specification, implementation, code review and application QA. A selected
+skill must pass its source and contract checks at Apply and again at its owning
+stage; a saved binding does not grant permission to run it. `Presets` and
+`Load preset <name>` change only the draft. `Save defaults` or
+`Save preset <name>` followed by `Apply preference` saves reusable choices to
+the reviewed personal destination; project `Apply` is a separate action.
+
 The [configuration boundary](scripts/playbook-config.md) is also the
 effective-default reader for existing lane gates. New projects still use the
 existing bootstrap approval gate, which can preview seeding personal defaults
@@ -41,6 +52,15 @@ published API rates where established. Explicit Refresh rechecks advice; ordinar
 checkpoints reuse it for up to 24 hours. An unavailable saved route stays visible
 until an explicit replacement or another selection is previewed. Source outages
 retain the last actual successful date and do not create new recommendations.
+
+At Plan, Build and Verify boundaries, the agent shows the effective saved route
+and any supported evidence-backed advice. The human selects the route; the
+stage checks live availability and identity before launch. For an approved
+feature, `build one`, `build all` and `build to <slice>` control how many eligible
+slices run before the next handback. An optional `fast` suffix requests Codex
+fast mode for that Build and its returned fixes and fresh Verify when available.
+The [model routing track](93-model-routing-track.md) and
+[build guide](10-process/07-implementation-tdd.md) contain the gates and limits.
 
 Projects already using a private V0.4.2 checkout should use the tested [transition guide](skills/ai-playbook-upgrade-project/MIGRATIONS.md) to adopt a public V0.5 release without overwriting their content. Projects still on V0.3 first use their private migration bridge. No earlier edition source tree is distributed here.
 

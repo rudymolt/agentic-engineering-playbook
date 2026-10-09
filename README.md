@@ -13,7 +13,7 @@
 
 Turn an idea into a clear specification, build it in manageable pieces, verify the result, and carry lessons into the next feature. You bring the goals and judgement. The playbook gives your agent a repeatable way to work.
 
-**Current release:** V0.5.0 · [Release notes](v0.5/CHANGELOG.md)
+**Current release:** V0.5.1 · [Release notes](v0.5/CHANGELOG.md#v051--2026-10-08)
 
 **Humans:** [Get started](#get-started) · **Agents:** [Read the agent digest](v0.5/AGENT-DIGEST.md)
 
@@ -32,6 +32,15 @@ Use it when you are building a new product or working on an existing codebase an
 - **Accepting work without proof.** Require tests, review, and evidence that the result meets the agreed goal. Larger changes receive independent verification from a fresh agent context.
 
 The human owns goals, acceptance criteria, and consequential decisions. The agent plans, implements, checks, and records the work within the agreed scope.
+
+## What's new in V0.5.1
+
+- **Configure model and skill choices in chat.** `/ai-playbook-configure` shows the current Plan, Build, Verify, and repair defaults, plus the skills used for alignment, specification, implementation, review, and application QA. You can inspect sources, edit a draft, and review the exact destination before applying it. Personal defaults and named presets can be saved locally and loaded into a draft for another project. [Configuration guide](v0.5/README.md#existing-projects)
+- **Get evidence-backed model advice.** At a Plan, Build, or Verify choice, the agent can show task-specific suggestions with source dates, limitations, and available pricing information. Suggestions do not change a saved preference or launch a model; the usual route and approval checks still apply. [Model routing guide](v0.5/93-model-routing-track.md)
+- **Choose the amount of build work.** After planning, choose `build one`, `build all`, or `build to <slice>` for eligible slices. Add `fast` to a Build choice when an available Codex route supports it. Fresh verification and the same quality gates apply. [Build choices](v0.5/10-process/07-implementation-tdd.md#the-build-choice-v0316)
+- **Keep setup and upgrades safe.** Bootstrap can preview project model seeds, and upgrades preserve adopted configuration and project content. Retained Apply recovery files are ignored by Git while the shareable configuration remains trackable. [Bootstrap](v0.5/skills/ai-playbook-bootstrap-project/SKILL.md) · [Upgrade](v0.5/skills/ai-playbook-upgrade-project/SKILL.md)
+
+See the [V0.5.1 changelog](v0.5/CHANGELOG.md#v051--2026-10-08) for the full set of changes and fixes.
 
 ## How it works
 
@@ -106,6 +115,8 @@ Setup checks how your environment reads project instructions, runs commands, loa
 
 The playbook includes Conductor-specific setup and delivery procedures alongside its general engineering workflow. During setup, the agent inspects the project and proposes appropriate setup commands, development commands, files to copy, and port or shared-resource handling. You review those changes before they are applied.
 
+After setup, `/ai-playbook-configure` can show the project's saved model and skill choices in the active agent chat. The Plan, Build, and Verify stages explain whether a selected route uses the current tab, a sidecar, or a new Conductor tab before work starts.
+
 ### Building features autonomously
 
 Once you have planned a feature and sliced it up into smaller chunks you are ready to build. With the playbook you can choose how much work the agent completes before handing control back:
@@ -139,10 +150,14 @@ You need a coding-agent environment, such as Codex or Claude Code, that can read
 Clone this repository into a separate directory using the repository URL from GitHub's **Code** button:
 
 ```sh
-git clone --branch v0.5.0 --depth 1 REPOSITORY_URL playbook
+git clone --branch v0.5.1 --depth 1 REPOSITORY_URL playbook
 ```
 
 Replace `REPOSITORY_URL` with the copied URL. Keep this checkout at the release tag so development changes cannot silently change the instructions your project uses.
+When a later release is available, read its changelog and use the
+[upgrade skill](v0.5/skills/ai-playbook-upgrade-project/SKILL.md) to check
+compatibility and preview the migration while preserving your project's
+instructions, model choices, skill bindings, and other customisations.
 
 ### 2. Open your project and give your agent this prompt
 
@@ -175,6 +190,8 @@ Once setup passes, describe the work in ordinary language:
 | Build a feature | “Help me plan a report export. Let's agree on what it needs to do.” |
 | Fix a bug | “Investigate why saving this form sometimes creates two records.” |
 | Review work | “Review this change and show the evidence that it is ready.” |
+| Adjust model or skill defaults | “Run `/ai-playbook-configure` and show me the choices before applying.” |
+| Build planned slices | “Build one,” “build all,” or “build to slice 3”; add “fast” when available. |
 | Resume a project | “What should we work on next?” or `/whats-next` |
 
 You do not need to memorise every stage or command. The agent uses the playbook to find the right next step and brings decisions back to you when your judgement is needed.
@@ -188,6 +205,7 @@ Read [v0.5/AGENT-DIGEST.md](v0.5/AGENT-DIGEST.md) first. It is the compact opera
 - **Setting up a target project:** follow the [bootstrap skill](v0.5/skills/ai-playbook-bootstrap-project/SKILL.md) from a pinned release checkout. Complete its setup review and prerequisite checks before declaring the project ready.
 - **Resuming an adopted project:** read its local instructions and state, then follow the digest's session-start route. Project-local rules take precedence over general playbook guidance.
 - **Upgrading an adopted project:** follow the [upgrade skill](v0.5/skills/ai-playbook-upgrade-project/SKILL.md) to review changes while preserving project-owned content.
+- **Configuring an adopted project:** use the [configure skill](v0.5/skills/ai-playbook-configure/SKILL.md) for model defaults and eligible skill jobs. Keep preferences and evidence local; project changes require a reviewed preview and explicit Apply.
 - **Changing this repository:** read [AGENTS.md](AGENTS.md) and the [maintenance guide](v0.5/MAINTENANCE.md).
 
 Load detailed stage instructions when the digest routes you to them. The versioned documents remain the operating source of truth.
