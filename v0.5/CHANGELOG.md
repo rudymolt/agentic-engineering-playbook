@@ -3,7 +3,8 @@
 ## Unreleased
 
 - Reuse one live installed-skill inventory scan and each job's route options
-  during a public configuration read or reply. Reuse the validated local
+  during a public configuration read or reply; compute defaults only when no
+  saved skill selection exists. Reuse the validated local
   checkpoint snapshot and its immutable commit payload when writing
   the next Git control commit. Use the standard JSON encoder for canonical
   values with ASCII keys and no floats. Keep fresh scans between calls and the Git

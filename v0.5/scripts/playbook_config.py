@@ -589,13 +589,6 @@ class Configuration:
 
     def read(self):
         try:
-            with self._bindings().inventory_scope():
-                return self._read()
-        except (ConfigError, OSError, UnicodeError, TypeError) as error:
-            return self._blocked(error)
-
-    def _read(self):
-        try:
             config, origins, inputs = self._snapshot()
             routes, evidence = self._available()
             proposal = {
@@ -614,12 +607,13 @@ class Configuration:
                               "action": "Use the existing bootstrap preview/approval gate; configuration never bootstraps."},
             }
             bindings = self._bindings()
-            bindings.rejections = []
-            starting = deepcopy(config.get("skills", bindings.defaults()))
-            proposal.update(skill_before=deepcopy(starting), skill_after=deepcopy(starting),
-                            skills_adopted="skills" in config, edited_jobs=[],
-                            skill_alternatives={job: bindings.options(job) for job in starting["jobs"]},
-                            skill_rejections=deepcopy(bindings.rejections))
+            with bindings.inventory_scope():
+                bindings.rejections = []
+                starting = deepcopy(config["skills"] if "skills" in config else bindings.defaults())
+                proposal.update(skill_before=deepcopy(starting), skill_after=deepcopy(starting),
+                                skills_adopted="skills" in config, edited_jobs=[],
+                                skill_alternatives={job: bindings.options(job) for job in starting["jobs"]},
+                                skill_rejections=deepcopy(bindings.rejections))
             if evidence.get("coordinator") is not None:
                 validate_choice(evidence["coordinator"], "coordinator")
                 proposal["coordinator"] = {"observed": True, "choice": deepcopy(evidence["coordinator"]),
@@ -887,6 +881,8 @@ class Configuration:
         return index
 
     def reply(self, proposal, text):
+        if isinstance(text, str) and text.strip().lower() == "not now":
+            return self._reply_public(proposal, text)
         try:
             with self._bindings().inventory_scope():
                 return self._reply_public(proposal, text)
@@ -1316,7 +1312,7 @@ class Configuration:
                 self._replacement(refreshed)
                 return self._seal(refreshed)
             if proposal["skills_adopted"] or proposal["edited_jobs"]:
-                starting = config.get("skills", self._bindings().defaults())
+                starting = config["skills"] if "skills" in config else self._bindings().defaults()
                 if starting != proposal["skill_before"]:
                     raise ConfigError("Skill inputs changed since preview; reload without replacing intentional choices.")
                 candidate["skills"] = deepcopy(proposal["skill_after"])
