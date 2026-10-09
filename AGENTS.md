@@ -9,3 +9,5 @@ During planning, account for future updates to software, skills, models and sett
 Do not add personal addresses, machine paths, private-project records, credentials, old edition trees, or historical private repository content. Treat a failed privacy check as a publication blocker.
 
 For maintainer commits, set both Git author and committer to a GitHub `noreply` address in each checkout before committing. Before merging a public PR through GitHub, confirm that the account's “Keep my email addresses private” setting is enabled; afterward, read back every commit newly added to `main` and require `noreply` author and committer addresses.
+
+Keep both required GitHub CI jobs on every PR. The edition job may use focused checks only when all changed paths are editorial release metadata; agent instructions, stage/skill content, templates, scripts, and CI changes run the full suite. A release still needs the full verifier on its final candidate.
