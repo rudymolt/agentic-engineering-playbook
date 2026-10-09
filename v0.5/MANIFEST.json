@@ -178,8 +178,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "04c98fa43b3308683cfcd9bf7a9727d0e591cc70a0902c1bdf2e448bd161b8f9",
-      "size": 51564
+      "sha256": "c4cb8ef146a9bd8641125fdfd6093baa852eca36249f6d85647561bb17da0c42",
+      "size": 51909
     },
     {
       "path": "MAINTENANCE.md",
@@ -1353,8 +1353,8 @@
     },
     {
       "path": "scripts/test_parallel_verification.py",
-      "sha256": "ac0d3eb23822fb1e451fc6ca94a74ac0576aec92b9832c28cbaba7f441f55b4f",
-      "size": 1867
+      "sha256": "8839fe71536dda9210ee9111bfbd24bad873037a28d8e8e88efd475767f2d5cf",
+      "size": 3127
     },
     {
       "path": "scripts/test_personal_presets.py",
@@ -1483,8 +1483,8 @@
     },
     {
       "path": "scripts/verify-playbook.py",
-      "sha256": "3f180750c82d303466d0cce37fbfb24855e18f8e1682e1c8eead9ab48f197753",
-      "size": 3594
+      "sha256": "2a14bef682a07ae95c6d0daba7676116c1b1881b9f54e34934d4a943d607246a",
+      "size": 3732
     },
     {
       "path": "skills/README.md",

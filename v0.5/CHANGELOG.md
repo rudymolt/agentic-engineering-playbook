@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- Forward `--jobs` from the top-level verifier to the delivery verifier when
+  parallel execution is requested; keep the default single-process command.
+
+*Why — verification lane:* the top-level verifier already sharded public tests,
+  but continued to run the delivery suite serially even when the caller asked
+  for concurrent file shards.
+
 - Separate configuration and interim checkpoint fixtures from their test classes
   so imported subclasses no longer inherit unrelated tests. Keep all existing
   test method definitions and fixture behavior.
