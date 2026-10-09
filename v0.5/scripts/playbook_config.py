@@ -589,6 +589,13 @@ class Configuration:
 
     def read(self):
         try:
+            with self._bindings().inventory_scope():
+                return self._read()
+        except (ConfigError, OSError, UnicodeError, TypeError) as error:
+            return self._blocked(error)
+
+    def _read(self):
+        try:
             config, origins, inputs = self._snapshot()
             routes, evidence = self._available()
             proposal = {
@@ -880,6 +887,13 @@ class Configuration:
         return index
 
     def reply(self, proposal, text):
+        try:
+            with self._bindings().inventory_scope():
+                return self._reply_public(proposal, text)
+        except (ConfigError, OSError, UnicodeError, KeyError, TypeError, AttributeError) as error:
+            return self._blocked(error)
+
+    def _reply_public(self, proposal, text):
         try:
             result = self._reply(proposal, text)
         except (ConfigError, OSError, UnicodeError, KeyError, TypeError, AttributeError) as error:

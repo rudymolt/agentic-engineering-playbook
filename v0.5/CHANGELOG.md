@@ -2,6 +2,19 @@
 
 ## Unreleased
 
+- Reuse one live installed-skill inventory scan and each job's route options
+  during a public configuration read or reply. Reuse the validated local
+  checkpoint snapshot and its immutable commit payload when writing
+  the next Git control commit. Use the standard JSON encoder for canonical
+  values with ASCII keys and no floats. Keep fresh scans between calls and the Git
+  compare-and-set, remote target, and post-push lineage checks.
+
+*Why — verification lane:* repeated inventory walks and a second local Git
+  read and repeat parsing inside checkpoint writes consumed time without adding
+  a new decision boundary. The existing checks still guard mutable inputs and
+  concurrent writes; the canonical encoder retains its exact fallback for
+  Unicode key ordering and ECMAScript number rendering.
+
 - Keep the full in-process matrices for model advice, guidance, configuration
   recovery, personal presets, and skill publication while sampling representative
   CLI cells with direct library parity checks.

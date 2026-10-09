@@ -693,13 +693,12 @@ class InterimCheckpointStore:
         if actual.commit_sha != expected.commit_sha or actual.digest != expected.digest:
             raise InterimCheckpointError("local checkpoint moved; reload and reconcile", code="cas-lost")
         previous = validate_record(actual.value)
-        self._assert_approved_target(previous)
         if record["approval_digest"] != previous["approval_digest"]:
             raise InterimCheckpointError("approval amendment is unavailable in S1")
         if self.remote_commit() != actual.commit_sha:
             raise InterimCheckpointError("remote checkpoint moved; reload and reconcile", code="cas-lost")
         try:
-            snapshot = self._store.write(actual.commit_sha, actual.digest, record)
+            snapshot = self._store._write_from_snapshot(actual.commit_sha, actual.digest, record, actual)
         except CasMismatch as exc:
             raise InterimCheckpointError("local checkpoint moved; reload and reconcile", code="cas-lost") from exc
         return self._push_or_reconcile(snapshot, expected.commit_sha)
