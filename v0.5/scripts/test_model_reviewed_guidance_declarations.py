@@ -491,3 +491,7 @@ class ReviewedGuidanceTests(ReviewedGuidanceCase):
                 self.assert_ruby_contract('<' + tag + '>' + qualifier + RUBY_PAGE + '</' + tag + '>', False)
                 if tag != 'plaintext':
                     self.assert_ruby_contract('<' + tag + '>' + qualifier + 'unused</' + tag + '>' + RUBY_PAGE, True)
+
+
+if __name__ == '__main__':
+    unittest.main()

@@ -1174,3 +1174,7 @@ class ReviewedGuidanceTests(ReviewedGuidanceCase):
             result = subprocess.run([sys.executable, str(script), '--guidance', str(listing), '--page', SOURCES[0] + '=' + str(page)],
                                     capture_output=True, text=True)
             self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
+
+
+if __name__ == '__main__':
+    unittest.main()

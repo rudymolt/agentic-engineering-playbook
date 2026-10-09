@@ -3,8 +3,8 @@
 ## Unreleased
 
 - Split the reviewed guidance tests into three balanced unittest file shards and
-  move their shared fixture into a non-test module. Preserve all 154 test methods
-  and their assertions.
+  move their shared fixture into a non-test module. Preserve all 154 test methods,
+  their assertions, and direct execution of each shard.
 
 *Why — verification lane:* a single long file fixes the minimum wall time of
   the three-worker public CI suite. Balanced shards let the existing scheduler

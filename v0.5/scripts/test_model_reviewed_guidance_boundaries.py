@@ -692,3 +692,7 @@ class ReviewedGuidanceTests(ReviewedGuidanceCase):
             for opening in ('>', '/>'):
                 with self.subTest(tag=tag, opening=opening):
                     self.assert_fresh_page_contract('<' + tag + opening + PAGE + '</' + tag + '>', False)
+
+
+if __name__ == '__main__':
+    unittest.main()
