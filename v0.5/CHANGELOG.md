@@ -21,6 +21,20 @@ installer-order collisions; managed upgrades preserve local customizations.
 
 Guided configuration, evidence-backed model advice, skill bindings, and safer upgrades.
 
+- Require PR review conversations to be checked and addressed before declaring a
+  merge ready, with evidence for stale findings and resolution of handled threads.
+
+*Why — ship lane:* an unresolved review thread can block an otherwise verified
+  release PR, and a reviewer can cite a commit outside the current PR. Explicit
+  head-bound triage and thread resolution keep the merge decision reviewable.
+
+- Use focused checks for documentation-only PR iterations, reserving the full
+  release-readiness suite for the final candidate before shipping.
+
+*Why — verification lane:* repeating a long repository-wide suite after every
+  prose edit slows review without replacing the required final-candidate gate.
+  Focused checks give fast feedback while the release gate stays authoritative.
+
 - Complete the explicitly deferred Playbook configuration UI feature retro and
   field report; audit shipped slices and learning coverage, retain observational
   evidence gaps, assess the three approved candidates and clear only this
