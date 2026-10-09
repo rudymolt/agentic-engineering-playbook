@@ -178,8 +178,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "c4cb8ef146a9bd8641125fdfd6093baa852eca36249f6d85647561bb17da0c42",
-      "size": 51909
+      "sha256": "78fdd06a0d97e308764653350a24ed70f5d857048dda13c2f3858f6ddc7eba24",
+      "size": 52370
     },
     {
       "path": "MAINTENANCE.md",
@@ -1193,8 +1193,8 @@
     },
     {
       "path": "scripts/reviewed_guidance_support.py",
-      "sha256": "ea8b01fba40d563f0dddcf435a616b05dfe7f8709128b183424ceaf1e483298b",
-      "size": 15543
+      "sha256": "c42d5fc4219788d2a6961f72f561d65d143169a4f0816951dec322db5ca14a24",
+      "size": 16440
     },
     {
       "path": "scripts/skill-bindings.md",
@@ -1293,8 +1293,8 @@
     },
     {
       "path": "scripts/test_model_advice_projection.py",
-      "sha256": "cbd08e1ff1dc092c0641d92e95e745a05bbd1c012001aa267ae8b2ec81d591c2",
-      "size": 32544
+      "sha256": "f17ea7082fdb6b98ab03142eaf51d02dc36e26805ca1c3ec4da531bc1cba94ad",
+      "size": 34129
     },
     {
       "path": "scripts/test_model_claim_status.py",
@@ -1308,8 +1308,8 @@
     },
     {
       "path": "scripts/test_model_input_boundaries.py",
-      "sha256": "3cfb771b7fc5a3bc6acafcd58f534b7fb0e125a6e1ffb07c03dd222a12a69a6e",
-      "size": 7569
+      "sha256": "12d0cd7642b4cf6e870bc5981efcd0dfce148ad076984c6f850846dae693afea",
+      "size": 8047
     },
     {
       "path": "scripts/test_model_recommendations.py",
@@ -1328,28 +1328,28 @@
     },
     {
       "path": "scripts/test_model_reviewed_guidance.py",
-      "sha256": "8bce1c6535648fff60a82e73f5b05874403657a6c069d7fea177742897804a50",
-      "size": 84514
+      "sha256": "3f1d474743c515d7dcc47e0775681007c3d18d652e05315035e20ca9c2b003ee",
+      "size": 84465
     },
     {
       "path": "scripts/test_model_reviewed_guidance_boundaries.py",
-      "sha256": "59c12a57196ef10f93c922e385b16b856b7f51abf812017575ea79b46f893408",
-      "size": 51007
+      "sha256": "e83a62ca6fdfc494f115cdc236d7abe3071aa7a693aab4a24f110d34d493805a",
+      "size": 50958
     },
     {
       "path": "scripts/test_model_reviewed_guidance_declarations.py",
-      "sha256": "7ffaa5c987b8c8ba28b2d3c4f3316905c4e2697aeb193c9864a916fa6d3e4376",
-      "size": 33801
+      "sha256": "13f0b7c633f318468035f60406116248b14875581213ded705a0653b0b239894",
+      "size": 33752
     },
     {
       "path": "scripts/test_model_subtotal_projection.py",
-      "sha256": "265ebec2fd17ecb21ebfadac8ad49209c17265fe1578d65be82977553b90570e",
-      "size": 13598
+      "sha256": "c9447eb0e298e21be3eafbaa5d749b66436f60f44557c7aed219ccd6735c934b",
+      "size": 13638
     },
     {
       "path": "scripts/test_model_task_risk_boundaries.py",
-      "sha256": "37fa560be0cf79dcfd4e0ec168c7a1804e27682234d9aa4b36ab385c2180f995",
-      "size": 11979
+      "sha256": "76018dbd33b97aee216fca4d2510685173732ca6649ef8da209f42e773e4b181",
+      "size": 12555
     },
     {
       "path": "scripts/test_parallel_verification.py",
@@ -1358,8 +1358,8 @@
     },
     {
       "path": "scripts/test_personal_presets.py",
-      "sha256": "3ab08a132199fecf9e0a7f27b259aa665f24a62ef9b403f58350c1600020e882",
-      "size": 67042
+      "sha256": "2291758f708374c4fe7ad3e25cbc3d9b74caf55cfee4704acf523158abba6069",
+      "size": 67533
     },
     {
       "path": "scripts/test_playbook_config.py",
@@ -1373,8 +1373,8 @@
     },
     {
       "path": "scripts/test_playbook_config_roles.py",
-      "sha256": "b18f351427ba4e26d440fa0885c3d796e94c61f53814023161e06a79e0aecd12",
-      "size": 49580
+      "sha256": "1fb802e6de0094f9c3eeed2330db171fa3f8c703cb55b73851d86b724cd59caa",
+      "size": 49946
     },
     {
       "path": "scripts/test_playbook_state.py",
@@ -1423,8 +1423,8 @@
     },
     {
       "path": "scripts/test_skill_publication.py",
-      "sha256": "81a71f5b0d14c59512b08c8111e4167f72098ef196f799eeb54d87373925eb50",
-      "size": 17726
+      "sha256": "eb10363ee7676a73b36cbfc36d93bbcf3e0d7201c7adc4498bd2894a18a27920",
+      "size": 18661
     },
     {
       "path": "scripts/test_template_base.py",

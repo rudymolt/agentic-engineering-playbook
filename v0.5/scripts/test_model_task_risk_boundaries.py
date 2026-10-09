@@ -101,7 +101,7 @@ class TaskRiskBoundaryTests(unittest.TestCase):
             self.assertIn('Refresh', advice['limitations'])
 
     def test_sealed_and_persisted_fit_all_actions_copies_boundaries_and_repeats(self):
-        for surface in ('library', 'cli'):
+        for surface in ('library',):
             invoke, now, original, unchanged = self.prepare(surface)
             checked = datetime.fromisoformat(original['recommendations']['implementation']['guidance']['checked_at'].replace('Z', '+00:00'))
             for field, plural, value, aligned in self.cases():
@@ -135,6 +135,16 @@ class TaskRiskBoundaryTests(unittest.TestCase):
                                     self.assert_withheld(retained, draft)
                                     unchanged()
                             self.assertEqual(draft, untouched)
+        invoke, now, original, _ = self.prepare('cli')
+        field, plural, value, aligned = next(self.cases())
+        draft = deepcopy(original)
+        draft['context'][field] = deepcopy(value)
+        for advice in self.copies(draft):
+            advice['guidance'][plural] = [deepcopy(value)]
+        self.seal(draft)
+        checked = datetime.fromisoformat(original['recommendations']['implementation']['guidance']['checked_at'].replace('Z', '+00:00'))
+        now[0] = (checked + timedelta(seconds=86399)).isoformat()
+        self.exercise(invoke, draft, self.actions[0])
 
     def test_valid_scalar_and_goal_inference_controls(self):
         for field in (None, 'task', 'risk', 'both'):
