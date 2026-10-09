@@ -178,8 +178,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "f37444fc8710f2a61b57b6d0cfffb76c223e8398c4db8ca254a8045d9c70ab82",
-      "size": 49620
+      "sha256": "252d72638ec1d803a50b7cbf799fffeb06cc02375b51fc006bcb886535328253",
+      "size": 50130
     },
     {
       "path": "MAINTENANCE.md",
@@ -1473,8 +1473,8 @@
     },
     {
       "path": "skills/ai-playbook-blast-radius/SKILL.md",
-      "sha256": "ba0a5fa8f8fe3fbb2d09517c7e5ae7d0fd84db1d70c6f423f795b361422f31e5",
-      "size": 3387
+      "sha256": "7cdcfa20232a0f76e52a3d616de1e6be5f62d8e863d6ea38bd242d10a08ce2af",
+      "size": 4320
     },
     {
       "path": "skills/ai-playbook-blast-radius/agents/openai.yaml",
@@ -1518,8 +1518,8 @@
     },
     {
       "path": "skills/ai-playbook-how/SKILL.md",
-      "sha256": "db0e8c737d9575e899b82bf3ad230b24740f3ad57d5335825fd26642e6eb8a3a",
-      "size": 2553
+      "sha256": "eda0ad7ab8cf02688f4369007ffe1f407ed76f393aca16c770f2e597d210b73a",
+      "size": 3728
     },
     {
       "path": "skills/ai-playbook-how/agents/openai.yaml",
@@ -1533,8 +1533,8 @@
     },
     {
       "path": "skills/ai-playbook-maintain-verification-harness/SKILL.md",
-      "sha256": "3fddd6c0bd9c2e087f671349a0cd2106f9d87affa7bd26490445df0d0d6306c8",
-      "size": 6720
+      "sha256": "e447fb7bbb04b95f746f1e2fcc1da776114c236065f43deb18ca53c5416d3953",
+      "size": 8739
     },
     {
       "path": "skills/ai-playbook-maintain-verification-harness/agents/openai.yaml",
@@ -1563,8 +1563,8 @@
     },
     {
       "path": "skills/ai-playbook-verification-harness/SKILL.md",
-      "sha256": "9fa4eefdd3c6f4b7a1cc11966637834203854a5efd0c85eb8576adcc5aebee80",
-      "size": 6474
+      "sha256": "003088dded5df3a504d515efa060899e5bfe3eb7d5477d8e47f971ad983bb402",
+      "size": 7802
     },
     {
       "path": "skills/ai-playbook-verification-harness/agents/openai.yaml",
@@ -1578,8 +1578,8 @@
     },
     {
       "path": "skills/ai-playbook-why/SKILL.md",
-      "sha256": "c3dbbef02352db07448e808907470d56db69eb61bcca2739f6998d41b45c11f9",
-      "size": 3262
+      "sha256": "edfbc8c43f84ab04245018a525bf47a5ac96638ebabd40affa646544f56ebc6c",
+      "size": 4421
     },
     {
       "path": "skills/ai-playbook-why/agents/openai.yaml",

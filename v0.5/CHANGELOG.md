@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- Add explicit `playbook_result` mappings to the five pstack-derived skills,
+  including qualified explanations, blocked evidence, draft harnesses and
+  complete maintenance audits. Park optional prevention and benchmarking ideas
+  in a separate exploration scope.
+
+*Why — correctness lane:* callers need an unambiguous terminal handoff without
+mistaking a completed report for review acceptance or permission to update state.
+The adapters retain their evidence requirements, scope and upstream provenance.
+
 - Adopt Matt's released v1.3.1 source contract and a pinned installer recipe.
   Rename the domain glossary convention to GLOSSARY.md; migrate managed project
   content, pristine bases and provenance with interruption recovery. Preserve

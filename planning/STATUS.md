@@ -1,8 +1,12 @@
 # Planning status
 
-active_features: 2
+active_features: 3
 
 ## Active features
+
+[Pstack result consistency](pstack-result-contract/slices.md) — approved;
+terminal mappings and a separate deferred exploration scope implemented;
+independent review and focused checks passed, PR review pending.
 
 [Matt skills migration](matt-skills-migration/slices.md) — implemented;
 independent review passed, verification and human review tracked in PR #27.
