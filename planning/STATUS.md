@@ -5,7 +5,7 @@ active_features: 4
 ## Active features
 
 [Verifier performance](verifier-performance/slices.md) — aligned and specified; five
-ordered slices, one PR per slice; slice 1 in progress.
+ordered slices, one PR per slice; slice 2 in progress after the first PR.
 
 [Pstack result consistency](pstack-result-contract/slices.md) — approved;
 terminal mappings and a separate deferred exploration scope implemented;

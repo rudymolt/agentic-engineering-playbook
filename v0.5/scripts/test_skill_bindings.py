@@ -15,7 +15,7 @@ from unittest.mock import patch
 
 from playbook_config import Configuration, ConfigError
 from skill_bindings import JobBindings, JOBS
-from test_playbook_config import ConfigurationTests
+from test_playbook_config import ConfigurationFixture
 
 
 @lru_cache(maxsize=1)
@@ -71,7 +71,7 @@ def qualified_qa(project):
     return route, source, record, proof
 
 
-class BindingTests(ConfigurationTests):
+class BindingTests(ConfigurationFixture):
     def setUp(self):
         super().setUp()
         self.bindings = JobBindings(self.project)

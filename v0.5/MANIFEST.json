@@ -178,8 +178,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "c83de73d81504d799df2296e16d477463f5f735af9bd746a80bf277d0889b770",
-      "size": 51134
+      "sha256": "04c98fa43b3308683cfcd9bf7a9727d0e591cc70a0902c1bdf2e448bd161b8f9",
+      "size": 51564
     },
     {
       "path": "MAINTENANCE.md",
@@ -208,7 +208,7 @@
     },
     {
       "path": "delivery/MANIFEST.yml",
-      "sha256": "4d0d38239a3e72dc87274bd76bef3ad655c90c3ab9a012ed4ca3e8c54fb49c54",
+      "sha256": "0785f25e66bf1bc810d45baed65d5f18cf1e943345a4fa166a1accffe669d07e",
       "size": 36947
     },
     {
@@ -958,8 +958,8 @@
     },
     {
       "path": "delivery/tests/test_interim.py",
-      "sha256": "396f67f1d8776401c3e49519f5949af4f84db5eda53878fd1dd5e3ffd49a5962",
-      "size": 18033
+      "sha256": "0200a3600c90d0b56b1d389123b2c5ab59945f2c57a18c9c512c455eea66b5ba",
+      "size": 18092
     },
     {
       "path": "delivery/tests/test_interim_advance.py",
@@ -973,8 +973,8 @@
     },
     {
       "path": "delivery/tests/test_interim_coordinator.py",
-      "sha256": "2a404885a1577c77c6c660e1ee17e1aefadaadb208ffee690912e26bcd24cbab",
-      "size": 48275
+      "sha256": "934744dbf8ee8baab261f147cdfb537c81e8d64854ac6c104b3e2672f5227ac4",
+      "size": 48279
     },
     {
       "path": "delivery/tests/test_interim_host_continuation.py",
@@ -1263,8 +1263,8 @@
     },
     {
       "path": "scripts/test_custom_skill_bindings.py",
-      "sha256": "6b6c384c8b609c1257e57ce684f8ee7d354effd5172e37d7e57395008af51152",
-      "size": 57010
+      "sha256": "3fb002f4a99c315ef494d8bcad71619180c1694346d7ebc402bc8b3413ce99c7",
+      "size": 57012
     },
     {
       "path": "scripts/test_delivery_ci_scope.py",
@@ -1363,8 +1363,8 @@
     },
     {
       "path": "scripts/test_playbook_config.py",
-      "sha256": "5cf0a6d90bde4a962e8cfcb057d989e7a70bef2657adfb2ac85964ffa1c1a9fa",
-      "size": 43627
+      "sha256": "6a315fda164bf167de7b94837edf523ee584adb91d918010b8b4c85a7eb94dd7",
+      "size": 43678
     },
     {
       "path": "scripts/test_playbook_config_directory.py",
@@ -1413,8 +1413,8 @@
     },
     {
       "path": "scripts/test_skill_bindings.py",
-      "sha256": "bfe95aeb12fd995045f2bdec9603ec7a6b4785ddefa578c67fdcc060a48a3e27",
-      "size": 27676
+      "sha256": "8cd7051355281e7cffc8391cb060de6694809fcc264f76343f54ce6b97923ff9",
+      "size": 27680
     },
     {
       "path": "scripts/test_skill_metadata.py",

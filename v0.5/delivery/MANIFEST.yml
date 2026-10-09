@@ -746,7 +746,7 @@
       "source": "tests/test_core.py"
     },
     {
-      "digest": "sha256:396f67f1d8776401c3e49519f5949af4f84db5eda53878fd1dd5e3ffd49a5962",
+      "digest": "sha256:0200a3600c90d0b56b1d389123b2c5ab59945f2c57a18c9c512c455eea66b5ba",
       "install_path": null,
       "source": "tests/test_interim.py"
     },
@@ -761,7 +761,7 @@
       "source": "tests/test_interim_conductor_host.py"
     },
     {
-      "digest": "sha256:2a404885a1577c77c6c660e1ee17e1aefadaadb208ffee690912e26bcd24cbab",
+      "digest": "sha256:934744dbf8ee8baab261f147cdfb537c81e8d64854ac6c104b3e2672f5227ac4",
       "install_path": null,
       "source": "tests/test_interim_coordinator.py"
     },
@@ -803,5 +803,5 @@
   ],
   "manifest_schema_version": 1,
   "manifest_self_rule": "pack_digest covers the complete non-manifest source inventory",
-  "pack_digest": "sha256:c6546118c27e53c693bb8973a9679227152ee79f10840091d376377eb84d3ae5"
+  "pack_digest": "sha256:c7012b71563ed424c4d68a72b3cc781a855efadb37867fd8b1bc49902ebbf0e3"
 }
