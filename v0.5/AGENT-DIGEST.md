@@ -67,7 +67,7 @@ files{path,role}:
   planning/{slug}/,         one folder per in-flight feature (spec, slices, notes)
   archive/STATUS.md,        count of shipped features; do NOT read archive contents
   CLAUDE.md / AGENTS.md,    project-local operating rules (override this playbook)
-  CONTEXT.md,               shared vocabulary + durable decisions; ADRs for the why
+  GLOSSARY.md,               shared vocabulary + durable decisions; ADRs for the why
   .playbook-routing/,       gitignored pre-feature cross-tab handoffs; never durable planning docs
 ```
 

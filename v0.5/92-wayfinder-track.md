@@ -81,7 +81,7 @@ Treat a `/prototype` as runnable primary-source evidence, not a disposable scree
 Graduate only when every in-scope decision ticket is closed or explicitly ruled out, `Not yet specified` is empty, and the destination is clear enough for normal acceptance and verification contracts.
 
 1. Walk every resolution comment.
-2. Promote durable domain terms to `CONTEXT.md`, hard-to-reverse decisions to `docs/adr/`, project-wide rules to `CLAUDE.md`, and UI vocabulary to the design glossary/kitchen sink/interaction guide.
+2. Promote durable domain terms to `GLOSSARY.md`, hard-to-reverse decisions to `docs/adr/`, project-wide rules to `CLAUDE.md`, and UI vocabulary to the design glossary/kitchen sink/interaction guide.
 3. Run the normal stage 01–04 outputs. Create one `planning/{slug}/` folder per surviving feature, record the map link in its alignment/spec artifacts, write the spec, and publish vertical slices.
 4. Give implementation tickets ordinary `ready-for-agent` plus AFK/HITL metadata and implementation blocking edges. Do not carry `wayfinder:*` labels into the implementation frontier.
 5. Replace the open map with the resulting active feature(s) in state, remove it from `active_wayfinding_maps` and `planning/STATUS.md`, set `last_updated`, and recompute status.

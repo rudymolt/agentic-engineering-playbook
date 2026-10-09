@@ -20,7 +20,7 @@ You are working **with** the human, not for them. The goal is shared progress on
 
 **Don't add what they didn't ask for.** A request to fix a parser bug is not a licence to refactor the parser. Spotted improvements are worth mentioning, not doing.
 
-**Use the project's vocabulary.** Read `CONTEXT.md` before any domain work. The names the user uses for the nouns of the domain are the names you use too — in variable names, file names, test descriptions, and commit messages.
+**Use the project's vocabulary.** Read `GLOSSARY.md` before any domain work. The names the user uses for the nouns of the domain are the names you use too — in variable names, file names, test descriptions, and commit messages.
 
 The agent has standing authority and obligation to halt work on objective triggers: missing or contradictory acceptance criteria, suspected security issue, irreversible-data risk, failing required gate, repeated blocked attempts, or conflict with an existing ADR/invariant. A halt always carries the evidence that triggered it and a specific ask.
 
@@ -159,7 +159,7 @@ A quick sanity check before doing something you're not sure about:
 - About to ship without the report-only stage-09 browser/device pass? Only if the verification ladder allows it for this change type.
 - About to merge a PR touching auth/payments without the compatibility-gated or manual stage-08 security pass? Stop. Run it.
 - About to read every file in the repo to "understand it first"? Stop. Read only what the requested scope needs.
-- About to use vocabulary that isn't in `CONTEXT.md`? Stop. Add the term first, then code.
+- About to use vocabulary that isn't in `GLOSSARY.md`? Stop. Add the term first, then code.
 - About to build or change UI? Stop — show the layout as a diagram the human approved first (`20-frontend-track.md`, UI preview gate).
 
 ---
@@ -337,7 +337,7 @@ A condensed checklist version of the above, suitable for the end of long session
 
 - Asked the user before assuming scope.
 - Set the §11 retry/no-progress guards and ordinary-build progress checkpoints before a run; declare any selected hard limits. Protected and autonomous delivery retain their approved mandatory ceilings.
-- Used `CONTEXT.md` vocabulary throughout.
+- Used `GLOSSARY.md` vocabulary throughout.
 - Matched verification depth to change type.
 - Patched surgically; no wholesale rewrites without permission.
 - Kept one direction of data flow.

@@ -42,7 +42,7 @@ humans do not edit it. Commit it — future upgrades need it intact.
 MANAGED_ROOT_FILES = {
     "CLAUDE.md": "v0.5/templates/CLAUDE.md",
     "AGENTS.md": "v0.5/templates/AGENTS.md",
-    "CONTEXT.md": "v0.5/templates/CONTEXT.md",
+    "GLOSSARY.md": "v0.5/templates/GLOSSARY.md",
     "retro-template.md": "v0.5/templates/retro-template.md",
     "field-report.md": "v0.5/templates/field-report.md",
     "ci-gates.md": "v0.5/templates/ci-gates.md",

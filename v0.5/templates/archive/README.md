@@ -26,6 +26,6 @@ Periodically (e.g. annually), prune subfolders older than {project-decided perio
 
 ## What this folder MUST NOT contain
 
-- Anything that should remain readable to agents — promote it to a Tier 3 living doc first (`CLAUDE.md`, `CONTEXT.md`, `docs/adr/`, `docs/releases/`).
+- Anything that should remain readable to agents — promote it to a Tier 3 living doc first (`CLAUDE.md`, `GLOSSARY.md`, `docs/adr/`, `docs/releases/`).
 - Secrets or credentials — those should never have been in `planning/` in the first place.
 - Production data — same.

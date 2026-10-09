@@ -44,13 +44,13 @@ stage-08 verifier.
 - One phase per implementer conversation; one review per verifier conversation; fresh both times.
 - Never paste the implementer's transcript to the verifier — that separation is what makes the review independent. (A verifier with deep *spec* context is fine; it is implementer-reasoning contamination the pattern forbids.)
 - Merge before starting the next phase. Stacked unmerged phases turn one bad merge decision into five.
-- When a merge or rebase does conflict — the common case when provably-independent slices ran in parallel worktrees (stage 07's fan-out rule) — use `/resolving-merge-conflicts` (Matt; present and unchanged in the released v1.2.3 inventory): a standalone loop for resolving an in-progress conflict from primary-source intent, rather than ad-hoc conflict-marker surgery. The resolved merge still passes through the phase's verification commands before it counts as done.
+- When a merge or rebase conflicts, inspect the merge base and both sides' intent against the accepted spec. Resolve the conflict, inspect the resulting diff, and execute affected tests plus the phase's verification commands before it counts as done. Conflicting product intent returns to alignment; required fresh review still applies. Ordinary agent tools perform this procedure; Matt v1.3.1 removed the dedicated conflict skill without a replacement.
 
 ## Relationship to the other tracks
 
 This track is human-orchestrated and conversational — the human triggers each phase and each review. The loop track (`90-loop-track.md`) is the scheduled, unattended shape; a delegation phase can run *inside* a loop only after the loop track's own earned-autonomy conditions are met. Both tracks sit on the same rails: the stage 08 verifier and the §11 floor.
 
-**Optional discovery track:** [`92-wayfinder-track.md`](92-wayfinder-track.md) uses `/wayfinder` (Matt, v1.2.3) to clarify efforts too big and foggy for one session through a tracker-resident map of *decision* tickets. Wayfinder discovers the route; this track executes an already anchored multi-phase route. A completed map may graduate into a delegation plan, but delegation phases are implementation work and never remain on the Wayfinder decision frontier.
+**Optional discovery track:** [`92-wayfinder-track.md`](92-wayfinder-track.md) uses `/wayfinder` (Matt, v1.3.1) to clarify efforts too big and foggy for one session through a tracker-resident map of *decision* tickets. Wayfinder discovers the route; this track executes an already anchored multi-phase route. A completed map may graduate into a delegation plan, but delegation phases are implementation work and never remain on the Wayfinder decision frontier.
 
 ## Provenance
 

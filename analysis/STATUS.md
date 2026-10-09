@@ -2,7 +2,8 @@
 
 ## Active
 
-*(none)*
+- [Matt v1.3.1 adoption](2026-10-08-matt-migration.md) — selected source and
+  migration implementation; host rollout and gstack qualification remain separate.
 
 ## Field reports
 

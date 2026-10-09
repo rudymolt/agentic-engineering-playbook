@@ -32,11 +32,11 @@ The "we chose X over Y because Z" record, plus rejected alternatives so future-u
 
 The present-tense source of truth.
 
-**Lives in:** `CLAUDE.md`, `AGENTS.md`, `CONTEXT.md`, `DESIGN-GLOSSARY.md`, `ui-kitchen-sink.html`, `playbook-cadences.yml`, this playbook itself.
+**Lives in:** `CLAUDE.md`, `AGENTS.md`, `GLOSSARY.md`, `DESIGN-GLOSSARY.md`, `ui-kitchen-sink.html`, `playbook-cadences.yml`, this playbook itself.
 
 **Lifetime:** as long as the project.
 
-**Fate at ship:** updated. New vocabulary that survived the build moves to `CONTEXT.md`; new design tokens to the kitchen sink; new project-wide rules to `CLAUDE.md`.
+**Fate at ship:** updated. New vocabulary that survived the build moves to `GLOSSARY.md`; new design tokens to the kitchen sink; new project-wide rules to `CLAUDE.md`.
 
 ---
 
@@ -46,7 +46,7 @@ Mandatory at ship. Skipping it is how stale planning docs accumulate.
 
 1. Run `git status --short` and note whether doc-close starts from a clean or mixed tree.
 2. **Promote surviving decisions to ADRs** at `docs/adr/` (rebuild the ADR index — see `10-process/02-context-and-adrs.md`).
-3. **Promote surviving vocabulary to `CONTEXT.md`**, and UI vocabulary to `DESIGN-GLOSSARY.md` / `ui-kitchen-sink.html` when applicable.
+3. **Promote surviving vocabulary to `GLOSSARY.md`**, and UI vocabulary to `DESIGN-GLOSSARY.md` / `ui-kitchen-sink.html` when applicable.
 4. **Update `CLAUDE.md`** if the build surfaced any project-wide rule.
 5. **Update durable source docs** — `docs/README.md`, product specs, design docs, architecture references, completed exec plans — so future agents do not need the planning folder.
    When the project explicitly adopted a verification harness and shipped entry

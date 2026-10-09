@@ -1,4 +1,4 @@
-# CONTEXT.md — {project name}
+# GLOSSARY.md — {project name}
 
 > The domain glossary for this project. Domain terms only — no implementation jargon. Used in variable names, file names, test descriptions, commit messages.
 >
@@ -20,7 +20,7 @@
 
 **Definition.** {One or two sentences. Specific, not generic.}
 
-**Related.** {Other CONTEXT.md terms it interacts with.}
+**Related.** {Other GLOSSARY.md terms it interacts with.}
 
 **Not the same as.** {Other terms it's sometimes confused with, and why they're different.}
 ```

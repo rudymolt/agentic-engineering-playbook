@@ -30,17 +30,19 @@ split suite and drift, while the weekly maintenance cron keeps the strict set.
 ## Upstream maintenance
 
 - Last verified 2026-10-08; next due 2026-11-08 (monthly cadence, procedure: [`v0.5/MAINTENANCE.md`](v0.5/MAINTENANCE.md)).
-- Upstream versions: matt_pocock_skills v1.2.3; gstack 1.62.0.0 (d078622); pstack 93b00b8; claude_code_docs 2026-07-09; codex_docs 2026-07-09; cursor_docs 2026-07-09.
+- Upstream versions: matt_pocock_skills v1.3.1; gstack 1.62.0.0 (d078622); pstack 93b00b8; claude_code_docs 2026-07-09; codex_docs 2026-07-09; cursor_docs 2026-07-09.
 
 ## Upstream packages
 
 | Package | Level | Pin | Verified | Skills named |
 |---|---|---|---|---:|
-| mattpocock-skills | accelerator | v1.2.3 | 2026-09-08 | 20 |
+| mattpocock-skills | accelerator | v1.3.1 | 2026-10-08 | 20 |
 | gstack | accelerator | 1.62.0.0 (d078622) | 2026-09-08 | 35 |
 | pstack | source | 93b00b89ef425a9c1bac0d0b317dfc49c930ac99 | 2026-09-08 | 0 |
-| playbook | local | — | — | 12 |
+| playbook | local | — | — | 13 |
 
 ## Active analysis documents
 
-*(none tracked — see [`analysis/STATUS.md`](analysis/STATUS.md))*
+- [Matt v1.3.1 adoption](analysis/2026-10-08-matt-migration.md) — selected source and
+
+Index: [`analysis/STATUS.md`](analysis/STATUS.md). Archived docs live in `analysis/archive/` (agents do not read it).

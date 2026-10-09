@@ -1904,6 +1904,8 @@ class K41MergeBridgeTests(unittest.TestCase):
             )
 
     def test_protected_paths_and_unknown_risk_require_human_merge(self) -> None:
+        domain_paths = ["CONTEXT.md", "CONTEXT-MAP.md", "GLOSSARY.md", "GLOSSARY-MAP.md", "src/orders/GLOSSARY.md"]
+        self.assertEqual(sorted(domain_paths), classify_paths(self.policy, domain_paths, "documentation-maintenance"))
         protected = self.decision(changed_paths=[".github/workflows/merge.yml"])
         self.assertEqual("deny", protected["decision"])
         self.assertEqual([".github/workflows/merge.yml"], protected["protected_path_matches"])

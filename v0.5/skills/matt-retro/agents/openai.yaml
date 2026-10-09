@@ -1,0 +1,6 @@
+interface:
+  display_name: "Matt's Environment Retro"
+  short_description: "Review session friction and improve the agent environment"
+  default_prompt: "Use $matt-retro to review this session and suggest environment improvements."
+policy:
+  allow_implicit_invocation: false

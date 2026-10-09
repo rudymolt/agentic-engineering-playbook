@@ -12,7 +12,7 @@ Take the **cold path** when `prereqs_required` is true or missing; `last_run.pre
 
 ## Warm path — normal session
 
-1. Confirm the nine required root entries still exist: `CLAUDE.md`, `AGENTS.md`, `CONTEXT.md`, `.playbook-state.yml`, `playbook-cadences.yml`, `planning/`, `archive/`, `planning/STATUS.md`, `archive/STATUS.md`.
+1. Confirm the nine required root entries still exist: `CLAUDE.md`, `AGENTS.md`, `GLOSSARY.md`, `.playbook-state.yml`, `playbook-cadences.yml`, `planning/`, `archive/`, `planning/STATUS.md`, `archive/STATUS.md`.
 2. Confirm `playbook_version` is current and no cold-path trigger above fired.
 3. Confirm every capability needed by today's work still has a non-empty route under `capability_routes`; read [`prereqs-capability-profiles.md`](prereqs-capability-profiles.md) only when a route is unclear.
 4. Apply Check D for high-stakes work and run the three cheap Check E security checks.
@@ -54,12 +54,12 @@ that is the layout verified on this host.
 .claude/skills/engineering/codebase-design/SKILL.md
 .claude/skills/engineering/code-review/SKILL.md
 .claude/skills/engineering/research/SKILL.md
-.claude/skills/engineering/resolving-merge-conflicts/SKILL.md
 .claude/skills/engineering/wayfinder/SKILL.md
 .claude/skills/productivity/grill-me/SKILL.md
 .claude/skills/productivity/handoff/SKILL.md
 .claude/skills/productivity/grilling/SKILL.md
 .claude/skills/productivity/writing-for-agents/SKILL.md
+.claude/skills/engineering/pr/SKILL.md
 ```
 <!-- /generated: upstream/check-a -->
 
@@ -67,7 +67,22 @@ In upstream v1.0.0, `/diagnose` was renamed `/diagnosing-bugs`, `write-a-skill` 
 
 For upstream skill invocation, verify both harness surfaces when present: Claude Code uses `disable-model-invocation: true`; Codex uses `agents/openai.yaml → policy.allow_implicit_invocation: false`. A user-invoked skill sets both, while a model-invoked skill omits both. `/writing-for-agents` is model-invoked as of v1.2.2. Codex `agents/openai.yaml` also carries picker metadata; its presence does not by itself change authority.
 
-If a Matt skill is unavailable, name the manual route from the capability profile. Offer `npx skills@latest add mattpocock/skills` when the user wants the accelerated profile; after installation, `/setup-matt-pocock-skills` can configure tracker/domain files. The cold path passes without the package only when every required lane has an explicit manual route.
+If a Matt skill is unavailable, name the manual route from the capability profile. Offer `npx skills@1.7.1 add https://github.com/mattpocock/skills/tree/v1.3.1` when the user wants the accelerated profile; after installation, `/setup-matt-pocock-skills` can configure tracker/domain files. The cold path passes without the package only when every required lane has an explicit manual route.
+
+The installer command above pins both CLI 1.7.1 and Matt's v1.3.1 tag. Select
+only the registered skills needed by the project; optional `/pr` is extended.
+Matt's full retro is provided by the default-installed local `/matt-retro`
+adapter (`$matt-retro` in Codex); gstack keeps `/retro` (`$gstack-retro`). Exclude
+Matt's bare `retro` from this upstream installer selection. Before rollout, check
+the active project/user skill roots and runtime discovery for existing duplicate
+`retro` entries. If Matt's bare entry is already installed, preserve customized
+content and reconcile its scope with the human before removing or renaming it;
+verify each resolved command points to the intended provider. Do not select
+`implement-spec` as the playbook build controller.
+Preview with `--list` before installing, preserve customized installed files and
+record per-skill bytes against commit `24fe0ef7737efae15c87225755e9f6f5965e4888`.
+Avoid a generic update command that advances the installation beyond this pin.
+Existing projects first follow the [domain migration](../skills/ai-playbook-upgrade-project/MIGRATIONS.md).
 
 ## Check B — gstack accelerator inventory
 
@@ -145,14 +160,17 @@ Set `capability_routes.verified_at` and `last_run.prereqs` to now, set `prereqs_
 ## Provenance
 
 <!-- generated: upstream/provenance -->
-The Matt Pocock accelerator inventory and behaviour contracts were verified on 2026-09-08 against the released `mattpocock/skills` v1.2.3 tag and the installation under `~/.agents/skills/`. The gstack inventory was last verified on 2026-09-08 against the installed checkout at 1.62.0.0 (d078622). Embedded reviewer behaviour and exact installed source digests were audited on 2026-09-08; every inspected upstream workflow currently falls back to a playbook-owned route. Host capability claims were verified on 2026-07-09 against the first-party sources linked in `prereqs-capability-profiles.md`. Maintainers re-check released-source inventory through `../MAINTENANCE.md`.
+The Matt Pocock accelerator inventory and behaviour contracts were verified on 2026-10-08 against the released `mattpocock/skills` v1.3.1 tag. This source review does not qualify a host installation. The gstack inventory was last verified on 2026-09-08 against the installed checkout at 1.62.0.0 (d078622). Embedded reviewer source audits are dated 2026-09-08, 2026-10-08; every inspected upstream workflow currently falls back to a playbook-owned route. Host capability claims were verified on 2026-07-09 against the first-party sources linked in `prereqs-capability-profiles.md`. Maintainers re-check released-source inventory through `../MAINTENANCE.md`.
 <!-- /generated: upstream/provenance -->
+
+For mapped domains, `GLOSSARY-MAP.md` plus every resolved mapped glossary satisfies
+the domain entry prerequisite. Do not create a competing root glossary.
 
 The separate monthly released-source comparison completed on 2026-10-08;
 next due 2026-11-08. See the [dated maintenance analysis](../../analysis/2026-10-08-upstream-drift.md)
 for candidate-source drift, removed/renamed commands and manual fallbacks.
-The retained-source and historical host-audit dates above are unchanged;
-the comparison does not qualify newer installed skills or upgrade a host.
+Matt source adoption is recorded separately from historical host-audit dates;
+the comparison and source review do not qualify installed skills or upgrade a host.
 
 ---
 
