@@ -881,15 +881,6 @@ class Configuration:
         return index
 
     def reply(self, proposal, text):
-        if isinstance(text, str) and text.strip().lower() == "not now":
-            return self._reply_public(proposal, text)
-        try:
-            with self._bindings().inventory_scope():
-                return self._reply_public(proposal, text)
-        except (ConfigError, OSError, UnicodeError, KeyError, TypeError, AttributeError) as error:
-            return self._blocked(error)
-
-    def _reply_public(self, proposal, text):
         try:
             result = self._reply(proposal, text)
         except (ConfigError, OSError, UnicodeError, KeyError, TypeError, AttributeError) as error:

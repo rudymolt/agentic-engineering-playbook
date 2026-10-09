@@ -178,8 +178,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "ee1a344943a39c2309c6d6f76649025b76589e014ca7c6708d26e998ff9ebd8f",
-      "size": 53239
+      "sha256": "54c210623c5dd129c9df7c9172224d9c98f54384693a1784391de51544fe9f85",
+      "size": 53449
     },
     {
       "path": "MAINTENANCE.md",
@@ -208,7 +208,7 @@
     },
     {
       "path": "delivery/MANIFEST.yml",
-      "sha256": "7c0c0ca764ffc56f18da06830f4763ace46e1565ce8c0f312a71635277b41bf9",
+      "sha256": "24d5561f0af2734df04a69cae0875492eb98a6238b6d491dbfda63a9465e25db",
       "size": 36947
     },
     {
@@ -803,8 +803,8 @@
     },
     {
       "path": "delivery/src/delivery_pilot/interim.py",
-      "sha256": "68c87a7a51a05deb06295f9991e82cf8eceb5b53244c64986bd83d939a2a9ea7",
-      "size": 52073
+      "sha256": "709d8d6c46186434855cbc1a7daf10038e7334d5981b5e6643c3299ff5199578",
+      "size": 53025
     },
     {
       "path": "delivery/src/delivery_pilot/interim_advance.py",
@@ -958,8 +958,8 @@
     },
     {
       "path": "delivery/tests/test_interim.py",
-      "sha256": "12af2c2f2b6380ee92380c7732342029ac3c92bfced83cdb3b83415456dcc29e",
-      "size": 18688
+      "sha256": "479f97b7da57b1bb6d64c0467f8294e8729a71bfc05597e3c54762ef90a427be",
+      "size": 19162
     },
     {
       "path": "delivery/tests/test_interim_advance.py",
@@ -1168,8 +1168,8 @@
     },
     {
       "path": "scripts/playbook_config.py",
-      "sha256": "3763158136c2ca16d85e55c75d04e805b71b7bdeb957bd2a0b0d0cb6e290b887",
-      "size": 106231
+      "sha256": "e757bd9bf76cc423daf1e8d8dbc411c20f6179bb669aff97eca404e9f4bf50f0",
+      "size": 105796
     },
     {
       "path": "scripts/playbook_state.py",

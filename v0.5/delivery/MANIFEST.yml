@@ -591,7 +591,7 @@
       "source": "src/delivery_pilot/interfaces.py"
     },
     {
-      "digest": "sha256:68c87a7a51a05deb06295f9991e82cf8eceb5b53244c64986bd83d939a2a9ea7",
+      "digest": "sha256:709d8d6c46186434855cbc1a7daf10038e7334d5981b5e6643c3299ff5199578",
       "install_path": "runtime/delivery_pilot/interim.py",
       "source": "src/delivery_pilot/interim.py"
     },
@@ -746,7 +746,7 @@
       "source": "tests/test_core.py"
     },
     {
-      "digest": "sha256:12af2c2f2b6380ee92380c7732342029ac3c92bfced83cdb3b83415456dcc29e",
+      "digest": "sha256:479f97b7da57b1bb6d64c0467f8294e8729a71bfc05597e3c54762ef90a427be",
       "install_path": null,
       "source": "tests/test_interim.py"
     },
@@ -803,5 +803,5 @@
   ],
   "manifest_schema_version": 1,
   "manifest_self_rule": "pack_digest covers the complete non-manifest source inventory",
-  "pack_digest": "sha256:2a53607ab2b8dd77b37e7e109e8964d064f912c554915633546456719eecce75"
+  "pack_digest": "sha256:9c3a0485575d263bd63066d9b409d630e3c3217a50061ca49aba5fd6aef51e0a"
 }
