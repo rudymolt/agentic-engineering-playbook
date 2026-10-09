@@ -102,7 +102,7 @@ Always, in every project:
 
 - **`CLAUDE.md`** (this file) — governance: stack, commands, tiers, constraints.
 - **`AGENTS.md`** — quick-start: which files to read for which task.
-- **`CONTEXT.md`** — domain vocabulary so agents don't re-derive it.
+- **`GLOSSARY.md`** — domain vocabulary so agents don't re-derive it.
 - **`DESIGN-GLOSSARY.md`** *or* **`design-glossary/`** (if UI) — the textual ubiquitous language for UI. A large glossary is split into `design-glossary/` (read `index.md` first, then the entries you need); see `{path-to-playbook}/v0.5/20-frontend-track.md`.
 - **`ui-kitchen-sink.html`** (if UI) — the visual ubiquitous language for UI.
 - **`frontend-design-language-guide.html`** (if UI) — the interaction language: application-level principles and surface decision rules (row vs card, drawer vs modal, history disclosure).

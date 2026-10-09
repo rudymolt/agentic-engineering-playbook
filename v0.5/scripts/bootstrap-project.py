@@ -19,7 +19,7 @@ from playbook_state import validate_cadences, validate_state  # noqa: E402
 ROOT_TEMPLATE_FILES = {
     "CLAUDE.md": "CLAUDE.md",
     "AGENTS.md": "AGENTS.md",
-    "CONTEXT.md": "CONTEXT.md",
+    "GLOSSARY.md": "GLOSSARY.md",
     ".playbook-state.yml": ".playbook-state.yml",
     "playbook-cadences.yml": "playbook-cadences.yml",
     "retro-template.md": "retro-template.md",
@@ -123,7 +123,7 @@ def compatible_existing_file(target: Path, data: bytes, playbook_root: Path) -> 
                 "/whats-next",
             )
         )
-    if name == "CONTEXT.md":
+    if name == "GLOSSARY.md":
         return bool(text.strip())
     if name == "playbook-cadences.yml":
         return "cadences:" in text
@@ -279,6 +279,14 @@ def bootstrap_project(
 
     state_path = project / ".playbook-state.yml"
     existing_state = state_path.read_text() if state_path.exists() else None
+    if any((project / name).exists() or (project / name).is_symlink()
+           for name in ("CONTEXT.md", "CONTEXT-MAP.md", "GLOSSARY-MAP.md")):
+        report.manual_reviews.append(
+            "Existing domain files or a glossary map require review before bootstrap; "
+            "use /ai-playbook-upgrade-project for managed files, or review the domain-file "
+            "rename in MIGRATIONS.md. No replacement glossary was created."
+        )
+        return report
     if existing_state is not None and state_version(existing_state) not in {version, "null", None}:
         raise ValueError(
             "project already records another playbook version; use /ai-playbook-upgrade-project"

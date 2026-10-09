@@ -58,7 +58,7 @@ def inventory_values(registry, manifest: dict) -> dict[str, str]:
         "gstack_version": gstack.get("value", ""),
         "gstack_commit": gstack["commit"][:7],
         "gstack_verified": gstack["verified"],
-        "manifest_verified": max(entry["last_verified"] for entry in integrations.values()),
+        "manifest_verified": ", ".join(sorted({entry["last_verified"] for entry in integrations.values()})),
     }
 
 
@@ -92,9 +92,9 @@ def render_regions(registry, maintenance_values) -> dict[str, str]:
         "provenance": (
             "The Matt Pocock accelerator inventory and behaviour contracts were verified on "
             f"{values['matt_verified']} against the released `mattpocock/skills` "
-            f"{values['matt_tag']} tag and the installation under `~/.agents/skills/`. "
+            f"{values['matt_tag']} tag. This source review does not qualify a host installation. "
             f"{gstack_provenance} "
-            "Embedded reviewer behaviour and exact installed source digests were audited on "
+            "Embedded reviewer source audits are dated "
             f"{values['manifest_verified']}; every inspected upstream workflow currently falls "
             "back to a playbook-owned route. Host capability claims were verified on 2026-07-09 "
             "against the first-party sources linked in `prereqs-capability-profiles.md`. "

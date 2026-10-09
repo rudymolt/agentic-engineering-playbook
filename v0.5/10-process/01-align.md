@@ -51,7 +51,7 @@ Before the first planning skill starts, use the Plan gate in [`../93-model-routi
 
 ### Option A — settled-product project, code-level change
 
-`/grill-with-docs` (Matt). Challenges the plan against the existing `CONTEXT.md`, sharpens terminology, and updates `CONTEXT.md` and ADRs inline as decisions crystallise.
+`/grill-with-docs` (Matt). Challenges the plan against the existing `GLOSSARY.md`, sharpens terminology, and updates `GLOSSARY.md` and ADRs inline as decisions crystallise.
 
 Two rules the underlying `/grilling` loop enforces as of upstream v1.1.0, both of which this stage relies on: **facts vs decisions** — a question answerable by exploring the codebase gets explored, but a *decision* is always put to the human and waited on (a grilling agent that answers its own decision questions has broken HITL); and a **confirmation gate** — the plan is not enacted until the human explicitly confirms shared understanding has been reached. Treat that confirmation as this stage's exit condition.
 

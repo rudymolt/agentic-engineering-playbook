@@ -49,13 +49,13 @@ If the spec hangs on an open factual question (a library's actual behaviour, an 
 Before the spec is accepted, run both checks:
 
 - **scope-guardian:** challenge unjustified complexity, scope creep, and premature abstraction.
-- **Coherence:** check for internal contradictions and terminology drift against `CONTEXT.md`.
+- **Coherence:** check for internal contradictions and terminology drift against `GLOSSARY.md`.
 
 ## What the spec must contain
 
 The Matt skill enforces most of this, but for reference:
 
-- **Problem statement.** One paragraph, in `CONTEXT.md` vocabulary.
+- **Problem statement.** One paragraph, in `GLOSSARY.md` vocabulary.
 - **User stories.** Concrete scenarios, each with an acceptance criterion.
 - **Out of scope.** The "no" list. Often more important than the "yes" list.
 - **Deep modules to extract.** Which seams in the codebase should this feature use? Which should it introduce?

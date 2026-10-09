@@ -25,7 +25,7 @@ All of these should be true. If any is false, run the full bootstrap instead.
 
 ## What lite mode drops
 
-- **Files:** no `.playbook-state.yml`, no `playbook-cadences.yml`, no `planning/` or `archive/` folders, no spec documents. A single `CLAUDE.md` from `templates/CLAUDE.md` (keep the first rule and constraints sections; delete what doesn't apply) and — once the project survives more than one session — a minimal `CONTEXT.md` for vocabulary.
+- **Files:** no `.playbook-state.yml`, no `playbook-cadences.yml`, no `planning/` or `archive/` folders, no spec documents. A single `CLAUDE.md` from `templates/CLAUDE.md` (keep the first rule and constraints sections; delete what doesn't apply) and — once the project survives more than one session — a minimal `GLOSSARY.md` for vocabulary.
 - **Stages:** 03 Spec, 04 breakdown, 05 triage, 06 architecture cadence, 09 browser QA (no UI), 10's doc-close ritual, 12's formal retro. Alignment answers live in the chat and in commit messages.
 - **Cadences and state:** nothing is tracked, so nothing is overdue. The cost of this is exactly why the graduation tripwire below exists.
 
@@ -51,7 +51,7 @@ Graduate to the full playbook the first time **any** of these happens:
 - You catch yourself wanting a tracker, a planning doc, or "notes for next session".
 - Anything irreversible enters scope: real users' data, auth, payments, migrations.
 
-**How to graduate:** run the full bootstrap sequence (`README.md`), keeping your existing `CLAUDE.md` and `CONTEXT.md` as the project-filled content the templates merge around. Backfill nothing else — the full loop starts from the next feature, not retroactively. Stamp `playbook_version` as normal; record `decisions.graduated_from_lite: {YYYY-MM-DD}` in the new `.playbook-state.yml`.
+**How to graduate:** run the full bootstrap sequence (`README.md`), keeping your existing `CLAUDE.md` and `GLOSSARY.md` as the project-filled content the templates merge around. Backfill nothing else — the full loop starts from the next feature, not retroactively. Stamp `playbook_version` as normal; record `decisions.graduated_from_lite: {YYYY-MM-DD}` in the new `.playbook-state.yml`.
 
 Graduation is one-way. If a graduated project feels heavy, tune `playbook-cadences.yml` at the retro — don't return to lite.
 
@@ -60,6 +60,6 @@ Graduation is one-way. If a graduated project feels heavy, tune `playbook-cadenc
 ## Next
 
 - Lite project, new piece of work → step 1 of the lite loop (five questions)
-- Tripwire fired → run the full bootstrap in `README.md`, keeping `CLAUDE.md` + `CONTEXT.md`
+- Tripwire fired → run the full bootstrap in `README.md`, keeping `CLAUDE.md` + `GLOSSARY.md`
 - Not sure lite applies → it probably doesn't; run the full bootstrap
 - Want to see the full loop worked end-to-end first → `80-quickstart.md`

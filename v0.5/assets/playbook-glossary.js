@@ -48,7 +48,7 @@ window.PLAYBOOK_GLOSSARY = {
     def: "A saved snapshot of your changes with a short message describing what they do."
   },
   contextmd: {
-    title: "CONTEXT.md",
+    title: "GLOSSARY.md",
     def: "A file holding the project's glossary of real-world terms, so the agent uses your exact words everywhere."
   },
   designreview: {

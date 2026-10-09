@@ -15,7 +15,7 @@
        ▲
        │  promotion rule: stable across feature retros
        │
-  Per-project (CLAUDE.md, CONTEXT.md, playbook-cadences.yml)
+  Per-project (CLAUDE.md, GLOSSARY.md, playbook-cadences.yml)
        ▲
        │  promotion rule: appears in 2+ session retros
        │
@@ -100,7 +100,7 @@ A playbook addition graduates to a new skill (Matt-style or gstack-style) when:
 
 ## Learnings refresh
 
-On a scheduled refresh, revisit existing learnings (`CLAUDE.md` rules, `CONTEXT.md` terms, promoted items) and mark each **keep / update / replace / archive**. Stale compounded knowledge is worse than none.
+On a scheduled refresh, revisit existing learnings (`CLAUDE.md` rules, `GLOSSARY.md` terms, promoted items) and mark each **keep / update / replace / archive**. Stale compounded knowledge is worse than none.
 
 Record the run: set `last_run.learnings_refresh` in `.playbook-state.yml`.
 

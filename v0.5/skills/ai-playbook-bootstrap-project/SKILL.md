@@ -35,7 +35,7 @@ Set up one project without overwriting anything it already owns. The skill handl
 
 ## Lite mode
 
-When the user chooses lite mode, follow `70-lite-mode.md` directly. Preserve any existing `CLAUDE.md`; keep only the first rule and project constraints, add a minimal `CONTEXT.md` after the project survives one session, and do not create full-mode state, cadence, planning, or archive files. Graduation re-enters this skill in full mode.
+When the user chooses lite mode, follow `70-lite-mode.md` directly. Preserve any existing `CLAUDE.md`; keep only the first rule and project constraints, add a minimal `GLOSSARY.md` after the project survives one session, and do not create full-mode state, cadence, planning, or archive files. Graduation re-enters this skill in full mode.
 
 ## Guardrails
 

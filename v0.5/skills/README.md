@@ -4,6 +4,12 @@ The playbook's local skills use the invocation mechanics from `/writing-for-agen
 
 Provenance: [Matt Pocock's `writing-for-agents`](https://github.com/mattpocock/skills/tree/v1.2.3/skills/productivity/writing-for-agents), its skill-mechanics reference, and the locally installed skill were reviewed on 2026-08-08. The dual-harness metadata mechanics are the source contract; the reach analysis and authority framing below are this playbook's synthesis. `writing-great-skills` is the removed pre-v1.2 name and remains valid only in explicit upgrade history.
 
+Upstream v1.3.1 dependent skills explicitly request a skill loader. Use the host's
+actual loader; where none exists, read the resolved installed SKILL.md and its
+selected references. Merely mentioning a skill does not load its instructions.
+Missing user-owned tracker setup asks the human to run setup; it never authorizes
+an implicit setup interview or replacement of customized tracker files.
+
 ## Taxonomy
 
 - **Model-invoked:** `description` is present, `disable-model-invocation` is absent, and `agents/openai.yaml` omits `policy.allow_implicit_invocation: false`. The agent may discover the skill from a natural-language trigger, and another skill may reach it. Discovery does not expand authority: external writes, releases, upgrades, and other consequential actions still require the user's request or the skill's own approval gate.
@@ -12,7 +18,7 @@ Provenance: [Matt Pocock's `writing-for-agents`](https://github.com/mattpocock/s
 Every local skill carries `agents/openai.yaml` with Codex picker metadata (`interface.display_name` and `interface.short_description`). Metadata and frontmatter must agree on invocation ownership; picker visibility never broadens the user's authority grant.
 
 <!-- generated: upstream/local-skills -->
-local_skills[12]{name,invocation}:
+local_skills[13]{name,invocation}:
   whats-next, model
   model-router, model
   ai-playbook-upgrade-project, model
@@ -25,6 +31,7 @@ local_skills[12]{name,invocation}:
   ai-playbook-blast-radius, model
   ai-playbook-configure, user
   ship-release, model
+  matt-retro, user
 <!-- /generated: upstream/local-skills -->
 
 The manifest-owned `/ai-playbook-deliver` runtime is installed separately from
@@ -32,7 +39,7 @@ The manifest-owned `/ai-playbook-deliver` runtime is installed separately from
 natural-language feature request still routes through stages 01–04, and only
 an explicit approved **deliver to PR** or admitted K4.1 action starts it.
 
-## Why all eleven are model-invoked
+## Why these eleven are model-invoked
 
 | Skill | Reach that earns model invocation | Authority boundary |
 |---|---|---|
@@ -47,6 +54,21 @@ an explicit approved **deliver to PR** or admitted K4.1 action starts it.
 | `/ai-playbook-blast-radius` | Concrete risky revisions need a discoverable route from material assumptions to executable affected-code evidence | It reports unproven risks and requests scoped proof helpers; it does not lower risk classes, authority gates, or fresh verification requirements |
 | `/ship-release` | Natural-language requests such as “cut a release” must reach the release reconciler | Its description requires explicit release intent; it preserves approval, push, tag, and GitHub invariants |
 | `/model-router` | Lane boundaries and typed `models` / `openai defaults` replies must reach one consistent chooser | It selects and launches a route only after the human's lane action; stage and external-mutation gates remain intact |
+
+## Two independently callable retros
+
+| Provider | Claude | Codex | Installed from |
+|---|---|---|---|
+| gstack | `/retro` | `$gstack-retro` | Pinned gstack installation |
+| Matt Pocock | `/matt-retro` | `$matt-retro` | Playbook bootstrap/upgrade |
+
+[`matt-retro`](matt-retro/SKILL.md) is an explicit-only local adapter containing
+Matt's complete pinned upstream workflow and MIT notice. Its source reference
+is not another discoverable skill. This uses the existing local installation
+and customization-preserving upgrade mechanism; it needs no installer alias or
+host-specific plugin namespace. Leave Matt's bare `retro` unselected in the
+upstream installer. Its `writing-for-agents` dependency is a stage-00 prerequisite.
+See [stage 12](../10-process/12-retro-and-learn.md) for combining results.
 
 ## Embedded upstream skill contract
 

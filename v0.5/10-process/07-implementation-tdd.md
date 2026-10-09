@@ -73,7 +73,7 @@ fresh stage-08 verifier.
   checks.
 - **No refactoring inside the loop.** Get to green; structural improvement is the stage-08 standards/spec pass's job (the compatible upstream source supplies the refactoring rules; the manual route preserves them).
 - **No speculative features.** Only what the slice asks for.
-- **Test names and interface vocabulary match `CONTEXT.md`.** No alternative jargon sneaking in.
+- **Test names and interface vocabulary match `GLOSSARY.md`.** No alternative jargon sneaking in.
 
 ## After each TDD cycle
 

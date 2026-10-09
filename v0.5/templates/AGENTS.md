@@ -8,14 +8,14 @@
 
 1. Read `{playbook-path}/v0.5/AGENT-DIGEST.md` — the playbook entry point.
 2. Read `CLAUDE.md` for the project contract — **including its first rule: a feature request routes to stage 01 alignment, never directly to code.**
-3. Read `CONTEXT.md` for the domain vocabulary you'll need.
+3. Read `GLOSSARY.md` for the domain vocabulary you'll need.
 4. Run the prereqs check in `{playbook-path}/v0.5/10-process/00-prereqs.md`.
 
 ## Routing — which files to read for which task
 
 | Task | Read first |
 |---|---|
-| Anything new | `CLAUDE.md`, `CONTEXT.md`, `.playbook-state.yml`, the relevant stage in `{playbook-path}/v0.5/10-process/` |
+| Anything new | `CLAUDE.md`, `GLOSSARY.md`, `.playbook-state.yml`, the relevant stage in `{playbook-path}/v0.5/10-process/` |
 | New feature | `{playbook-path}/v0.5/10-process/01-align.md` — **mandatory first stop; no source edits before alignment is recorded** |
 | Choose a Plan, Build, or Verify model | `{playbook-path}/v0.5/93-model-routing-track.md`, then `/model-router` |
 | Bug fix | `{playbook-path}/v0.5/10-process/11-debug.md` |
@@ -40,6 +40,6 @@
 - Don't read `archive/`.
 - Don't read planning folders of features not currently in `active_features`.
 - Don't treat `.playbook-routing/` handoffs as durable feature docs; use them only to resume the named pending route.
-- Don't invent vocabulary not in `CONTEXT.md`.
+- Don't invent vocabulary not in `GLOSSARY.md`.
 - Don't rewrite a file wholesale unless the user has explicitly asked.
 - Don't run the full test suite for a typo fix; don't ship a parser rewrite with only a type-check (see verification ladder in `{playbook-path}/v0.5/00-foundations.md` §4).

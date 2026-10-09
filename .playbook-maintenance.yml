@@ -5,10 +5,10 @@ last_verified: 2026-10-08
 next_due: 2026-11-08
 cadence: monthly
 # Completed comparison: analysis/2026-10-08-upstream-drift.md
-# Below are retained pins/historical host-doc dates, not candidate adoption.
+# Below are adopted source pins and historical host-doc dates; source review is not host qualification.
 
 upstreams:
-  matt_pocock_skills: v1.2.3
+  matt_pocock_skills: v1.3.1
   gstack: 1.62.0.0 (d078622)
   pstack: 93b00b8
   claude_code_docs: 2026-07-09

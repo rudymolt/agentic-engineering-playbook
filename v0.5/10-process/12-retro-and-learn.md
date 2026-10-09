@@ -15,7 +15,19 @@
 
 ## What to run
 
-`/retro` (gstack). For a weekly view across all your projects, `/retro global`.
+Both retros are independently callable:
+
+| Purpose | Claude command | Codex command |
+|---|---|---|
+| gstack delivery/team retrospective | `/retro` | `$gstack-retro` |
+| Matt Pocock agent-environment retrospective | `/matt-retro` | `$matt-retro` |
+
+Use gstack for the usual weekly or shipped-feature discussion; `/retro global`
+provides a weekly view across projects. Offer Matt's command for a deeper look
+at session friction, checks, instructions and tooling. The human invokes it;
+a stage or another skill must not silently start this explicit-only command.
+Either command can run independently; when both are selected for one stage-12
+retro, combine their findings into one retro record.
 
 **`/retro` is the facilitator, not the output.** The gstack skill runs the discussion; it knows nothing about this playbook's files. The stage is complete only when the discussion has been written to `planning/retros/{YYYY-MM-DD}.md` using the project's `retro-template.md` — including its §8 checklist, which carries the eval and field-report checks. An agent that runs `/retro` and stops has held a conversation, not run stage 12.
 
@@ -38,6 +50,17 @@ These values are observational. Collect a three-period baseline for sample appli
 
 ## The retro template
 
+Include an environment-improvement pass, drawing on
+[Matt's v1.3.1 retro](https://github.com/mattpocock/skills/blob/v1.3.1/skills/engineering/retro/SKILL.md):
+identify navigation friction, missing checks, confusing instructions and wasted
+tool calls from actual session evidence. Prefer a deterministic check for a
+mechanical mistake; keep judgement calls in review guidance. Propose changes
+through this stage's promotion rules rather than editing settings automatically.
+For the complete Matt workflow, the independently callable
+[`matt-retro` adapter](../skills/matt-retro/SKILL.md) includes the exact pinned
+source and license. Bootstrap/upgrade install it under its distinct name.
+The bare `/retro` route remains gstack's.
+
 Use `templates/retro-template.md` as the structure. Sections:
 
 1. **What worked.** Specific, ideally with evidence.
@@ -48,7 +71,7 @@ Use `templates/retro-template.md` as the structure. Sections:
 5. **Learning coverage and observational eval.** Do the captured `/learn` entries reflect the shipped work, and does the retro contain the required eval row or explicit evidence-gap explanation?
 6. **Promotion candidates.** Which learnings should become:
    - A new rule in this project's `CLAUDE.md`?
-   - A new entry in `CONTEXT.md`?
+   - A new entry in `GLOSSARY.md`?
    - A new ADR?
    - A change to this playbook?
    - A new skill?
@@ -61,7 +84,7 @@ A learning earns promotion to the playbook when **any** of:
 - It would have prevented a real incident.
 - It changes a stage's invariants (not just its parameters).
 
-Lower-bar things stay in `CLAUDE.md` or `CONTEXT.md`. The playbook is the shared bedrock — it should change slowly and deliberately.
+Lower-bar things stay in `CLAUDE.md` or `GLOSSARY.md`. The playbook is the shared bedrock — it should change slowly and deliberately.
 
 ## When a cadence is wrong
 
@@ -89,7 +112,7 @@ This review is the accountability backstop for open maps, which `/whats-next` su
 - A learning coverage note that names the shipped-work evidence checked and any new lessons captured.
 - An observational eval row for periods with shipped slices or independent verification, or an explicit reason the required evidence was unavailable.
 - **A field-report decision (v0.5 evidence loop).** Explicitly check the four proof events (independent-verifier catch, budget-ceiling trip, acceptance-criteria refusal, structured escalation) and the friction signals against this period. If any occurred, complete the project's `field-report.md` and copy it to the playbook repo's `analysis/field-reports/{YYYY-MM-DD}-{project-slug}.md`. If none occurred, record "no proof events this period" in the retro — that line is the evidence the check happened.
-- Updates to `CLAUDE.md`, `CONTEXT.md`, `playbook-cadences.yml`, or this playbook if any candidates were promoted.
+- Updates to `CLAUDE.md`, `GLOSSARY.md`, `playbook-cadences.yml`, or this playbook if any candidates were promoted.
 - Updates to MEMORY.md if any cross-project lessons emerged.
 - For every delivery mission, a denominator-preserving disposition:
   qualifying, nonqualifying, cancelled, or externally completed. Keep product
