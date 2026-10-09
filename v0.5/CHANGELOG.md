@@ -17,6 +17,10 @@ manual adapters until separately qualified. gstack qualification remains a
 separate batch. Distinct retro entry names make both workflows available without
 installer-order collisions; managed upgrades preserve local customizations.
 
+## V0.5.1 — 2026-10-08
+
+Guided configuration, evidence-backed model advice, skill bindings, and safer upgrades.
+
 - Complete the explicitly deferred Playbook configuration UI feature retro and
   field report; audit shipped slices and learning coverage, retain observational
   evidence gaps, assess the three approved candidates and clear only this

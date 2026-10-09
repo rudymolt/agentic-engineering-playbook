@@ -6,7 +6,9 @@
 
 ## Release
 
-**V0.5.0** — 2026-09-26. Initial public edition from a reviewed adaptation of the private V0.4.2 source. It begins a new Git history, carries one live edition, and adds an independent public verification and upgrade contract.
+**V0.5.1** — 2026-10-08. Guided configuration, evidence-backed model advice, skill bindings, and safer upgrades.
+
+- V0.5.0 — 2026-09-26. Initial public edition from a reviewed adaptation of the private V0.4.2 source. It begins a new Git history, carries one live edition, and adds an independent public verification and upgrade contract.
 
 Full history: [`v0.5/CHANGELOG.md`](v0.5/CHANGELOG.md).
 
