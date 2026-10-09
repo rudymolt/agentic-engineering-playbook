@@ -112,6 +112,29 @@ stage authority.
 Completion criterion: affected entry-point knowledge has a named stage owner;
 no watcher, automatic PR, or new cadence is introduced.
 
+## Terminal result
+
+On every exit, including an early stop, append a YAML `playbook_result` containing
+`outcome`, `next_stage`, and an ordered `required_actions` list. Choose the row
+that matches the result:
+
+| Work result | outcome | next_stage | required_actions |
+|---|---|---|---|
+| `clean` after complete source/live coverage | `handoff` | Owning stage id, default `09-qa` | Review the complete audit and, only if accepted, perform the stage-owned maintenance timestamp update and status recomputation |
+| `changed` after scoped corrections and fresh complete independent verification | `handoff` | Owning stage id, default `09-qa` | Review the correction evidence and, only if accepted, perform the stage-owned maintenance timestamp update and status recomputation |
+| Requested complete audit is `blocked`, partial, or has a correction still pending/reproof-required | `blocked` | Owning stage id, default `09-qa` | Name missing coverage, approval, prerequisite, defect or proof; finish authorized corrections and required verification before acceptance |
+| Successful single-entry doc-close evidence handback; no complete audit requested | `handoff` | Actual doc-close owner, normally `10-ship-and-deploy` | Consume the affected entry's evidence and continue remaining doc-close/retro actions |
+
+Keep the maintenance finding separate from `playbook_result.outcome`: `clean`
+and `changed` are not valid envelope outcomes. Emit the actual owning stage id
+(for example `08-review`, `09-qa` or `10-ship-and-deploy`). Carry remaining caller
+actions forward. The report never writes the maintenance clock or other state;
+a handoff offers evidence for stage-owned acceptance and does not certify QA or
+shipping. A single-entry doc-close handback reports no complete-audit finding or clock
+credit and does not require a full maintenance audit. Partial coverage blocks
+only a requested complete audit; an unresolved single-entry requirement returns
+`blocked` to its doc-close owner with that specific remaining action.
+
 ## Guardrails
 
 - An unadopted project has no map-maintenance obligation.

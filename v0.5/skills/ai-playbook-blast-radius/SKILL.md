@@ -57,6 +57,22 @@ write task instead of editing product code.
 Completion criterion: the existing stage-08 result makes each acceptance block,
 unproven risk, counterexample, and limit visible to its stage owner.
 
+## Terminal result
+
+On every exit, including an early stop, append a YAML `playbook_result` containing
+`outcome`, `next_stage`, and an ordered `required_actions` list. Choose the row
+that matches the result:
+
+| Result | outcome | next_stage | required_actions |
+|---|---|---|---|
+| Scoped review evidence delivered with no acceptance-blocking finding | `handoff` | `08-review` | Consume the bounded evidence and finish remaining stage-08 checks |
+| Essential assumption unproven, counterexample found, or required proof unavailable | `blocked` | `08-review` | Identify each acceptance block and the scoped proof/remediation plus fresh verification needed |
+
+Retain non-blocking unproven assumptions and limits in the review report. A
+finished writeup is never a `complete` merge verdict. The stage owner reconciles
+required work; the envelope grants no permission to write a proof helper, change
+product code, update state or ship.
+
 ## Guardrails
 
 - This procedure informs existing review; it does not replace mandatory tests,

@@ -61,6 +61,24 @@ intent as a settled decision.
 Completion criterion: the result distinguishes evidence, inference,
 contradictions, and unknowns, and any constraints remain advisory and cited.
 
+## Terminal result
+
+On every exit, including an early stop, append a YAML `playbook_result` containing
+`outcome`, `next_stage`, and an ordered `required_actions` list. Choose the row
+that matches the result:
+
+| Result | outcome | next_stage | required_actions |
+|---|---|---|---|
+| Standalone bounded explanation delivered, with evidence limits explicit | `complete` | `null` | `[]` |
+| Bounded explanation delivered to an invoking stage | `handoff` | Actual invoking stage id | Consume the findings and continue that stage's remaining work |
+| Target cannot be bounded or an essential prerequisite prevents the requested investigation | `blocked` | Invoking stage id, or `/whats-next` when standalone | Name the missing target/access/evidence and the action needed to resume |
+
+A supported "unknown" and an unavailable optional source can be a completed
+qualified answer. Missing history does not establish intent. `complete`
+refers only to this explanation; it cannot complete the caller's review or ship
+gate. Emit a concrete stage id, never the words "invoking stage". Carry any
+already-required caller actions forward; this report does not write state.
+
 ## Guardrails
 
 - Local tickets and decisions count as evidence; missing tracker access does not

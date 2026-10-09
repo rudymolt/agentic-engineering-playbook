@@ -47,6 +47,24 @@ test that the evidence does not show.
 Completion criterion: every behavioral claim says whether it is source-read or
 executed runtime evidence, with locators and limits sufficient to check it.
 
+## Terminal result
+
+On every exit, including an early stop, append a YAML `playbook_result` containing
+`outcome`, `next_stage`, and an ordered `required_actions` list. Choose the row
+that matches the result:
+
+| Result | outcome | next_stage | required_actions |
+|---|---|---|---|
+| Standalone bounded explanation delivered, with evidence limits explicit | `complete` | `null` | `[]` |
+| Bounded explanation delivered to an invoking stage | `handoff` | Actual invoking stage id | Consume the findings and continue that stage's remaining work |
+| Target cannot be bounded or an essential prerequisite prevents the requested investigation | `blocked` | Invoking stage id, or `/whats-next` when standalone | Name the missing target/access/evidence and the action needed to resume |
+
+A source-read explanation can be complete with runtime evidence explicitly
+unavailable. This does not establish that the runtime behavior passed a test. `complete`
+refers only to this explanation; it cannot complete the caller's review or ship
+gate. Emit a concrete stage id, never the words "invoking stage". Carry any
+already-required caller actions forward; this report does not write state.
+
 ## Guardrails
 
 - This skill does not invent callers, history, or tests.
