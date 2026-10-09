@@ -14,11 +14,38 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
+      - name: Classify public edition test scope
+        id: edition-scope
+        shell: bash
+        env:
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          if [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]; then
+            python3 v0.5/scripts/edition_ci_scope.py \
+              --base "$PR_BASE_SHA" --head "$GITHUB_SHA" \
+              >> "$GITHUB_OUTPUT"
+          else
+            {
+              echo "run_full=true"
+              echo "reason=main push or manual run"
+            } >> "$GITHUB_OUTPUT"
+          fi
       - name: Verify public edition and content boundary
+        if: steps.edition-scope.outputs.run_full == 'true'
         run: python3 v0.5/scripts/verify-playbook.py --skip-drift --skip-delivery --jobs 3
+      - name: Verify editorial content and generated files
+        if: steps.edition-scope.outputs.run_full == 'false'
+        run: |
+          python3 v0.5/scripts/check-md-conventions.py
+          python3 v0.5/scripts/check-links.py
+          python3 v0.5/scripts/check-public-content.py
+          python3 v0.5/scripts/generate-status.py --check
+          python3 v0.5/scripts/generate-manifest.py --check
 
   delivery:
     runs-on: ubuntu-latest
