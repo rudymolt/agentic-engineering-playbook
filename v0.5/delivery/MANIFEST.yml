@@ -591,7 +591,7 @@
       "source": "src/delivery_pilot/interfaces.py"
     },
     {
-      "digest": "sha256:709d8d6c46186434855cbc1a7daf10038e7334d5981b5e6643c3299ff5199578",
+      "digest": "sha256:40dabfed37c227be7cd5b68520dc002f3581bbf35a07da258e7ad99d2992d43f",
       "install_path": "runtime/delivery_pilot/interim.py",
       "source": "src/delivery_pilot/interim.py"
     },
@@ -803,5 +803,5 @@
   ],
   "manifest_schema_version": 1,
   "manifest_self_rule": "pack_digest covers the complete non-manifest source inventory",
-  "pack_digest": "sha256:9c3a0485575d263bd63066d9b409d630e3c3217a50061ca49aba5fd6aef51e0a"
+  "pack_digest": "sha256:6b545446ac916e0f0a1fcaedc23e7e769be6b8e6f81230bbe3dd449dbe77a2ee"
 }

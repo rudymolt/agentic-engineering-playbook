@@ -10,7 +10,6 @@ from __future__ import annotations
 
 import subprocess
 import argparse
-import re
 from copy import deepcopy
 from dataclasses import dataclass
 from datetime import datetime, timezone
@@ -591,31 +590,22 @@ class InterimCheckpointStore:
         return InterimCheckpointSnapshot(snapshot.value, snapshot.digest, snapshot.commit_sha, reconciled,
                                          self._parents(snapshot.commit_sha))
 
-    def _remote_urls(self) -> tuple[list[str], list[str]]:
-        # `remote -v` expands URL rewrites and lists every effective fetch and
-        # push target in one Git call, including multiple push URLs.
-        result = self._git("remote", "-v", check=False)
+    def _remote_urls(self, push: bool) -> list[str]:
+        args = ("remote", "get-url", "--push", "--all", self.remote) if push else ("remote", "get-url", "--all", self.remote)
+        result = self._git(*args, check=False)
         if result.returncode:
             raise InterimCheckpointError("approved repository identity could not be read")
-        fetch_urls: list[str] = []
-        push_urls: list[str] = []
-        for line in result.stdout.decode().splitlines():
-            if not line.startswith(self.remote + "\t"):
-                continue
-            match = re.fullmatch(r"(.+) \((fetch|push)\)(?: \[[^]]+\])?", line[len(self.remote) + 1:])
-            if match is None:
-                raise InterimCheckpointError("approved repository identity is malformed")
-            (fetch_urls if match[2] == "fetch" else push_urls).append(match[1])
-        if not fetch_urls or not push_urls:
+        values = [line for line in result.stdout.decode().splitlines() if line]
+        if not values:
             raise InterimCheckpointError("approved repository identity is empty")
-        return fetch_urls, push_urls
+        return values
 
     def _assert_approved_target(self, record: dict[str, Any]) -> None:
         approval, checkpoint = record["approval"], record["approval"]["checkpoint"]
         repository = approval["repository"]
         if repository["remote"] != self.remote or checkpoint["ref"] != self.control_ref:
             raise InterimCheckpointError("checkpoint adapter target differs from immutable approval", code="target")
-        fetch_urls, push_urls = self._remote_urls()
+        fetch_urls, push_urls = self._remote_urls(False), self._remote_urls(True)
         if len(fetch_urls) != 1 or len(push_urls) != 1:
             raise InterimCheckpointError("approved repository must have exactly one effective fetch and push target", code="target")
         if repository["fetch_url"] != fetch_urls[0] or repository["push_url"] != push_urls[0]:
@@ -694,8 +684,7 @@ class InterimCheckpointStore:
     def persist(self, expected: InterimCheckpointSnapshot, record: object) -> InterimCheckpointSnapshot:
         return self._persist_validated(expected, validate_record(record))
 
-    def _persist_validated(self, expected: InterimCheckpointSnapshot, record: dict[str, Any],
-                           previous_validated: dict[str, Any] | None = None) -> InterimCheckpointSnapshot:
+    def _persist_validated(self, expected: InterimCheckpointSnapshot, record: dict[str, Any]) -> InterimCheckpointSnapshot:
         """Use records validated at this boundary; the digest still checks the caller's snapshot."""
         self._assert_approved_target(record)
         if digest(expected.value) != expected.digest:
@@ -706,7 +695,7 @@ class InterimCheckpointStore:
             raise InterimCheckpointError("local checkpoint could not be read") from exc
         if actual.commit_sha != expected.commit_sha or actual.digest != expected.digest:
             raise InterimCheckpointError("local checkpoint moved; reload and reconcile", code="cas-lost")
-        previous = previous_validated if previous_validated is not None else validate_record(actual.value)
+        previous = validate_record(actual.value)
         if record["approval_digest"] != previous["approval_digest"]:
             raise InterimCheckpointError("approval amendment is unavailable in S1")
         try:
@@ -727,29 +716,25 @@ class InterimCheckpointStore:
         previous, projected = validate_record(expected.value), validate_record(record)
         monitoring = previous.get("monitoring")
         if not isinstance(monitoring, dict):
-            return self._persist_validated(expected, projected, previous)
+            return self.persist(expected, projected)
         # Monitoring owns its own reservation, reconciliation, and audit
         # records.  Rewrapping those writes would manufacture wake generations
         # or recursively emit events.
         from .interim_monitor import _terminal, checkpoint_transition, locator, retire
         terminal = _terminal(projected)
         emitted: dict[str, str] | None = None
-        rewritten = False
         if terminal:
             projected = retire(projected, terminal)
-            rewritten = True
         elif projected.get("monitoring") != monitoring or self._wake_write(previous, projected):
-            return self._persist_validated(expected, projected, previous)
+            return self.persist(expected, projected)
         elif monitoring.get("state") == "active" and self._continuation_is_stable(projected):
             reason = "coordinator-boundary-" + projected["state"]["next_action"]
             projected = checkpoint_transition(projected, reason, expected.commit_sha)
-            rewritten = True
             pending = projected["monitoring"]["pending_wake"]
             emitted = locator({"run_id": projected["approval"]["run_id"],
                                "control_ref": projected["monitoring"]["control_ref"],
                                "generation": pending["generation"]})
-        persisted = self._persist_validated(expected, validate_record(projected) if rewritten else projected,
-                                            previous)
+        persisted = self.persist(expected, projected)
         if emitted is not None and self.dispatch_emitter is not None:
             try:
                 self.dispatch_emitter(emitted)

@@ -7,14 +7,13 @@
   saved skill selection exists. Reuse the validated local
   checkpoint snapshot and its immutable commit payload when writing
   the next Git control commit. Use the standard JSON encoder for canonical
-  values with ASCII keys and no floats. Reuse validation at the lifecycle
-  boundary and inspect effective fetch/push URLs in one Git call. Keep fresh
-  scans between calls and fresh admission checks during replies, along with the
+  values with ASCII keys and no floats. Keep fresh scans between calls and
+  fresh admission checks during replies, along with the
   Git compare-and-set, remote target, and post-push lineage checks.
 
 *Why — verification lane:* repeated inventory walks and a second local Git
-  read and repeat parsing and validation inside checkpoint writes consumed time
-  without adding a new decision boundary. The push lease still rejects remote
+  read and repeat parsing inside checkpoint writes consumed time without adding
+  a new decision boundary. The push lease still rejects remote
   movement, and the existing checks still guard mutable inputs and
   concurrent writes; the canonical encoder retains its exact fallback for
   Unicode key ordering and ECMAScript number rendering.
