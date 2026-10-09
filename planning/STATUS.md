@@ -1,8 +1,18 @@
 # Planning status
 
-active_features: 4
+active_features: 5
 
 ## Active features
+
+[Checkpoint and delivery verifier performance](checkpoint-performance/spec.md) —
+`in-flight`; spec and [six-slice breakdown](checkpoint-performance/slices.md)
+accepted. Build all six sequentially with Sol remains selected. S1 measurement
+implementation and the actual reference baseline pass independent review;
+S1's initial gate is complete. The [quantified savings gap](checkpoint-performance/evidence.md)
+remains an experimental risk covered by the recorded approval.
+Draft PR #41 checkpoints the measurement work; S2 is next and S3–S6 remain pending.
+Same-path seed restoration, fixed comparators and all target/count invariants
+remain binding; no performance target is certified.
 
 [Verifier performance](verifier-performance/slices.md) — aligned and specified; five
 ordered slices implemented; the measured slice 5 improvement is accepted,

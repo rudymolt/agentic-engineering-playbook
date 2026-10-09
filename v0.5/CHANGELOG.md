@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- Extend the delivery profiler with opt-in worker Git diagnostics, complete
+  process wall times, fixed-checkout guidance measurements and serial verifier
+  attribution. Offer an optional reference-runner baseline after both required
+  CI jobs, retaining their existing workloads.
+
+*Why — checkpoint measurement lane:* fixture costs and process overhead need
+  reproducible attribution before performance changes can be accepted without
+  weakening persistence or matrix coverage.
+
 - Remember the human-confirmed merge email privacy setting in root `AGENTS.md`
   for the exact repository/account pair. Require matching GitHub target and
   merging identity, invalidate on revocation or a disabled-setting report,

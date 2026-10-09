@@ -5,6 +5,11 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      checkpoint_baseline:
+        description: "Measure the pinned checkpoint baseline after required jobs"
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -86,3 +91,42 @@ jobs:
       - name: Record delivery suite skip
         if: steps.delivery-scope.outputs.run_delivery != 'true'
         run: echo "Delivery suite skipped — ${{ steps.delivery-scope.outputs.reason }}."
+
+  checkpoint-baseline:
+    if: github.event_name == 'workflow_dispatch' && inputs.checkpoint_baseline
+    needs: [edition, delivery]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Pin clean reference checkouts
+        run: |
+          mkdir -p .context/measurements
+          git worktree add --detach .context/baseline a3daedf03b24c5b3feb41d5953272d281de7b283
+          git worktree add --detach .context/guidance-comparator 9d8dc1a5ec583aa3cd727a52d06dcd5438bf2a8e
+      - name: Measure privileged serial baseline and complete standalone files
+        run: |
+          sudo --preserve-env=ImageOS,ImageVersion "$(command -v python3)" bench/profile_delivery_tests.py \
+            --root .context/baseline --verify-suite --repeat 1 --output .context/measurements/baseline-delivery.json
+      - name: Measure all guidance files at both fixed references
+        run: |
+          python3 bench/profile_delivery_tests.py --root .context/baseline --group guidance \
+            --repeat 1 --output .context/measurements/baseline-guidance.json
+          python3 bench/profile_delivery_tests.py --root .context/guidance-comparator --group guidance \
+            --repeat 1 --output .context/measurements/comparator-guidance.json
+      - name: Attribute baseline Git operations separately from acceptance timing
+        run: |
+          sudo --preserve-env=ImageOS,ImageVersion "$(command -v python3)" bench/profile_delivery_tests.py \
+            --root .context/baseline --pattern test_interim_recovery.py --pattern test_interim_coordinator.py \
+            --git-diagnostics --repeat 1 --output .context/measurements/baseline-diagnostic.json
+      - name: Retain sanitised measurement reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: checkpoint-baseline
+          path: .context/measurements/*.json
+          retention-days: 30
