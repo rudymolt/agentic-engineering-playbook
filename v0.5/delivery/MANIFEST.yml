@@ -526,7 +526,7 @@
       "source": "src/delivery_pilot/budget.py"
     },
     {
-      "digest": "sha256:49fedd981db54c81c8e5eed9f6e77c331eb43659a2dbc05656d34ea7f6af08fe",
+      "digest": "sha256:ad587743048b473611019e5983179124938201218fedc0c8c6eed7c80e4b1617",
       "install_path": "runtime/delivery_pilot/canonical.py",
       "source": "src/delivery_pilot/canonical.py"
     },
@@ -576,7 +576,7 @@
       "source": "src/delivery_pilot/gates.py"
     },
     {
-      "digest": "sha256:2dc7bd04e2e5a0e31a9452c36fc0a47056abd66f62d37a5cf0333dba454663d8",
+      "digest": "sha256:05ad1def64293b6e6654c1cbceb586d1576a74ffee8438c13af64483fbee204b",
       "install_path": "runtime/delivery_pilot/git_control.py",
       "source": "src/delivery_pilot/git_control.py"
     },
@@ -591,7 +591,7 @@
       "source": "src/delivery_pilot/interfaces.py"
     },
     {
-      "digest": "sha256:7b0ba13effd24fa23c3d11549d9a8a48186012735de2de62351865c3858f1fdb",
+      "digest": "sha256:40dabfed37c227be7cd5b68520dc002f3581bbf35a07da258e7ad99d2992d43f",
       "install_path": "runtime/delivery_pilot/interim.py",
       "source": "src/delivery_pilot/interim.py"
     },
@@ -646,7 +646,7 @@
       "source": "src/delivery_pilot/interim_recovery.py"
     },
     {
-      "digest": "sha256:f5bd94cb79bdaa4e0ae073c6ea855c9dc5f88191a6d0d10dc4ec87fe1d14cd64",
+      "digest": "sha256:70b3af0af248806d52c756813ecfe3282e81f116fb4faa6d8bb393c7de607226",
       "install_path": "runtime/delivery_pilot/interim_repair.py",
       "source": "src/delivery_pilot/interim_repair.py"
     },
@@ -661,7 +661,7 @@
       "source": "src/delivery_pilot/interim_routes.py"
     },
     {
-      "digest": "sha256:6256afdb67a6ccceb0a30aedda4e4806b97d93812ac43cbbf6fef185d9fd2a5e",
+      "digest": "sha256:c2667dce912752980ab2088386ec9c46c21955fb38795cd60b5343df5c187b14",
       "install_path": "runtime/delivery_pilot/interim_semantics.py",
       "source": "src/delivery_pilot/interim_semantics.py"
     },
@@ -741,12 +741,12 @@
       "source": "tests/test_continuation.py"
     },
     {
-      "digest": "sha256:a1b6123f2b4f427f8736529a4240268a2345c4ba95d4b51eea91a085539df900",
+      "digest": "sha256:7f0cbc3b5ef34394b21b4707967f69328c34af63cfbc040f1146bb5c0b097e1b",
       "install_path": null,
       "source": "tests/test_core.py"
     },
     {
-      "digest": "sha256:0200a3600c90d0b56b1d389123b2c5ab59945f2c57a18c9c512c455eea66b5ba",
+      "digest": "sha256:479f97b7da57b1bb6d64c0467f8294e8729a71bfc05597e3c54762ef90a427be",
       "install_path": null,
       "source": "tests/test_interim.py"
     },
@@ -803,5 +803,5 @@
   ],
   "manifest_schema_version": 1,
   "manifest_self_rule": "pack_digest covers the complete non-manifest source inventory",
-  "pack_digest": "sha256:c7012b71563ed424c4d68a72b3cc781a855efadb37867fd8b1bc49902ebbf0e3"
+  "pack_digest": "sha256:6b545446ac916e0f0a1fcaedc23e7e769be6b8e6f81230bbe3dd449dbe77a2ee"
 }

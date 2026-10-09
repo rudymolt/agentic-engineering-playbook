@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import secrets
 import subprocess
+from copy import deepcopy
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
@@ -27,6 +28,7 @@ class GitControlStore:
         self.repository = repository
         self.control_ref = control_ref
         self.control_path = control_path
+        self._cached_snapshot: GitSnapshot | None = None
         if not control_ref.startswith("refs/heads/delivery-control/"):
             raise ValueError("control ref must use refs/heads/delivery-control/")
         if control_path != "mission.yml":
@@ -66,25 +68,37 @@ class GitControlStore:
         result = self._git("update-ref", self.control_ref, commit, ZERO_SHA, check=False)
         if result.returncode:
             raise CasMismatch("control ref creation lost compare-and-set")
-        return GitSnapshot(genesis_payload, digest(genesis_payload), commit)
+        snapshot = GitSnapshot(genesis_payload, digest(genesis_payload), commit)
+        self._cached_snapshot = GitSnapshot(deepcopy(genesis_payload), snapshot.digest, commit)
+        return snapshot
 
     def read(self) -> GitSnapshot:
         commit = self._resolve()
         if commit is None:
             raise FileNotFoundError(self.control_ref)
+        if self._cached_snapshot is not None and self._cached_snapshot.commit_sha == commit:
+            cached = self._cached_snapshot
+            return GitSnapshot(deepcopy(cached.value), cached.digest, commit)
         raw = self._git("show", f"{commit}:{self.control_path}").stdout
         value = load_strict(raw)
-        return GitSnapshot(value, digest(value), commit)
+        snapshot = GitSnapshot(value, digest(value), commit)
+        self._cached_snapshot = GitSnapshot(deepcopy(value), snapshot.digest, commit)
+        return snapshot
 
     def write(self, expected_commit: str, expected_digest: str, value: dict[str, Any]) -> GitSnapshot:
-        current = self.read()
+        return self._write_from_snapshot(expected_commit, expected_digest, value, self.read())
+
+    def _write_from_snapshot(self, expected_commit: str, expected_digest: str,
+                             value: dict[str, Any], current: GitSnapshot) -> GitSnapshot:
         if current.commit_sha != expected_commit or current.digest != expected_digest:
             raise CasMismatch("control ref or projection digest moved")
         commit = self._commit(value, current.commit_sha, "delivery control checkpoint")
         result = self._git("update-ref", self.control_ref, commit, expected_commit, check=False)
         if result.returncode:
             raise CasMismatch("control checkpoint lost compare-and-set")
-        return GitSnapshot(value, digest(value), commit)
+        snapshot = GitSnapshot(value, digest(value), commit)
+        self._cached_snapshot = GitSnapshot(deepcopy(value), snapshot.digest, commit)
+        return snapshot
 
     def push(self, remote: str, expected_remote_commit: str | None, commit: str) -> None:
         lease = expected_remote_commit or ZERO_SHA
