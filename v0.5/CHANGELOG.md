@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## V0.5.1 — 2026-10-09
+
+Guided configuration, evidence-backed model advice, skill bindings, safer upgrades, and updated skill integrations.
+
 - Keep both required PR CI jobs while routing editorial-only README and release
   metadata changes through focused content and generated-file checks. Run the
   full edition suite for agent instructions, process/skill docs, code, and CI.
@@ -34,10 +38,6 @@ project definitions and recorded bases intact; changed reviewer sources retain
 manual adapters until separately qualified. gstack qualification remains a
 separate batch. Distinct retro entry names make both workflows available without
 installer-order collisions; managed upgrades preserve local customizations.
-
-## V0.5.1 — 2026-10-08
-
-Guided configuration, evidence-backed model advice, skill bindings, and safer upgrades.
 
 - Require PR review conversations to be checked and addressed before declaring a
   merge ready, with evidence for stale findings and resolution of handled threads.
