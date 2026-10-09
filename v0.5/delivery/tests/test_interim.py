@@ -193,7 +193,7 @@ class InterimApprovalTests(unittest.TestCase):
             initial_state(initial_record(approval()))
 
 
-class InterimCheckpointTests(unittest.TestCase):
+class InterimCheckpointFixture(unittest.TestCase):
     def setUp(self) -> None:
         self.temp = tempfile.TemporaryDirectory()
         self.root = Path(self.temp.name)
@@ -225,6 +225,8 @@ class InterimCheckpointTests(unittest.TestCase):
     def store(self, repository: Path) -> InterimCheckpointStore:
         return InterimCheckpointStore(repository, "origin", self.approval()["checkpoint"]["ref"])
 
+
+class InterimCheckpointTests(InterimCheckpointFixture):
     def test_adapter_refuses_a_remote_not_bound_by_approval(self) -> None:
         wrong_remote = InterimCheckpointStore(self.first, "other", self.approval()["checkpoint"]["ref"])
         with self.assertRaisesRegex(InterimCheckpointError, "immutable approval"):

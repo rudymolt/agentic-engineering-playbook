@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+- Separate configuration and interim checkpoint fixtures from their test classes
+  so imported subclasses no longer inherit unrelated tests. Keep all existing
+  test method definitions and fixture behavior.
+
+*Why — verification lane:* unittest discovery was running the same public tests
+  111 extra times and delivery tests 14 extra times, inflating gate time and
+  confusing failure reports without adding distinct coverage.
+
 - Split the reviewed guidance tests into three balanced unittest file shards and
   move their shared fixture into a non-test module. Preserve all 154 test methods,
   their assertions, and direct execution of each shard.

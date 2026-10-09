@@ -178,8 +178,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "c83de73d81504d799df2296e16d477463f5f735af9bd746a80bf277d0889b770",
-      "size": 51134
+      "sha256": "b650c716c3fd54b9798f9eed02e04ae77cd8bf7030e44daddb5f7706307e6072",
+      "size": 51531
     },
     {
       "path": "MAINTENANCE.md",
@@ -958,8 +958,8 @@
     },
     {
       "path": "delivery/tests/test_interim.py",
-      "sha256": "396f67f1d8776401c3e49519f5949af4f84db5eda53878fd1dd5e3ffd49a5962",
-      "size": 18033
+      "sha256": "0200a3600c90d0b56b1d389123b2c5ab59945f2c57a18c9c512c455eea66b5ba",
+      "size": 18092
     },
     {
       "path": "delivery/tests/test_interim_advance.py",
@@ -973,8 +973,8 @@
     },
     {
       "path": "delivery/tests/test_interim_coordinator.py",
-      "sha256": "2a404885a1577c77c6c660e1ee17e1aefadaadb208ffee690912e26bcd24cbab",
-      "size": 48275
+      "sha256": "934744dbf8ee8baab261f147cdfb537c81e8d64854ac6c104b3e2672f5227ac4",
+      "size": 48279
     },
     {
       "path": "delivery/tests/test_interim_host_continuation.py",
@@ -1263,8 +1263,8 @@
     },
     {
       "path": "scripts/test_custom_skill_bindings.py",
-      "sha256": "6b6c384c8b609c1257e57ce684f8ee7d354effd5172e37d7e57395008af51152",
-      "size": 57010
+      "sha256": "3fb002f4a99c315ef494d8bcad71619180c1694346d7ebc402bc8b3413ce99c7",
+      "size": 57012
     },
     {
       "path": "scripts/test_delivery_ci_scope.py",
@@ -1328,18 +1328,18 @@
     },
     {
       "path": "scripts/test_model_reviewed_guidance.py",
-      "sha256": "8bce1c6535648fff60a82e73f5b05874403657a6c069d7fea177742897804a50",
-      "size": 84514
+      "sha256": "3f1d474743c515d7dcc47e0775681007c3d18d652e05315035e20ca9c2b003ee",
+      "size": 84465
     },
     {
       "path": "scripts/test_model_reviewed_guidance_boundaries.py",
-      "sha256": "59c12a57196ef10f93c922e385b16b856b7f51abf812017575ea79b46f893408",
-      "size": 51007
+      "sha256": "e83a62ca6fdfc494f115cdc236d7abe3071aa7a693aab4a24f110d34d493805a",
+      "size": 50958
     },
     {
       "path": "scripts/test_model_reviewed_guidance_declarations.py",
-      "sha256": "7ffaa5c987b8c8ba28b2d3c4f3316905c4e2697aeb193c9864a916fa6d3e4376",
-      "size": 33801
+      "sha256": "13f0b7c633f318468035f60406116248b14875581213ded705a0653b0b239894",
+      "size": 33752
     },
     {
       "path": "scripts/test_model_subtotal_projection.py",
@@ -1363,8 +1363,8 @@
     },
     {
       "path": "scripts/test_playbook_config.py",
-      "sha256": "5cf0a6d90bde4a962e8cfcb057d989e7a70bef2657adfb2ac85964ffa1c1a9fa",
-      "size": 43627
+      "sha256": "6a315fda164bf167de7b94837edf523ee584adb91d918010b8b4c85a7eb94dd7",
+      "size": 43678
     },
     {
       "path": "scripts/test_playbook_config_directory.py",
@@ -1413,8 +1413,8 @@
     },
     {
       "path": "scripts/test_skill_bindings.py",
-      "sha256": "bfe95aeb12fd995045f2bdec9603ec7a6b4785ddefa578c67fdcc060a48a3e27",
-      "size": 27676
+      "sha256": "8cd7051355281e7cffc8391cb060de6694809fcc264f76343f54ce6b97923ff9",
+      "size": 27680
     },
     {
       "path": "scripts/test_skill_metadata.py",

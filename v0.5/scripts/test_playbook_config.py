@@ -12,7 +12,7 @@ from unittest.mock import patch
 from playbook_config import Configuration, ConfigError
 
 
-class ConfigurationTests(unittest.TestCase):
+class ConfigurationFixture(unittest.TestCase):
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory()
         self.addCleanup(self.temporary.cleanup)
@@ -49,6 +49,11 @@ class ConfigurationTests(unittest.TestCase):
     def discover(self, request):
         return {**self.discovery, "request_id": request["request_id"], "checked_at": request["started_at"]}
 
+    def preview(self):
+        return self.service.reply(self.service.reply(self.service.read(), "Edit Build"), "1")
+
+
+class ConfigurationTests(ConfigurationFixture):
     def test_typed_edit_adopts_all_roles_and_next_lane_reads_it(self):
         proposal = self.service.read()
         self.assertEqual(proposal["state"], "decision_required")
@@ -76,9 +81,6 @@ class ConfigurationTests(unittest.TestCase):
         self.assertEqual((self.project / ".playbook-config.json").read_bytes(), saved)
         self.assertEqual(self.state.read_bytes(), self.runtime)
         self.assertEqual(self.approval.read_bytes(), b'{"routes":{"build":{"model":"approved","effort":"high"}}}\n')
-
-    def preview(self):
-        return self.service.reply(self.service.reply(self.service.read(), "Edit Build"), "1")
 
     def test_invalid_duplicate_and_newer_adoption_never_falls_back(self):
         for contents in ('{', '{"schema_version":1,"schema_version":1}', '{"schema_version":2}', '{"schema_version":true}', '{"schema_version":1,"adopted":false,"models":{}}'):
