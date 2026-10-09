@@ -15,10 +15,11 @@
 - Endpoint: verified implementation and reviewable PR against `main`; no merge
   or release. Findings return to the same scope with fresh verification.
 
-Status: implemented; privacy TDD and focused checks pass. Fresh independent
-review, full final-candidate verification and PR checks remain required before
-readiness. Sol Build uses GPT-6.1 Sol/medium, standard pace. Runtime launch
-evidence stays in local evidence, not this public planning record.
+Status: shipped in PR #39 on 2026-10-09 as `98886bd`. Privacy TDD,
+focused checks, fresh Sol/high review and the full canonical verifier passed
+on candidate `9bcba3b`; both PR CI jobs passed and the addressed review thread
+was resolved. Post-merge readback confirms noreply author and committer.
+Runtime evidence remains local. Human feature retro: no further promotion.
 
 Report progress at ordinary checkpoints; no hard duration was selected. Stop
 on explicit Stop, a real authority/quota boundary, or three identical failures
