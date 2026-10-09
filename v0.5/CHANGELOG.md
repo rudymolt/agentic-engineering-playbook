@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+- Remember the human-confirmed merge email privacy setting in root `AGENTS.md`
+  for the exact repository/account pair. Require matching GitHub target and
+  merging identity, invalidate on revocation or a disabled-setting report,
+  and retain per-checkout noreply configuration and every new main commit check.
+  Permit only the two exact public record fields through the privacy checker;
+  retain all other marker, path and email checks with regression coverage.
+
+*Why — maintainer merge lane:* repeated confirmation of an unchanged human
+  statement interrupted merges without strengthening commit identity checks.
+  A bounded, provenance-bearing record avoids repeated prompts while preserving
+  privacy and review gates.
+
 - Reuse one live installed-skill inventory scan and each job's route options
   during a public configuration read; compute defaults only when no
   saved skill selection exists. Reuse the validated local

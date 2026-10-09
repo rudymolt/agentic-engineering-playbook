@@ -8,7 +8,20 @@ During planning, account for future updates to software, skills, models and sett
 
 Do not add personal addresses, machine paths, private-project records, credentials, old edition trees, or historical private repository content. Treat a failed privacy check as a publication blocker.
 
-For maintainer commits, set both Git author and committer to a GitHub `noreply` address in each checkout before committing. Before merging a public PR through GitHub, confirm that the account's “Keep my email addresses private” setting is enabled; afterward, read back every commit newly added to `main` and require `noreply` author and committer addresses.
+For maintainer commits, set both Git author and committer to a GitHub `noreply` address in each checkout before committing. Before each public PR merge through GitHub, establish the actual PR target repository and authenticated merging login from GitHub, then compare them with the complete canonical record below. Reuse its human confirmation only when both match exactly, the recorded setting is enabled, and no explicit revocation or disabled-setting report has invalidated it. Repeat merges by that pair need no new setting confirmation; the record has no periodic expiry.
+
+If the record is absent, incomplete, invalidated, or does not match, obtain an affirmative human confirmation that the merging account's “Keep my email addresses private” setting is enabled and record the new confirmation before merging. If the target or login is unknown, establish it before deciding whether to reuse the record. Copied instructions do not authorize reuse for another repository. An explicit revocation or disabled-setting report invalidates the record immediately; reuse requires a fresh affirmative human confirmation recorded here. Changes to public record identifiers require ordinary privacy review.
+
+### Canonical merge privacy confirmation
+
+- Repository: rudymolt/agentic-engineering-playbook
+- GitHub login: rudymolt
+- Setting: “Keep my email addresses private” enabled
+- Confirmed on: 2026-10-09
+- Provenance: prior human confirmation recorded before GitHub PR #38; this is a remembered human statement, not live API verification.
+- Status: active; no revocation recorded
+
+This record proves neither commit identity nor merge authorization. After every merge, read back every commit newly added to `main` and require `noreply` author and committer addresses. All review, CI and merge gates still apply.
 
 Before calling a PR ready to merge, inspect its review threads and comments. Fix valid findings and verify the updated head; answer stale or incorrect findings with evidence. Resolve each addressed thread, and leave any thread that needs human action clearly identified.
 
