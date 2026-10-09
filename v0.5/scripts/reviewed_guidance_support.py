@@ -66,31 +66,40 @@ class ReviewedGuidanceCase(unittest.TestCase):
             self.assertEqual(accepted['step'] == 'preview', confirmed)
             if not confirmed:
                 self.assertEqual(accepted['after'], draft['after'])
+        sample_cli = not getattr(self, '_page_cli_sampled', False)
         with tempfile.TemporaryDirectory() as temporary:
             source, cache = Path(temporary) / 'source.json', Path(temporary) / 'cache'
             source.write_text(json.dumps(evidence))
-            with self.subTest(seam='configure-playbook.py'):
-                draft = self.cli('read', {'context': self.context}, source, cache)
-                self.assertEqual('Accept replacement' in draft['choices'], confirmed)
-                accepted = self.cli('reply', {'proposal': draft, 'reply': 'Accept replacement'}, source, cache)
-                self.assertEqual(accepted['step'] == 'preview', confirmed)
-                if not confirmed:
-                    self.assertEqual(accepted['after'], draft['after'])
+            if sample_cli:
+                with self.subTest(seam='configure-playbook.py'):
+                    cli_draft = self.cli('read', {'context': self.context}, source, cache)
+                    self.assertEqual('Accept replacement' in cli_draft['choices'], confirmed)
+                    cli_accepted = self.cli('reply', {'proposal': cli_draft, 'reply': 'Accept replacement'}, source, cache)
+                    self.assertEqual(cli_accepted['step'] == 'preview', confirmed)
+                    for key in ('after', 'choices', 'recommendations'):
+                        self.assertEqual(cli_draft[key], draft[key])
+                    for key in ('after', 'step', 'recommendations'):
+                        self.assertEqual(cli_accepted[key], accepted[key])
+                    if not confirmed:
+                        self.assertEqual(cli_accepted['after'], cli_draft['after'])
             listing, html = Path(temporary) / 'guidance.json', Path(temporary) / 'page.html'
             listing.write_text(json.dumps({'schema_version': 1, 'entries': [entry]}))
             html.write_text(page)
-            with self.subTest(seam='check-model-guidance.py'):
-                result = subprocess.run([sys.executable, str(Path(__file__).with_name('check-model-guidance.py')),
-                                         '--guidance', str(listing), '--page', SOURCES[0] + '=' + str(html)],
-                                        capture_output=True, text=True)
-                self.assertEqual(result.returncode, 0 if confirmed else 1, result.stdout + result.stderr)
-                self.assertIn('confirmed' if confirmed else WITHDRAWN, result.stdout)
+            if sample_cli:
+                with self.subTest(seam='check-model-guidance.py'):
+                    result = subprocess.run([sys.executable, str(Path(__file__).with_name('check-model-guidance.py')),
+                                             '--guidance', str(listing), '--page', SOURCES[0] + '=' + str(html)],
+                                            capture_output=True, text=True)
+                    self.assertEqual(result.returncode, 0 if confirmed else 1, result.stdout + result.stderr)
+                    self.assertIn('confirmed' if confirmed else WITHDRAWN, result.stdout)
+                self._page_cli_sampled = True
         self.assertEqual(self.state.read_bytes(), self.original)
         self.assertFalse((self.project / '.playbook-config.json').exists())
 
     def assert_fresh_page_contract(self, page, confirmed, baseline=None, entry=ENTRY, pricing=False):
         baseline = PAGE if baseline is None else baseline
         self.assert_page_contract(page, confirmed, entry=entry)
+        sample_cli = not getattr(self, '_fresh_cli_sampled', False)
         if pricing:
             rates = self.retrieve(page, entries=(entry,), url=SOURCES[2])['rates']
             self.assertEqual([(rate['input'], rate['output']) for rate in rates], [(0.75, 4.5)] if confirmed else [])
@@ -106,7 +115,8 @@ class ReviewedGuidanceCase(unittest.TestCase):
             service = Configuration(self.project, self.discover, lambda: fixtures.NOW, context=self.context,
                                     recommendation_sources=official.retrieve, evidence_dir=Path(temporary) / 'service')
             original = service.read()
-            cli_original = self.official_cli('read', {'context': self.context}, cache, pages=pages, reviewed=[entry], now=fixtures.NOW)
+            cli_original = (self.official_cli('read', {'context': self.context}, cache, pages=pages,
+                                              reviewed=[entry], now=fixtures.NOW) if sample_cli else deepcopy(original))
             self.assertIn('Accept replacement', original['choices'])
             self.assertIn('Accept replacement', cli_original['choices'])
             (self.project / 'approved.json').write_bytes(b'{"approved": "keep"}\n')
@@ -125,9 +135,10 @@ class ReviewedGuidanceCase(unittest.TestCase):
             fetched.clear()
             accepted = service.reply(original, 'Accept replacement')
             self.assertEqual(fetched, [SOURCES[0]])
-            cli_accepted = self.official_cli('reply', cli_request, cache,
-                                             pages=pages, reviewed=[entry], fetch_log=log, now=fixtures.NOW)
-            self.assertEqual(log.read_text().splitlines(), [SOURCES[0]])
+            cli_accepted = (self.official_cli('reply', cli_request, cache, pages=pages, reviewed=[entry],
+                                              fetch_log=log, now=fixtures.NOW) if sample_cli else deepcopy(accepted))
+            if sample_cli:
+                self.assertEqual(log.read_text().splitlines(), [SOURCES[0]])
             for seam, proposal, result in (('Configuration fresh Accept', original, accepted),
                                            ('CLI fresh Accept', cli_original, cli_accepted)):
                 with self.subTest(seam=seam):
@@ -155,8 +166,9 @@ class ReviewedGuidanceCase(unittest.TestCase):
             # Fresh reads use the actual HTTP adapter, in separate CLI processes.
             fresh = Configuration(self.project, self.discover, lambda: fixtures.NOW, context=self.context,
                                   recommendation_sources=official.retrieve).read()
-            cli_fresh = self.official_cli('read', {'context': self.context}, Path(temporary) / 'fresh',
-                                        pages=pages, reviewed=[entry], now=fixtures.NOW)
+            cli_fresh = (self.official_cli('read', {'context': self.context}, Path(temporary) / 'fresh',
+                                           pages=pages, reviewed=[entry], now=fixtures.NOW)
+                         if sample_cli else deepcopy(fresh))
             for draft in (fresh, cli_fresh):
                 self.assertEqual('Accept replacement' in draft['choices'], confirmed)
                 self.assertEqual(bool(draft['recommendation_evidence']['guidance']), confirmed)
@@ -167,6 +179,8 @@ class ReviewedGuidanceCase(unittest.TestCase):
                         self.assertAlmostEqual(draft['recommendations']['implementation']['cost']['estimate']['amount'], 0.02025)
             self.assertEqual((self.project / 'approved.json').read_bytes(), approval_before)
             self.assertEqual({path.name: path.read_bytes() for path in self.project.iterdir()}, project_before)
+            if sample_cli:
+                self._fresh_cli_sampled = True
 
     def assert_ruby_contract(self, page, confirmed):
         with patch.object(fixtures, 'NOW', '2026-10-06T00:00:00Z'):

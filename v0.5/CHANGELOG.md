@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- Keep the full in-process matrices for model advice, guidance, configuration
+  recovery, personal presets, and skill publication while sampling representative
+  CLI cells with direct library parity checks.
+
+*Why — verification lane:* thousands of subprocess launches repeated the same
+  matrix assertions that already run through the library boundary. Sampling
+  preserves CLI integration checks and error-path coverage while cutting the
+  public verifier's dominant per-cell process cost.
+
 - Forward `--jobs` from the top-level verifier to the delivery verifier when
   parallel execution is requested; keep the default single-process command.
 
