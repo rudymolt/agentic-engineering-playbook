@@ -11,3 +11,5 @@ Do not add personal addresses, machine paths, private-project records, credentia
 For maintainer commits, set both Git author and committer to a GitHub `noreply` address in each checkout before committing. Before merging a public PR through GitHub, confirm that the account's “Keep my email addresses private” setting is enabled; afterward, read back every commit newly added to `main` and require `noreply` author and committer addresses.
 
 Before calling a PR ready to merge, inspect its review threads and comments. Fix valid findings and verify the updated head; answer stale or incorrect findings with evidence. Resolve each addressed thread, and leave any thread that needs human action clearly identified.
+
+During documentation-only PR iteration, run the relevant focused checks (Markdown, links, public content, and generated files affected by the edit). Save the full `python3 v0.5/scripts/verify-playbook.py` run for the final release candidate before shipping; do not restart it after every small edit.
