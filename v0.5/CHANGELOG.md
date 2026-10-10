@@ -10,6 +10,14 @@
 *Why — serial evidence lane:* an unsuccessful qualification preserved its exit
   code but discarded the evidence needed to identify the failing boundary.
 
+- Stage the full privileged qualification verifier in an owned detached
+  worktree of the same revision and tree. Preserve real permission-denial tests,
+  native failures, clean-state and cleanup gates; include source checks and
+  staging in total elapsed time.
+
+*Why — full qualification execution:* capability-restricted test children must
+  reach their unchanged CLI source while denied fixture artifacts remain denied.
+
 - Add opt-in final checkpoint qualification after both required CI jobs, with
   three alternating complete measurement pairs, separate native diagnostics,
   actual runner facts, and a full release verifier without skip flags.

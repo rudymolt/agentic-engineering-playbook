@@ -27,7 +27,12 @@ fresh cross-slice runtime review passes. The first reference attempt fails
 serial repair verification despite all standalone files passing; incomplete
 receipts are excluded. Bounded native failure-evidence correction passes fresh
 independent review, with 46 support tests and native transparency/storage probes.
-A new frozen candidate and repeated reference qualification remain required.
+The next attempt completes timing and diagnostic collections, then fails the
+full verifier at capability-restricted CLI source entry. Independent diagnosis
+confirms an execution precondition on unchanged source. An owned detached
+verification worktree preserves the privileged complete workload and all checks;
+fresh independent verification passes the execution and timing correction.
+A new freeze and complete repeated qualification remain required.
 
 [Verifier performance](verifier-performance/slices.md) — aligned and specified; five
 ordered slices implemented; the measured slice 5 improvement is accepted,

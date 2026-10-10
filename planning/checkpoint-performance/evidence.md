@@ -444,3 +444,38 @@ real storage streams and focused public checks. A new frozen candidate and
 complete repeated reference qualification remain required. Every numerical/count/safety gate
 remains pending; no production repair, isolation claim or threshold change follows
 from this observability correction alone.
+
+
+### Full-verifier source-entry failure and execution correction
+
+The next frozen-reference attempt completes all three delivery and guidance
+pairs and separate native diagnostics, then fails the privileged full verifier
+during public permission tests. Capability-restricted children cannot open the
+unchanged configuration CLI source before executing it. The baseline and
+candidate source and tests are byte-identical at this boundary. Raw receipts
+and logs are preserved privately; this incomplete attempt is excluded from
+final acceptance, with no flake label or full-verifier timing pass.
+
+Independent diagnosis reproduces the same source-entry failure on both revisions
+under a foreign private ancestor. The original three permission methods pass
+unchanged under an invocation-owned ancestor, with chmod-denied artifacts still
+denied. Every native operation category, failure and original matrix is audited;
+the protected sequence preserves all remaining order, phase and outcomes after
+only the approved initial seed removal. Preliminary measurements expose
+remaining absolute-target gaps; they do not certify the failed qualification.
+
+The execution-only correction runs the unchanged complete privileged Python
+3.12 verifier with three workers and no skip flags in a unique owned detached
+worktree of the same revision and tree. A native zero-capability CLI source-entry
+probe precedes verification. Original and execution checkouts must remain clean;
+cleanup is explicit and failure blocks acceptance. Native exit and elapsed time
+remain separate, including an honest absent native result when the probe blocks
+entry. Total wall includes initial source checks, staging, probe, verification,
+execution checks, worktree and temporary-root cleanup, and final source checks.
+Runner-home permissions, global Git configuration, tests, production APIs and
+all comparison/target requirements remain unchanged. Fresh independent
+verification passes the exact execution and timing correction, including the
+original permission methods, six failure/dirty/cleanup controls and delayed
+status/probe/native/temporary-root cleanup timing boundaries. These are
+diagnostic safety checks, not performance acceptance. A new frozen candidate
+and all complete repeated reference receipts remain required.

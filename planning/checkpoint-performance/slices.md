@@ -175,7 +175,12 @@ and changed-authority regressions, full guidance-group paired timings.
 **Checkpoint:** the first frozen-reference attempt fails native serial repair
 verification while every standalone file passes. Its incomplete receipts are
 excluded. Bounded native failure-evidence correction passes fresh independent
-verification. A new freeze and complete repeated qualification remain required. The original qualification implementation
+verification. The next reference attempt completes measurement and diagnostic
+collections, then fails full-verifier CLI source entry under restricted
+capabilities. Independent diagnosis confirms unchanged baseline/candidate code;
+an owned execution worktree preserves the complete privileged workload. Fresh
+independent verification passes the execution and timing correction; a new
+freeze and complete repeated qualification remain required. The original qualification implementation
 passes fresh independent cross-slice
 runtime review with no new actionable source findings. Freeze the reviewed
 tracked candidate before measurements; retain
