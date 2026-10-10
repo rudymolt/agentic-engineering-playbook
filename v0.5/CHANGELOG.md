@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- Restore complete recovery fixture seeds from immutable class/process-owned
+  templates to their original reserved paths before sequential tests. Preserve
+  approved URLs, checkpoint bytes/history, independent object storage and
+  existing within-test fresh resets and matrix publication/reload checks.
+
+*Why — checkpoint seed lane:* repeated initial history construction adds work
+  before the same recovery scenarios. Same-path independent copies remove that
+  setup cost without changing the immutable approval or tested boundaries.
+
 - Repack exclusively owned, sequential recovery/coordinator fixture remotes
   in the foreground at a measured loose-object threshold before transport
   clones. Configure receiving maintenance safeguards locally and retain every

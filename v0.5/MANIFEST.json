@@ -178,8 +178,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "af41e3ef8272200fa3e89754cbfc4d9feebcd9f5272a05a98f96d281ff53773b",
-      "size": 55078
+      "sha256": "31613bd4f5497b1b33b4bd955cbe501f2484a8933bff336ed6a8943977c8f2ac",
+      "size": 55618
     },
     {
       "path": "MAINTENANCE.md",
@@ -208,8 +208,8 @@
     },
     {
       "path": "delivery/MANIFEST.yml",
-      "sha256": "16c57e05822c4d87bfa23763eb4bf3662c43c8512134412a9f6cff0be3c28acd",
-      "size": 37133
+      "sha256": "5c51fa78f6984a6e3c181f25a754d871e002fb9cfde47e114533e09ae52a66b6",
+      "size": 37316
     },
     {
       "path": "delivery/README.md",
@@ -927,6 +927,11 @@
       "size": 2551
     },
     {
+      "path": "delivery/tests/checkpoint_seed_support.py",
+      "sha256": "73cfadde13d754b2d214ae318dcf203fe23cef856d7abf9ed8cfc0c51d0b50bf",
+      "size": 3850
+    },
+    {
       "path": "delivery/tests/control_ref_test_support.py",
       "sha256": "aeccfed7d187d91d59e70d2e83ce229f0da233f7ad4e6f526c7fd37ed7cf050c",
       "size": 1923
@@ -993,8 +998,8 @@
     },
     {
       "path": "delivery/tests/test_interim_recovery.py",
-      "sha256": "1ae5a4484b2a4c16178797fcbad8a8832d4194656bb647e905cbda2d671f98f9",
-      "size": 54809
+      "sha256": "23737370287234bc4c15756574098fc5a479683f9547ed0624569d165da86a8e",
+      "size": 55857
     },
     {
       "path": "delivery/tests/test_interim_repair.py",

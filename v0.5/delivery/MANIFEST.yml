@@ -716,6 +716,11 @@
       "source": "tests/checkpoint_fixture_support.py"
     },
     {
+      "digest": "sha256:73cfadde13d754b2d214ae318dcf203fe23cef856d7abf9ed8cfc0c51d0b50bf",
+      "install_path": null,
+      "source": "tests/checkpoint_seed_support.py"
+    },
+    {
       "digest": "sha256:aeccfed7d187d91d59e70d2e83ce229f0da233f7ad4e6f526c7fd37ed7cf050c",
       "install_path": null,
       "source": "tests/control_ref_test_support.py"
@@ -781,7 +786,7 @@
       "source": "tests/test_interim_monitor.py"
     },
     {
-      "digest": "sha256:1ae5a4484b2a4c16178797fcbad8a8832d4194656bb647e905cbda2d671f98f9",
+      "digest": "sha256:23737370287234bc4c15756574098fc5a479683f9547ed0624569d165da86a8e",
       "install_path": null,
       "source": "tests/test_interim_recovery.py"
     },
@@ -808,5 +813,5 @@
   ],
   "manifest_schema_version": 1,
   "manifest_self_rule": "pack_digest covers the complete non-manifest source inventory",
-  "pack_digest": "sha256:5ff4c2b5ff6cba99e323e8a60868bd9c197ac35c12d0e061d42064c58828004b"
+  "pack_digest": "sha256:bc5f7aae6ccde00e39a6bd9eda3282c994b8bc26cdde8d6f036139989dbcffe4"
 }

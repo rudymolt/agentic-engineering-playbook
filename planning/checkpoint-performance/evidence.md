@@ -180,3 +180,60 @@ reproduced and resolved that finding, reran relevant checks, audited the exact
 counts and accepted the experiment with no open findings. The accepted risk is
 one preliminary diagnostic-VM pair; final repeated reference qualification
 remains S6-owned.
+
+## S3 preliminary seed-restoration evidence
+
+Each recovery class builds its complete initial failed-S2 or repair snapshot
+once per worker process through the original fresh fixture and production
+transitions. A separate read-only template retains the complete quiescent tree.
+Sequential tests restore ordinary independent copies to the original absolute
+working path, reconstruct validated snapshots and fresh stores/counters, and
+retain approved URLs, checkpoint bytes, digest and history. Templates use no
+hard links or object alternates and receive no Git operations. Existing
+within-test fresh resets and all original matrix bodies remain unchanged.
+
+One clean complete-file pair ran candidate then the clean S2 baseline on the
+same diagnostic VM with Python 3.12.13, Git 2.50.1 and one unprivileged worker.
+Whole-process timings include construction, copying, restoration, teardown,
+interpreter startup and process-exit template cleanup. A concurrent static
+review performed no test/profile execution; runtime review waited for the
+sequential timing and diagnostic batches to finish.
+
+| Complete file | Baseline seconds | Candidate seconds | Change | Retained tests |
+| --- | --- | --- | --- | --- |
+| Recovery | 836.926 | 801.227 | 4.3% lower | 29, all passed |
+| Coordinator, unchanged control | 358.684 | 359.835 | 0.3% higher | 26, all passed |
+
+Separate fresh diagnostic runs pass all original IDs/outcomes. The only
+boundary reductions are initial seed construction:
+
+| Boundary | Recovery baseline | Recovery candidate | Removed | Coordinator, both |
+| --- | --- | --- | --- | --- |
+| Push attempts | 6,430 | 6,170 | 260 | 3,236 |
+| Transport clones | 888 | 834 | 54 | 450 |
+| Fetch attempts | 2,151 | 2,151 | 0 | 749 |
+| Ref reads | 2,199 | 2,172 | 27 | 775 |
+
+The 14 initial failed-S2 builds and 15 initial repair builds formerly cost
+279 pushes, 58 clones and 29 ref reads. Two retained class builds cost
+19 pushes, four clones and two ref reads, yielding exactly the table's net
+reductions. Every original test's initial-construction delta matches separately.
+All 11,053 matrix boundary attempts across the 860 attributed test/subtest
+identities match by test/class/case/category; coordinator counts also match
+exactly by test/class/case/phase/category. Failed attempts remain counted.
+
+The three focused real-Git regressions exercise mutation/deletion restoration,
+template immutability, independent storage/configuration/memory, class ownership,
+and fresh worker/single-selected-test execution. Original recovery test method
+ASTs and coordinator source are unchanged; setup assertions still run per test.
+Fresh independent runtime review accepts the experiment with no open findings.
+It recomputed the raw counts and confirmed the complete ordered native streams
+after removing only each initial seed prefix. It executed three supplied
+regressions, five adversarial cases, 17 original recovery selections in both
+orders, individual original tests, 18 persistence/authority tests, both writer
+races and original coordinator matrix checks. Simultaneously live workers,
+reachable history/parents, template immutability and refusal of Git against
+the template were verified. Both refreshed manifests and focused public checks
+pass. One preliminary VM pair remains an accepted experimental limitation,
+not final performance qualification. All repeated reference-runner targets
+remain S6-owned.

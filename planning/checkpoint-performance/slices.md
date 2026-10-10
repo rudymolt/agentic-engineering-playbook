@@ -85,6 +85,14 @@ history regressions where missing, command-count parity and paired file timings.
 
 ## S3 — Independent restoration of immutable fixture seeds
 
+**Result:** complete; fresh independent runtime review accepts the experiment
+with no open findings. One complete-file VM pair reduces
+recovery by 4.3%; the unchanged coordinator control is 0.3% slower. Native
+counts reconcile exactly to removed initial construction, with all matrix
+attempts retained. This certifies no reference target; repeated final-candidate
+qualification remains S6-owned.
+Continue to S4 under the approved build-all endpoint.
+
 **What it delivers:** each sequential test begins from the complete approved
 S2/repair seed without rebuilding that history, while other tests remain isolated.
 
