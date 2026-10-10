@@ -21,7 +21,9 @@ The lookup reduces complete guidance wall time by 7.2% in one preliminary VM
 pair, with all 154 original IDs retained; fresh independent runtime review passes.
 The pre-existing arbitrary-object isolation gap remains explicitly unresolved.
 Same-path seed restoration, fixed comparators and all target/count invariants
-remain binding; no performance target is certified.
+remain binding; no performance target is certified. S6 prepares an opt-in
+qualification run with three alternating pairs and final-candidate CI observations;
+fresh cross-slice runtime review passes, while reference receipts remain pending.
 
 [Verifier performance](verifier-performance/slices.md) — aligned and specified; five
 ordered slices implemented; the measured slice 5 improvement is accepted,

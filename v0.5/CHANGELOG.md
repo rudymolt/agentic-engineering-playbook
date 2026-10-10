@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- Add opt-in final checkpoint qualification after both required CI jobs, with
+  three alternating complete measurement pairs, separate native diagnostics,
+  actual runner facts, and a full release verifier without skip flags.
+
+*Why — checkpoint qualification lane:* repeatable evidence on a frozen candidate
+  distinguishes actual reference target results from preliminary VM timings.
+
 - Replace repeated default-ignorable range scans with equivalent immutable
   character lookup; preserve normalization order and fresh guidance admission.
 

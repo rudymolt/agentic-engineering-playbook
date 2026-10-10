@@ -172,6 +172,13 @@ and changed-authority regressions, full guidance-group paired timings.
 
 ## S6 — Final qualification and gap review
 
+**Checkpoint:** qualification implementation passes fresh independent cross-slice
+runtime review with no new actionable source findings. Freeze the reviewed
+tracked candidate before measurements; retain
+observed receipts and target dispositions in the draft PR and private evidence
+without moving that revision. All targets and the unresolved custom-object
+isolation gap remain open until their respective evidence supports closure.
+
 **What it delivers:** a maintainer receives auditable evidence for every safety
 and performance requirement on the same final candidate.
 

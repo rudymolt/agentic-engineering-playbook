@@ -356,3 +356,44 @@ Focused publication and generated-file checks pass. Exact final status-wording
 verification precedes the atomic checkpoint. The rejected proposal experiment
 and all three excluded timing sets stay preserved privately. This new set belongs
 solely to the approved narrower route; S6 qualification remains required.
+
+
+## S6 qualification preparation checkpoint
+
+The optional final qualification workflow retains both required jobs and their
+existing workloads. Its opt-in job waits for both, checks a clean frozen candidate,
+and uses the fixed delivery and guidance comparator revisions. It alternates three
+complete privileged delivery pairs and three unprivileged guidance pairs through
+the existing profiler seam. Native-attempt diagnostics run separately from timing;
+the final Python 3.12 release verifier uses three workers with no skip flags.
+Actual runner facts are recorded in the required jobs and qualification receipts.
+
+The workflow schedule smoke check first fails when the qualification job is absent,
+then passes against the actual loop bodies: six invocations per measurement group,
+three alternating pairs, two separate diagnostic invocations, unique receipt paths,
+and the full verifier command without skip flags. These simulated invocations prove
+scheduling only; they establish no performance or privileged-runtime result.
+Required job selectors and commands match the S5 checkpoint byte for byte after
+removing the added runner-fact steps. Fresh independent cross-slice runtime
+review passes with no new actionable source findings.
+
+This is a preparation record, not a qualification claim. The reviewed tracked
+revision must be frozen before the reference runs. Observations, raw receipts,
+independent receipt review, and each target's met/unmet/blocked disposition belong
+in the draft PR handback and ignored evidence so those reports do not move the
+measured candidate. Missing targets keep this feature open. The pre-existing
+arbitrary-object isolation gap remains unresolved; no universal isolation claim,
+compatibility narrowing, merge, or release is authorized by this checkpoint.
+
+
+Independent S6 review freshly resolves the 15-file/526-ID delivery inventory and
+154-ID guidance inventory, executes fixture/profiler/classifier/Unicode checks,
+and checks effective URL multiplicity, rewrites, exact-ref lease/CAS, lineage,
+reconciliation, concurrent sends, changed guidance/inventory and stale proposals
+at existing public seams. Selected matched diagnostics retain every test/matrix
+attempt and reconcile their sole reduction to initial seed construction. Additional
+order and process-exit cleanup checks pass. Markdown, links, public content,
+status and both generated-file checks pass. The reviewer confirms required-job
+workload parity and the bounded architecture without a new production service.
+These are focused diagnostic-VM safety checks, not complete reference receipts;
+full-file count accounting and all numerical acceptance remain pending.
