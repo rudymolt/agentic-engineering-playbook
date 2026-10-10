@@ -711,6 +711,16 @@
       "source": "src/delivery_pilot/workflow.py"
     },
     {
+      "digest": "sha256:e7458a8f1568092ac929528030c8e008db7778ba39b1158b9a6f81f4a05dfd96",
+      "install_path": null,
+      "source": "tests/checkpoint_fixture_support.py"
+    },
+    {
+      "digest": "sha256:73cfadde13d754b2d214ae318dcf203fe23cef856d7abf9ed8cfc0c51d0b50bf",
+      "install_path": null,
+      "source": "tests/checkpoint_seed_support.py"
+    },
+    {
       "digest": "sha256:aeccfed7d187d91d59e70d2e83ce229f0da233f7ad4e6f526c7fd37ed7cf050c",
       "install_path": null,
       "source": "tests/control_ref_test_support.py"
@@ -746,7 +756,7 @@
       "source": "tests/test_core.py"
     },
     {
-      "digest": "sha256:479f97b7da57b1bb6d64c0467f8294e8729a71bfc05597e3c54762ef90a427be",
+      "digest": "sha256:760433f8817cca3061603dd5834dc0a8b071f6aa145de29306d9d503cd3cc621",
       "install_path": null,
       "source": "tests/test_interim.py"
     },
@@ -761,7 +771,7 @@
       "source": "tests/test_interim_conductor_host.py"
     },
     {
-      "digest": "sha256:934744dbf8ee8baab261f147cdfb537c81e8d64854ac6c104b3e2672f5227ac4",
+      "digest": "sha256:5ed807971c0a37fcabfe012abc02f0b90af6a129584c80d7c324f7a4a944ae26",
       "install_path": null,
       "source": "tests/test_interim_coordinator.py"
     },
@@ -776,12 +786,12 @@
       "source": "tests/test_interim_monitor.py"
     },
     {
-      "digest": "sha256:07550030bbae4d7273530e2852c14ef568dd9a420e67934a96ed2583b1a58006",
+      "digest": "sha256:23737370287234bc4c15756574098fc5a479683f9547ed0624569d165da86a8e",
       "install_path": null,
       "source": "tests/test_interim_recovery.py"
     },
     {
-      "digest": "sha256:ea1a770693a8d68a0ae33339a56e171f669824a0a31642a172a97e1a2e9efb9b",
+      "digest": "sha256:6eec579f1963e9a783297c81aaf1c96026184656faf3210e756d0ed9c4be47d0",
       "install_path": null,
       "source": "tests/test_interim_repair.py"
     },
@@ -803,5 +813,5 @@
   ],
   "manifest_schema_version": 1,
   "manifest_self_rule": "pack_digest covers the complete non-manifest source inventory",
-  "pack_digest": "sha256:6b545446ac916e0f0a1fcaedc23e7e769be6b8e6f81230bbe3dd449dbe77a2ee"
+  "pack_digest": "sha256:bc5f7aae6ccde00e39a6bd9eda3282c994b8bc26cdde8d6f036139989dbcffe4"
 }

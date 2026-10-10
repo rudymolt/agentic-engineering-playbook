@@ -5,6 +5,15 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      checkpoint_baseline:
+        description: "Measure the pinned checkpoint baseline after required jobs"
+        type: boolean
+        default: false
+      checkpoint_qualification:
+        description: "Run three paired final-candidate measurements after required jobs"
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -19,6 +28,18 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
+      - name: Record actual verification runner
+        run: |
+          python3.12 - <<'PY'
+          import json, os, platform, subprocess
+          report = {"revision": subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(),
+                    "python": platform.python_version(),
+                    "git": subprocess.check_output(["git", "--version"], text=True).strip(),
+                    "os": platform.freedesktop_os_release(), "machine": platform.machine(), "cpus": os.cpu_count(),
+                    "image_os": os.environ.get("ImageOS"), "image_version": os.environ.get("ImageVersion"),
+                    "privileged": os.geteuid() == 0, "workers": 3}
+          print("Verification runner facts: " + json.dumps(report, sort_keys=True))
+          PY
       - name: Classify public edition test scope
         id: edition-scope
         shell: bash
@@ -56,6 +77,18 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
+      - name: Record actual verification runner
+        run: |
+          sudo --preserve-env=ImageOS,ImageVersion "$(command -v python3.12)" - <<'PY'
+          import json, os, platform, subprocess
+          report = {"revision": subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(),
+                    "python": platform.python_version(),
+                    "git": subprocess.check_output(["git", "--version"], text=True).strip(),
+                    "os": platform.freedesktop_os_release(), "machine": platform.machine(), "cpus": os.cpu_count(),
+                    "image_os": os.environ.get("ImageOS"), "image_version": os.environ.get("ImageVersion"),
+                    "privileged": os.geteuid() == 0, "workers": 3}
+          print("Verification runner facts: " + json.dumps(report, sort_keys=True))
+          PY
       - name: Classify delivery test scope
         id: delivery-scope
         shell: bash
@@ -86,3 +119,165 @@ jobs:
       - name: Record delivery suite skip
         if: steps.delivery-scope.outputs.run_delivery != 'true'
         run: echo "Delivery suite skipped — ${{ steps.delivery-scope.outputs.reason }}."
+
+  checkpoint-baseline:
+    if: github.event_name == 'workflow_dispatch' && inputs.checkpoint_baseline
+    needs: [edition, delivery]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Pin clean reference checkouts
+        run: |
+          mkdir -p .context/measurements
+          git worktree add --detach .context/baseline a3daedf03b24c5b3feb41d5953272d281de7b283
+          git worktree add --detach .context/guidance-comparator 9d8dc1a5ec583aa3cd727a52d06dcd5438bf2a8e
+      - name: Measure privileged serial baseline and complete standalone files
+        run: |
+          sudo --preserve-env=ImageOS,ImageVersion "$(command -v python3)" bench/profile_delivery_tests.py \
+            --root .context/baseline --verify-suite --repeat 1 --output .context/measurements/baseline-delivery.json
+      - name: Measure all guidance files at both fixed references
+        run: |
+          python3 bench/profile_delivery_tests.py --root .context/baseline --group guidance \
+            --repeat 1 --output .context/measurements/baseline-guidance.json
+          python3 bench/profile_delivery_tests.py --root .context/guidance-comparator --group guidance \
+            --repeat 1 --output .context/measurements/comparator-guidance.json
+      - name: Attribute baseline Git operations separately from acceptance timing
+        run: |
+          sudo --preserve-env=ImageOS,ImageVersion "$(command -v python3)" bench/profile_delivery_tests.py \
+            --root .context/baseline --pattern test_interim_recovery.py --pattern test_interim_coordinator.py \
+            --git-diagnostics --repeat 1 --output .context/measurements/baseline-diagnostic.json
+      - name: Retain sanitised measurement reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: checkpoint-baseline
+          path: .context/measurements/*.json
+          retention-days: 30
+
+  checkpoint-qualification:
+    if: github.event_name == 'workflow_dispatch' && inputs.checkpoint_qualification
+    needs: [edition, delivery]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Pin clean qualification revisions
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test -z "$(git status --porcelain)"
+          test "$(python3.12 -c 'import sys; print(sys.version_info[:2] == (3, 12))')" = True
+          mkdir -p .context/qualification
+          git worktree add --detach .context/qualification-baseline a3daedf03b24c5b3feb41d5953272d281de7b283
+          git worktree add --detach .context/qualification-guidance 9d8dc1a5ec583aa3cd727a52d06dcd5438bf2a8e
+      - name: Alternate three complete privileged delivery pairs
+        run: |
+          for pair in 1 2 3; do
+            roles="baseline candidate"
+            if [[ "$pair" == 2 ]]; then roles="candidate baseline"; fi
+            for role in $roles; do
+              root=.
+              if [[ "$role" == baseline ]]; then root=.context/qualification-baseline; fi
+              sudo --preserve-env=ImageOS,ImageVersion "$(command -v python3.12)" bench/profile_delivery_tests.py \
+                --root "$root" --verify-suite --repeat 1 \
+                --output ".context/qualification/delivery-pair-$pair-$role.json"
+            done
+          done
+      - name: Alternate three complete guidance pairs
+        run: |
+          for pair in 1 2 3; do
+            roles="comparator candidate"
+            if [[ "$pair" == 2 ]]; then roles="candidate comparator"; fi
+            for role in $roles; do
+              root=.
+              if [[ "$role" == comparator ]]; then root=.context/qualification-guidance; fi
+              python3.12 bench/profile_delivery_tests.py --root "$root" --group guidance --repeat 1 \
+                --output ".context/qualification/guidance-pair-$pair-$role.json"
+            done
+          done
+      - name: Attribute native attempts separately from timing
+        run: |
+          for role in baseline candidate; do
+            root=.
+            if [[ "$role" == baseline ]]; then root=.context/qualification-baseline; fi
+            sudo --preserve-env=ImageOS,ImageVersion "$(command -v python3.12)" bench/profile_delivery_tests.py \
+              --root "$root" --pattern test_interim_recovery.py --pattern test_interim_coordinator.py \
+              --git-diagnostics --repeat 1 --output ".context/qualification/diagnostic-$role.json"
+          done
+      - name: Time the complete final release verifier without skip flags
+        run: |
+          sudo --preserve-env=ImageOS,ImageVersion "$(command -v python3.12)" - <<'PY'
+          import hashlib, json, os, platform, subprocess, sys, tempfile, time
+          from datetime import datetime, timezone
+          from pathlib import Path
+          command = [sys.executable, "v0.5/scripts/verify-playbook.py", "--jobs", "3"]
+          started = time.perf_counter()
+          report = {
+              "revision": subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(),
+              "tree": subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], text=True).strip(),
+              "dirty_before": bool(subprocess.check_output(["git", "status", "--porcelain"], text=True)),
+              "python": platform.python_version(),
+              "git": subprocess.check_output(["git", "--version"], text=True).strip(),
+              "runner": {"os": platform.freedesktop_os_release(), "machine": platform.machine(),
+                         "cpus": os.cpu_count(), "image_os": os.environ.get("ImageOS"),
+                         "image_version": os.environ.get("ImageVersion")},
+              "privileged": os.geteuid() == 0, "workers": 3,
+              "recorded_at": datetime.now(timezone.utc).isoformat(),
+              "verifier_sha256": hashlib.sha256(Path(command[1]).read_bytes()).hexdigest(),
+              "arguments": ["verify-playbook.py", "--jobs", "3"],
+          }
+          # DAC-restricted fixture children must be able to reach their code.
+          # Keep the runner-owned checkout and its parent permissions unchanged.
+          with tempfile.TemporaryDirectory(prefix="checkpoint-full-verifier-") as temporary:
+              checkout = Path(temporary) / "source"
+              subprocess.run(["git", "worktree", "add", "--detach", str(checkout),
+                              report["revision"]], check=True)
+              try:
+                  execution = {
+                      "revision": subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=checkout, text=True).strip(),
+                      "tree": subprocess.check_output(["git", "rev-parse", "HEAD^{tree}"], cwd=checkout, text=True).strip(),
+                      "owned": checkout.stat().st_uid == os.geteuid() == Path(temporary).stat().st_uid,
+                      "dirty_before": bool(subprocess.check_output(["git", "status", "--porcelain"], cwd=checkout, text=True)),
+                  }
+                  if (execution["revision"] != report["revision"] or execution["tree"] != report["tree"]
+                          or not execution["owned"] or execution["dirty_before"]):
+                      raise RuntimeError("verification checkout identity or ownership mismatch")
+                  probe = subprocess.run(["setpriv", "--bounding-set=-all", "--inh-caps=-all", "--ambient-caps=-all",
+                                          sys.executable, "v0.5/scripts/configure-playbook.py", "--help"],
+                                         cwd=checkout, capture_output=True)
+                  execution["source_access_probe_returncode"] = probe.returncode
+                  result = None
+                  native_wall = None
+                  if probe.returncode == 0:
+                      native_started = time.perf_counter()
+                      result = subprocess.run(command, cwd=checkout)
+                      native_wall = time.perf_counter() - native_started
+                  execution["dirty_after"] = bool(subprocess.check_output(["git", "status", "--porcelain"], cwd=checkout, text=True))
+              finally:
+                  cleanup = subprocess.run(["git", "worktree", "remove", "--force", str(checkout)])
+              execution.update(cleanup_returncode=cleanup.returncode, removed=not checkout.exists())
+              report["execution_checkout"] = execution
+          dirty_after = bool(subprocess.check_output(["git", "status", "--porcelain"], text=True))
+          report.update(wall_seconds=time.perf_counter() - started,
+                        native_wall_seconds=native_wall, returncode=result.returncode if result is not None else None,
+                        dirty_after=dirty_after)
+          Path(".context/qualification/full-verifier.json").write_text(json.dumps(report, indent=2) + "\n")
+          raise SystemExit(probe.returncode or (result.returncode if result is not None else 1) or cleanup.returncode
+                           or int(report["dirty_before"] or report["dirty_after"]
+                           or execution["dirty_after"] or not execution["removed"]))
+          PY
+      - name: Retain sanitised qualification receipts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: checkpoint-qualification
+          path: .context/qualification/*.json
+          retention-days: 30

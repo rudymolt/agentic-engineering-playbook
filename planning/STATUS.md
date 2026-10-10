@@ -1,8 +1,38 @@
 # Planning status
 
-active_features: 4
+active_features: 5
 
 ## Active features
+
+[Checkpoint and delivery verifier performance](checkpoint-performance/spec.md) —
+`in-flight`; spec and [six-slice breakdown](checkpoint-performance/slices.md)
+accepted. Build all six sequentially with Sol remains selected. S1 measurement
+implementation and the actual reference baseline pass independent review;
+S1's initial gate is complete. The [quantified savings gap](checkpoint-performance/evidence.md)
+remains an experimental risk covered by the recorded approval.
+Draft PR #41 checkpoints the measurement work. S2’s owned-remote maintenance
+experiment and S3's same-path restoration experiment are independently
+accepted with their preliminary-VM limitations. S4's validation-reuse experiment
+is rejected after a coordinator regression and negligible combined saving;
+S3 production source is restored. S5's proposal-reuse experiment stopped at the
+third ownership failure and was rejected. The maintainer approved Unicode-only
+S5 review/measurement and S6 with Sol; historical failures remain recorded.
+The lookup reduces complete guidance wall time by 7.2% in one preliminary VM
+pair, with all 154 original IDs retained; fresh independent runtime review passes.
+The pre-existing arbitrary-object isolation gap remains explicitly unresolved.
+Same-path seed restoration, fixed comparators and all target/count invariants
+remain binding; no performance target is certified. S6 prepares an opt-in
+qualification run with three alternating pairs and final-candidate CI observations;
+fresh cross-slice runtime review passes. The first reference attempt fails
+serial repair verification despite all standalone files passing; incomplete
+receipts are excluded. Bounded native failure-evidence correction passes fresh
+independent review, with 46 support tests and native transparency/storage probes.
+The next attempt completes timing and diagnostic collections, then fails the
+full verifier at capability-restricted CLI source entry. Independent diagnosis
+confirms an execution precondition on unchanged source. An owned detached
+verification worktree preserves the privileged complete workload and all checks;
+fresh independent verification passes the execution and timing correction.
+A new freeze and complete repeated qualification remain required.
 
 [Verifier performance](verifier-performance/slices.md) — aligned and specified; five
 ordered slices implemented; the measured slice 5 improvement is accepted,
