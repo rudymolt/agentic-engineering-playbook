@@ -23,7 +23,11 @@ The pre-existing arbitrary-object isolation gap remains explicitly unresolved.
 Same-path seed restoration, fixed comparators and all target/count invariants
 remain binding; no performance target is certified. S6 prepares an opt-in
 qualification run with three alternating pairs and final-candidate CI observations;
-fresh cross-slice runtime review passes, while reference receipts remain pending.
+fresh cross-slice runtime review passes. The first reference attempt fails
+serial repair verification despite all standalone files passing; incomplete
+receipts are excluded. Bounded native failure-evidence correction passes fresh
+independent review, with 46 support tests and native transparency/storage probes.
+A new frozen candidate and repeated reference qualification remain required.
 
 [Verifier performance](verifier-performance/slices.md) — aligned and specified; five
 ordered slices implemented; the measured slice 5 improvement is accepted,

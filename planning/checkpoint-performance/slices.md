@@ -172,7 +172,11 @@ and changed-authority regressions, full guidance-group paired timings.
 
 ## S6 — Final qualification and gap review
 
-**Checkpoint:** qualification implementation passes fresh independent cross-slice
+**Checkpoint:** the first frozen-reference attempt fails native serial repair
+verification while every standalone file passes. Its incomplete receipts are
+excluded. Bounded native failure-evidence correction passes fresh independent
+verification. A new freeze and complete repeated qualification remain required. The original qualification implementation
+passes fresh independent cross-slice
 runtime review with no new actionable source findings. Freeze the reviewed
 tracked candidate before measurements; retain
 observed receipts and target dispositions in the draft PR and private evidence

@@ -397,3 +397,50 @@ status and both generated-file checks pass. The reviewer confirms required-job
 workload parity and the bounded architecture without a new production service.
 These are focused diagnostic-VM safety checks, not complete reference receipts;
 full-file count accounting and all numerical acceptance remain pending.
+
+
+### First frozen-reference attempt: failed serial verification
+
+The first qualification attempt at `bb9e2bd` passes both required CI jobs and
+all 15 standalone delivery files with 526 original IDs, but candidate serial
+verification returns failure after the repair file. The baseline serial run
+passes. Later pairs, guidance, native diagnostics and the full release verifier
+do not run. Partial receipts and the failed log are preserved privately and
+excluded from acceptance; the failure is not relabelled as a timing result or
+assumed to be a flaky test. Direct privileged diagnostic-VM repair verification
+passes all 33 tests, which establishes no cause or equivalent reference result.
+
+The serial profiler previously retained the failing exit code but discarded
+unittest failure details. An initial text-parsing correction passed ordinary
+checks but fresh independent review found private ignored-file eligibility and
+assertion-text forgery; that uncommitted parser is superseded, not accepted.
+
+The replacement captures actual unittest failure callbacks and traceback frames
+through an owned, temporary startup adapter for the canonical verifier's direct
+unittest children. It forwards native positional/keyword callback forms and
+return values unchanged, preserves native command/exit
+behavior and existing startup customization, and authorises identities/locations
+only from the bound Git-tracked public source inventory. Stdlib base descriptors
+read plain callback state without executing user properties or mapping methods;
+unsupported state remains unattributed instead of changing native behavior. Assertion text, subtest
+values, ignored/untracked paths and arbitrary output cannot supply identities or
+frames. Unknown failures retain the native exit. Failed runs omit output-derived
+command/step attribution because assertion text cannot authenticate it. A bounded
+byte reader drains invalid encodings and oversized lines without retaining them;
+bounded event records mark overflow. Command labels are admitted at most once,
+matching canonical verifier selection and bounding boundary accumulation.
+Startup/capture/cleanup overhead stays in serial wall time, and
+Git diagnostics remain separate. The capture helper's hash is included in receipts.
+
+Meaningful native CLI regressions cover real failure/error/subtests, spoofed
+headers and assertions, ignored helper traceback frames, unknown native exits,
+explicit overflow, invalid-byte draining, bounded long-line storage and preserved
+startup customization. The new reader regressions fail before their corrections;
+all 46 benchmark-support tests pass afterward, including a real repeated-header
+stream storage regression, keyword/mixed/positional callback-spy checks and native
+instance-descriptor, mapping-method and result-getter guards. Fresh independent
+verification passes the exact correction with all 46 tests, native parity probes,
+real storage streams and focused public checks. A new frozen candidate and
+complete repeated reference qualification remain required. Every numerical/count/safety gate
+remains pending; no production repair, isolation claim or threshold change follows
+from this observability correction alone.

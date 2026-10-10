@@ -7,6 +7,7 @@ failure diagnostics. Run identical commands on the baseline and candidate.
 from __future__ import annotations
 
 import argparse
+import ast
 from contextlib import contextmanager, nullcontext
 import io
 import hashlib
@@ -15,11 +16,13 @@ import json
 import os
 from pathlib import Path
 import platform
+import re
 import runpy
 import shlex
 import subprocess
 import sys
 import threading
+import tempfile
 import time
 import unittest
 from unittest import mock
@@ -201,32 +204,147 @@ def worker(pattern: str, tests: list[str], diagnostics: bool = False, group: str
     return measured
 
 
+def public_python_sources() -> list[Path]:
+    """Bind eligibility to this Git checkout, never ignored filesystem entries."""
+    top = Path(subprocess.check_output(["git", "rev-parse", "--show-toplevel"], cwd=ROOT, text=True).strip())
+    if top.resolve() != ROOT.parent.resolve():
+        return []
+    tracked = subprocess.check_output(["git", "ls-files", "-z"], cwd=ROOT).decode().split("\0")
+    return [ROOT / name for name in tracked if name.endswith(".py") and
+            name.startswith(("delivery/tests/", "delivery/src/", "scripts/")) and
+            (ROOT / name).is_file() and (ROOT / name).resolve() == ROOT / name]
+
+
+def serial_failure_sources() -> tuple[set[str], set[str]]:
+    """Index public source identities without importing or executing tests."""
+    paths = public_python_sources()
+    identities = set()
+    sources = {path.relative_to(ROOT).as_posix() for path in paths}
+    for path in paths:
+        if path.parent != ROOT / "delivery/tests" or not path.name.startswith("test_"):
+            continue
+        module = path.stem
+        identities.update((module, "unittest.loader._FailedTest." + module))
+        try:
+            tree = ast.parse(path.read_text())
+        except (OSError, SyntaxError, UnicodeError):
+            continue
+        for cls in tree.body:
+            if isinstance(cls, ast.ClassDef):
+                identities.add(module + "." + cls.name)
+                identities.update(module + "." + cls.name + "." + method.name
+                                  for method in cls.body if isinstance(method, (ast.FunctionDef, ast.AsyncFunctionDef))
+                                  and method.name.startswith("test_"))
+    return identities, sources
+
+
+SERIAL_STARTUP = '''import importlib.machinery, importlib.util, os, sys
+from pathlib import Path
+own = Path(__file__).parent.resolve()
+search = [entry for entry in sys.path if Path(entry or os.getcwd()).resolve() != own]
+prior = importlib.machinery.PathFinder.find_spec("sitecustomize", search)
+if prior is not None:
+    module = importlib.util.module_from_spec(prior)
+    sys.modules["sitecustomize"] = module
+    if prior.loader is not None:
+        prior.loader.exec_module(module)
+spec = importlib.util.spec_from_file_location("_checkpoint_serial_capture", CAPTURE_PATH)
+module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(module)
+module.startup(os.environ["CHECKPOINT_SERIAL_FAILURE_CONFIG"])
+'''
+
+
+def bounded_output_lines(stream):
+    """Drain arbitrary bytes; retain only short lines eligible as headers."""
+    pending = bytearray()
+    oversized = False
+    while chunk := stream.read1(8192):
+        pieces = chunk.split(b"\n")
+        for index, piece in enumerate(pieces):
+            if not oversized:
+                if len(pending) + len(piece) <= 1024:
+                    pending.extend(piece)
+                else:
+                    pending.clear()
+                    oversized = True
+            if index < len(pieces) - 1:
+                if not oversized:
+                    yield pending.decode("utf-8", errors="replace")
+                pending.clear()
+                oversized = False
+    if pending and not oversized:
+        yield pending.decode("utf-8", errors="replace")
+
+
 def serial_verifier(selected: str, env: dict) -> dict:
-    """Time the actual verifier, attributing its flushed command boundaries."""
+    """Time the native verifier; collect failure events without parsing messages."""
     command = [sys.executable, str(ROOT / "delivery/scripts/verify.py"), "--set", selected, "--jobs", "1"]
     started = time.perf_counter()
+    known_failures, known_sources = serial_failure_sources()
     boundaries = []
+    seen_labels = set()
     previous = None
     previous_started = None
-    with subprocess.Popen(command, cwd=ROOT, env=env, text=True, stdout=subprocess.PIPE,
-                          stderr=subprocess.STDOUT) as process:
-        for line in process.stdout:
-            if not (line.startswith("$ ") or line.startswith("V0.5 delivery ")):
-                continue
-            now = time.perf_counter()
-            if previous is not None:
-                boundaries.append({"pattern": previous, "wall_seconds": now - previous_started})
-            previous = None
-            if line.startswith("$ "):
-                parts = shlex.split(line[2:])
-                previous = parts[parts.index("-p") + 1] if "-p" in parts else "generated-file-check"
-                previous_started = now
-        returncode = process.wait()
+    captured = {}
+    with tempfile.TemporaryDirectory(prefix="checkpoint-serial-evidence-") as directory:
+        scratch = Path(directory)
+        config_path = scratch / "config.json"
+        output_path = scratch / "events.json"
+        config_path.write_text(json.dumps({"root": str(ROOT.resolve()), "verifier": command[1],
+            "owner": str(scratch / "owner"), "output": str(output_path),
+            "identities": sorted(known_failures), "sources": sorted(known_sources)}))
+        capture_path = Path(__file__).with_name("serial_failure_capture.py").resolve()
+        (scratch / "sitecustomize.py").write_text("CAPTURE_PATH = " + repr(str(capture_path)) + "\n" + SERIAL_STARTUP)
+        child_env = env.copy()
+        child_env["CHECKPOINT_SERIAL_FAILURE_CONFIG"] = str(config_path)
+        child_env["PYTHONPATH"] = str(scratch) + (os.pathsep + child_env["PYTHONPATH"] if child_env.get("PYTHONPATH") else "")
+        with subprocess.Popen(command, cwd=ROOT, env=child_env, stdout=subprocess.PIPE,
+                              stderr=subprocess.STDOUT) as process:
+            for line in bounded_output_lines(process.stdout):
+                label = None
+                if line.startswith("$ "):
+                    try:
+                        parts = shlex.split(line[2:])
+                    except ValueError:
+                        continue
+                    if parts[1:] == ["delivery/scripts/generate.py", "--check"]:
+                        label = "generated-file-check"
+                    elif (len(parts) == 9 and parts[1:7] == ["-m", "unittest", "discover", "-s", "delivery/tests", "-p"]
+                          and parts[8:] == ["-v"] and "delivery/tests/" + parts[7] in known_sources):
+                        label = parts[7]
+                    if label is None or label in seen_labels:
+                        continue
+                    # Canonical serial verification executes each pattern once.
+                    # Public source inventory bounds this set and the step list.
+                    seen_labels.add(label)
+                elif line.strip() != f"V0.5 delivery {selected} checks passed.":
+                    continue
+                now = time.perf_counter()
+                if previous is not None:
+                    boundaries.append({"pattern": previous, "wall_seconds": now - previous_started})
+                previous = label
+                previous_started = now if label is not None else None
+            returncode = process.wait()
+        if output_path.exists():
+            captured = json.loads(output_path.read_text())
     ended = time.perf_counter()
     if previous is not None:
         boundaries.append({"pattern": previous, "wall_seconds": ended - previous_started})
+    # Assertion/output text cannot authenticate failed-command attribution.
+    # Failed attempts are ineligible for timings; retain native events and exit.
+    if returncode:
+        boundaries = []
+    failed_tests = captured.get("failed_tests", []) if returncode else []
+    evidence = {"status": "passed" if returncode == 0 else "identified" if failed_tests else "unknown",
+                "command": None,
+                "matched_events": captured.get("matched_events", 0),
+                "unmatched_events": captured.get("unmatched_events", 0),
+                "truncated": captured.get("truncated", False), "capture": "unittest callbacks"}
     return {"wall_seconds": ended - started, "returncode": returncode, "steps": boundaries,
-            "attribution": "elapsed between flushed verifier command headers; overhead retained"}
+            "failed_tests": failed_tests, "failure_evidence": evidence,
+            "attribution": "failed-run command attribution omitted" if returncode else
+                           "elapsed between flushed verifier command headers; overhead retained"}
 
 
 def os_identity() -> dict:
@@ -277,7 +395,9 @@ def main() -> int:
               "profiler_sha256": hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
               "verifier_sha256": hashlib.sha256((ROOT / "delivery/scripts/verify.py").read_bytes()).hexdigest(),
               "test_sources": {p.name: hashlib.sha256(p.read_bytes()).hexdigest()
-                               for p in sorted((ROOT / ("delivery/tests" if args.group == "delivery" else "scripts")).glob("test_*.py"))},
+                               for p in public_python_sources() if p.parent == ROOT / ("delivery/tests" if args.group == "delivery" else "scripts")
+                               and p.name.startswith("test_")},
+              "serial_capture_sha256": hashlib.sha256(Path(__file__).with_name("serial_failure_capture.py").read_bytes()).hexdigest(),
               "repetitions": [], "timing": "perf_counter; setup, method, cleanup included"}
     patterns = (["selected"] if args.test else args.pattern or
                 (["test_model_reviewed_guidance.py", "test_model_reviewed_guidance_boundaries.py",
@@ -291,6 +411,11 @@ def main() -> int:
             report.setdefault("serial_verifier", []).append(verified)
             successful = successful and verified["returncode"] == 0
             print(f"serial verifier: {verified['wall_seconds']:.3f}s; returncode={verified['returncode']}", flush=True)
+            if verified["returncode"]:
+                # Publish identities/relative locations only, never assertion values,
+                # subtest parameters, native arguments or captured failure text.
+                print("serial failure evidence: " + json.dumps({**verified["failure_evidence"],
+                      "failed_tests": verified["failed_tests"]}), flush=True)
         for pattern in patterns:
             command = [sys.executable, str(Path(__file__).resolve()), "--worker", pattern, "--root", str(ROOT.parent), "--group", args.group]
             if args.git_diagnostics:

@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+- Retain source-bound failing unittest identities and actual traceback locations
+  from native serial verification through temporary failure callbacks, preserving
+  existing startup customization, draining output in bounded byte chunks and
+  excluding assertion values, raw output or failed-run command attribution.
+
+*Why — serial evidence lane:* an unsuccessful qualification preserved its exit
+  code but discarded the evidence needed to identify the failing boundary.
+
 - Add opt-in final checkpoint qualification after both required CI jobs, with
   three alternating complete measurement pairs, separate native diagnostics,
   actual runner facts, and a full release verifier without skip flags.
