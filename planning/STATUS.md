@@ -12,7 +12,9 @@ S1's initial gate is complete. The [quantified savings gap](checkpoint-performan
 remains an experimental risk covered by the recorded approval.
 Draft PR #41 checkpoints the measurement work. S2’s owned-remote maintenance
 experiment and S3's same-path restoration experiment are independently
-accepted with their preliminary-VM limitations. S4 is next; S5–S6 remain pending.
+accepted with their preliminary-VM limitations. S4's validation-reuse experiment
+is rejected after a coordinator regression and negligible combined saving;
+S3 production source is restored. S5 is next; S6 remains pending.
 Same-path seed restoration, fixed comparators and all target/count invariants
 remain binding; no performance target is certified.
 

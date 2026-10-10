@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- Record the rejected checkpoint validation-reuse experiment and retain the
+  existing persistence implementation after complete-file timings show no
+  material combined benefit and a coordinator regression.
+
+*Why — checkpoint experiment:* whole-file evidence prevents retaining extra
+  admission and hook machinery without a measured verification benefit.
+
 - Restore complete recovery fixture seeds from immutable class/process-owned
   templates to their original reserved paths before sequential tests. Preserve
   approved URLs, checkpoint bytes/history, independent object storage and

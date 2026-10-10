@@ -116,6 +116,14 @@ isolation regressions, attributed count deltas and matched complete-file timings
 
 ## S4 — Operation-local checkpoint validation reuse
 
+**Result:** experiment rejected. The corrected candidate passes all original
+55 tests, but one complete clean VM pair gives only 0.6% lower recovery wall
+time and 1.1% higher coordinator wall time. The combined saving is under one
+second. S3 production source is restored; no validation-reuse optimization
+lands. Rejection/reversion verification precedes the atomic checkpoint; all
+performance targets remain binding. See [the evidence](evidence.md).
+Continue to S5 under the approved build-all endpoint.
+
 **What it delivers:** a checkpoint transition avoids redundant validation/copying
 of an unchanged admitted value while rejecting the same unsafe writes.
 

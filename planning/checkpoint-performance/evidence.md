@@ -237,3 +237,39 @@ the template were verified. Both refreshed manifests and focused public checks
 pass. One preliminary VM pair remains an accepted experimental limitation,
 not final performance qualification. All repeated reference-runner targets
 remain S6-owned.
+
+## S4: checkpoint validation reuse rejected
+
+A bounded lifecycle experiment admitted an owned checkpoint once and reused it
+only before mutation. Public persist overrides and monitoring projections kept
+their validating seam. Review found a custom-copy admission gap; regressions
+reproduced it and an exact-builtin snapshot/original-input fallback corrected it.
+Additional callable-proxy and foreign-bound-method regressions corrected hook
+routing. The corrected candidate passed 14 focused checks and all 18 existing
+persistence tests. Fresh independent static review found no introduced defect.
+
+The complete clean candidate/baseline pair used the same diagnostic VM,
+Python 3.12.13, Git 2.50.1 and one unprivileged worker. Both original files and
+all 55 IDs/assertions/matrix bodies were unchanged and passed at both revisions.
+Wall times include setup, cleanup, interpreter startup and process exit.
+
+| Complete file | S3 baseline seconds | Experiment seconds | Change | Tests |
+| --- | --- | --- | --- | --- |
+| Recovery | 821.682 | 816.880 | 0.6% lower | 29, all passed |
+| Coordinator | 367.472 | 371.424 | 1.1% higher | 26, all passed |
+
+Combined wall time changed from 1,189.153 to 1,188.304 seconds: less than one
+second saved in one pair, with a coordinator regression. This does not justify
+retaining the additional checkpoint machinery. The experiment is rejected;
+production source is restored byte-for-byte to the S3 predecessor and no
+validation-reuse optimization or admission flag lands. The experimental
+regressions, exact diff and raw reports remain in ignored evidence.
+
+Two earlier interrupted measurement sets are retained and excluded because
+their source preceded the admission/hook corrections. Diagnostics for the
+rejected final experiment were stopped after the clean retention decision; no
+native-attempt parity or reference target is claimed for that discarded code.
+Retained production authority, original tests and native protocol are unchanged.
+Independent rejection/reversion verification precedes the atomic documentation
+checkpoint. S5 and final S6 qualification continue; every original target
+remains binding and the feature stays open.
