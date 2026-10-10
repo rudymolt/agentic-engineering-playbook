@@ -86,9 +86,16 @@ class FaultRecoveryFixture(RecoveryFixture):
         return self._call("owned_workers", super().owned_workers, run_id)
 
 
+def recovery_repair_fixture():
+    # Keep this helper local so unittest does not collect inherited repair tests.
+    class SequentialRepairFixture(repair_tests.RepairPolicyTests):
+        maintenance_loose_threshold = 512
+    return SequentialRepairFixture("run")
+
+
 class RecoveryTests(unittest.TestCase):
     def setUp(self):
-        self.base = repair_tests.RepairPolicyTests("run")
+        self.base = recovery_repair_fixture()
         self.base.setUp()
         self.snapshot = self.base.failed_s2()
         self.clock = lambda: datetime(2026, 9, 19, tzinfo=timezone.utc)
@@ -315,7 +322,7 @@ class RecoveryBoundaryTests(unittest.TestCase):
     """Public transitions and real remote reloads, with nonempty S3 history."""
 
     def setUp(self):
-        self.base = repair_tests.RepairPolicyTests("run")
+        self.base = recovery_repair_fixture()
         self.base.setUp()
         self.store = self.base.store(self.base.first)
         repair, diagnosed = self.base.open_and_diagnose()
@@ -638,7 +645,7 @@ class RecoveryBoundaryTests(unittest.TestCase):
             with self.subTest(limits=limits):
                 # Build real S3 history under a separately approved ceiling.
                 self.base.tearDown()
-                self.base = repair_tests.RepairPolicyTests("run"); self.base.setUp()
+                self.base = recovery_repair_fixture(); self.base.setUp()
                 original_approval = self.base.s2_approval
                 self.base.s2_approval = lambda task=None: {**original_approval(task), "hard_limits": limits}
                 repair, diagnosed = self.base.open_and_diagnose()

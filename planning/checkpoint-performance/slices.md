@@ -59,6 +59,13 @@ checkpoint and guidance behaviour remains unchanged.
 
 ## S2 — Safe fixture maintenance for faster clones
 
+**Result:** complete; experiment retained after fresh independent verification.
+The 512-object candidate improves complete-file diagnostic-VM timings by 7.8%
+and 12.6%, with identical test IDs/outcomes and exact attributed boundary counts.
+The returned delivery-manifest finding is fixed and independently verified.
+See [the evidence](evidence.md). No absolute reference target is claimed.
+Continue to S3 under the approved build-all endpoint.
+
 **What it delivers:** recovery/coordinator transport clones spend less time
 packing accumulated loose objects without losing history or recovery checks.
 

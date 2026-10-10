@@ -139,6 +139,9 @@ class Fixture:
 
 
 class CoordinatorTests(InterimCheckpointFixture):
+    # This fixture performs only synchronous writes and clones.
+    maintenance_loose_threshold = 512
+
     def assert_receipt_parity(self, cases, phase="verify", handoff=False):
         store = self.store(self.first)
         approved = initial_record(self.s2_approval())

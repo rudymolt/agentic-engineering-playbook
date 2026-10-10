@@ -10,7 +10,8 @@ accepted. Build all six sequentially with Sol remains selected. S1 measurement
 implementation and the actual reference baseline pass independent review;
 S1's initial gate is complete. The [quantified savings gap](checkpoint-performance/evidence.md)
 remains an experimental risk covered by the recorded approval.
-Draft PR #41 checkpoints the measurement work; S2 is next and S3–S6 remain pending.
+Draft PR #41 checkpoints the measurement work. S2’s owned-remote maintenance
+experiment is independently accepted; S3 is next and S4–S6 remain pending.
 Same-path seed restoration, fixed comparators and all target/count invariants
 remain binding; no performance target is certified.
 

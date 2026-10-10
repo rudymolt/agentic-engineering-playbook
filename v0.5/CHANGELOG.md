@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- Repack exclusively owned, sequential recovery/coordinator fixture remotes
+  in the foreground at a measured loose-object threshold before transport
+  clones. Configure receiving maintenance safeguards locally and retain every
+  real publication, clone and reload.
+
+*Why — checkpoint fixture lane:* accumulated loose objects made transport
+  clones repack the same history repeatedly. Owned, quiescent maintenance
+  reduces complete-file costs while preserving history and writer-race coverage.
+
 - Extend the delivery profiler with opt-in worker Git diagnostics, complete
   process wall times, fixed-checkout guidance measurements and serial verifier
   attribution. Offer an optional reference-runner baseline after both required

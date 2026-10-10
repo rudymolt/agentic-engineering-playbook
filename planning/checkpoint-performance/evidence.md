@@ -136,3 +136,47 @@ for the other files is a planning remainder when the two target files consume
 their full combined allowance, not proof that the suite target is impossible
 above that remainder. Measure the actual residual budget. Retry/race command
 counts require per-case attribution; deterministic counts must match exactly.
+
+## S2 preliminary fixture-maintenance evidence
+
+The frozen candidate opts in only the sequential coordinator fixture and the
+recovery-owned repair helper. It counts loose object files in the owned bare
+remote and performs a foreground `repack -a -d` at 512 objects before the next
+transport clone. The receiving repository stores `gc.auto=0`,
+`maintenance.auto=false`, and `receive.autogc=false` locally. The shared fixtures
+used by concurrent-writer tests remain outside the opt-in.
+
+One clean complete-file pair ran candidate then baseline, sequentially, on the
+diagnostic Amazon Linux VM with Python 3.12.13, Git 2.50.1 and one worker. Costs
+include interpreter startup, fixture setup, object scans, repacking and cleanup.
+This pair is experimental evidence; final target qualification still requires
+the specified repeated reference-class measurements on the final revision.
+
+| Complete file | Baseline seconds | Candidate seconds | Reduction | Retained tests |
+| --- | --- | --- | --- | --- |
+| Recovery | 899.242 | 828.848 | 7.8% | 29, all passed |
+| Coordinator | 405.947 | 354.629 | 12.6% | 26, all passed |
+
+The original ordered test IDs and outcomes match exactly. An earlier warmup
+passed both files but briefly overlapped the focused red/green checks; its raw
+results are retained privately and excluded from this comparison. Two focused
+real-Git checks pass for threshold maintenance, reachable-history/transport
+readback and refusal of foreign/symlinked remotes. Independent static review
+found no concrete defect. Matched diagnostics passed all 55 tests and require
+exact equality for every test/class/case/phase in each boundary category:
+
+| Complete file | Push | Clone | Fetch | Ref read | Foreground repacks | Repack seconds |
+| --- | --- | --- | --- | --- | --- | --- |
+| Recovery | 6,430 | 888 | 2,151 | 2,199 | 9 | 0.769 |
+| Coordinator | 3,236 | 450 | 749 | 775 | 13 | 1.276 |
+
+Each of the four boundary totals and attributed counts matches the baseline;
+maintenance removes no publication or reload. Diagnostic durations are kept
+separate from timing acceptance. Independent runtime review executed supplied
+and adversarial real-Git support probes, 28 existing integration tests and both
+writer races successfully. It found the stale delivery manifest; the builder
+regenerated delivery then edition manifests. Fresh independent verification
+reproduced and resolved that finding, reran relevant checks, audited the exact
+counts and accepted the experiment with no open findings. The accepted risk is
+one preliminary diagnostic-VM pair; final repeated reference qualification
+remains S6-owned.
