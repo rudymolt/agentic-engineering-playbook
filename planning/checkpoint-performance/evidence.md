@@ -273,3 +273,86 @@ Retained production authority, original tests and native protocol are unchanged.
 Independent rejection/reversion verification precedes the atomic documentation
 checkpoint. S5 and final S6 qualification continue; every original target
 remains binding and the feature stays open.
+
+## Guidance experiment stop checkpoint
+
+The S5 candidate replaced the default-ignorable range scan with immutable lookup
+and attempted operation-local canonical-byte/revision reuse. Supplied checks
+passed 50 configuration and 41 recommendation tests, including legacy numeric
+keys, tuples, surrogate strings, independently copied subclasses and shared
+instance attributes. All 154 original guidance IDs passed on the latest candidate.
+These outcomes do not establish safety or performance acceptance.
+
+Fresh independent runtime probes confirm two gaps in the ownership proof. A
+removed member descriptor leaves allocated mutable slot storage shared by the
+caller and retained copy. A class descriptor hook can also mutate the copied
+container after its child snapshot and canonical-byte comparison, retaining
+shared caller state with a revision that no longer matches the retained bytes.
+Only minimal retention probes ran; no downstream Apply bypass is claimed.
+
+This is the third recurrence of the caller-ownership condition and triggers the
+approved stop guard. The cumulative identical-failure count is three, with zero
+no-progress iterations; no fourth repair begins. All three S5 measurement sets
+are retained privately but excluded. The last set stopped during predecessor
+measurement, so it is not a complete accepted comparison. Microtest results and
+partial groups cannot substitute for the required reference qualification.
+
+The rejected candidate, source hashes, regressions and independent reproduction
+receipts are preserved privately. All four S5 source/test files are restored
+byte-for-byte to the accepted checkpoint; neither the lookup nor proposal reuse
+is retained. S1–S3 remain accepted, S4 remains rejected, and S6 has not started.
+The full final verifier and repeated reference qualification remain pending.
+Both required CI jobs passed on the last accepted draft head. The umbrella stays
+open; all original target thresholds, comparators and safety/count requirements
+remain binding. Resume requires a human disposition of this stop; counters are
+not reset by a handoff.
+
+
+## Approved Unicode-only continuation
+
+After the recorded stop, the maintainer approved an Astra diagnosis and then
+explicitly rejected proposal-retention reuse, selected Unicode-only S5 with Sol,
+and authorized S6 qualification. Diagnosis probes reproduce hidden-slot sharing
+on the original implementation as well as the rejected candidate; descriptor
+mutation that creates a stale revision is introduced by the rejected inspector.
+A benign iterator subclass is also newly refused by that inspector. The original
+Python API behavior is retained. Its arbitrary custom-object isolation remains
+an explicit unresolved compatibility question; no universal safety pass or
+unapproved narrowing is inferred. Failure history is preserved, not reset.
+
+The Unicode candidate constructs an immutable lookup from the unchanged inclusive
+default-ignorable ranges. It preserves deletion before NFKC, composition,
+whitespace collapse/strip, supplementary boundaries and surrogate values. No
+proposal, reviewed-guidance, inventory or approval data is cached. Proposal and
+delivery source remain byte-for-byte identical to the accepted checkpoint.
+
+A work-count regression is red on the original renderer: 1,300 characters cause
+22,100 code-point conversions. The lookup passes that budget and independent
+interval-slicing equivalence across every Unicode code point. All 42
+recommendation tests and 37 original configuration tests pass; all original test
+method bodies remain unchanged. One new test initially used literal escape text;
+only its test strings were corrected before any retained measurements.
+
+One sequential complete-group measurement set uses Python 3.12.13, Git 2.50.1,
+eight CPUs, one unprivileged worker and the same profiler on the diagnostic VM:
+
+| Role | Process-inclusive wall | Original guidance IDs |
+| --- | ---: | ---: |
+| Unicode-only candidate | 216.193 s | 154 |
+| Clean predecessor | 232.853 s | 154 |
+| Exact fixed guidance comparator | 370.916 s | 154 |
+
+All outcomes pass without skips. The candidate/predecessor ratio is 0.928
+(7.2% lower); its fixed-comparator ratio is 0.583. Source inventories and actual
+runner facts match, and lookup construction/startup/cleanup remain inside wall
+time. This supports retaining the experiment, which passes fresh independent runtime
+review. It is one preliminary VM set, not the required paired median or a
+CI-class target pass. S6 owns all repeated final-candidate measurements.
+
+Fresh Sol source and runtime review finds no actionable defect. The reviewer
+independently executes eight Unicode probes, all 79 affected tests, and the full
+154-ID guidance group, then audits the matched raw timing/source/runner reports.
+Focused publication and generated-file checks pass. Exact final status-wording
+verification precedes the atomic checkpoint. The rejected proposal experiment
+and all three excluded timing sets stay preserved privately. This new set belongs
+solely to the approved narrower route; S6 qualification remains required.

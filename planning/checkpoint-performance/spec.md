@@ -12,6 +12,14 @@ without weakening checkpoint authority, persistence, recovery, or test coverage.
 Close the remaining reviewed-guidance gap while keeping fresh admission at each
 public operation. A faster test that proves less is not an acceptable result.
 
+**Approved stop disposition:** reject proposal-retention reuse and limit S5 to
+Unicode lookup, then continue to S6 qualification with Sol. The recorded third
+ownership failure remains in history; this is new authorization for a narrower
+route, not a reset or another ownership-inspector repair. Preserve the existing
+Python API behavior. Arbitrary custom-object isolation is a pre-existing,
+explicitly unresolved compatibility question; no universal isolation pass or
+exception to a safety gate is inferred. Final evidence must expose that gap.
+
 ## User stories and acceptance
 
 | Scenario | Acceptance criterion |

@@ -14,7 +14,12 @@ Draft PR #41 checkpoints the measurement work. S2’s owned-remote maintenance
 experiment and S3's same-path restoration experiment are independently
 accepted with their preliminary-VM limitations. S4's validation-reuse experiment
 is rejected after a coordinator regression and negligible combined saving;
-S3 production source is restored. S5 is next; S6 remains pending.
+S3 production source is restored. S5's proposal-reuse experiment stopped at the
+third ownership failure and was rejected. The maintainer approved Unicode-only
+S5 review/measurement and S6 with Sol; historical failures remain recorded.
+The lookup reduces complete guidance wall time by 7.2% in one preliminary VM
+pair, with all 154 original IDs retained; fresh independent runtime review passes.
+The pre-existing arbitrary-object isolation gap remains explicitly unresolved.
 Same-path seed restoration, fixed comparators and all target/count invariants
 remain binding; no performance target is certified.
 

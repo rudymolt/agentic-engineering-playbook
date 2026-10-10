@@ -2,6 +2,20 @@
 
 ## Unreleased
 
+- Replace repeated default-ignorable range scans with equivalent immutable
+  character lookup; preserve normalization order and fresh guidance admission.
+
+*Why — Unicode lane:* repeated character classification adds guidance verifier
+work; a complete preliminary VM pair improves while every original test remains.
+
+
+- Record the stopped guidance experiment after independent caller-ownership
+  failures; retain the accepted source and all original qualification gates.
+
+*Why — guidance experiment:* passing ordinary tests cannot justify retaining
+proposal reuse that shares caller state or returns a stale revision.
+
+
 - Record the rejected checkpoint validation-reuse experiment and retain the
   existing persistence implementation after complete-file timings show no
   material combined benefit and a coordinator regression.

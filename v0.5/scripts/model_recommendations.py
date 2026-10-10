@@ -40,6 +40,11 @@ DEFAULT_IGNORABLE_RANGES = ((0x00AD, 0x00AD), (0x034F, 0x034F), (0x061C, 0x061C)
                            (0xE0000, 0xE0FFF))
 
 
+# Immutable Unicode lookup only; never reviewed-guidance or authority data.
+_DEFAULT_IGNORABLE_CHARACTERS = frozenset(chr(point) for start, end in DEFAULT_IGNORABLE_RANGES
+                                        for point in range(start, end + 1))
+
+
 def validate_reviewed_guidance(entries):
     """Return reviewed entries unchanged, or raise ValueError for any malformed entry."""
     if not isinstance(entries, list):
@@ -84,7 +89,7 @@ def load_reviewed_guidance(path=REVIEWED_GUIDANCE):
 def rendered_text(parts):
     # Remove invisible code points before normalising the composed visible text.
     text = unicodedata.normalize("NFKC", "".join(ch for ch in "".join(parts)
-                                  if not any(start <= ord(ch) <= end for start, end in DEFAULT_IGNORABLE_RANGES)))
+                                  if ch not in _DEFAULT_IGNORABLE_CHARACTERS))
     return re.sub(r"\s+", " ", text).strip()
 
 

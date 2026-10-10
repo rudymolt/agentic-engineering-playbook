@@ -142,13 +142,24 @@ and measured affected-file benefit.
 
 ## S5 — Guidance performance with fresh admission
 
-**What it delivers:** guidance/configuration operations avoid repeated encoding,
-Unicode scanning and validation while each new operation observes current input.
+**Result:** proposal-retention reuse is rejected after the third ownership
+failure. The maintainer approved a narrower Unicode-only route with Sol and
+continuation to S6, preserving failure history and existing Python API behavior.
+The pre-existing arbitrary-object isolation gap remains explicitly unresolved.
+The lookup passes all 154 original guidance IDs and reduces complete group wall
+time by 7.2% against its clean predecessor in one preliminary VM pair; the fixed
+comparator ratio is 0.583. These are not repeated reference acceptance receipts.
+Fresh independent runtime review accepts the Unicode-only change with no open
+findings. Continue to S6 under the approved route. See [the evidence](evidence.md).
+
+**What it delivers:** equivalent immutable character classification avoids
+repeated range scanning while each public operation observes current authority.
 
 **Blocked by:** S1. **Mode:** AFK.
 
-- Reuse unchanged canonical bytes/revisions only within one operation; preserve
-  byte format, hash identity and mutable-input isolation.
+- Proposal-retention reuse is rejected under the approved stop disposition;
+  preserve its original implementation and record the unresolved custom-object
+  isolation question without a universal safety claim.
 - Preserve invisible-character deletion before NFKC, whitespace normalisation
   and boundary/supplementary-code-point behaviour when optimising lookup.
 - Keep reviewed guidance, inventory, withdrawn confirmations and retained
