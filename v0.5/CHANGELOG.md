@@ -2,6 +2,55 @@
 
 ## Unreleased
 
+- Decline optional standalone capture when the public unittest stdlib path
+  query or directory/source symlink check is unavailable. Native error handling,
+  passing guards and reports continue with empty, unknown failure evidence.
+
+*Why — unittest path availability:* an optional trust path check could raise
+  before native tests ran. Narrow availability handling declines observation
+  before owned hooks without replacing public sources or catching test failures.
+
+- Decline optional subprocess exception evidence when its approved public source
+  path, read or compilation is unavailable. Preserve native test execution and
+  reports, fixed builtin labels and available native integer return-code proof.
+
+*Why — subprocess source availability:* optional source reads could abort a
+  native suite before test loading. Narrow availability handling leaves
+  unsupported subprocess metadata unknown without substituting other sources.
+
+- Read fixed builtin labels through the native raw module dictionary slot.
+  Decline standalone observation when public unittest source metadata is
+  missing, unsupported or unavailable, and require live source agreement.
+  Native suites still run and report unknown evidence without result registration.
+
+*Why — module metadata:* module dictionary getters and absent source filenames
+  changed native startup and test outcomes. Trusted raw reads and an explicit
+  evidence decline preserve native execution without inspecting user metadata.
+
+- Classify detailed failure metadata with fixed builtin labels and source-checked
+  native subprocess exceptions. Rebound aliases and unsupported classes stay
+  unknown; only an exact native subprocess exception with a plain integer
+  return code supplies that field. Checks run at explicit capture entry and
+  require live agreement, without querying thrown custom-object metadata.
+
+*Why — exception classification:* a mutable stdlib alias could authorize a custom
+  exception label and return code. Source equivalence preserves native positive
+  evidence without claiming historical provenance or universal object isolation.
+
+- Capture standalone benchmark failures through the profiler's owned result
+  constructor and formatter, preserving native callbacks and conditional cleanup.
+  Share bounded metadata extraction with serial capture; initialize standalone
+  source checks explicitly after worker timing starts and serial imports after
+  startup eligibility. Report process exit separately from suite success, and
+  retain unknown phases when effective native dispatch cannot be proved.
+  Finite native controls cover ownership, binding and metadata privacy; source
+  equivalence and two native frame reads do not establish arbitrary-object,
+  saved-callable, audit or concurrent compatibility or performance qualification.
+
+*Why — standalone evidence lane:* native callback interposition changed observable
+  behavior; owned construction and formatting retain safe failure evidence while
+  leaving callback attributes intact.
+
 - Retain source-bound failing unittest identities and actual traceback locations
   from native serial verification through temporary failure callbacks, preserving
   existing startup customization, draining output in bounded byte chunks and

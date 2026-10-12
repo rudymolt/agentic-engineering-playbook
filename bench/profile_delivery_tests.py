@@ -27,6 +27,8 @@ import time
 import unittest
 from unittest import mock
 
+from serial_failure_capture import installed_capture
+
 ROOT = Path(__file__).resolve().parents[1] / "v0.5"
 SETS = runpy.run_path(str(ROOT / "delivery/scripts/verify.py"))["SETS"]
 
@@ -157,7 +159,9 @@ class GitDiagnostics:
 
 
 def worker(pattern: str, tests: list[str], diagnostics: bool = False, group: str = "delivery") -> dict:
+    started = time.perf_counter()
     os.chdir(ROOT)
+    identities, sources = serial_failure_sources(include_guidance=group == "guidance")
     directory = "delivery/tests" if group == "delivery" else "scripts"
     sys.path.insert(0, str(ROOT / directory))
     observer = GitDiagnostics()
@@ -183,17 +187,28 @@ def worker(pattern: str, tests: list[str], diagnostics: bool = False, group: str
             super().stopTest(test)
             observer.test = None
 
-    started = time.perf_counter()
-    # Install before imports so proxies and saved subprocess references see it.
-    with observer.installed() if diagnostics else nullcontext():
+    runner_owner = [None]
+    # Preserve discovery and native runner creation order.
+    with installed_capture({'root': str(ROOT.resolve()), 'identities': identities,
+                            'sources': sources}, detailed=True, target=TimedResult, runner=runner_owner) as captured, (
+            observer.installed() if diagnostics else nullcontext()):
         suite = (unittest.defaultTestLoader.loadTestsFromNames(tests) if tests else
                  unittest.defaultTestLoader.discover(directory, pattern=pattern))
         discovered = suite.countTestCases()
-        result = unittest.TextTestRunner(stream=io.StringIO(), resultclass=TimedResult).run(suite)
+        runner = unittest.TextTestRunner(stream=io.StringIO(), resultclass=TimedResult)
+        runner_owner[0] = runner
+        result = runner.run(suite)
     measured = {"seconds": time.perf_counter() - started, "successful": result.wasSuccessful() and discovered > 0,
             "discovered": discovered,
             "tests": rows, "failures": len(result.failures), "errors": len(result.errors),
-            "skipped": len(result.skipped)}
+            "skipped": len(result.skipped), "failed_tests": captured['failed_tests'],
+            "failure_evidence": {
+                "status": "passed" if result.wasSuccessful() and discovered > 0 else
+                          "identified" if captured['failed_tests'] else "unknown",
+                "matched_events": captured['matched_events'],
+                "unmatched_events": captured['unmatched_events'],
+                "truncated": captured['truncated'],
+                "unsupported_callbacks": captured['unsupported_callbacks'], "capture": "owned unittest formatter"}}
     if discovered == 0:
         measured["selection_error"] = "empty-selection"
     if diagnostics:
@@ -210,18 +225,21 @@ def public_python_sources() -> list[Path]:
     if top.resolve() != ROOT.parent.resolve():
         return []
     tracked = subprocess.check_output(["git", "ls-files", "-z"], cwd=ROOT).decode().split("\0")
-    return [ROOT / name for name in tracked if name.endswith(".py") and
+    ignored = set(subprocess.check_output(
+        ["git", "ls-files", "-ci", "--exclude-standard", "-z"], cwd=ROOT).decode().split("\0"))
+    return [ROOT / name for name in tracked if name not in ignored and name.endswith(".py") and
             name.startswith(("delivery/tests/", "delivery/src/", "scripts/")) and
             (ROOT / name).is_file() and (ROOT / name).resolve() == ROOT / name]
 
 
-def serial_failure_sources() -> tuple[set[str], set[str]]:
+def serial_failure_sources(*, include_guidance: bool = False) -> tuple[set[str], set[str]]:
     """Index public source identities without importing or executing tests."""
     paths = public_python_sources()
     identities = set()
     sources = {path.relative_to(ROOT).as_posix() for path in paths}
     for path in paths:
-        if path.parent != ROOT / "delivery/tests" or not path.name.startswith("test_"):
+        directories = (ROOT / "delivery/tests", ROOT / "scripts") if include_guidance else (ROOT / "delivery/tests",)
+        if path.parent not in directories or not path.name.startswith("test_"):
             continue
         module = path.stem
         identities.update((module, "unittest.loader._FailedTest." + module))
@@ -426,10 +444,15 @@ def main() -> int:
             result = subprocess.run(command, env=env, text=True, capture_output=True, check=True)
             measured = json.loads(result.stdout)
             measured["wall_seconds"] = time.perf_counter() - started
+            measured["worker_returncode"] = result.returncode
             batch.append({"pattern": pattern, **measured})
             successful = successful and measured["successful"]
             print(f"repeat {repeat + 1}: {pattern}: {measured['seconds']:.3f}s; "
-                  f"{len(measured['tests'])} tests; successful={measured['successful']}", flush=True)
+                  f"{len(measured['tests'])} tests; successful={measured['successful']}; "
+                  f"worker_returncode={measured['worker_returncode']}", flush=True)
+            if not measured['successful']:
+                print("standalone failure evidence: " + json.dumps({**measured['failure_evidence'],
+                      "failed_tests": measured['failed_tests']}), flush=True)
         report["repetitions"].append(batch)
         args.output.parent.mkdir(parents=True, exist_ok=True)
         args.output.write_text(json.dumps(report, indent=2) + "\n")

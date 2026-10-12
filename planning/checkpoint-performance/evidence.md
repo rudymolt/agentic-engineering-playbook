@@ -479,3 +479,28 @@ original permission methods, six failure/dirty/cleanup controls and delayed
 status/probe/native/temporary-root cleanup timing boundaries. These are
 diagnostic safety checks, not performance acceptance. A new frozen candidate
 and all complete repeated reference receipts remain required.
+
+### Standalone native failure-evidence correction
+
+Fresh independent functional review passes the integrated profiler correction
+and all 92 benchmark support tests, with no failures, errors or skipped tests.
+The retained 71-, 72-, 77-, 84- and 87-test cohorts also pass. Native callbacks
+remain unchanged; standalone evidence uses the profiler-owned result constructor
+and formatter. Serial capture retains its existing result class and startup
+eligibility. Both paths share bounded metadata extraction.
+
+Failure evidence contains only supported identities, fixed exception labels,
+provable phases and eligible public source frames. Unsupported metadata stays
+unknown. Unavailable optional stdlib source reads, compilation and path checks
+decline observation while preserving native test execution and reports. Controls
+verify that a failed suite can report a worker process exit of zero while the
+parent exits nonzero. Native binding, setup, teardown, cleanup, import, subtest,
+privacy, event/frame bounds and source-preservation controls pass independently.
+
+These checks establish bounded functional behavior on the diagnostic VM, not
+reference performance acceptance or universal custom-object, audit,
+saved-callable or concurrent compatibility. The original failed watchdog cause
+remains unknown, and all failed qualification attempts remain excluded. Freeze
+the final reviewed revision before collecting all fresh reference measurements,
+the full release verifier and three delivery CI observations. Every original
+target remains binding; unmet targets keep this feature open.
