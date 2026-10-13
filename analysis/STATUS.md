@@ -13,6 +13,9 @@
 
 ## Field reports
 
+- [2026-10-13 — Checkpoint performance](field-reports/2026-10-13-checkpoint-performance.md)
+  — shipped retained improvements, rejected experiments and acceptance disposition.
+
 - [2026-10-08 — Playbook configuration UI](field-reports/2026-10-08-playbook-config-ui.md)
   — completed feature retro evidence; historical failures and proof gaps retained.
 
