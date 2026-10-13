@@ -2,6 +2,136 @@
 
 ## Unreleased
 
+- Accept the measured checkpoint/guidance improvements after complete reference
+  qualification and independent correctness review. Retain the 512-object
+  fixture threshold and stop further performance experiments; preserve the
+  four unmet original speed targets in the public measurement summary.
+
+*Why — maintainer acceptance:* the maintainer chose to ship the verified gains
+  rather than require more optimization. Correctness, safety, privacy and final
+  release checks remain mandatory; no unmet target is relabelled as passed.
+
+
+- Decline optional standalone capture when the public unittest stdlib path
+  query or directory/source symlink check is unavailable. Native error handling,
+  passing guards and reports continue with empty, unknown failure evidence.
+
+*Why — unittest path availability:* an optional trust path check could raise
+  before native tests ran. Narrow availability handling declines observation
+  before owned hooks without replacing public sources or catching test failures.
+
+- Decline optional subprocess exception evidence when its approved public source
+  path, read or compilation is unavailable. Preserve native test execution and
+  reports, fixed builtin labels and available native integer return-code proof.
+
+*Why — subprocess source availability:* optional source reads could abort a
+  native suite before test loading. Narrow availability handling leaves
+  unsupported subprocess metadata unknown without substituting other sources.
+
+- Read fixed builtin labels through the native raw module dictionary slot.
+  Decline standalone observation when public unittest source metadata is
+  missing, unsupported or unavailable, and require live source agreement.
+  Native suites still run and report unknown evidence without result registration.
+
+*Why — module metadata:* module dictionary getters and absent source filenames
+  changed native startup and test outcomes. Trusted raw reads and an explicit
+  evidence decline preserve native execution without inspecting user metadata.
+
+- Classify detailed failure metadata with fixed builtin labels and source-checked
+  native subprocess exceptions. Rebound aliases and unsupported classes stay
+  unknown; only an exact native subprocess exception with a plain integer
+  return code supplies that field. Checks run at explicit capture entry and
+  require live agreement, without querying thrown custom-object metadata.
+
+*Why — exception classification:* a mutable stdlib alias could authorize a custom
+  exception label and return code. Source equivalence preserves native positive
+  evidence without claiming historical provenance or universal object isolation.
+
+- Capture standalone benchmark failures through the profiler's owned result
+  constructor and formatter, preserving native callbacks and conditional cleanup.
+  Share bounded metadata extraction with serial capture; initialize standalone
+  source checks explicitly after worker timing starts and serial imports after
+  startup eligibility. Report process exit separately from suite success, and
+  retain unknown phases when effective native dispatch cannot be proved.
+  Finite native controls cover ownership, binding and metadata privacy; source
+  equivalence and two native frame reads do not establish arbitrary-object,
+  saved-callable, audit or concurrent compatibility or performance qualification.
+
+*Why — standalone evidence lane:* native callback interposition changed observable
+  behavior; owned construction and formatting retain safe failure evidence while
+  leaving callback attributes intact.
+
+- Retain source-bound failing unittest identities and actual traceback locations
+  from native serial verification through temporary failure callbacks, preserving
+  existing startup customization, draining output in bounded byte chunks and
+  excluding assertion values, raw output or failed-run command attribution.
+
+*Why — serial evidence lane:* an unsuccessful qualification preserved its exit
+  code but discarded the evidence needed to identify the failing boundary.
+
+- Stage the full privileged qualification verifier in an owned detached
+  worktree of the same revision and tree. Preserve real permission-denial tests,
+  native failures, clean-state and cleanup gates; include source checks and
+  staging in total elapsed time.
+
+*Why — full qualification execution:* capability-restricted test children must
+  reach their unchanged CLI source while denied fixture artifacts remain denied.
+
+- Add opt-in final checkpoint qualification after both required CI jobs, with
+  three alternating complete measurement pairs, separate native diagnostics,
+  actual runner facts, and a full release verifier without skip flags.
+
+*Why — checkpoint qualification lane:* repeatable evidence on a frozen candidate
+  distinguishes actual reference target results from preliminary VM timings.
+
+- Replace repeated default-ignorable range scans with equivalent immutable
+  character lookup; preserve normalization order and fresh guidance admission.
+
+*Why — Unicode lane:* repeated character classification adds guidance verifier
+work; a complete preliminary VM pair improves while every original test remains.
+
+
+- Record the stopped guidance experiment after independent caller-ownership
+  failures; retain the accepted source and all original qualification gates.
+
+*Why — guidance experiment:* passing ordinary tests cannot justify retaining
+proposal reuse that shares caller state or returns a stale revision.
+
+
+- Record the rejected checkpoint validation-reuse experiment and retain the
+  existing persistence implementation after complete-file timings show no
+  material combined benefit and a coordinator regression.
+
+*Why — checkpoint experiment:* whole-file evidence prevents retaining extra
+  admission and hook machinery without a measured verification benefit.
+
+- Restore complete recovery fixture seeds from immutable class/process-owned
+  templates to their original reserved paths before sequential tests. Preserve
+  approved URLs, checkpoint bytes/history, independent object storage and
+  existing within-test fresh resets and matrix publication/reload checks.
+
+*Why — checkpoint seed lane:* repeated initial history construction adds work
+  before the same recovery scenarios. Same-path independent copies remove that
+  setup cost without changing the immutable approval or tested boundaries.
+
+- Repack exclusively owned, sequential recovery/coordinator fixture remotes
+  in the foreground at a measured loose-object threshold before transport
+  clones. Configure receiving maintenance safeguards locally and retain every
+  real publication, clone and reload.
+
+*Why — checkpoint fixture lane:* accumulated loose objects made transport
+  clones repack the same history repeatedly. Owned, quiescent maintenance
+  reduces complete-file costs while preserving history and writer-race coverage.
+
+- Extend the delivery profiler with opt-in worker Git diagnostics, complete
+  process wall times, fixed-checkout guidance measurements and serial verifier
+  attribution. Offer an optional reference-runner baseline after both required
+  CI jobs, retaining their existing workloads.
+
+*Why — checkpoint measurement lane:* fixture costs and process overhead need
+  reproducible attribution before performance changes can be accepted without
+  weakening persistence or matrix coverage.
+
 - Remember the human-confirmed merge email privacy setting in root `AGENTS.md`
   for the exact repository/account pair. Require matching GitHub target and
   merging identity, invalidate on revocation or a disabled-setting report,

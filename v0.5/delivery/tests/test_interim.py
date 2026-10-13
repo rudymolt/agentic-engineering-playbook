@@ -199,6 +199,12 @@ class InterimCheckpointFixture(unittest.TestCase):
         self.root = Path(self.temp.name)
         self.remote = self.root / "remote.git"
         self.git("init", "--bare", str(self.remote), cwd=self.root)
+        self.remote_maintenance = None
+        if getattr(self, "maintenance_loose_threshold", None) is not None:
+            from checkpoint_fixture_support import OwnedRemoteMaintenance
+            self.remote_maintenance = OwnedRemoteMaintenance(self.temp, self.remote, self.git,
+                                                            threshold=self.maintenance_loose_threshold)
+            self.remote_maintenance.configure()
         self.first = self.clone("first")
         self.second = self.clone("second")
 
@@ -213,6 +219,8 @@ class InterimCheckpointFixture(unittest.TestCase):
         return subprocess.run(["git", *args], cwd=cwd, text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=True)
 
     def clone(self, name: str) -> Path:
+        if self.remote_maintenance is not None:
+            self.remote_maintenance.before_clone()
         path = self.root / name
         try:
             self.git("clone", "-q", "--no-local", str(self.remote), str(path), cwd=self.root)

@@ -7,9 +7,13 @@ import tempfile
 import subprocess
 import sys
 import unittest
+import unicodedata
+from unittest.mock import patch
+
+import model_recommendations
 
 from playbook_config import Configuration, ROLES
-from model_recommendations import OfficialSources, cost
+from model_recommendations import OfficialSources, cost, rendered_text, DEFAULT_IGNORABLE_RANGES
 
 
 NOW = "2026-10-01T12:00:00Z"
@@ -35,6 +39,32 @@ REVIEWED_CLAUDE, REVIEWED_CLAUDE_PAGE = reviewed("claude-fixture-1-0", "Claude F
 
 def claim(url, **values):
     return dict(source_url=url, checked_at=NOW, uncertainty="Synthetic controlled evidence, not current rates.", **values)
+
+
+class UnicodeRenderingTests(unittest.TestCase):
+    def test_lookup_equivalence_over_every_unicode_code_point(self):
+        all_points = ''.join(map(chr, range(sys.maxunicode + 1)))
+        segments = []
+        previous = 0
+        for start, end in DEFAULT_IGNORABLE_RANGES:
+            segments.append(all_points[previous:start])
+            previous = end + 1
+        segments.append(all_points[previous:])
+        expected = ' '.join(unicodedata.normalize('NFKC', ''.join(segments)).split())
+        self.assertEqual(rendered_text([all_points]), expected)
+
+    def test_deletion_precedes_composition_and_preserves_supplementary_boundaries(self):
+        self.assertEqual(rendered_text(['e', '\u200d', '\u0301']), 'é')
+        self.assertEqual(rendered_text(['A\u034f\u030a']), 'Å')
+        self.assertEqual(rendered_text(['\u115f\u1160  Ａ\u200dＢ\U000e0100\tC  ']), 'AB C')
+        self.assertEqual(rendered_text(['foo\u00adbar']), 'foobar')
+        self.assertEqual(rendered_text(['x\U000e0000\U000e0fff\U000e1000y']), 'x\U000e1000y')
+
+    def test_character_classification_does_not_repeat_code_point_conversion(self):
+        text = 'Visible text ' * 100
+        with patch.object(model_recommendations, 'ord', wraps=ord, create=True) as conversion:
+            self.assertEqual(rendered_text([text]), text.strip())
+        self.assertLessEqual(conversion.call_count, len(text))
 
 
 class RecommendationTests(unittest.TestCase):

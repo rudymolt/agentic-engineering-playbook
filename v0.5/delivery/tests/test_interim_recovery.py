@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import sys
+import os
 import runpy
 import unittest
 from collections import Counter
@@ -17,6 +18,7 @@ from delivery_pilot.interim_recovery import InterimRecoveryCoordinator  # noqa: 
 from delivery_pilot.interim_coordinator import InterimDispatchError  # noqa: E402
 import test_interim_repair as repair_tests  # noqa: E402
 from control_ref_test_support import memoized_control_refs  # noqa: E402
+from checkpoint_seed_support import CheckpointSeed  # noqa: E402
 
 
 class RecoveryFixture:
@@ -86,16 +88,55 @@ class FaultRecoveryFixture(RecoveryFixture):
         return self._call("owned_workers", super().owned_workers, run_id)
 
 
-class RecoveryTests(unittest.TestCase):
-    def setUp(self):
-        self.base = repair_tests.RepairPolicyTests("run")
-        self.base.setUp()
-        self.snapshot = self.base.failed_s2()
-        self.clock = lambda: datetime(2026, 9, 19, tzinfo=timezone.utc)
-        self.coordinator = InterimRecoveryCoordinator(self.base.store(self.base.first), self.clock)
+def recovery_repair_fixture():
+    # Keep this helper local so unittest does not collect inherited repair tests.
+    class SequentialRepairFixture(repair_tests.RepairPolicyTests):
+        maintenance_loose_threshold = 512
+    return SequentialRepairFixture("run")
+
+
+class SeededRecoveryCase(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        # A class owns its seed for this process, including separately selected
+        # methods. Process exit performs cleanup inside whole-file wall timing.
+        seed = cls.__dict__.get('_checkpoint_seed')
+        if seed is None or seed.closed or seed.pid != os.getpid():
+            cls._checkpoint_seed = CheckpointSeed(cls.build_seed)
+
+    @classmethod
+    def build_seed(cls):
+        base = recovery_repair_fixture()
+        try:
+            base.setUp()
+            return base, cls.seed_snapshot(base)
+        except BaseException:
+            if hasattr(base, 'temp'):
+                base.tearDown()
+            raise
+
+    def restored_seed(self):
+        self.base = recovery_repair_fixture()
+        snapshot = self._checkpoint_seed.restore(self.base)
+        self.addCleanup(self._checkpoint_seed.release)
+        return snapshot
 
     def tearDown(self):
-        self.base.tearDown()
+        try:
+            self.base.tearDown()
+        finally:
+            self._checkpoint_seed.release()
+
+
+class RecoveryTests(SeededRecoveryCase):
+    @staticmethod
+    def seed_snapshot(base):
+        return base.failed_s2()
+
+    def setUp(self):
+        self.snapshot = self.restored_seed()
+        self.clock = lambda: datetime(2026, 9, 19, tzinfo=timezone.utc)
+        self.coordinator = InterimRecoveryCoordinator(self.base.store(self.base.first), self.clock)
 
     def test_clean_clone_recovery_observes_active_worker_without_replacement_or_duplicate_wake(self):
         fixture = RecoveryFixture()
@@ -311,16 +352,18 @@ class RecoveryTests(unittest.TestCase):
                     self.coordinator.resume(type(stopped)(corrupt, stopped.digest, stopped.commit_sha), "human resume", RecoveryFixture(observed_state="terminal"))
 
 
-class RecoveryBoundaryTests(unittest.TestCase):
+class RecoveryBoundaryTests(SeededRecoveryCase):
     """Public transitions and real remote reloads, with nonempty S3 history."""
 
-    def setUp(self):
-        self.base = repair_tests.RepairPolicyTests("run")
-        self.base.setUp()
-        self.store = self.base.store(self.base.first)
-        repair, diagnosed = self.base.open_and_diagnose()
+    @staticmethod
+    def seed_snapshot(base):
+        repair, diagnosed = base.open_and_diagnose()
         fixture = repair_tests.RepairFixture("fail")
-        self.seed = repair.repair_once(diagnosed, "TASK-413", self.base.task(), fixture, fixture)
+        return repair.repair_once(diagnosed, "TASK-413", base.task(), fixture, fixture)
+
+    def setUp(self):
+        self.seed = self.restored_seed()
+        self.store = self.base.store(self.base.first)
         self.assertTrue(self.seed.value["repair"]["cycles"])
         self.assertTrue(self.seed.value["repair"]["diagnoses"])
         self.assertTrue(self.seed.value["forecasts"]["revised"])
@@ -328,9 +371,6 @@ class RecoveryBoundaryTests(unittest.TestCase):
         self.clock = lambda: datetime(2026, 9, 19, tzinfo=timezone.utc)
         self.coordinator = InterimRecoveryCoordinator(self.store, self.clock)
         self.serial = 0
-
-    def tearDown(self):
-        self.base.tearDown()
 
     @staticmethod
     def change(key, value):
@@ -638,7 +678,7 @@ class RecoveryBoundaryTests(unittest.TestCase):
             with self.subTest(limits=limits):
                 # Build real S3 history under a separately approved ceiling.
                 self.base.tearDown()
-                self.base = repair_tests.RepairPolicyTests("run"); self.base.setUp()
+                self.base = recovery_repair_fixture(); self.base.setUp()
                 original_approval = self.base.s2_approval
                 self.base.s2_approval = lambda task=None: {**original_approval(task), "hard_limits": limits}
                 repair, diagnosed = self.base.open_and_diagnose()

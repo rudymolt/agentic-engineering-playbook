@@ -1,8 +1,19 @@
 # Planning status
 
-active_features: 4
+active_features: 5
 
 ## Active features
+
+[Checkpoint and delivery verifier performance](checkpoint-performance/spec.md) —
+measured improvements accepted by the maintainer on 2026-10-13; final shipping
+checks and review pending. Complete reference qualification and fresh independent
+source/receipt review passed correctness/safety checks. Four original speed
+targets remain unmet and are explicitly accepted for release; guidance and full
+verifier targets were met. The latest two-threshold 256 experiment is
+independently rejected; retain 512 and stop further performance experiments.
+S4 validation reuse and S5 proposal retention remain rejected. The custom-object
+isolation question remains disclosed. See the durable
+[accepted measurements](../bench/test-runtime/CHECKPOINT-PERFORMANCE.md).
 
 [Verifier performance](verifier-performance/slices.md) — aligned and specified; five
 ordered slices implemented; the measured slice 5 improvement is accepted,
