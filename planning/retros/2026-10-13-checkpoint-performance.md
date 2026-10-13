@@ -85,6 +85,13 @@ new implementation or investigation selected by this release.
 
 ## 8. State updates applied
 
+Map QA / affected verification-harness map entry: n/a — no maintainer
+verification harness or root consumer runtime state was adopted. The conditional
+[stage-08 map check](../../v0.5/10-process/08-review.md) and
+[doc-close map check](../../v0.5/30-document-lifecycle.md) therefore do not apply.
+No map, runtime harness or maintenance-clock credit is introduced by closeout.
+
+
 - Planning/archive indexes reflect the shipped feature; mirrored maintainer
   state records production verification, doc-close and this retrospective.
 - No consumer state file or cadence tuning is needed in this maintainer checkout.

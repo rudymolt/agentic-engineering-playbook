@@ -40,7 +40,6 @@ last_run:
   feature_ship: 2026-10-13T05:03:43Z
   doc_close: 2026-10-13T05:08:56Z
   retro: 2026-10-13T05:08:56Z
-  retro: 2026-10-09T20:54:02Z
 pending_closeouts: []
 ```
 

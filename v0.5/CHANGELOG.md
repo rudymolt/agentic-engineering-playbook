@@ -4,6 +4,8 @@
 
 ## V0.5.2 — 2026-10-13
 
+This release retains verified checkpoint and guidance gains with bounded native failure evidence.
+
 - Accept the measured checkpoint/guidance improvements after complete reference
   qualification and independent correctness review. Retain the 512-object
   fixture threshold and stop further performance experiments; preserve the

@@ -6,7 +6,7 @@
 
 ## Release
 
-**V0.5.2** — 2026-10-13. - Accept the measured checkpoint/guidance improvements after complete reference
+**V0.5.2** — 2026-10-13. This release retains verified checkpoint and guidance gains with bounded native failure evidence.
 
 - V0.5.1 — 2026-10-09. Guided configuration, evidence-backed model advice, skill bindings, safer upgrades, and updated skill integrations.
 - V0.5.0 — 2026-09-26. Initial public edition from a reviewed adaptation of the private V0.4.2 source. It begins a new Git history, carries one live edition, and adds an independent public verification and upgrade contract.
