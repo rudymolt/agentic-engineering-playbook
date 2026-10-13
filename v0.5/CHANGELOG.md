@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+- Accept the measured checkpoint/guidance improvements after complete reference
+  qualification and independent correctness review. Retain the 512-object
+  fixture threshold and stop further performance experiments; preserve the
+  four unmet original speed targets in the public measurement summary.
+
+*Why — maintainer acceptance:* the maintainer chose to ship the verified gains
+  rather than require more optimization. Correctness, safety, privacy and final
+  release checks remain mandatory; no unmet target is relabelled as passed.
+
+
 - Decline optional standalone capture when the public unittest stdlib path
   query or directory/source symlink check is unavailable. Native error handling,
   passing guards and reports continue with empty, unknown failure evidence.

@@ -1,6 +1,7 @@
 # Checkpoint performance build breakdown
 
-Status: approved; the maintainer selected build all six with Sol. The reviewed
+Status: measured improvements accepted on 2026-10-13; further performance
+experiments stopped and final shipping gates pending. The reviewed
 [spec](spec.md) remains the acceptance contract. Sol is assigned to start S1;
 runtime identity and the private tracker mapping are retained in handoff evidence.
 
@@ -171,6 +172,15 @@ repeated range scanning while each public operation observes current authority.
 and changed-authority regressions, full guidance-group paired timings.
 
 ## S6 — Final qualification and gap review
+
+**Acceptance:** complete frozen-reference receipts and fresh independent
+source/receipt review are retained. The maintainer accepts the measured gains
+on 2026-10-13, subject to final correctness/safety/privacy/release gates. Four
+original speed targets are unmet and no longer release blockers; guidance and
+full-verifier targets are met. The two-threshold 256 experiment is independently
+rejected; retain 512 and stop further performance experiments. The historical
+checkpoint below is preserved. See the durable
+[accepted measurements](../../bench/test-runtime/CHECKPOINT-PERFORMANCE.md).
 
 **Checkpoint:** the first frozen-reference attempt fails native serial repair
 verification while every standalone file passes. Its incomplete receipts are

@@ -504,3 +504,28 @@ remains unknown, and all failed qualification attempts remain excluded. Freeze
 the final reviewed revision before collecting all fresh reference measurements,
 the full release verifier and three delivery CI observations. Every original
 target remains binding; unmet targets keep this feature open.
+
+### Final acceptance and stopped performance exploration — 2026-10-13
+
+Complete reference qualification on `5e7946b` returned all native checks and
+both required jobs successfully. Fresh independent source/receipt review found
+no new actionable source-safety finding; four original numerical targets remain
+unmet. The maintainer explicitly accepts the measured improvements, provided
+correctness, safety, privacy and final release gates pass, and stops further
+performance experiments. This changes release acceptance rather than the data.
+
+The latest two-threshold 256 experiment preserves all original 55 methods and
+native operation parity but regresses recovery's median by 0.64% and improves the
+combined median by only 1.64%. Fresh independent review accepts rejection; shared
+source retains 512. No coordinator-only follow-up is selected. Experimental
+manifest findings apply only to the rejected disposable copy; no source from it
+lands. Disclosed experimental containment and opaque Git-metadata uncertainties
+remain in the private receipts, without actor attribution or strict ownership
+claims. Prior interrupted/failed attempts remain excluded and their unknown
+causes remain unknown.
+
+The durable [measurement and limitation summary](../../bench/test-runtime/CHECKPOINT-PERFORMANCE.md)
+records the matched baseline/candidate results, unchanged safety boundaries and
+original target dispositions. Final release checks will attest the shipping
+head; the numerical receipts attest their frozen source and are not silently
+rebound to later documentation revisions.

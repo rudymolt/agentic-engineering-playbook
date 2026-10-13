@@ -1,7 +1,23 @@
 # Checkpoint and delivery verifier performance spec
 
-Status: accepted; all six slices approved for sequential Sol implementation.
+Status: measured improvements accepted by the maintainer on 2026-10-13;
+final shipping gates pending.
 See [alignment](alignment.md) and [evidence synthesis](evidence.md).
+
+## Maintainer acceptance — 2026-10-13
+
+After the latest bounded experiment, the maintainer explicitly accepts the
+measured improvements and stops further performance experiments, provided all
+correctness, safety, privacy, review and release checks pass. Recovery,
+coordinator, serial and delivery CI speed targets below remain historically
+unmet; they no longer block this release. No result is relabelled as meeting
+its original target. The guidance and full-verifier targets were met.
+
+Retain the independently reviewed 512-object fixture threshold. Reject the
+latest two-threshold256 experiment; no coordinator-only follow-up is selected.
+Validation reuse and proposal retention remain rejected. The pre-existing
+custom-object isolation question stays disclosed and is not a universal
+compatibility claim. See the durable [accepted measurements](../../bench/test-runtime/CHECKPOINT-PERFORMANCE.md).
 
 ## Problem and outcome
 
