@@ -1,8 +1,16 @@
 # Archive status
 
-archived_features: 2
+archived_features: 3
 
 ## Shipped features
+
+- **Checkpoint and delivery verifier performance** — shipped 2026-10-13 in
+  PR #41 as `20eeb04`; verified head `084857c`. Archived at
+  `2026-10-13-checkpoint-performance/`. Doc-close and
+  [feature retrospective](../planning/retros/2026-10-13-checkpoint-performance.md)
+  are complete in the release closeout PR, awaiting human merge. The maintainer
+  accepts measured gains while four original speed targets remain unmet;
+  retain 512, stop further experiments, preserve compatibility limits.
 
 - **Playbook configuration UI** — shipped 2026-10-08 in PR #20 as `0a3770e`;
   S8 accepted on final candidate `05de2a0`. Archived at

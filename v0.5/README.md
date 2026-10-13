@@ -2,7 +2,7 @@
 
 > Read [AGENT-DIGEST.md](AGENT-DIGEST.md) first. This folder is the live public edition.
 
-**Current release:** V0.5.1 · [Changes](CHANGELOG.md#v051--2026-10-09)
+**Current release:** V0.5.2 · [Changes](CHANGELOG.md#v052--2026-10-13)
 
 V0.5 is a human-led, agent-assisted engineering process with 13 stages, optional tracks, project templates, local skills, deterministic checks, and an optional delivery runtime. This repository contains one edition and begins with a new public Git history.
 

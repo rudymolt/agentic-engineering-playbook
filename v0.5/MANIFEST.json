@@ -178,8 +178,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "8f3724b48c3ddc852567066554c310aa40c9744b94601a0304e62d286bae9c01",
-      "size": 61455
+      "sha256": "033de871be203f0e880a3db1f79c8ccdc5b071dd41d246a7d5af4f74f3a149f1",
+      "size": 61481
     },
     {
       "path": "MAINTENANCE.md",
@@ -188,7 +188,7 @@
     },
     {
       "path": "README.md",
-      "sha256": "3bd5261018961265627ac0d0667968c1ba687babfa45092f5aa9196829afc8b0",
+      "sha256": "ddf7dc7c2e0a3e164ac01123ca728c111f654dd27c8b8048838c9b586accf76d",
       "size": 6089
     },
     {

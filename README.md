@@ -13,7 +13,7 @@
 
 Turn an idea into a clear specification, build it in manageable pieces, verify the result, and carry lessons into the next feature. You bring the goals and judgement. The playbook gives your agent a repeatable way to work.
 
-**Current release:** V0.5.1 · [Release notes](v0.5/CHANGELOG.md#v051--2026-10-09)
+**Current release:** V0.5.2 · [Release notes](v0.5/CHANGELOG.md#v052--2026-10-13)
 
 **Humans:** [Get started](#get-started) · **Agents:** [Read the agent digest](v0.5/AGENT-DIGEST.md)
 
@@ -33,16 +33,14 @@ Use it when you are building a new product or working on an existing codebase an
 
 The human owns goals, acceptance criteria, and consequential decisions. The agent plans, implements, checks, and records the work within the agreed scope.
 
-## What's new in V0.5.1
+## What's new in V0.5.2
 
-- **Configure model and skill choices in chat.** `/ai-playbook-configure` shows the current Plan, Build, Verify, and repair defaults, plus the skills used for alignment, specification, implementation, review, and application QA. You can inspect sources, edit a draft, and review the exact destination before applying it. Personal defaults and named presets can be saved locally and loaded into a draft for another project. [Configuration guide](v0.5/README.md#existing-projects)
-- **Get evidence-backed model advice.** At a Plan, Build, or Verify choice, the agent can show task-specific suggestions with source dates, limitations, and available pricing information. Suggestions do not change a saved preference or launch a model; the usual route and approval checks still apply. [Model routing guide](v0.5/93-model-routing-track.md)
-- **Choose the amount of build work.** After planning, choose `build one`, `build all`, or `build to <slice>` for eligible slices. Add `fast` to a Build choice when an available Codex route supports it. Fresh verification and the same quality gates apply. [Build choices](v0.5/10-process/07-implementation-tdd.md#the-build-choice-v0316)
-- **Keep setup and upgrades safe.** Bootstrap can preview project model seeds, and upgrades preserve adopted configuration and project content. Retained Apply recovery files are ignored by Git while the shareable configuration remains trackable. [Bootstrap](v0.5/skills/ai-playbook-bootstrap-project/SKILL.md) · [Upgrade](v0.5/skills/ai-playbook-upgrade-project/SKILL.md)
-- **Use the updated skill integrations.** Matt's pinned v1.3.1 skills now use `GLOSSARY.md`; the upgrade skill previews and migrates managed vocabulary while preserving project edits. `/matt-retro` and gstack's `/retro` remain distinct. The included pstack adaptations now return explicit outcomes and next steps so agents can hand work back to the right stage. [Migration guide](v0.5/skills/ai-playbook-upgrade-project/MIGRATIONS.md) · [Local skills](v0.5/skills/README.md)
-- **Review and ship with clearer gates.** PR review threads must be addressed before merge readiness. Documentation edits get focused local checks during iteration; both required GitHub CI jobs stay in place, and the final release candidate gets the full verifier. [Shipping guide](v0.5/10-process/10-ship-and-deploy.md)
+- **Verify with less repeated work.** Safe fixture repacking and independent recovery seed restoration reduce checkpoint verification cost. Equivalent Unicode lookup speeds up guidance checks while keeping fresh admission. [Accepted measurements](bench/test-runtime/CHECKPOINT-PERFORMANCE.md)
+- **Keep failure evidence useful and bounded.** The profiler retains supported failure identities and public source frames while preserving native callbacks, exits and reports. Unsupported metadata stays unknown.
+- **Preserve correctness when optimizing.** Validation reuse, proposal retention and the latest 256-object repack experiment were rejected. The maintainer accepted the verified gains and stopped further performance experiments; four original speed targets remain unmet.
+- **Keep maintainer merges private.** A recorded human confirmation is reused only for the same repository/account pair, with noreply author and committer checks after every merge.
 
-See the [V0.5.1 changelog](v0.5/CHANGELOG.md#v051--2026-10-09) for the full set of changes and fixes.
+See the [V0.5.2 changelog](v0.5/CHANGELOG.md#v052--2026-10-13) for all changes since V0.5.1, including earlier verifier improvements. Existing projects should review the changes and upgrade from a pinned release while preserving local customizations.
 
 ## How it works
 
@@ -152,7 +150,7 @@ You need a coding-agent environment, such as Codex or Claude Code, that can read
 Clone this repository into a separate directory using the repository URL from GitHub's **Code** button:
 
 ```sh
-git clone --branch v0.5.1 --depth 1 REPOSITORY_URL playbook
+git clone --branch v0.5.2 --depth 1 REPOSITORY_URL playbook
 ```
 
 Replace `REPOSITORY_URL` with the copied URL. Keep this checkout at the release tag so development changes cannot silently change the instructions your project uses.

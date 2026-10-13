@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## V0.5.2 — 2026-10-13
+
 - Accept the measured checkpoint/guidance improvements after complete reference
   qualification and independent correctness review. Retain the 512-object
   fixture threshold and stop further performance experiments; preserve the
