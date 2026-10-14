@@ -63,7 +63,7 @@ If you need archive content for an incident investigation, ask the human to surf
 ## Playbook configuration
 
 - **Session entry point:** read `{path-to-playbook}/v0.5/AGENT-DIGEST.md` first each session — stage map, routing rules, and hard rules in one read.
-- **Playbook version:** V0.5 (`{path-to-playbook}/v0.5/`)
+- **Playbook edition:** V0.5 (`{path-to-playbook}/v0.5/`); see `.playbook-state.yml` for the verified installed release
 - **Intrusion level:** nudge   *# silent | nudge | insist*
 - **Cadence config:** `./playbook-cadences.yml`
 - **State file:** `./.playbook-state.yml`

@@ -235,6 +235,18 @@ _STATE_TOP_FIELDS = {
         lambda v: v is None or (isinstance(v, str) and re.fullmatch(r"V\d+\.\d+\.\d+", v)),
         'null or a version string such as "V0.5.0"',
     ),
+    "playbook_release": (
+        lambda v: v is None or (isinstance(v, str) and re.fullmatch(r"v\d+\.\d+\.\d+", v)),
+        'null or an exact release tag such as "v0.5.2"',
+    ),
+    "playbook_release_tag_object": (
+        lambda v: v is None or (isinstance(v, str) and re.fullmatch(r"[0-9a-f]{40}", v)),
+        "null or a 40-character lowercase Git SHA",
+    ),
+    "playbook_release_commit": (
+        lambda v: v is None or (isinstance(v, str) and re.fullmatch(r"[0-9a-f]{40}", v)),
+        "null or a 40-character lowercase Git SHA",
+    ),
     "last_upgraded": (_is_datetime_or_null, "null or an ISO 8601 date"),
     "prereqs_required": (_is_bool_or_null, "true or false"),
 }

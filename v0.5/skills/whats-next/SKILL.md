@@ -9,6 +9,8 @@ description: Route the next playbook stage from project state and cadence eviden
 
 A short recommendation in this shape:
 
+Before the recommendation, show `Playbook edition: {playbook_version}; installed release: {playbook_release}` from `.playbook-state.yml`. Display a missing or null release as `unknown (unverified source)`; do not infer it from the edition stamp, directory name, or changelog and do not call the project behind on that evidence alone.
+
 > **Next:** {stage name} — {one-line description}
 >
 > **Why:** {rationale, citing the state or cadence rule that fired}

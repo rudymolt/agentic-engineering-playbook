@@ -1,4 +1,5 @@
 import hashlib
+import re
 import subprocess
 import sys
 import tempfile
@@ -23,6 +24,7 @@ class PublicTransitionTest(unittest.TestCase):
             text = text.replace("/v0.5/", "/v0.4/")
             if name == ".playbook-state.yml":
                 text = text.replace("playbook_version: null", "playbook_version: V0.4.2", 1)
+                text = re.sub(r"(?m)^playbook_release(?:_[a-z_]+)?:.*\n", "", text)
             (project / name).write_text(text)
         bases = {
             "CLAUDE.md": f"The full playbook V0.4 is at `{old_root}/v0.4/`.\n",
@@ -62,6 +64,9 @@ class PublicTransitionTest(unittest.TestCase):
             self.assertNotIn("manual review:", first.stdout)
             state = (project / ".playbook-state.yml").read_text()
             self.assertIn("playbook_version: V0.5.0", state)
+            self.assertIn("playbook_release: null", state)
+            self.assertIn("playbook_release_tag_object: null", state)
+            self.assertIn("playbook_release_commit: null", state)
             for name in ("CLAUDE.md", "AGENTS.md", ".playbook-state.yml", "playbook-cadences.yml"):
                 text = (project / name).read_text()
                 self.assertNotIn(str(old_root), text, name)
@@ -102,6 +107,7 @@ class PublicTransitionTest(unittest.TestCase):
             result = self.run_upgrade(project)
             self.assertIn("manual review:", result.stdout)
             self.assertIn("playbook_version: V0.4.2", (project / ".playbook-state.yml").read_text())
+            self.assertIn("playbook_release: null", (project / ".playbook-state.yml").read_text())
             self.assertIn("Project-specific playbook", claude.read_text())
 
 

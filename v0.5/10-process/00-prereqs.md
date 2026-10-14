@@ -8,12 +8,12 @@
 
 ## Choose the path
 
-Take the **cold path** when `prereqs_required` is true or missing; `last_run.prereqs`, `decisions.capability_profile`, `capability_routes`, or `capability_routes.verified_at` is missing; the recorded playbook version is behind; a required file is missing; the host/runtime/tool installation changed; the project changed capability profile; or the previous prereq run failed. Otherwise take the warm path. Bootstrap and `/ai-playbook-upgrade-project` set `prereqs_required: true`, so even a same-day upgrade cannot take the warm path accidentally.
+Take the **cold path** when `prereqs_required` is true or missing; `last_run.prereqs`, `decisions.capability_profile`, `capability_routes`, or `capability_routes.verified_at` is missing; the recorded playbook edition is behind the installed edition; a required file is missing; the host/runtime/tool installation changed; the project changed capability profile; or the previous prereq run failed. Before taking the warm path, run `python3 {playbook-path}/v0.5/scripts/release_provenance.py {playbook-path} --local-check {playbook_release} --tag-object {playbook_release_tag_object} --commit {playbook_release_commit}` when all three recorded values exist. This offline check requires a clean checkout still at the exact verified tag object and commit; failure or missing proof takes the cold path. An unknown release is reported as unknown, not as an older release. Bootstrap and `/ai-playbook-upgrade-project` set `prereqs_required: true` when an installation changes, so even a same-day upgrade cannot take the warm path accidentally.
 
 ## Warm path — normal session
 
 1. Confirm the nine required root entries still exist: `CLAUDE.md`, `AGENTS.md`, `GLOSSARY.md`, `.playbook-state.yml`, `playbook-cadences.yml`, `planning/`, `archive/`, `planning/STATUS.md`, `archive/STATUS.md`.
-2. Confirm `playbook_version` is current and no cold-path trigger above fired.
+2. Confirm `playbook_version` matches the installed edition (V0.5.0 for this edition), the offline checkout check passed, and no cold-path trigger above fired. Name `playbook_release` separately when reporting status.
 3. Confirm every capability needed by today's work still has a non-empty route under `capability_routes`; read [`prereqs-capability-profiles.md`](prereqs-capability-profiles.md) only when a route is unclear.
 4. Apply Check D for high-stakes work and run the three cheap Check E security checks.
 5. Set `last_run.prereqs` to now and recompute the status block; leave `capability_routes.verified_at` unchanged because only the cold audit rewrites the inventory.
@@ -131,7 +131,7 @@ Verify the nine required root entries from the warm path. Confirm `ci-gates.md` 
 
 A missing required entry does not pass by inspection alone: restore uncustomised boilerplate through bootstrap or the upgrade tiers while preserving project content. Halt when restoration needs a human-owned choice that has not been made.
 
-Compare `playbook_version` with the newest `CHANGELOG.md` entry. If behind, offer `/ai-playbook-upgrade-project`; an upgrade may wait until a clean boundary, but the nudge is recorded.
+Compare `playbook_version` with the installed **edition** (V0.5.0 for this edition), never with a changelog release heading. For the **installed release**, run `python3 {playbook-path}/v0.5/scripts/release_provenance.py {playbook-path}` against the selected checkout and compare its verified release tag, tag object, and commit with `playbook_release`, `playbook_release_tag_object`, and `playbook_release_commit`. If any value differs, offer `/ai-playbook-upgrade-project` for a reviewed installation change; an upgrade may wait until a clean boundary, but the nudge is recorded. If proof is unavailable, report `installed release: unknown (unverified source)` and ask the project owner to check its pinned checkout. An unverified source needs the cold prerequisite path on later sessions until release provenance is established; this protects against silent in-place checkout changes. Do not infer a release from the path, changelog, or edition stamp, and do not call the project behind on that evidence alone. Ordinary warm sessions use the local check without re-querying the public tag.
 
 For UI projects, verify `DESIGN-GLOSSARY.md` (or a split `design-glossary/`), `ui-kitchen-sink.html`, and `frontend-design-language-guide.html`. A missing UI artefact routes to the bootstrap choice in `../20-frontend-track.md` before UI implementation. A recorded `decisions.no_ui: true` skips this branch.
 
@@ -179,6 +179,6 @@ the comparison and source review do not qualify installed skills or upgrade a ho
 - All checks pass, user described a feature → open `01-align.md`
 - All checks pass, user reported a bug → open `11-debug.md`
 - All checks pass, user said ship/deploy → open `10-ship-and-deploy.md`
-- Project behind the playbook version → offer `/ai-playbook-upgrade-project`
+- Project behind the installed edition or verified release → offer `/ai-playbook-upgrade-project`
 - Required capability has no route → halt and name the missing lane
 - Unsure → run `/whats-next`

@@ -79,7 +79,7 @@ python3 PUBLIC_STABLE_CHECKOUT/v0.5/scripts/compute-status.py PROJECT --check
 
 The upgrader uses the project's recorded pristine bases to three-way merge managed files. It must preserve project-written content, retarget active playbook instructions from the old checkout to the public checkout, and produce a no-change second run. It updates the state and cadence file references without discarding project counters, decisions, or timestamps. A conflict, edited/missing base, or remaining old checkout reference produces `manual review:` and blocks the V0.5 stamp. Resolve the exact file, then rerun; use `--adopt-current FILE` only after accepting that file's final content.
 
-After a clean run, verify that project `CLAUDE.md` and project `AGENTS.md` point at the public stable checkout, `.playbook-state.yml` says `V0.5.0`, `prereqs_required: true`, and the second run changes nothing. Run stage 00's cold path before resuming feature work. The project owner decides when to remove the old checkout; the upgrade tool does not delete it.
+After a clean run, verify that project `CLAUDE.md` and project `AGENTS.md` point at the public stable checkout, `.playbook-state.yml` says `playbook_version: V0.5.0` for the edition and records the verified installed release separately (for example `playbook_release: v0.5.2`), `prereqs_required: true`, and the second run changes nothing. If release proof is unavailable, `playbook_release: null` means unknown; do not infer an older release from `V0.5.0`. Run stage 00's cold path before resuming feature work. The project owner decides when to remove the old checkout; the upgrade tool does not delete it.
 
 ## Development checkout
 

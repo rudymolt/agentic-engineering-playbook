@@ -3,7 +3,8 @@
 > Evidence from a real project running playbook v0.5, for the playbook maintainer. Fill this in at a retro (the retro template links here) or whenever one of the proof events below happens. When complete, copy this file back to the **playbook repo** at `analysis/field-reports/{YYYY-MM-DD}-{project-slug}.md` — the playbook is copied into project repos, so evidence only travels back if a human carries it. Match the report's length to the evidence — cover what happened, then stop; no filler sections, redundant summaries, or boilerplate.
 
 - **Project:** {name / one-line description; private details may be redacted}
-- **Playbook version:** {playbook_version from .playbook-state.yml}
+- **Playbook edition:** {playbook_version from .playbook-state.yml}
+- **Installed release:** {playbook_release from .playbook-state.yml, or unknown if null}
 - **Period covered:** {start} – {end}
 - **Slices shipped this period:** {n}
 

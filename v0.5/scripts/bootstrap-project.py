@@ -14,7 +14,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import template_base  # noqa: E402
-from playbook_state import validate_cadences, validate_state  # noqa: E402
+import release_provenance  # noqa: E402
+from playbook_state import parse_scalar, validate_cadences, validate_state  # noqa: E402
 
 ROOT_TEMPLATE_FILES = {
     "CLAUDE.md": "CLAUDE.md",
@@ -276,6 +277,8 @@ def bootstrap_project(
     info = project.stat()
     report.project_identity = {"resolved": str(project), "device": info.st_dev, "inode": info.st_ino}
     version = current_version(playbook_root)
+    release_evidence = release_provenance.verified_release_evidence(playbook_root)
+    release = release_evidence[0] if release_evidence else None
 
     state_path = project / ".playbook-state.yml"
     existing_state = state_path.read_text() if state_path.exists() else None
@@ -291,6 +294,18 @@ def bootstrap_project(
         raise ValueError(
             "project already records another playbook version; use /ai-playbook-upgrade-project"
         )
+    if existing_state is not None and state_version(existing_state) == version:
+        recorded_fields = []
+        for key in ("playbook_release", "playbook_release_tag_object", "playbook_release_commit"):
+            recorded = re.search(rf"(?m)^{key}:\s*([^\s#]+)", existing_state)
+            recorded_fields.append(
+                parse_scalar(recorded.group(1)) if recorded else None
+            )
+        if tuple(recorded_fields) != (release_evidence or (None, None, None)):
+            raise ValueError(
+                "installed Playbook release proof differs or cannot be verified; "
+                "use /ai-playbook-upgrade-project for a reviewed patch-release migration"
+            )
 
     for source_name, target_name in ROOT_TEMPLATE_FILES.items():
         if target_name == ".playbook-state.yml" and state_path.exists():
@@ -356,6 +371,21 @@ def bootstrap_project(
             state = replace_null_nested_state_scalar(state, key, today.isoformat())
         if not report.manual_reviews:
             state = replace_state_scalar(state, "playbook_version", version)
+            release_fields = {
+                "playbook_release": release,
+                "playbook_release_tag_object": release_evidence[1] if release_evidence else None,
+                "playbook_release_commit": release_evidence[2] if release_evidence else None,
+            }
+            for key, value in release_fields.items():
+                rendered = f'"{value}"' if value and key != "playbook_release" else (value or "null")
+                if re.search(rf"(?m)^{key}:", state):
+                    state = replace_state_scalar(state, key, rendered)
+                elif "last_upgraded:" in state:
+                    state = state.replace(
+                        "last_upgraded:", f"{key}: {rendered}\nlast_upgraded:", 1
+                    )
+                else:
+                    raise ValueError(f"cannot place {key} in customized state")
             state = replace_state_scalar(state, "last_upgraded", today.isoformat())
         record_write(state_path, state.encode(), report)
 
@@ -391,6 +421,12 @@ def print_plan(project: Path, playbook_root: Path, *, ui: str, ci: str) -> None:
     if not templates.is_dir():
         raise FileNotFoundError(f"playbook templates not found: {templates}")
     print("Bootstrap plan:")
+    evidence = release_provenance.verified_release_evidence(playbook_root)
+    release = evidence[0] if evidence else None
+    print(
+        f"Playbook edition: {current_version(playbook_root)}; installed release: "
+        f"{release or 'unknown (source tag not verified)'}"
+    )
     for target_name in ROOT_TEMPLATE_FILES.values():
         action = "preserve/review" if (project / target_name).exists() else "create"
         print(f"{action}: {target_name}")
@@ -493,6 +529,13 @@ def main(argv: list[str] | None = None) -> int:
     if report.manual_reviews:
         print("Safe bootstrap changes applied, but project setup is incomplete.")
         return 2
+    state = (args.project / ".playbook-state.yml").read_text()
+    installed_release = re.search(r"(?m)^playbook_release:\s*([^\s#]+)", state)
+    release_value = installed_release.group(1) if installed_release else "null"
+    print(
+        f"Playbook edition: {current_version(args.playbook_path)}; installed release: "
+        f"{release_value if release_value != 'null' else 'unknown (source tag not verified)'}"
+    )
     print("Playbook files initialized; run stage 00 cold path before feature work.")
     return 0
 

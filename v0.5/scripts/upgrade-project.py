@@ -17,10 +17,12 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import template_base  # noqa: E402
+import release_provenance  # noqa: E402
 import glossary_migration  # noqa: E402
 from playbook_state import (  # noqa: E402
     insert_after_line,
     insert_before,
+    parse_scalar,
     parse_top_level_list,
     parse_top_level_map,
     replace_top_level_scalar,
@@ -1089,6 +1091,10 @@ def upgrade_project(
     project = project.resolve()
     today = today or date.today()
     report = UpgradeReport()
+    verified_evidence = release_provenance.verified_release_evidence(
+        Path(__file__).resolve().parents[2]
+    )
+    verified_release = verified_evidence[0] if verified_evidence else None
 
     required = (".playbook-state.yml", "AGENTS.md", "CLAUDE.md")
     missing = [name for name in required if not (project / name).exists()]
@@ -1099,6 +1105,28 @@ def upgrade_project(
     original_state = state_path.read_text()
     starting_version_match = re.search(r"(?m)^playbook_version:\s*([^\s#]+)", original_state)
     starting_version = starting_version_match.group(1) if starting_version_match else "unknown"
+    starting_release = parse_scalar(top_level_scalar_value(original_state, "playbook_release") or "null")
+    recorded_release = starting_release if isinstance(starting_release, str) else None
+    recorded_tag_object = parse_scalar(
+        top_level_scalar_value(original_state, "playbook_release_tag_object") or "null"
+    )
+    recorded_commit = parse_scalar(
+        top_level_scalar_value(original_state, "playbook_release_commit") or "null"
+    )
+    starting_proof = (
+        recorded_release,
+        recorded_tag_object if isinstance(recorded_tag_object, str) else None,
+        recorded_commit if isinstance(recorded_commit, str) else None,
+    )
+    previous_tag = re.fullmatch(r"v(\d+)\.(\d+)\.(\d+)", recorded_release or "")
+    destination_tag = re.fullmatch(r"v(\d+)\.(\d+)\.(\d+)", verified_release or "")
+    if previous_tag and destination_tag and (
+        tuple(map(int, destination_tag.groups())) < tuple(map(int, previous_tag.groups()))
+    ):
+        raise ValueError(
+            f"verified destination {verified_release} is older than recorded {recorded_release}; "
+            "refusing to downgrade the installed Playbook release"
+        )
     starting_upgrade_date = top_level_scalar_value(original_state, "last_upgraded")
     needs_upgrade_date_repair = starting_upgrade_date in {None, "", "null", "~"}
     previous_version = re.fullmatch(r"V0\.4\.(\d+)", starting_version)
@@ -1305,7 +1333,30 @@ def upgrade_project(
     # until every required manual review is resolved.
     target_version = CURRENT_VERSION if not report.manual_reviews else starting_version
     migrated_state = replace_top_level_scalar(migrated_state, "playbook_version", target_version)
-    certification_changed = target_version != starting_version or needs_cold_path
+    target_proof = (verified_evidence or (None, None, None)) if not report.manual_reviews else (None, None, None)
+    for key, value in zip(
+        ("playbook_release", "playbook_release_tag_object", "playbook_release_commit"),
+        target_proof,
+    ):
+        rendered = f'"{value}"' if value and key != "playbook_release" else (value or "null")
+        if re.search(rf"(?m)^{key}:", migrated_state):
+            migrated_state = replace_top_level_scalar(migrated_state, key, rendered)
+        else:
+            migrated_state, found = insert_before(
+                migrated_state, "last_upgraded:", f"{key}: {rendered}\n"
+            )
+            if not found:
+                migrated_state, found = insert_before(
+                    migrated_state, "prereqs_required:", f"{key}: {rendered}\n"
+                )
+                if not found:
+                    raise RuntimeError(f"cannot place {key} in customized state")
+    certification_changed = (
+        target_version != starting_version or needs_cold_path
+        or target_proof != starting_proof
+    )
+    if target_proof != starting_proof:
+        migrated_state = replace_top_level_scalar(migrated_state, "prereqs_required", "true")
     if (not report.manual_reviews or identity_only) and (
         certification_changed or needs_upgrade_date_repair
     ):
@@ -1368,6 +1419,12 @@ def main(argv: list[str] | None = None) -> int:
     if report.manual_reviews:
         print("Safe migrations applied, but the project was not certified current.")
         return 2
+    state = (args.project / ".playbook-state.yml").read_text()
+    installed_release = top_level_scalar_value(state, "playbook_release")
+    print(
+        f"Playbook edition: {top_level_scalar_value(state, 'playbook_version')}; "
+        f"installed release: {installed_release if installed_release not in {None, 'null', '~'} else 'unknown (source tag not verified)'}"
+    )
     print("Safe migrations applied; run stage 00 cold path to certify the project.")
     return 0
 
