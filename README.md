@@ -35,10 +35,11 @@ The human owns goals, acceptance criteria, and consequential decisions. The agen
 
 ## What's new in V0.5.2
 
-- **Verify with less repeated work.** Safe fixture repacking and independent recovery seed restoration reduce checkpoint verification cost. Equivalent Unicode lookup speeds up guidance checks while keeping fresh admission. [Accepted measurements](bench/test-runtime/CHECKPOINT-PERFORMANCE.md)
-- **Keep failure evidence useful and bounded.** The profiler retains supported failure identities and public source frames while preserving native callbacks, exits and reports. Unsupported metadata stays unknown.
-- **Preserve correctness when optimizing.** Validation reuse, proposal retention and the latest 256-object repack experiment were rejected. The maintainer accepted the verified gains and stopped further performance experiments; four original speed targets remain unmet.
-- **Keep maintainer merges private.** A recorded human confirmation is reused only for the same repository/account pair, with noreply author and committer checks after every merge.
+This release makes the Playbook's own verification faster and its failure reports more useful for maintainers.
+
+- **Faster checks while improving the Playbook.** Checkpoint test files ran about 5% faster, and guidance checks ran 30% faster in the accepted measurements. The tests still exercise the same scenarios. Four original speed targets remain unmet, so the maintainer has stopped further performance experiments for this release. [See the measurements](bench/test-runtime/CHECKPOINT-PERFORMANCE.md).
+- **More useful failure reports.** Failed runs retain supported error details and source locations without changing how the tests run. Reports keep private or unsupported details out.
+- **Fewer repeated privacy confirmations for maintainer merges.** A recorded confirmation of the GitHub email privacy setting can be reused for the same repository and account. After each merge, every new commit is still checked for `noreply` author and committer addresses.
 
 See the [V0.5.2 changelog](v0.5/CHANGELOG.md#v052--2026-10-13) for all changes since V0.5.1, including earlier verifier improvements. Existing projects should review the changes and upgrade from a pinned release while preserving local customizations.
 
