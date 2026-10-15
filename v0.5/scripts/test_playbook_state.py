@@ -20,17 +20,29 @@ empty_list: []
 class TypedLayerTest(unittest.TestCase):
     def test_installed_release_field_is_optional_for_old_state_and_typed_when_present(self):
         self.assertFalse(any(p.path == "playbook_release" for p in ps.validate_state(STATE)))
-        self.assertFalse(any(
+        self.assertTrue(any(
             p.path == "playbook_release" for p in ps.validate_state(STATE + "playbook_release: v0.5.2\n")
         ))
         self.assertTrue(any(
             p.path == "playbook_release" for p in ps.validate_state(STATE + "playbook_release: latest\n")
         ))
         self.assertFalse(any(
-            p.path in {"playbook_release_tag_object", "playbook_release_commit"}
+            p.path in {"playbook_release", "playbook_release_tag_object", "playbook_release_commit"}
             for p in ps.validate_state(
-                STATE + "playbook_release_tag_object: " + "a" * 40
+                STATE + "playbook_release: v0.5.2\nplaybook_release_tag_object: " + "a" * 40
                 + "\nplaybook_release_commit: " + "b" * 40 + "\n"
+            )
+        ))
+        self.assertTrue(any(
+            p.path == "playbook_release" for p in ps.validate_state(
+                STATE + "playbook_release: v0.5.2\nplaybook_release_tag_object: "
+                + "a" * 40 + "\nplaybook_release_commit: null\n"
+            )
+        ))
+        self.assertTrue(any(
+            p.path == "playbook_release" for p in ps.validate_state(
+                STATE + "playbook_release: null\nplaybook_release_tag_object: "
+                + "a" * 40 + "\nplaybook_release_commit: null\n"
             )
         ))
         self.assertTrue(any(

@@ -38,7 +38,8 @@ status:
 # patch releases; do not compare it with a release heading in CHANGELOG.md.
 playbook_version: null   # e.g. "V0.5.0"
 # Exact installed release, when a clean checkout's annotated tag matches the
-# public repository. Null means release provenance could not be verified.
+# public repository. Null means release provenance could not be verified. The
+# release and both proof hashes must be populated together, or all be null.
 playbook_release: null   # e.g. "v0.5.2"; null is displayed as unknown
 playbook_release_tag_object: null  # verified annotated tag object SHA, for offline warm checks
 playbook_release_commit: null      # verified checkout commit SHA, for offline warm checks

@@ -591,6 +591,23 @@ def validate_state(text: str) -> list[ValidationProblem]:
             problems.append(ValidationProblem(
                 block["line"], key, f"got {value!r}", f"expected {expectation}"))
 
+    # Older project states omit release fields entirely. Once present, release
+    # identity must be complete: a tag name alone is not evidence of an install.
+    release_keys = (
+        "playbook_release", "playbook_release_tag_object", "playbook_release_commit"
+    )
+    release_values = {
+        key: parse_scalar(blocks[key]["inline"]) if key in blocks else None
+        for key in release_keys
+    }
+    populated = sum(value is not None for value in release_values.values())
+    if populated not in {0, len(release_keys)}:
+        line = next(blocks[key]["line"] for key in release_keys if key in blocks)
+        problems.append(ValidationProblem(
+            line, "playbook_release", "incomplete release proof",
+            "set the release, tag object, and commit together, or leave all three null"
+        ))
+
     schema_version = parse_scalar(blocks["schema_version"]["inline"]) \
         if "schema_version" in blocks else None
     if schema_version == 3:

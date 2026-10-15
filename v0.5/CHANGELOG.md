@@ -6,7 +6,9 @@
   release in bootstrap, upgrades, status, and stage 00. Keep the release unknown
   when a clean exact public tag cannot be proved, and store the verified tag
   object and commit for offline warm-path drift detection. Preserve existing
-  project customisations and same-edition migration behavior.
+  project customisations and same-edition migration behavior. State validation
+  requires the release and both proof hashes together, so an unproven tag name
+  cannot appear as an installed release.
 
 *Why — edition and release identity:* comparing the fixed edition stamp with a
   newer changelog release made current projects appear outdated. Separate

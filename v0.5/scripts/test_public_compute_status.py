@@ -53,13 +53,25 @@ class PublicStatusTest(unittest.TestCase):
             state = project / ".playbook-state.yml"
             state.write_text(state.read_text().replace(
                 "playbook_version: null", "playbook_version: V0.5.0", 1
-            ).replace("playbook_release: null", "playbook_release: v0.5.2", 1))
+            ).replace("playbook_release: null", "playbook_release: v0.5.2", 1)
+                .replace("playbook_release_tag_object: null", 'playbook_release_tag_object: "' + "a" * 40 + '"', 1)
+                .replace("playbook_release_commit: null", 'playbook_release_commit: "' + "b" * 40 + '"', 1))
             MODULE.recompute_project(project, NOW)
             output = io.StringIO()
             with redirect_stdout(output):
                 self.assertEqual(MODULE.main([str(project), "--check"], NOW), 0)
             self.assertIn("Playbook edition: V0.5.0; installed release: v0.5.2", output.getvalue())
-            state.write_text(state.read_text().replace("playbook_release: v0.5.2", "playbook_release: null", 1))
+            incomplete = state.read_text().replace(
+                'playbook_release_commit: "' + "b" * 40 + '"',
+                "playbook_release_commit: null", 1,
+            )
+            state.write_text(incomplete)
+            ok, problems = MODULE.check_project(project, NOW)
+            self.assertFalse(ok)
+            self.assertTrue(any("incomplete release proof" in problem for problem in problems))
+            state.write_text(state.read_text().replace("playbook_release: v0.5.2", "playbook_release: null", 1)
+                             .replace('playbook_release_tag_object: "' + "a" * 40 + '"', "playbook_release_tag_object: null", 1)
+                             .replace('playbook_release_commit: "' + "b" * 40 + '"', "playbook_release_commit: null", 1))
             output = io.StringIO()
             with redirect_stdout(output):
                 self.assertEqual(MODULE.main([str(project), "--check"], NOW), 0)
