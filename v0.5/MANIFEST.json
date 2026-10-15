@@ -13,8 +13,8 @@
     },
     {
       "path": "10-process/00-prereqs.md",
-      "sha256": "8010fdb309c3749b0b1dd137d00a30c1589d7ccaa38b56a7b0af4d51ddbb810c",
-      "size": 14085
+      "sha256": "3af158861e6e18f6c1618e7c726b4adf980b28a34d1c7a52e416642dc54ecb32",
+      "size": 15642
     },
     {
       "path": "10-process/01-align.html",
@@ -178,8 +178,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "ef0fbab8f3720e248ce495b857e90c61e543f8283f9680593b0ecdd037a2f467",
-      "size": 61580
+      "sha256": "3e731812abe1dbdb2338fa017710f93f6f08b8e250348901a19b44dec639a093",
+      "size": 62366
     },
     {
       "path": "MAINTENANCE.md",
@@ -188,8 +188,8 @@
     },
     {
       "path": "README.md",
-      "sha256": "ddf7dc7c2e0a3e164ac01123ca728c111f654dd27c8b8048838c9b586accf76d",
-      "size": 6089
+      "sha256": "84a3be099c8ddb144bd0816f5d1c0f07eb71f3c804e69cef7ef5623e9d5a625f",
+      "size": 6584
     },
     {
       "path": "assets/playbook-docs.css",
@@ -1038,8 +1038,8 @@
     },
     {
       "path": "scripts/bootstrap-project.py",
-      "sha256": "25aa7535c4c07726500afabdab2b1073899ba1f99a008fd99a46008fa6c72553",
-      "size": 20777
+      "sha256": "1f3e62a9a51b528d34b8aec1fedf694349c9ec46c23d5f8bdd7be6a9b5ef07fe",
+      "size": 23246
     },
     {
       "path": "scripts/bootstrap_seed.py",
@@ -1093,8 +1093,8 @@
     },
     {
       "path": "scripts/compute-status.py",
-      "sha256": "311d6fa35fd53954f0a0180a4c2d5d067e211d8f3ea428c3d0321b05b8a64617",
-      "size": 27723
+      "sha256": "fec0096ebab1564a8d960ab5d375cf83685cdba2087af326b3621bcb8fc7bbf5",
+      "size": 28467
     },
     {
       "path": "scripts/configure-playbook.py",
@@ -1183,8 +1183,13 @@
     },
     {
       "path": "scripts/playbook_state.py",
-      "sha256": "8e92ea506596869a57d85019761a252499609feb02c996c92f1f0ab5bd76a22d",
-      "size": 30640
+      "sha256": "c2a07d9f3b821679ef8b8ba4cad2fdf0ca75887b8cc6eb4132aa7f8d90382fc2",
+      "size": 32014
+    },
+    {
+      "path": "scripts/release_provenance.py",
+      "sha256": "665db81f9607704e51071a8dc87c57572bd345ad56c24fbb31ee23eb4829031b",
+      "size": 6138
     },
     {
       "path": "scripts/remove-project.py",
@@ -1238,8 +1243,8 @@
     },
     {
       "path": "scripts/test_bootstrap_project.py",
-      "sha256": "f298586072d922874f8399d143353ff849d6b7d84c424b62edc122dd2e22ed17",
-      "size": 18283
+      "sha256": "364b249a69a5e383bd9994e4858d4c656e855a3d988ad28e30056b3d5cb8efc2",
+      "size": 24829
     },
     {
       "path": "scripts/test_bootstrap_seed_routes.py",
@@ -1388,13 +1393,13 @@
     },
     {
       "path": "scripts/test_playbook_state.py",
-      "sha256": "f478cb49e5db2e5aad79d0ec5f7a4b85300cb4ecc9c2670ce8372b11c689a9f2",
-      "size": 12734
+      "sha256": "5f08527f3a875d773e4552e34cf98ed7b35b2c265e886781ec7fef2027b2c4fa",
+      "size": 14280
     },
     {
       "path": "scripts/test_public_compute_status.py",
-      "sha256": "d69661095109d9621240f330df96babf05eb8b7b0efd3d3f5f396cb7dc6b7b34",
-      "size": 2286
+      "sha256": "911e721224178846aa060681df02856dd57050b78d8af8d0de90a610273b8823",
+      "size": 4329
     },
     {
       "path": "scripts/test_public_content.py",
@@ -1403,8 +1408,13 @@
     },
     {
       "path": "scripts/test_public_upgrade_transition.py",
-      "sha256": "8957fe50d8ecc71f3fe554f914949ed3e5d920b303f735fc53fda2edb2c0f169",
-      "size": 5388
+      "sha256": "5d767d93e54af66aeda5146bf7f5db5a81cd808b1c0796fd99447b494199614b",
+      "size": 5776
+    },
+    {
+      "path": "scripts/test_release_provenance.py",
+      "sha256": "7e84a544eb320f4cf8be06639c87b37ed76a9b2a760a8be9202da44a200b0fc0",
+      "size": 4704
     },
     {
       "path": "scripts/test_rename_upstream_skill.py",
@@ -1473,8 +1483,8 @@
     },
     {
       "path": "scripts/upgrade-project.py",
-      "sha256": "d17803a69b1e65fc0652afdd4f270f6559e0c961a235dab5481b6018c94ff562",
-      "size": 60562
+      "sha256": "78781036bf14570de1c5454ebfcbd3ff3fd11bb9c25b4e6e6e216c9412612f9d",
+      "size": 63486
     },
     {
       "path": "scripts/upstream_registry.py",
@@ -1518,8 +1528,8 @@
     },
     {
       "path": "skills/ai-playbook-bootstrap-project/SKILL.md",
-      "sha256": "2e431ecd03fef64b8bc35d62e30853891aefeb0224bb2e6607dc143aded89378",
-      "size": 8668
+      "sha256": "c5674bcbe545632762581e329e145539694d389a5c11c01cc04db0a212d908a9",
+      "size": 8784
     },
     {
       "path": "skills/ai-playbook-bootstrap-project/agents/openai.yaml",
@@ -1578,18 +1588,18 @@
     },
     {
       "path": "skills/ai-playbook-upgrade-project/MIGRATIONS.md",
-      "sha256": "b2878972d0e9a5c76bfe1554b1013d7c4a1fcd48125344f294c1f70e480449b7",
-      "size": 6645
+      "sha256": "67fe4359d3f82feede09d376d85ab51753b672b40cd840a296290537ffa28b68",
+      "size": 6892
     },
     {
       "path": "skills/ai-playbook-upgrade-project/SKILL.md",
-      "sha256": "2c4e55d70a0e4dac88915d89038dae19297b1e0e9a2dac7a6e420bbd1407da47",
-      "size": 3700
+      "sha256": "a882f3b9c19ddc5e829e66a31a23ff2988806408bc085aa445f6442f6dd6dbdf",
+      "size": 4327
     },
     {
       "path": "skills/ai-playbook-upgrade-project/agents/openai.yaml",
-      "sha256": "297fd4a31ed9c137d05dbc39682e73ba253687518195518e5c853c7f45f5fa23",
-      "size": 287
+      "sha256": "e4cfbf9337a389fcaf76d48536c12135a0945e817dc75e710787b55424001e23",
+      "size": 336
     },
     {
       "path": "skills/ai-playbook-verification-harness/NOTICE",
@@ -1688,8 +1698,8 @@
     },
     {
       "path": "skills/whats-next/SKILL.md",
-      "sha256": "c5b5474d2ebe49aa5079b9a733f069e2a280d23c99b4708a3106d7cf25af2118",
-      "size": 12463
+      "sha256": "d93126eab410221b81f302e0602a506c64f242287e11bc53f6b59ced2fe752f0",
+      "size": 12798
     },
     {
       "path": "skills/whats-next/agents/openai.yaml",
@@ -1703,8 +1713,8 @@
     },
     {
       "path": "templates/.playbook-state.yml",
-      "sha256": "cc30bbc0c8041a343e805c582055c85170427be720f8f604f0675d3d47691042",
-      "size": 8672
+      "sha256": "84214974746c1b7bc6f69b8570f1082dfb463deaed348ec818e8a6e71d0f4ae7",
+      "size": 9073
     },
     {
       "path": "templates/AGENTS.md",
@@ -1713,8 +1723,8 @@
     },
     {
       "path": "templates/CLAUDE.md",
-      "sha256": "927b1fd23e24e4c2810c6d6c49f05ac83cd4ba3f1bd4986f3fe3fe91ea4325c0",
-      "size": 8733
+      "sha256": "a092d5c5b67ee44cea3e3b84b36dba1c5c1a483081c0a50c238a4e1c071b5264",
+      "size": 8795
     },
     {
       "path": "templates/DESIGN-GLOSSARY.md",
@@ -1753,8 +1763,8 @@
     },
     {
       "path": "templates/field-report.md",
-      "sha256": "4460c3aaa36ee76c29ef256a85a0c42d5eed285cda5c344b52ee04fa0ae9cc1a",
-      "size": 3807
+      "sha256": "8e73feff0cfeced02a61ccbb923e724416e41533c72c1b3eeaf465ab9b45f20e",
+      "size": 3896
     },
     {
       "path": "templates/frontend-design-language-guide.html",

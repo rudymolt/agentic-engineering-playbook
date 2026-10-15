@@ -1,8 +1,11 @@
 # Planning status
 
-active_features: 4
+active_features: 5
 
 ## Active features
+
+[Edition and installed release](edition-release-identity/slices.md) — aligned
+and specified; implementation in progress on a separate branch.
 
 [Verifier performance](verifier-performance/slices.md) — aligned and specified; five
 ordered slices implemented; the measured slice 5 improvement is accepted,

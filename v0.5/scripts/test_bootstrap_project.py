@@ -5,10 +5,13 @@ import tempfile
 import unittest
 from datetime import date
 from pathlib import Path
+from unittest.mock import patch
 
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 PLAYBOOK_ROOT = SCRIPT_DIR.parents[1]
+PROOF_051 = ("v0.5.1", "1" * 40, "ab" * 20)
+PROOF_052 = ("v0.5.2", "b2" * 20, "bc" * 20)
 spec = importlib.util.spec_from_file_location("bootstrap_project", SCRIPT_DIR / "bootstrap-project.py")
 bootstrap_project = importlib.util.module_from_spec(spec)
 assert spec.loader is not None
@@ -40,6 +43,7 @@ class BootstrapProjectTest(unittest.TestCase):
             self.assertIn(
                 f"playbook_version: {bootstrap_project.current_version(PLAYBOOK_ROOT)}", state
             )
+            self.assertIn("playbook_release: null", state)
             self.assertIn("planning: { model_id: gpt-6.1-sol, runner: codex, reasoning: high }", state)
             self.assertIn("implementation: { model_id: gpt-6.1-sol, runner: codex, reasoning: medium }", state)
             self.assertIn("verification: { model_id: gpt-6.1-sol, runner: codex, reasoning: high }", state)
@@ -64,7 +68,7 @@ class BootstrapProjectTest(unittest.TestCase):
             self.assertIn(".playbook-routing/", (project / ".gitignore").read_text())
             claude = (project / "CLAUDE.md").read_text()
             self.assertIn(str(PLAYBOOK_ROOT), claude)
-            self.assertIn("Playbook version:** V0.5", claude)
+            self.assertIn("Playbook edition:** V0.5", claude)
             self.assertIn("The full playbook V0.5", claude)
             self.assertNotIn("{path-to-playbook}", claude)
             self.assertNotIn("{playbook-path}", (project / "AGENTS.md").read_text())
@@ -104,6 +108,107 @@ class BootstrapProjectTest(unittest.TestCase):
             self.assertEqual(second.changed_files, [])
             self.assertEqual(second.manual_reviews, [])
             self.assertEqual(before, after)
+
+    def test_verified_release_is_separate_from_edition_and_patch_upgrade_is_idempotent(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            project = Path(tmp) / "patch-project"
+            project.mkdir()
+            with patch.object(bootstrap_project.release_provenance, "verified_release_evidence", return_value=PROOF_051):
+                bootstrap_project.bootstrap_project(
+                    project, PLAYBOOK_ROOT, project_name="Patch Project", ui="no", ci="copy",
+                    today=date(2026, 10, 9),
+                )
+            state_path = project / ".playbook-state.yml"
+            state = state_path.read_text()
+            self.assertIn("playbook_version: V0.5.0", state)
+            self.assertIn("playbook_release: v0.5.1", state)
+            self.assertIn(f'playbook_release_tag_object: "{PROOF_051[1]}"', state)
+            self.assertIn(f'playbook_release_commit: "{PROOF_051[2]}"', state)
+            state_path.write_text(state.replace("prereqs_required: true", "prereqs_required: false", 1))
+
+            with patch.object(upgrade_project.release_provenance, "verified_release_evidence", return_value=PROOF_052):
+                first = upgrade_project.upgrade_project(project, date(2026, 10, 14))
+                upgraded = state_path.read_text()
+                self.assertEqual(first.manual_reviews, [])
+                self.assertIn("playbook_version: V0.5.0", upgraded)
+                self.assertIn("playbook_release: v0.5.2", upgraded)
+                self.assertIn(f'playbook_release_tag_object: "{PROOF_052[1]}"', upgraded)
+                self.assertIn(f'playbook_release_commit: "{PROOF_052[2]}"', upgraded)
+                self.assertIn("last_upgraded: 2026-10-14", upgraded)
+                self.assertIn("prereqs_required: true", upgraded)
+                second = upgrade_project.upgrade_project(project, date(2026, 10, 15))
+            self.assertEqual(second.changed_files, [])
+            self.assertEqual(state_path.read_text(), upgraded)
+
+    def test_unverified_upgrade_clears_old_release_without_changing_edition(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            project = Path(tmp) / "unknown-release-project"
+            project.mkdir()
+            with patch.object(bootstrap_project.release_provenance, "verified_release_evidence", return_value=PROOF_051):
+                bootstrap_project.bootstrap_project(
+                    project, PLAYBOOK_ROOT, project_name="Unknown Release", ui="no", ci="copy",
+                    today=date(2026, 10, 9),
+                )
+            with patch.object(upgrade_project.release_provenance, "verified_release_evidence", return_value=None):
+                report = upgrade_project.upgrade_project(project, date(2026, 10, 14))
+            state = (project / ".playbook-state.yml").read_text()
+            self.assertEqual(report.manual_reviews, [])
+            self.assertIn("playbook_version: V0.5.0", state)
+            self.assertIn("playbook_release: null", state)
+            self.assertIn("playbook_release_tag_object: null", state)
+            self.assertIn("playbook_release_commit: null", state)
+
+    def test_incomplete_older_bootstrap_state_gains_release_field(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            project = Path(tmp) / "older-incomplete-project"
+            project.mkdir()
+            state = (PLAYBOOK_ROOT / "v0.5" / "templates" / ".playbook-state.yml").read_text()
+            state = "\n".join(
+                line for line in state.splitlines() if not line.startswith("playbook_release:")
+            ) + "\n"
+            (project / ".playbook-state.yml").write_text(state)
+            with patch.object(bootstrap_project.release_provenance, "verified_release_evidence", return_value=None):
+                report = bootstrap_project.bootstrap_project(
+                    project, PLAYBOOK_ROOT, project_name="Older Incomplete", ui="no", ci="copy",
+                    today=date(2026, 10, 14),
+                )
+            self.assertEqual(report.manual_reviews, [])
+            installed = (project / ".playbook-state.yml").read_text()
+            self.assertIn("playbook_version: V0.5.0", installed)
+            self.assertIn("playbook_release: null", installed)
+
+    def test_bootstrap_does_not_relabel_an_existing_patch_installation(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            project = Path(tmp) / "already-installed"
+            project.mkdir()
+            with patch.object(bootstrap_project.release_provenance, "verified_release_evidence", return_value=PROOF_051):
+                bootstrap_project.bootstrap_project(
+                    project, PLAYBOOK_ROOT, project_name="Already Installed", ui="no", ci="copy",
+                    today=date(2026, 10, 9),
+                )
+            previous = (project / ".playbook-state.yml").read_text()
+            with patch.object(bootstrap_project.release_provenance, "verified_release_evidence", return_value=PROOF_052):
+                with self.assertRaisesRegex(ValueError, "upgrade-project"):
+                    bootstrap_project.bootstrap_project(
+                        project, PLAYBOOK_ROOT, project_name="Already Installed", ui="no", ci="copy",
+                        today=date(2026, 10, 14),
+                    )
+            self.assertEqual((project / ".playbook-state.yml").read_text(), previous)
+
+    def test_upgrade_refuses_a_verified_patch_release_downgrade(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            project = Path(tmp) / "newer-project"
+            project.mkdir()
+            with patch.object(bootstrap_project.release_provenance, "verified_release_evidence", return_value=PROOF_052):
+                bootstrap_project.bootstrap_project(
+                    project, PLAYBOOK_ROOT, project_name="Newer Project", ui="no", ci="copy",
+                    today=date(2026, 10, 14),
+                )
+            previous = (project / ".playbook-state.yml").read_text()
+            with patch.object(upgrade_project.release_provenance, "verified_release_evidence", return_value=PROOF_051):
+                with self.assertRaisesRegex(ValueError, "refusing to downgrade"):
+                    upgrade_project.upgrade_project(project, date(2026, 10, 15))
+            self.assertEqual((project / ".playbook-state.yml").read_text(), previous)
 
     def test_cli_plan_is_read_only_and_lists_decisions(self):
         with tempfile.TemporaryDirectory() as tmp:

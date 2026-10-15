@@ -2,6 +2,19 @@
 
 ## Unreleased
 
+- Distinguish the V0.5.0 edition migration stamp from the verified installed
+  release in bootstrap, upgrades, status, and stage 00. Keep the release unknown
+  when a clean exact public tag cannot be proved, and store the verified tag
+  object and commit for offline warm-path drift detection. Preserve existing
+  project customisations and same-edition migration behavior. State validation
+  requires the release and both proof hashes together, so an unproven tag name
+  cannot appear as an installed release.
+
+*Why — edition and release identity:* comparing the fixed edition stamp with a
+  newer changelog release made current projects appear outdated. Separate
+  labels and verified provenance make patch-release upgrades and unknown
+  sources clear without inventing a release.
+
 ## V0.5.2 — 2026-10-13
 
 This release retains verified checkpoint and guidance gains with bounded native failure evidence.

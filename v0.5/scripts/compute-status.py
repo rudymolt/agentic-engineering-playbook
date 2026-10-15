@@ -19,6 +19,7 @@ from playbook_state import (  # noqa: E402
     parse_top_level_map,
     quote_yaml_string,
     strip_inline_comment,
+    top_level_scalar_value,
     validate_cadences,
     validate_state,
 )
@@ -544,6 +545,15 @@ def read_project_files(project_root: Path) -> tuple[str, str]:
     )
 
 
+def playbook_identity_line(state_text: str) -> str:
+    """Name edition and release separately in user-facing status output."""
+    edition = parse_scalar(top_level_scalar_value(state_text, "playbook_version") or "null")
+    release = parse_scalar(top_level_scalar_value(state_text, "playbook_release") or "null")
+    edition_label = edition if isinstance(edition, str) else "unknown"
+    release_label = release if isinstance(release, str) else "unknown (unverified source)"
+    return f"Playbook edition: {edition_label}; installed release: {release_label}"
+
+
 def recompute_project(project_root: Path, now: datetime | None = None) -> str:
     now = now or datetime.now(timezone.utc)
     state_text, cadences_text = read_project_files(project_root)
@@ -614,6 +624,7 @@ def main(argv: list[str] | None = None, now: datetime | None = None) -> int:
             ok, failures = check_project(project_root, now)
             if ok:
                 print(".playbook-state.yml status block is current.")
+                print(playbook_identity_line(read_project_files(project_root)[0]))
                 return 0
             print(".playbook-state.yml status block is stale or wrong:")
             for failure in failures:
@@ -630,6 +641,7 @@ def main(argv: list[str] | None = None, now: datetime | None = None) -> int:
         print(f"compute-status failed: {error}", file=sys.stderr)
         return 1
     print(f"Recomputed {project_root / '.playbook-state.yml'}")
+    print(playbook_identity_line(read_project_files(project_root)[0]))
     return 0
 
 

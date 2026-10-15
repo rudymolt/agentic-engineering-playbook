@@ -235,6 +235,18 @@ _STATE_TOP_FIELDS = {
         lambda v: v is None or (isinstance(v, str) and re.fullmatch(r"V\d+\.\d+\.\d+", v)),
         'null or a version string such as "V0.5.0"',
     ),
+    "playbook_release": (
+        lambda v: v is None or (isinstance(v, str) and re.fullmatch(r"v\d+\.\d+\.\d+", v)),
+        'null or an exact release tag such as "v0.5.2"',
+    ),
+    "playbook_release_tag_object": (
+        lambda v: v is None or (isinstance(v, str) and re.fullmatch(r"[0-9a-f]{40}", v)),
+        "null or a 40-character lowercase Git SHA",
+    ),
+    "playbook_release_commit": (
+        lambda v: v is None or (isinstance(v, str) and re.fullmatch(r"[0-9a-f]{40}", v)),
+        "null or a 40-character lowercase Git SHA",
+    ),
     "last_upgraded": (_is_datetime_or_null, "null or an ISO 8601 date"),
     "prereqs_required": (_is_bool_or_null, "true or false"),
 }
@@ -578,6 +590,23 @@ def validate_state(text: str) -> list[ValidationProblem]:
         if not predicate(value):
             problems.append(ValidationProblem(
                 block["line"], key, f"got {value!r}", f"expected {expectation}"))
+
+    # Older project states omit release fields entirely. Once present, release
+    # identity must be complete: a tag name alone is not evidence of an install.
+    release_keys = (
+        "playbook_release", "playbook_release_tag_object", "playbook_release_commit"
+    )
+    release_values = {
+        key: parse_scalar(blocks[key]["inline"]) if key in blocks else None
+        for key in release_keys
+    }
+    populated = sum(value is not None for value in release_values.values())
+    if populated not in {0, len(release_keys)}:
+        line = next(blocks[key]["line"] for key in release_keys if key in blocks)
+        problems.append(ValidationProblem(
+            line, "playbook_release", "incomplete release proof",
+            "set the release, tag object, and commit together, or leave all three null"
+        ))
 
     schema_version = parse_scalar(blocks["schema_version"]["inline"]) \
         if "schema_version" in blocks else None
