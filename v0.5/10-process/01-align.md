@@ -18,6 +18,34 @@ Skip if the change is a one-line typo, comment, or formatting fix.
 
 ## What to run
 
+### Recover the stage source and choose the route
+
+A missing configured `{playbook-path}` establishes only that the configured
+filesystem location is unavailable. Check for another accessible copy of this
+edition and read its digest, stage 00, and this stage before choosing a route.
+Apply stage 00's provenance and capability rules to that copy; finding it does
+not silently change the project's pinned installation or authorize an upgrade.
+If no usable stage source exists, name the missing capability instead of
+inventing a stage procedure.
+
+After resolving any saved binding below, choose the stage option that fits the
+request and any explicit user direction.
+For a settled-product code-level change, evaluate Option A first; the presence
+of broader strategic options alone does not call for them. If the applicable
+route names a skill, check the relevant project, user, and runtime-advertised
+skill sources listed in stage 00 Check A before saying the skill is unavailable.
+Keep discovery bounded to the candidate skills, and respect invocation policy
+and any saved binding. Do not install a skill, switch models, or introduce an
+extra approval gate merely to recover from a missing path; the existing Plan
+and shared-understanding gates still apply.
+
+Before starting the grilling, report the configured path's status, any
+alternative stage source, whether the relevant skills were checked, and why
+the selected route is skill-driven or manual. An explicit request for manual
+alignment is sufficient reason to use it; do not claim skill absence unless
+it was checked. When a skill is unavailable, use the stage 00 manual capability
+route and name the evidence for that conclusion.
+
 For new choices, resolve the saved primary binding at this stage-owned invocation
 point. Resume an approved execution with its retained `approved_binding`, not
 current defaults; older active routes without a binding remain unchanged:
@@ -55,6 +83,12 @@ Before the first planning skill starts, use the Plan gate in [`../93-model-routi
 
 Two rules the underlying `/grilling` loop enforces as of upstream v1.1.0, both of which this stage relies on: **facts vs decisions** — a question answerable by exploring the codebase gets explored, but a *decision* is always put to the human and waited on (a grilling agent that answers its own decision questions has broken HITL); and a **confirmation gate** — the plan is not enacted until the human explicitly confirms shared understanding has been reached. Treat that confirmation as this stage's exit condition.
 
+The manual route follows the same discipline: inspect the code or documents
+for answerable facts, ask human-owned decisions in small batches and record
+their answers, then summarize the proposed understanding and wait for explicit
+confirmation before leaving alignment. Record the route and its evidence with
+the alignment output.
+
 ### Option B — greenfield or strategic-fit unclear
 
 `/office-hours` (gstack) — YC-style office hours, six forcing questions reframing the product before any code is written. Produces a design doc that feeds every downstream stage.
@@ -81,7 +115,7 @@ After `/grill-with-docs` settles a UI-affecting feature, run the UI preview gate
 
 After bounded breadth-first grilling, offer the user-invoked `/wayfinder` track when the work will not fit one discovery session and unresolved dependencies or multiple coupled decision domains would control the eventual spec. Read [`../92-wayfinder-track.md`](../92-wayfinder-track.md). Do not start it automatically; wait for the human to invoke it. If grilling exposes no real fog, stay on the normal alignment path.
 
-## Recommended default order for a new feature
+## Recommended order when the strategic and technical lenses are needed
 
 ```
 /office-hours

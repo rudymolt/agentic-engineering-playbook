@@ -34,6 +34,14 @@ Check every supported agent-runtime location before declaring a skill unavailabl
 - User roots: `~/.claude/skills/`, `~/.codex/skills/`, `~/.agents/skills/`.
 - Runtime-advertised skills in the current session.
 
+At stage 01, a missing configured playbook path is a source-location finding,
+not evidence that the alignment procedure or a named skill is unavailable.
+Check an accessible alternative edition source under Check C's provenance
+rules, then inspect only the skill candidates relevant to the selected
+alignment option in the roots above. Report which sources were checked before
+claiming a manual fallback is necessary. An explicit user choice of manual
+alignment needs no skill-absence claim.
+
 The path list below mirrors upstream's bucketed Claude layout. A flattened install at
 `~/.agents/skills/<name>/SKILL.md` or `.agents/skills/<name>/SKILL.md` counts name-for-name;
 that is the layout verified on this host.

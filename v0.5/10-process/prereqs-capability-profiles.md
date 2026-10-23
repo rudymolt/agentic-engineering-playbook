@@ -14,6 +14,13 @@ A session may proceed when every capability required by the work has a verified 
 
 If none exists, halt at stage 00 and name the missing capability. An unavailable optional accelerator is reported as profile information, not as a failed gate.
 
+The configured playbook path and the alignment capability are separate checks.
+When the path is absent, look for a usable edition source and apply stage 00's
+provenance rules before evaluating stage 01's relevant skill or manual route.
+Only describe a skill as unavailable after bounded discovery in the project,
+user, and runtime sources named by stage 00 Check A. A human's explicit manual
+choice selects the manual route without requiring or implying that discovery.
+
 ## Required capability lanes
 
 | Capability | Tool-assisted route | Manual route | Halt when |

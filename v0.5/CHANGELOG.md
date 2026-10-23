@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+- Clarify stage 01 recovery when the configured playbook path is missing:
+  inspect an accessible edition source, evaluate the applicable skill with
+  bounded discovery, and report the chosen route before alignment. Keep an
+  explicit or evidence-backed manual route subject to the same human decision
+  and confirmation gates.
+
+*Why — alignment fallback:* a missing filesystem path was treated as a reason
+  to start manual grilling before checking the relevant skill route. Separating
+  source, capability, and user choice makes the decision traceable.
+
 - Distinguish the V0.5.0 edition migration stamp from the verified installed
   release in bootstrap, upgrades, status, and stage 00. Keep the release unknown
   when a clean exact public tag cannot be proved, and store the verified tag
