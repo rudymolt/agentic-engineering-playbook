@@ -36,9 +36,11 @@ Check every supported agent-runtime location before declaring a skill unavailabl
 
 At stage 01, a missing configured playbook path is a source-location finding,
 not evidence that the alignment procedure or a named skill is unavailable.
-Check an accessible alternative edition source under Check C's provenance
-rules, then inspect only the skill candidates relevant to the selected
-alignment option in the roots above. Report which sources were checked before
+Require an accessible alternative checkout to be clean and match the recorded
+verified tag object and commit before using its guidance or helpers. A missing
+record or mismatch goes through Check C's owner/upgrade route; edition equality
+alone is insufficient. Then inspect only the skill candidates relevant to the
+selected alignment option in the roots above. Report which sources were checked before
 claiming a manual fallback is necessary. An explicit user choice of manual
 alignment needs no skill-absence claim.
 

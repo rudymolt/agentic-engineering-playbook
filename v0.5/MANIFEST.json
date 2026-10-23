@@ -13,8 +13,8 @@
     },
     {
       "path": "10-process/00-prereqs.md",
-      "sha256": "8a72e2114e9d0ab0cd0339d484476ba5da223fe12938db719fade64ed9101613",
-      "size": 16134
+      "sha256": "f59dc8f331092315d5699e865e9f281525da59bcc84004ff42edb8dc2b5c3244",
+      "size": 16313
     },
     {
       "path": "10-process/01-align.html",
@@ -23,8 +23,8 @@
     },
     {
       "path": "10-process/01-align.md",
-      "sha256": "3974d19215c0cff09ec994158c0b1dd3981d1e05a903feda06ea1637e90867b6",
-      "size": 10682
+      "sha256": "855082d9903b7efd9ea6a99caf8ccfad2d8b8db40738ab2631044fd5365a4e2a",
+      "size": 11319
     },
     {
       "path": "10-process/02-context-and-adrs.md",
@@ -108,8 +108,8 @@
     },
     {
       "path": "10-process/prereqs-capability-profiles.md",
-      "sha256": "55f0a5582ba4481885bb650351c4b837ccc5ce051ff3e668129b78ef1b0ab806",
-      "size": 8673
+      "sha256": "5936467c896fc47d685d349541f2f0e2e6d1cce3735cc9df4aca2042777aba53",
+      "size": 8852
     },
     {
       "path": "20-frontend-track.md",
@@ -173,13 +173,13 @@
     },
     {
       "path": "AGENT-DIGEST.md",
-      "sha256": "7a77e367024fed9a2e6f5ae714d88033c27be0a7e400f0514912b8b7a7122eb3",
-      "size": 18052
+      "sha256": "056abe326eedddcfa1b8c17b322a967f25705e834aa068c102198f731b6e0cbe",
+      "size": 18284
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "d20e0fd25b96f75be26128b79d062607b3da12eb800c9fc888f6938b3542733c",
-      "size": 62924
+      "sha256": "b645bc2cfcdaa36a20cef551aa2be84afe06c4902061aec1aaeed02a242a40c4",
+      "size": 62977
     },
     {
       "path": "MAINTENANCE.md",

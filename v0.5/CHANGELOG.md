@@ -3,9 +3,10 @@
 ## Unreleased
 
 - Clarify stage 01 recovery when the configured playbook path is missing:
-  inspect an accessible edition source, evaluate the applicable skill with
-  bounded discovery, and report the chosen route before alignment. Keep an
-  explicit or evidence-backed manual route subject to the same human decision
+  verify an alternative checkout against the pinned release, run its saved
+  binding helper, evaluate the applicable skill with bounded discovery, and
+  report the chosen route before alignment. Keep an explicit or evidence-backed
+  manual route subject to the same human decision
   and confirmation gates.
 
 *Why — alignment fallback:* a missing filesystem path was treated as a reason

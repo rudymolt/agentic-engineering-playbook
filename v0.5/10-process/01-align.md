@@ -21,12 +21,16 @@ Skip if the change is a one-line typo, comment, or formatting fix.
 ### Recover the stage source and choose the route
 
 A missing configured `{playbook-path}` establishes only that the configured
-filesystem location is unavailable. Check for another accessible copy of this
-edition and read its digest, stage 00, and this stage before choosing a route.
-Apply stage 00's provenance and capability rules to that copy; finding it does
-not silently change the project's pinned installation or authorize an upgrade.
-If no usable stage source exists, name the missing capability instead of
-inventing a stage procedure.
+filesystem location is unavailable. Look for another accessible checkout, but
+before using its guidance or executing a helper, verify that it is clean and
+matches the project's recorded `playbook_release_tag_object` and
+`playbook_release_commit` (stage 00's offline provenance rule). The edition
+stamp alone is insufficient. Call the matching checkout root
+`{resolved-playbook-path}` and read its digest, stage 00, and this stage. If
+proof is missing, the checkout differs, or no checkout exists, do not use it
+as the installed playbook: report the gap and seek an explicit owner choice
+through the stage 00 upgrade/provenance route before proceeding. Recovery does
+not silently change the project's pinned installation.
 
 After resolving any saved binding below, choose the stage option that fits the
 request and any explicit user direction.
@@ -36,8 +40,8 @@ route names a skill, check the relevant project, user, and runtime-advertised
 skill sources listed in stage 00 Check A before saying the skill is unavailable.
 Keep discovery bounded to the candidate skills, and respect invocation policy
 and any saved binding. Do not install a skill, switch models, or introduce an
-extra approval gate merely to recover from a missing path; the existing Plan
-and shared-understanding gates still apply.
+extra approval gate for an exact pinned-copy recovery; the existing Plan and
+shared-understanding gates still apply.
 
 Before starting the grilling, report the configured path's status, any
 alternative stage source, whether the relevant skills were checked, and why
@@ -47,12 +51,18 @@ it was checked. When a skill is unavailable, use the stage 00 manual capability
 route and name the evidence for that conclusion.
 
 For new choices, resolve the saved primary binding at this stage-owned invocation
-point. Resume an approved execution with its retained `approved_binding`, not
-current defaults; older active routes without a binding remain unchanged:
+point using the verified `{resolved-playbook-path}` (the configured path when
+it is available and qualified). Resume an approved execution with its retained
+`approved_binding`, not current defaults; older active routes without a binding
+remain unchanged:
 
 ```sh
-printf '%s' '{"job":"alignment","owner":"01"}' | python3 {playbook-path}/v0.5/scripts/configure-playbook.py --project . job-route
+printf '%s' '{"job":"alignment","owner":"01"}' | python3 {resolved-playbook-path}/v0.5/scripts/configure-playbook.py --project . job-route
 ```
+
+If that helper cannot run, do not infer `configured: false` or bypass a saved
+binding. Stop and name the unavailable routing capability; restore the exact
+pinned helper or use the reviewed stage 00 upgrade/provenance route.
 
 For a configured result, consume `routes` in saved order instead of automatically
 choosing the upstream defaults below. Manual/Playbook adapters perform this
