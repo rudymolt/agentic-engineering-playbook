@@ -68,6 +68,8 @@ class Skill:
     provenance: dict | None
     since: str | None
     removed_in: str | None
+    project_bundle: bool = False
+    dependencies: tuple[str, ...] = ()
 
 
 @dataclass
@@ -141,7 +143,7 @@ def _require(condition: bool, message: str) -> None:
 def _package(name: str, raw: dict) -> Package:
     _require(isinstance(raw, dict), f"package {name}: entry must be an object")
     kind = raw.get("kind", "upstream")
-    _require(kind in PACKAGE_KINDS, f"package {name}: kind must be one of {sorted(PACKAGE_KINDS)}")
+    _require(isinstance(kind, str) and kind in PACKAGE_KINDS, f"package {name}: kind must be one of {sorted(PACKAGE_KINDS)}")
     source = raw.get("source")
     _require(isinstance(source, str) and source.strip(), f"package {name}: source is required")
     pin = raw.get("pin") or {}
@@ -149,17 +151,17 @@ def _package(name: str, raw: dict) -> Package:
     adoption_level = raw.get("adoption_level")
     if kind == "upstream":
         _require(
-            adoption_level in ADOPTION_LEVELS,
+            isinstance(adoption_level, str) and adoption_level in ADOPTION_LEVELS,
             f"package {name}: adoption_level must be one of {sorted(ADOPTION_LEVELS)}",
         )
-        _require(isinstance(pin, dict) and pin.get("kind") in PIN_KINDS,
+        _require(isinstance(pin, dict) and isinstance(pin.get("kind"), str) and pin.get("kind") in PIN_KINDS,
                  f"package {name}: pin.kind must be one of {sorted(PIN_KINDS)}")
         _require(isinstance(pin.get("commit"), str) and len(pin["commit"]) >= 7,
                  f"package {name}: pin.commit must be a commit hash")
         if pin["kind"] != "commit":
             _require(isinstance(pin.get("value"), str) and pin["value"].strip(),
                      f"package {name}: pin.value is required for pin.kind {pin['kind']}")
-        _require(isinstance(install, dict) and install.get("method") in INSTALL_METHODS,
+        _require(isinstance(install, dict) and isinstance(install.get("method"), str) and install.get("method") in INSTALL_METHODS,
                  f"package {name}: install.method must be one of {sorted(INSTALL_METHODS)}")
         if adoption_level == "accelerator":
             _require(install["method"] != "none",
@@ -167,28 +169,36 @@ def _package(name: str, raw: dict) -> Package:
     else:
         _require(adoption_level is None, f"package {name}: local packages have no adoption_level")
     patterns = raw.get("harness_name_pattern") or {"claude": "/{name}"}
-    _require(isinstance(patterns, dict) and all("{name}" in v for v in patterns.values()),
+    _require(isinstance(patterns, dict) and all(isinstance(v, str) and "{name}" in v for v in patterns.values()),
              f"package {name}: every harness_name_pattern must contain {{name}}")
     watch = raw.get("watch") or []
-    _require(isinstance(watch, list), f"package {name}: watch must be a list")
+    _require(isinstance(watch, list) and all(isinstance(v, str) for v in watch), f"package {name}: watch must be a list")
     return Package(name, kind, source, adoption_level, pin, install, patterns, tuple(watch))
 
 
 def _skill(name: str, raw: dict, packages: dict[str, Package]) -> Skill:
     _require(isinstance(raw, dict), f"skill {name}: entry must be an object")
     package = raw.get("package")
-    _require(package in packages, f"skill {name}: unknown package {package!r}")
+    _require(isinstance(package, str) and package in packages, f"skill {name}: unknown package {package!r}")
     status = raw.get("status", "current")
-    _require(status in SKILL_STATUSES, f"skill {name}: status must be one of {sorted(SKILL_STATUSES)}")
+    _require(isinstance(status, str) and status in SKILL_STATUSES, f"skill {name}: status must be one of {sorted(SKILL_STATUSES)}")
     invocation = raw.get("invocation")
-    _require(invocation in INVOCATIONS, f"skill {name}: invocation must be user or model")
+    _require(isinstance(invocation, str) and invocation in INVOCATIONS, f"skill {name}: invocation must be user or model")
     tier = raw.get("tier", "accelerated")
-    _require(tier in TIERS, f"skill {name}: tier must be one of {sorted(TIERS)}")
-    lanes = tuple(raw.get("lanes") or [])
+    _require(isinstance(tier, str) and tier in TIERS, f"skill {name}: tier must be one of {sorted(TIERS)}")
+    raw_lanes = raw.get("lanes") or []
+    _require(isinstance(raw_lanes, list) and all(isinstance(v, str) for v in raw_lanes),
+             f"skill {name}: lanes must be a list of strings")
+    lanes = tuple(raw_lanes)
     unknown = sorted(set(lanes) - CAPABILITY_LANES)
     _require(not unknown, f"skill {name}: unknown lanes {unknown}")
-    stages = tuple(str(s) for s in (raw.get("stages") or []))
-    previous = tuple(raw.get("previous_names") or [])
+    raw_stages = raw.get("stages") or []
+    _require(isinstance(raw_stages, list) and all(isinstance(v, (str, int)) for v in raw_stages),
+             f"skill {name}: stages must be a list of stage identifiers")
+    stages = tuple(str(s) for s in raw_stages)
+    raw_previous = raw.get("previous_names") or []
+    _require(isinstance(raw_previous, list), f"skill {name}: previous_names must be a list")
+    previous = tuple(raw_previous)
     for entry in previous:
         _require(isinstance(entry, dict) and isinstance(entry.get("name"), str)
                  and isinstance(entry.get("upstream_version"), str),
@@ -203,6 +213,15 @@ def _skill(name: str, raw: dict, packages: dict[str, Package]) -> Skill:
     else:
         _require(install_by_default is None,
                  f"skill {name}: install_by_default applies to local skills only")
+    project_bundle = raw.get("project_bundle", False)
+    _require(isinstance(project_bundle, bool), f"skill {name}: project_bundle must be boolean")
+    dependencies = raw.get("dependencies", [])
+    _require(isinstance(dependencies, list) and all(isinstance(n, str) for n in dependencies),
+             f"skill {name}: dependencies must be skill names")
+    if project_bundle:
+        _require(status == "current" and packages[package].kind == "upstream"
+                 and isinstance(raw.get("upstream_path"), str),
+                 f"skill {name}: project bundle requires a current upstream path")
     if status == "removed":
         _require(isinstance(raw.get("removed_in"), str),
                  f"skill {name}: removed skills must record removed_in")
@@ -210,6 +229,7 @@ def _skill(name: str, raw: dict, packages: dict[str, Package]) -> Skill:
         name, package, status, invocation, tier, lanes, stages, previous,
         manifest_key, raw.get("upstream_path"), install_by_default,
         raw.get("provenance"), raw.get("since"), raw.get("removed_in"),
+        project_bundle, tuple(dependencies),
     )
 
 
@@ -220,6 +240,7 @@ def load(path: Path = DEFAULT_REGISTRY) -> Registry:
         raise RegistryError(f"missing registry: {path}") from error
     except json.JSONDecodeError as error:
         raise RegistryError(f"invalid registry JSON: {error}") from error
+    _require(isinstance(payload, dict), "registry must be an object")
     _require(payload.get("schema_version") == 1, "schema_version must be 1")
     raw_packages = payload.get("packages")
     raw_skills = payload.get("skills")
@@ -234,6 +255,13 @@ def load(path: Path = DEFAULT_REGISTRY) -> Registry:
                      f"manifest_key {skill.manifest_key!r} claimed by both "
                      f"{seen_manifest.get(skill.manifest_key)} and {skill.name}")
             seen_manifest[skill.manifest_key] = skill.name
+    for skill in skills.values():
+        for dependency in skill.dependencies:
+            _require(dependency in skills and skills[dependency].status == "current",
+                     f"skill {skill.name}: unknown or removed dependency {dependency!r}")
+            if skill.project_bundle:
+                _require(skills[dependency].project_bundle,
+                         f"skill {skill.name}: unbundled dependency {dependency!r}")
     all_names = set(skills)
     for skill in skills.values():
         for entry in skill.previous_names:
@@ -242,7 +270,8 @@ def load(path: Path = DEFAULT_REGISTRY) -> Registry:
     ideas = payload.get("borrowed_ideas") or []
     _require(isinstance(ideas, list), "borrowed_ideas must be a list")
     for idea in ideas:
-        _require(isinstance(idea, dict) and idea.get("package") in packages
+        _require(isinstance(idea, dict) and isinstance(idea.get("package"), str)
+                 and idea.get("package") in packages
                  and isinstance(idea.get("id"), str),
                  "borrowed_ideas entries need a known package and an id")
     return Registry(packages, skills, list(ideas))

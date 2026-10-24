@@ -89,3 +89,14 @@ When a local skill changes:
 4. Review the skill's completion criteria, references, and guardrails against the changed behaviour.
 
 The audit is complete when metadata and prose agree on invocation ownership, every branch has a checkable completion criterion, and conditional reference is behind a pointer rather than on every run.
+
+## Bundled project inventory
+
+[Project provisioning](scripts/skill-provisioning.md) packages complete selected
+upstream directories from the existing registry. Check this bundle during the
+monthly review and before adopting source, runtime, model, or setting changes.
+Review dependency closure, both invocation policies, licenses, compatibility,
+and retained customization/recovery behavior. Regenerate the bundle record and
+edition manifest in the reviewed change, run the canonical verifier, and retain
+actual runtime qualification separately. Ordinary provisioning never updates
+pins or adopts a newer source automatically.

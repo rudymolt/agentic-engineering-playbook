@@ -233,7 +233,8 @@ allowed_commands.update(path.name for path in (ROOT / "skills").iterdir() if pat
 allowed_commands.add("upgrade-project")
 
 for md_file in sorted(ROOT.rglob("*.md")):
-    if md_file.name == "CHANGELOG.md":
+    # Preserve upstream trigger wording; bundle integrity is checked separately.
+    if md_file.name == "CHANGELOG.md" or md_file.is_relative_to(ROOT / "bundles" / "mattpocock-skills"):
         continue
     rel = md_file.relative_to(ROOT)
     text = md_file.read_text()

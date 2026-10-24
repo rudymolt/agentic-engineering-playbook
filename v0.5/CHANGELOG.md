@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+- Add explicit project-skill preview/install/check commands and an offline,
+  registry-derived bundle of eleven complete reviewed Matt Pocock skills.
+  Preserve supporting material, dependency closure, invocation metadata,
+  licenses, conflicting files, and repairable initial installation. Keep
+  consumer release proof separate from maintainer candidates and runtime
+  qualification; automatic setup and consumer migration remain future work.
+
+*Why — repeatable project inventory:* fresh workspaces need the reviewed skill
+  material without relying on a developer's global install or a second upstream
+  download. Explicit activation and integrity checks make this possible while
+  preserving existing sources and stage authority.
+
 - Clarify stage 01 recovery when the configured playbook path is missing:
   verify an alternative checkout against the pinned release, run its saved
   binding helper, evaluate the applicable skill with bounded discovery, and

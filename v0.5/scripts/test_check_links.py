@@ -42,6 +42,21 @@ class CheckLinksTest(unittest.TestCase):
     def check(self, root: Path, placeholders=NO_PLACEHOLDERS):
         return check_links.check_repo(root, placeholders=placeholders)
 
+    def test_bundled_examples_and_project_references_keep_support_links_checked(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = make_repo(Path(tmp))
+            bundle = root / 'v0.5/bundles/mattpocock-skills'
+            skill = bundle / 'setup-matt-pocock-skills/SKILL.md'
+            skill.parent.mkdir(parents=True)
+            skill.write_text('Read `docs/agents/issue-tracker.md`. See [support](domain.md).')
+            (skill.parent / 'domain.md').write_text('Project template')
+            sample = bundle / 'domain-modeling/GLOSSARY-FORMAT.md'
+            sample.parent.mkdir()
+            sample.write_text('[Ordering](./src/ordering/GLOSSARY.md)')
+            self.assertEqual(self.check(root)[0], [])
+            (skill.parent / 'domain.md').unlink()
+            self.assertTrue(any('domain.md' in p for p in self.check(root)[0]))
+
     def test_clean_tree_passes(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = make_repo(Path(tmp))

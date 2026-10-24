@@ -1,8 +1,14 @@
 # Planning status
 
-active_features: 5
+active_features: 6
 
 ## Active features
+
+[Cloud skill provisioning](cloud-skill-provisioning/slices.md) — alignment,
+specification, both test seams, and seven implementation slices approved on
+2026-10-24. All seven child tickets are published with verified dependencies;
+S1 is implemented and independently verified, including returned fixes and fresh
+CLI QA. S2–S7 have not started; actual runtime qualification remains pending.
 
 [Edition and installed release](edition-release-identity/slices.md) — aligned
 and specified; implementation in progress on a separate branch.

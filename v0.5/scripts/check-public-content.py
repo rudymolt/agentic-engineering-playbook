@@ -25,6 +25,10 @@ PUBLIC_RUNTIME_RUN_URL = re.compile(
     r'(?<=[(" ])https://github\.com/' + "rudy" + "molt"
     + r'/agentic-engineering-playbook/actions/runs/[1-9][0-9]*(?=[)"])'
 )
+# Exact upstream HTTP endpoint examples; these are not personal machine paths.
+# Keep the independent email and remaining-line marker scans active.
+BUNDLED_ENDPOINT_FILE = Path('v0.5/bundles/mattpocock-skills/tdd/mocking.md')
+BUNDLED_ENDPOINTS = ('`/' + 'users/${id}`', '`/' + 'users/${userId}/orders`')
 ALLOWED_EMAILS = {"git@github.com"}
 ALLOWED_DOMAINS = {"example.com", "example.invalid", "users.noreply.github.com"}
 # The approved public confirmation fields are exact whole lines, root AGENTS only.
@@ -64,6 +68,9 @@ def problems(root: Path) -> list[str]:
                 marker_text = PUBLIC_RUNTIME_RUN_URL.sub("", marker_text)
             if relative == Path("AGENTS.md") and line in PUBLIC_MERGE_PRIVACY_FIELDS:
                 marker_text = ""
+            if relative == BUNDLED_ENDPOINT_FILE:
+                for endpoint in BUNDLED_ENDPOINTS:
+                    marker_text = marker_text.replace(endpoint, '')
             if PRIVATE_MARKERS.search(marker_text):
                 found.append(f"{relative}:{number}: private marker or personal path")
             for match in EMAIL.finditer(line):

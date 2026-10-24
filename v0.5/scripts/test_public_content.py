@@ -10,6 +10,19 @@ SPEC.loader.exec_module(MODULE)
 
 
 class PublicContentGateTest(unittest.TestCase):
+    def test_bundled_upstream_url_examples_do_not_hide_private_paths(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            p = root / 'v0.5/bundles/mattpocock-skills/tdd/mocking.md'
+            p.parent.mkdir(parents=True)
+            sample = '  getUser: (id) => fetch(`/' + 'users/${id}`),'
+            p.write_text(sample)
+            self.assertEqual(MODULE.problems(root), [])
+            p.write_text(sample + ' /' + 'Users/person/private')
+            self.assertTrue(MODULE.problems(root))
+            p.write_text('/' + 'Users/person/private')
+            self.assertTrue(MODULE.problems(root))
+
     def test_exact_merge_privacy_fields_are_allowed_only_in_root_agents(self):
         record = ("- Repository: rudy" + "molt/agentic-engineering-playbook\n"
                   "- GitHub login: rudy" + "molt\n")
