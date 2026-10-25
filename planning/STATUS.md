@@ -1,19 +1,8 @@
 # Planning status
 
-active_features: 6
+active_features: 5
 
 ## Active features
-
-[Deployment capability and existing authority](deployment-capability-and-authority/slices.md)
-— early access checks and deployment authority combined; alignment, specification,
-verification seam and integrated AFK slice approved. Build one in the current
-Astra/high tab at standard pace is approved. S1 documentation is implemented;
-the full Linux verifier passed all 1,252 tests with no skips. Fresh Sol 6.1/high
-standards/spec and security review found no actionable defects and passed all
-21 scenarios. On 2026-10-25 the human accepted that completed report-only review,
-waiving enforced read-only access for this review only. S1 is complete in this
-atomic slice commit and ready for the Build handback. Shipping remains a separate
-human decision.
 
 [Edition and installed release](edition-release-identity/slices.md) — aligned
 and specified; implementation in progress on a separate branch.
@@ -46,16 +35,28 @@ This maintainer checkout intentionally has no root `.playbook-state.yml`.
 The stage-10 closeout state is mirrored here; no consumer runtime state is created.
 
 ```yaml
-last_updated: 2026-10-13T05:08:56Z
+last_updated: 2026-10-25T06:36:21Z
 counters:
-  features_shipped_total: 3
+  features_shipped_total: 4
 last_run:
-  ship: 2026-10-13T05:03:43Z
-  feature_ship: 2026-10-13T05:03:43Z
-  doc_close: 2026-10-13T05:08:56Z
-  retro: 2026-10-13T05:08:56Z
+  ship: 2026-10-25T06:19:18Z
+  feature_ship: 2026-10-25T06:19:18Z
+  doc_close: 2026-10-25T06:36:21Z
+  retro: 2026-10-25T06:36:21Z
 pending_closeouts: []
 ```
+
+
+Capability and existing authority shipped in PR #46 as `8f6a2f0` on 2026-10-25.
+The merge tree matches final candidate `a3b732c`; noreply merge identities and
+both required main CI jobs are verified. Production verification means the
+published repository, not an installed consumer upgrade. Doc-close and the
+[feature retrospective](retros/2026-10-25-capability-and-authority.md) are
+complete on this closeout branch, awaiting human merge. Its pending closeout
+is cleared here; all other feature closeouts retain their existing ownership.
+The [closeout record](../archive/2026-10-25-deployment-capability-and-authority/closeout.md)
+preserves review exceptions, CI repair evidence and release limits. Current
+release pointers stay at V0.5.2; the feature remains under Unreleased.
 
 Checkpoint performance shipped in PR #41 as `20eeb04` on 2026-10-13.
 Its tree matches verified head `084857c`; noreply merge identities are verified.
