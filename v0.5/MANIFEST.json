@@ -178,8 +178,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "786409221c90ba9b78e25bd3ec1b4070cf7f5bdbbaf2f1d201f8219f4b553b34",
-      "size": 68445
+      "sha256": "a9562cf1c867975f21ab2e4e38b090ac9a3b7ebbfa8648fff372f8de568eb04b",
+      "size": 69768
     },
     {
       "path": "MAINTENANCE.md",
@@ -188,8 +188,8 @@
     },
     {
       "path": "README.md",
-      "sha256": "b73f9aba942d89535dc9570a81ce2d501179ebe2be832e1a7ebb2490c48dcbf1",
-      "size": 7329
+      "sha256": "87d22d9050da0340a730dd752e3c66a415fde56f72e2f78a8cc13901eb699841",
+      "size": 7739
     },
     {
       "path": "assets/playbook-docs.css",
@@ -1223,8 +1223,8 @@
     },
     {
       "path": "scripts/bootstrap-project.py",
-      "sha256": "95e047168bd9dd7f2070eb5287508474654e92b33be2727aca66812f38d0546c",
-      "size": 26247
+      "sha256": "b6aa30e5161cee6c2c6d2351118e8d43bcb082c0db362b962ca4c668733dfa51",
+      "size": 26617
     },
     {
       "path": "scripts/bootstrap_seed.py",
@@ -1258,8 +1258,8 @@
     },
     {
       "path": "scripts/check-public-content.py",
-      "sha256": "802a74d48d5a1028e64cd6ee7e3dc361eda86077d8f2b7cc8028b4edec1d42a5",
-      "size": 4185
+      "sha256": "2add2d7aca5f36458ad71695ef6dfd8145cfc4c809c3315ddfe6e9d78dbb065e",
+      "size": 5681
     },
     {
       "path": "scripts/check-skill-metadata.py",
@@ -1280,6 +1280,16 @@
       "path": "scripts/compute-status.py",
       "sha256": "fec0096ebab1564a8d960ab5d375cf83685cdba2087af326b3621bcb8fc7bbf5",
       "size": 28467
+    },
+    {
+      "path": "scripts/conductor-setup.sh",
+      "sha256": "2387a19640fe709268d808ddb5030e5164e5a959fe7e9f941275261601b9282c",
+      "size": 2120
+    },
+    {
+      "path": "scripts/conductor_setup.py",
+      "sha256": "325713e0f2482d8645670aea76ea013c0eec3b00e7aea21b20cacec4ec5a3e70",
+      "size": 12584
     },
     {
       "path": "scripts/configure-playbook.py",
@@ -1378,8 +1388,8 @@
     },
     {
       "path": "scripts/provision-skills.py",
-      "sha256": "96b9b5aa0e75203a45b78d130b167f5f146196358bf654d1ecd9050c7727e812",
-      "size": 19625
+      "sha256": "08a0e9fc353aadf406f7d0d671ec7789147a09601453c45d52cbc0acac1bae54",
+      "size": 20233
     },
     {
       "path": "scripts/provisioning_state.py",
@@ -1388,8 +1398,8 @@
     },
     {
       "path": "scripts/recover-playbook-source.py",
-      "sha256": "607a88f1c5eb43546162bb2a8eb267be69ef3bfbd85007925f8c90073ff7be4d",
-      "size": 10133
+      "sha256": "15ac82ccfe434e100d08da44a14affea5ce1dc677ad3b901584077e29c7b4cbe",
+      "size": 16252
     },
     {
       "path": "scripts/release_provenance.py",
@@ -1423,13 +1433,13 @@
     },
     {
       "path": "scripts/skill-provisioning.md",
-      "sha256": "62a29677c4d52f7c5e89f4fbd5ea0ff6d48892e4bb89049bbd9bc3e311f5717a",
-      "size": 25006
+      "sha256": "4912817419d46a4a5018059660cef850898ae7b82922df7655505646b1915077",
+      "size": 33651
     },
     {
       "path": "scripts/skill_adoption.py",
-      "sha256": "a6e52b31fa8e1fd708e015be4a4736027ce8d480deac941a0d9141c5446aa787",
-      "size": 8290
+      "sha256": "e57c7631122efbf38baae0830c7819314d97fbeebe0299b7da9f4445a8a97f94",
+      "size": 11372
     },
     {
       "path": "scripts/skill_bindings.py",
@@ -1480,6 +1490,11 @@
       "path": "scripts/test_check_release_state.py",
       "sha256": "9aa0f7b79166ccac06f2eba8af6539e5891ea96c5d7d7e88f0d9e78a28140e30",
       "size": 5487
+    },
+    {
+      "path": "scripts/test_conductor_setup.py",
+      "sha256": "d401c1def6e5b9a127895747213134477d3b46cb696735dcaccc1a4079e21d40",
+      "size": 46265
     },
     {
       "path": "scripts/test_config_repair_boundaries.py",
@@ -1623,8 +1638,8 @@
     },
     {
       "path": "scripts/test_public_content.py",
-      "sha256": "bdfbefc942169d7bb8f039809284a1c6dc392c1b6dae62918354ba1b07642f95",
-      "size": 7168
+      "sha256": "fc128f4487d2c4452b2e679d4b22f55c01bb4c909382b923d40d12cacc755950",
+      "size": 9509
     },
     {
       "path": "scripts/test_public_upgrade_transition.py",
@@ -1673,8 +1688,8 @@
     },
     {
       "path": "scripts/test_source_recovery.py",
-      "sha256": "1df24a2c010cda11760feb93e6fd685d5fd6e052cf8122f99d4e3bdfdde4aa6c",
-      "size": 17940
+      "sha256": "78cf39b2309c920c0010bb5a47a509606e224950bc636eaaf6a7f6ad597f8561",
+      "size": 18835
     },
     {
       "path": "scripts/test_template_base.py",
@@ -1713,8 +1728,8 @@
     },
     {
       "path": "scripts/upgrade-project.py",
-      "sha256": "4593bd2ef282697b411dfc42d461c2959a1e92e3838ed68e6924e323c5680b7f",
-      "size": 67331
+      "sha256": "a1a24dc920bb32346f3410358a4d34189d8dce3e2ce0fef3d34e0a42693145e8",
+      "size": 67772
     },
     {
       "path": "scripts/upstream_bundle.py",

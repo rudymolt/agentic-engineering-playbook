@@ -1,4 +1,7 @@
 import importlib.util
+import os
+import shutil
+import subprocess
 import tempfile
 import unittest
 from pathlib import Path
@@ -10,6 +13,40 @@ SPEC.loader.exec_module(MODULE)
 
 
 class PublicContentGateTest(unittest.TestCase):
+    def test_ignored_untracked_setup_output_is_skipped_but_never_tracked_content(self):
+        env = {**os.environ, 'GIT_CONFIG_NOSYSTEM': '1', 'GIT_CONFIG_GLOBAL': os.devnull}
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            skill = root / '.agents/skills/tdd/SKILL.md'
+            skill.parent.mkdir(parents=True)
+            skill.write_text('/' + 'Users/person/private\n')
+            (root / '.claude/skills').mkdir(parents=True)
+            (root / '.claude/skills/tdd').symlink_to('../../.agents/skills/tdd')
+            (root / '.claude/notes.md').write_text('/' + 'Users/person/private\n')
+            self.assertEqual(len(MODULE.problems(root)), 3)
+            # An enclosing repository's ignore rules never hide a nested tree.
+            outer = root.parent / (root.name + '-outer')
+            subprocess.run(['git', 'init', '-q', str(outer)], check=True, env=env)
+            (outer / '.gitignore').write_text('/inner/\n')
+            nested = outer / 'inner'
+            shutil.copytree(root, nested, symlinks=True)
+            self.addCleanup(shutil.rmtree, outer)
+            (nested / '.gitignore').write_text('/.agents/\n/.claude/skills/\n')
+            self.assertEqual(len(MODULE.problems(nested)), 3)
+            subprocess.run(['git', 'init', '-q', str(root)], check=True, env=env)
+            self.assertEqual(len(MODULE.problems(root)), 3)
+            (root / '.gitignore').write_text('/.agents/\n/.claude/skills/\n')
+            self.assertEqual(MODULE.problems(root), ['.claude/notes.md:1: private marker or personal path'])
+            subprocess.run(['git', '-C', str(root), 'add', '-f', '.agents/skills/tdd/SKILL.md'],
+                           check=True, env=env)
+            self.assertIn('.agents/skills/tdd/SKILL.md:1: private marker or personal path',
+                          MODULE.problems(root))
+            # Only directories are setup output; an ignored-looking regular file is scanned.
+            subprocess.run(['git', '-C', str(root), 'rm', '-rq', '--cached', '.agents'], check=True, env=env)
+            shutil.rmtree(root / '.agents')
+            (root / '.agents').write_text('/' + 'Users/person/private\n')
+            self.assertIn('.agents:1: private marker or personal path', MODULE.problems(root))
+
     def test_bundled_upstream_url_examples_do_not_hide_private_paths(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

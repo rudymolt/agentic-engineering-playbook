@@ -7,11 +7,11 @@ active_features: 6
 [Cloud skill provisioning](cloud-skill-provisioning/slices.md) — alignment,
 specification, both test seams, and seven implementation slices approved on
 2026-10-24. All seven child tickets are published with verified dependencies;
-S1–S4 are implemented and independently verified, including returned fixes and
-fresh CLI QA. S4 adds safe exact adopted-release recovery. S5 adds deliberate
-portable inventory adoption through bootstrap/upgrade with fixture evidence;
-fresh independent review is pending. S6–S7 and actual runtime qualification
-remain pending.
+S1–S5 are complete and independently verified, including returned fixes and
+fresh CLI QA. S6 setup/adoption/discovery implementation and isolated fixture
+evidence are available; independent review/QA and canonical full verification
+are its acceptance gates. One A8 install-isolation decision is open before S7;
+S7 actual runtime qualification remains pending.
 
 [Edition and installed release](edition-release-identity/slices.md) — aligned
 and specified; implementation in progress on a separate branch.

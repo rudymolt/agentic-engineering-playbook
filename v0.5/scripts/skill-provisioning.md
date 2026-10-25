@@ -208,7 +208,7 @@ and saves no routing preference. The owning stage controls actual execution.
 Selecting fallback does not repair installation, mark it complete, or qualify
 its source. No fallback is selected by preview, check, install, or recover.
 
-Automatic Conductor setup remains a later slice.
+Conductor setup is available through the explicit adoption option below.
 
 Local startup must continue preserving existing and newer sources. This command
 adds no startup hook, changes no user-wide settings, and does not install skills
@@ -280,9 +280,10 @@ The other provisioner actions and their `--skill`/`--custom-bindings-dir` option
 are forwarded unchanged. JSON adds `source_resolution` with the actual path,
 release, tag object, commit, reuse/acquisition mode and `adoption_changed: false`.
 Exit 2 still means a blocked or incomplete action; preserve reports privately.
-The recovery launcher requires Python 3.9 or newer and Git. Bootstrap and upgrade
-can adopt it through their existing preview/Apply boundary below. Automatic host
-setup remains future work; this command grants no live runtime qualification.
+The recovery launcher requires Python 3.9 or newer and Git; the optional Conductor
+hook below requires Python 3.10 or newer. Bootstrap and upgrade
+can adopt it through their existing preview/Apply boundary below. The optional
+Conductor hook uses the same resolver; neither grants live runtime qualification.
 
 ## Adopt through bootstrap or upgrade
 
@@ -317,7 +318,7 @@ The launcher and state remain usable after project recreation, including when
 the original configured path is absent.
 
 Adoption installs no bundled local duplicate and changes no saved model or job
-binding, machine-local source choice, user settings or existing setup command.
+binding, machine-local source choice, user settings or existing setup command unless `--conductor-setup` is also selected.
 Use the public launcher with its default `discover` action to inspect local
 sources. Explicit `install` is still required for bundle activation; it preserves
 the existing retention/conflict rules and upstream invocation controls. Project
@@ -365,6 +366,131 @@ install/upgrade repair for inspection rather than clearing it or certifying setu
 Explicit supported repair may write files; repeat bootstrap after repair verifies
 them without rewriting. Delivery lifecycle policy and runtime remain unchanged.
 
+
+## Optional Conductor setup adoption
+
+Add `--conductor-setup` **together with** `--adopt-skills` to the existing
+bootstrap preview or upgrade `--plan`. Include the same flags and the returned
+`--inventory-revision` in its existing Apply command. This adds no approval gate
+and does not change old consumers unless selected. Explicit setup configuration
+composition needs Python 3.11+ (`tomllib`); the configured hook needs Python 3.10+
+(the launcher alone runs on 3.9+), its standard library, Git for source
+verification, and POSIX `sh`.
+No toolchain, runtime, skill, model or setting is upgraded automatically.
+
+```sh
+python3 "$PLAYBOOK_PATH/v0.5/scripts/upgrade-project.py" "$PROJECT_PATH" \
+  --plan --adopt-skills --conductor-setup
+# After reviewing that same plan, use --apply-safe instead of --plan and add
+# --inventory-revision with its exact returned value; retain both option flags.
+```
+
+The preview shows the composed `setup_after` command and binds the existing shared
+settings and generated hook bytes to the inventory revision. Apply preserves the
+prior shell body's meaning, exported variables, inline comments, other settings and
+file modes while appending a guarded call to `.playbook/conductor-setup.sh`; the
+composed string is rewritten as one escaped TOML string. A nonzero status from the
+prior body's last command stops the hook with that status; earlier commands keep
+their existing error handling unless the prior body sets its own `set -e`. The hook runs in a subshell rooted at `CONDUCTOR_WORKSPACE_PATH`, so prior
+working-directory changes do not redirect its relative paths. Unchanged repeated
+Apply/setup preserves bytes, modes and mtimes. Failed setup adoption restores the
+previous hook and certification rather than leaving a newly active partial hook.
+
+Composition supports a standalone `setup` assignment in `[scripts]` or a root
+`scripts.setup` assignment, including quoted/multiline shell strings. Ambiguous
+layouts, malformed or non-UTF-8 settings, prior bodies that cannot be scanned
+safely (such as a heredoc with an unbalanced quote), terminating `exit`/`exec`/`return` tokens, customized
+managed suffixes/hooks, linked endpoints and legacy `conductor.json` or
+`.conductor/settings.json` require explicit reconciliation. The control-token
+check is conservative and can also refuse those words as arguments; move such
+commands into a reviewed project helper before adopting. Inputs are preserved on
+refusal. An inventory re-adoption without `--conductor-setup` refreshes an
+unmodified previously adopted hook together with its launcher; a customized hook
+is preserved for explicit reconciliation. Legacy settings must be deliberately migrated with their actions/archive
+and other values intact before creating shared TOML. Higher-precedence local or
+managed settings can mask the shared command; inspect the effective host settings.
+Static gitignored environment files belong to Conductor's Files to copy facility,
+not automatic copying or credential handling in this hook.
+
+The actual host-provided `CONDUCTOR_IS_LOCAL` selects behavior; paths and installed
+home skills are never environment evidence. Missing/invalid values refuse setup:
+
+- `1`: discover/report existing sources and directory aliases only. No acquisition,
+  skill/discovery-configuration writes, bundle activation or user-wide changes.
+  If the recorded source is absent or no longer the adopted release, the hook
+  reuses an exact source already verified in the same separate cache; the
+  configured checkout itself is never rewritten.
+- `0`: validate the existing inventory record and regular launcher, then replay
+  the exact adopted release through the same provisioner. The configured consumer
+  hook deliberately enables `--acquire` to the separate absolute
+  `$XDG_CACHE_HOME/agentic-engineering-playbook/sources` cache, or
+  `$HOME/.cache/agentic-engineering-playbook/sources` when XDG is unset. An already
+  available exact source/cache is reused offline. Recorded tag object and commit
+  remain authoritative; setup never selects a newer release or upgrades adoption.
+
+The portable launcher also accepts `setup` directly with the existing source and
+cache options. Its `--source` can be explicit; the generated hook reads the same
+rendered state-header Playbook location used by upgrade. An absent local source
+reports its recorded path and an explicit `--acquire ... preview` recovery command
+without downloading; after that separate recovery, local setup reuses the verified
+cache. The recorded path is machine-specific, so a teammate either restores it or
+uses that explicit recovery. Cloud missing proof, moved tags, offline
+acquisition, damaged bundle or unavailable dependencies leave adoption and project
+customizations repairable. Missing Python/shell/host inputs have actionable stderr;
+source/inventory errors retain JSON repair reports. Follow that repair before
+retrying; no fallback or user-only invocation happens automatically.
+
+### Discovery wiring and activation
+
+Codex uses the canonical `.agents/skills/NAME` directories. After a complete Cloud
+installation, setup creates missing `.claude/skills/NAME` **directory** aliases to
+`../../.agents/skills/NAME` for the registry-derived inventory and present
+Playbook-owned skills. Entire directories preserve references, dependency lookup,
+licenses, `disable-model-invocation` and `agents/openai.yaml` invocation policy.
+Correct existing links retain their literal targets and mtimes. Unknown content,
+wrong/dangling links, legacy same-name Claude commands and linked discovery parents
+are preserved and reported as conflicts; no alias is overwritten. Only conflicting
+aliases are withheld and named in the repair; other missing aliases are still
+created. A linked or nonregular `.claude` or `.claude/skills` parent withholds all
+aliases. A later explicit `install` or `recover` removes only setup-owned aliases
+whose canonical directory is gone. Local setup only
+observes this wiring. JSON reports `discovery_aliases` separately and, in Cloud,
+`installation_complete`; an alias conflict leaves overall setup incomplete while
+unaffected installed capabilities remain available under their stage rules.
+
+These filesystem observations are **not runtime discovery or invocation proof**.
+The documented mechanisms come from [Codex skill discovery](https://learn.chatgpt.com/docs/build-skills)
+and [Claude Code skills](https://code.claude.com/docs/en/skills.md). Actual selected
+source, duplicate-name behavior, version compatibility and explicit invocation
+remain the S7 gate for fresh/recreated Cloud and both local runtimes. An installed
+incompatible embedded reviewer retains its existing stage-owned fallback.
+
+The maintainer repository's shared `.conductor/settings.toml` calls
+`sh v0.5/scripts/conductor-setup.sh --candidate`. This uses the same provisioner,
+labels the current development candidate, and creates no consumer state or release
+stamp. Candidate mode is limited to its own checkout without consumer state; it
+never acquires a release. Its Cloud output (`.agents/` and `.claude/skills/`) is
+reproducible from the reviewed bundle and ignored at the repository root, so the
+candidate stays clean; public-content checks skip those paths only while they are
+ignored and untracked. Test this only in disposable fixtures before the live
+gate; do not bootstrap the real maintainer checkout.
+
+Conductor Cloud reads shared setup from the branch used to **create** the workspace;
+use a fresh/recreated workspace at the exact reviewed candidate for qualification.
+The Mac app reads shared repository settings from the **remote default branch**,
+so editing a feature worktree does not activate them locally. They must reach that
+branch through the normal reviewed process before new local workspaces inherit
+them. Nothing in fixture success authorizes publication, live runs, explicit
+user-only invocations or claims of supported runtime qualification. See the
+[Conductor scripts](https://conductor.build/docs/reference/scripts),
+[settings](https://conductor.build/docs/reference/settings),
+[environment](https://conductor.build/docs/reference/environment-variables) and
+[repository schema](https://conductor.build/schemas/settings.repo.schema.json).
+
+Monthly maintenance compares upstream/runtime/discovery changes. Any deliberate
+source, runtime, model or settings migration must recheck affected contracts,
+preserve customizations and recovery, and record actual tested versions. Startup
+only replays the approved choice.
 
 ## Maintainer candidates and updates
 

@@ -492,6 +492,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--ci", required=True, choices=("copy", "existing"))
     parser.add_argument("--apply", action="store_true")
     parser.add_argument('--adopt-skills', action='store_true', help='preview portable inventory adoption in the existing Apply gate; no local activation')
+    parser.add_argument('--conductor-setup', action='store_true', help='compose shared setup in the same --adopt-skills preview/Apply gate; requires Python 3.11+')
     parser.add_argument('--inventory-revision', help='exact inventory_revision shown in that preview')
     parser.add_argument("--preferences-dir", type=Path)
     parser.add_argument("--preset", help="Named personal seed; omission uses saved personal defaults.")
@@ -515,10 +516,12 @@ def main(argv: list[str] | None = None) -> int:
     clock = (lambda: args.now) if args.now else None
     skill_plan = None
     try:
+        if args.conductor_setup and not args.adopt_skills:
+            raise ValueError('--conductor-setup requires --adopt-skills in the existing preview/Apply gate')
         if args.adopt_skills:
             skill_plan = skill_adoption.prepare(args.project, args.playbook_path,
                                                 release_provenance.verified_release_evidence(args.playbook_path),
-                                                for_apply=args.apply)
+                                                for_apply=args.apply, conductor_setup=args.conductor_setup)
             if args.apply:
                 skill_adoption.require_revision(skill_plan, args.inventory_revision)
         elif args.inventory_revision:

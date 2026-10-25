@@ -1,0 +1,10 @@
+"$schema" = "https://conductor.build/schemas/settings.repo.schema.json"
+
+[scripts]
+setup = """
+if ! command -v sh >/dev/null 2>&1; then
+  printf '%s\\n' 'Playbook setup needs POSIX sh on PATH; restore the noninteractive toolchain.' >&2
+  exit 2
+fi
+sh v0.5/scripts/conductor-setup.sh --candidate
+"""

@@ -8,12 +8,15 @@ import os
 import json
 from pathlib import Path
 import re
+import shlex
 import subprocess
 import sys
 import tempfile
 import zipfile
 
 import release_provenance as provenance
+import skill_adoption as adoption
+import conductor_setup
 from playbook_state import parse_scalar, top_level_scalar_value
 import upstream_bundle as bundle
 
@@ -42,7 +45,7 @@ def adopted_proof(project):
 
 def validate_source(source, proof):
     if not provenance.local_checkout_matches_release(source, *proof):
-        raise SourceError('source does not match the clean adopted release, annotated tag object and commit; restore it or explicitly recover to a separate location')
+        raise SourceError(f'source {source} does not match the clean adopted release, annotated tag object and commit; restore it or explicitly recover to a separate location')
     if not (source / 'v0.5' / bundle.BUNDLE / 'integrity.json').is_file():
         raise SourceError('adopted release lacks the skill bundle; explicitly upgrade through the existing migration gate')
     bundle.load(source / 'v0.5')
@@ -59,8 +62,10 @@ def launcher_bytes():
     with zipfile.ZipFile(output, 'w') as archive:
         entries = {'__main__.py': b'from source_recovery import main\nraise SystemExit(main())\n',
                    'source_recovery.py': Path(__file__).read_bytes(),
-                   'LICENSE': (scripts.parents[1] / 'LICENSE').read_bytes()}
-        for name in ('release_provenance.py', 'playbook_state.py', 'upstream_bundle.py', 'upstream_registry.py'):
+                   'LICENSE': (scripts.parents[1] / 'LICENSE').read_bytes(),
+                   'conductor-setup.sh': (scripts / 'conductor-setup.sh').read_bytes()}
+        for name in ('release_provenance.py', 'playbook_state.py', 'upstream_bundle.py',
+                     'upstream_registry.py', 'skill_adoption.py', 'playbook_config.py', 'conductor_setup.py'):
             entries[name] = (scripts / name).read_bytes()
         for name, data in sorted(entries.items()):
             info = zipfile.ZipInfo(name)
@@ -96,13 +101,39 @@ def acquisition_git(directory, *args):
         raise SourceError('exact release acquisition unavailable; check repository access and the adopted tag, then retry explicitly')
 
 
+def missing_source(args, project, reason='is missing'):
+    cache = shlex.quote(str(args.cache_dir) if args.cache_dir is not None else '<separate cache>')
+    recover = (f'python3 .playbook/provision.pyz --project {shlex.quote(str(project))} --source '
+               f'{shlex.quote(str(args.source))} --acquire --cache-dir {cache} preview')
+    return SourceError(f'configured source {reason}: {args.source}; restore that exact checkout, or recover '
+                       f'it explicitly with: {recover}. Local discovery never downloads; setup then '
+                       'reuses the verified cache')
+
+
 def resolve_source(args, project, proof):
     source = args.source.resolve()
+    reason = 'is missing'
     if source.exists() or args.source.is_symlink():
-        validate_source(source, proof)
-        return source, 'reused'
+        try:
+            validate_source(source, proof)
+            return source, 'reused'
+        except SourceError:
+            if args.cache_dir is None:
+                raise
+        # The configured checkout stays untouched; only the separate exact cache may serve.
+        reason = 'differs from the adopted release'
     if args.cache_dir is None:
-        raise SourceError('configured source is missing; select a separate --cache-dir and explicit --acquire for recovery')
+        raise missing_source(args, project)
+    try:
+        return cached_source(args, project, proof, reason)
+    except SourceError as error:
+        if reason == 'is missing':
+            raise
+        raise SourceError(f'configured source {reason} and is preserved: {args.source}; {error}; '
+                          'restore that exact checkout or retry the explicit recovery') from None
+
+
+def cached_source(args, project, proof, reason):
     cache = args.cache_dir.resolve()
     if cache.is_relative_to(project) or args.cache_dir.is_symlink():
         raise SourceError('exact source cache must be an unlinked directory outside the consumer project and its customizations')
@@ -114,7 +145,7 @@ def resolve_source(args, project, proof):
         validate_source(target, proof)
         return target, 'reused'
     if not args.acquire:
-        raise SourceError('configured source is missing; use explicit --acquire with a non-discovery action; local discovery never downloads')
+        raise missing_source(args, project, reason)
     cache.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix='.recover-', dir=cache) as temporary:
         checkout = Path(temporary) / 'checkout'
@@ -136,30 +167,74 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--write-launcher', type=Path, help='explicit portable zipapp output; preserves existing differing files')
     parser.add_argument('--acquire', action='store_true', help='explicit exact recovery; forbidden with local discovery')
+    parser.add_argument('--candidate', action='store_true',
+                        help='explicit setup of the maintainer checkout, never a consumer adoption')
     parser.add_argument('--project', type=Path)
     parser.add_argument('--source', type=Path, help='configured checkout; never rewritten')
     parser.add_argument('--cache-dir', type=Path, help='separate exact-release storage')
     parser.add_argument('--repository', default=provenance.PUBLIC_REPOSITORY, help='acquisition transport, never release authority')
-    parser.add_argument('action', nargs='?', default='discover', choices=('discover', 'preview', 'install', 'check', 'recover', 'retain', 'fallback'))
+    parser.add_argument('action', nargs='?', default='discover', choices=('discover', 'preview', 'install', 'check', 'recover', 'retain', 'fallback', 'setup'))
     parser.add_argument('--skill')
     parser.add_argument('--custom-bindings-dir', type=Path)
     args = parser.parse_args(argv)
     try:
+        setup = None
+        if args.action == 'setup':
+            if args.write_launcher is not None or args.skill is not None:
+                raise SourceError('setup only replays inventory or discovers sources; run launcher export, '
+                                  'retention or fallback as separate explicit commands')
+            host = os.environ.get('CONDUCTOR_IS_LOCAL')
+            if host not in ('0', '1'):
+                raise SourceError('Conductor setup requires CONDUCTOR_IS_LOCAL=1 (local) or 0 (Cloud); '
+                                  'restore the host-provided environment and retry setup')
+            args.action = 'discover' if host == '1' else 'install'
+            setup = {'host': 'local' if host == '1' else 'cloud', 'action': args.action}
         if args.write_launcher is not None:
             changed = write_launcher(args.write_launcher)
             print(json.dumps({'launcher': str(args.write_launcher), 'changed': changed}))
             return 0
-        if args.project is None or args.source is None:
+        if args.project is None:
             raise SourceError('provide --project and the configured --source, or explicitly --write-launcher')
+        if args.source is None and setup is not None and not args.candidate:
+            state_file = args.project / '.playbook-state.yml'
+            text = state_file.read_text() if state_file.is_file() else ''
+            # Same rendered state-header location used by upgrade's recorded_playbook_root.
+            matches = re.findall(r'^# Updated by stage files \(see (/.+?)/v0\.[345]/10-process/\*\)', text, re.M)
+            if len(matches) != 1:
+                raise SourceError('setup requires the recorded Playbook location in the state header; restore the rendered header or pass explicit --source')
+            args.source = Path(matches[0])
+        if args.source is None:
+            raise SourceError('provide --project and the configured --source' + (
+                '; candidate setup requires its explicit checkout' if args.candidate else ''))
         if args.acquire and args.action == 'discover':
             raise SourceError('local discovery never acquires source; select explicit --acquire with preview/install/check or recovery')
         project = args.project.resolve()
-        proof = adopted_proof(project)
-        source, mode = resolve_source(args, project, proof)
-        cli = validate_source(source, proof)
-        release, tag, commit = proof
+        if args.candidate:
+            source = args.source.resolve()
+            state = project / '.playbook-state.yml'
+            if setup is None or project != source or state.exists() or state.is_symlink():
+                raise SourceError('--candidate is only for explicit maintainer setup in its own checkout '
+                                  'without consumer state; preserve consumer adoption and use its recorded release')
+            if args.acquire or args.cache_dir is not None:
+                raise SourceError('maintainer candidate setup never acquires a release; restore the candidate checkout')
+            cli = source / 'v0.5/scripts/provision-skills.py'
+            if cli.is_symlink() or not cli.is_file():
+                raise SourceError('maintainer candidate lacks its regular provisioner; restore the candidate checkout')
+            identity_args = ['--candidate']
+            resolution = {'mode': 'maintainer-candidate', 'adoption_changed': False}
+        else:
+            proof = adopted_proof(project)
+            record = adoption.setup_record(project) if setup is not None else None
+            source, mode = resolve_source(args, project, proof)
+            cli = validate_source(source, proof)
+            if record is not None:
+                adoption.validate_setup_inventory(project, source, proof, record)
+            release, tag, commit = proof
+            identity_args = ['--release', release, '--tag-object', tag, '--commit', commit]
+            resolution = {'mode': mode, 'path': str(source), 'release': release,
+                          'tag_object': tag, 'commit': commit, 'adoption_changed': False}
         command = [sys.executable, '-B', str(cli), '--project', str(project), '--source', str(source),
-                   '--release', release, '--tag-object', tag, '--commit', commit, args.action]
+                   *identity_args, args.action]
         if args.skill is not None:
             command += ['--skill', args.skill]
         if args.custom_bindings_dir is not None:
@@ -171,8 +246,29 @@ def main(argv=None):
                 raise ValueError('object required')
         except ValueError:
             raise SourceError('verified release provisioner failed without a JSON report; inspect that release and restore its supported interface') from None
-        result['source_resolution'] = {'mode': mode, 'path': str(source), 'release': release,
-                                       'tag_object': tag, 'commit': commit, 'adoption_changed': False}
+        if run.returncode == 0 and args.action in ('install', 'recover'):
+            result['changed'] = [*result.get('changed', []), *conductor_setup.prune_aliases(project)]
+        result['source_resolution'] = resolution
+        if setup is not None:
+            result['setup'] = setup
+            _, packages, registry = bundle.load(source / 'v0.5')
+            names = set(packages) | {name for name, skill in registry.skills.items()
+                                     if skill.status == 'current' and registry.packages[skill.package].kind == 'local'}
+            names.add('ai-playbook-deliver')  # Manifest-owned delivery skill, when bootstrap installed it.
+            rows, changed, conflicts = conductor_setup.discovery_aliases(
+                project, names, apply=setup['host'] == 'cloud' and run.returncode == 0 and result.get('complete') is True)
+            result['discovery_aliases'] = rows
+            result['changed'] = [*result.get('changed', []), *changed]
+            if setup['host'] == 'cloud':
+                result['installation_complete'] = result.get('complete', False)
+                if conflicts:
+                    withheld = ', '.join(r['path'] for r in rows if r['status'] == 'conflict')
+                    result['complete'] = False
+                    result['repair'] = ('Preserve conflicting Claude skill/command endpoints or linked discovery parents; explicitly reconcile '
+                                        + withheld + ' before retrying. Other aliases and canonical Codex files remain available; '
+                                        'actual invocation is unverified.')
+                    print(json.dumps(result, indent=2, sort_keys=True))
+                    return 2
         print(json.dumps(result, indent=2, sort_keys=True))
         return run.returncode
     except (SourceError, OSError, ValueError, RuntimeError) as error:

@@ -72,3 +72,24 @@ owner repair. Public bootstrap/upgrade fixtures compare link metadata and the
 complete target/consumer bytes, modes and mtimes on refusal, then restore regular
 state and apply the same reviewed revision. Keep the read-only recovery control
 separate so a write-boundary repair does not remove supported proof reads.
+
+## Same-shell setup composition and failure recovery
+
+Preserve prior noninteractive shell commands and exports when adding a setup
+hook; execute only the hook in a workspace-rooted subshell. Bind the settings and
+hook bytes into the existing adoption preview revision, retain inline comments,
+and reject ambiguous/terminating bodies instead of guessing how to rewrite them.
+A public upgrade fixture with a read-only settings file exposed a partially
+written hook: rollback must restore setup outputs as well as certification and
+launcher state. Compare complete fixture bytes, modes and mtimes on refusal and
+unchanged repeats. Directory aliases must preserve the complete skill target and
+existing unknown endpoints; file wiring still proves no runtime invocation.
+
+## Preservation oracles and per-route failure
+
+Compare preserved endpoints by mode, inode, device, links, owner, size, mtime,
+ctime and link target, not whole `stat` results: reads may refresh access time.
+Age the access time before the baseline so that refresh is deterministic on Linux.
+Exercise one conflicting route in a fresh fixture, not only after a complete
+install, and assert the unaffected routes are still wired. Every printed repair
+must be executable through the entry point that printed it.

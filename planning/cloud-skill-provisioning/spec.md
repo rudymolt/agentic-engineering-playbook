@@ -2,10 +2,12 @@
 
 Status: specification and both test seams approved by the human on 2026-10-24.
 Alignment and the [implementation slices](slices.md) are accepted.
-S1–S4 are implemented and independently verified at the approved fixture seam,
-including returned fixes and fresh CLI QA. S5 bootstrap/upgrade inventory adoption
-is implemented with isolated fixture evidence and awaits fresh independent review.
-S6–S7 remain future work; no live runtime qualification has occurred.
+S1–S5 are complete and independently verified at the approved fixture seam,
+including returned fixes and fresh CLI QA. S6 setup composition, host dispatch,
+exact replay and safe discovery wiring are implemented with isolated fixture
+evidence; independent review/QA and canonical full verification are its
+acceptance gates. S7 actual runtime qualification remains pending. No live
+qualification has occurred.
 
 Sources: [alignment](alignment.md), [domain glossary](../../GLOSSARY.md),
 [ADR 0002](../../docs/adr/0002-release-bundled-project-skills.md).
@@ -163,8 +165,12 @@ as qualified support.
 ## Remaining review and execution gates
 
 The scope decisions, specification, test seams, and stage-04 breakdown are
-accepted. Child tickets are published and S1 is selected for implementation.
-No new product decision is outstanding.
+accepted. Child tickets are published; S1–S5 are complete and S6
+implementation evidence is available for its acceptance gates.
+One product decision is outstanding before S7: A8 requires unaffected
+capabilities to remain usable, but one conflicting, unretained project skill
+still blocks a fresh installation of the whole inventory under the accepted S1
+atomic installation contract.
 Runtime access, concrete qualification ceilings, and live results are execution
 prerequisites, not assumed facts. Shipping additionally requires independent
 review, the changelog Why line, regenerated manifests, privacy/attribution

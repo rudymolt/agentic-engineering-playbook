@@ -17,6 +17,20 @@ def snapshot(root):
             for p in root.rglob('*') if p.is_file() and not p.is_symlink()}
 
 
+def preserved(path):
+    # Everything a preserving read must keep; kernel-maintained access time is not.
+    status = path.lstat()
+    fields = ('st_mode', 'st_ino', 'st_dev', 'st_nlink', 'st_uid', 'st_gid', 'st_size',
+              'st_mtime_ns', 'st_ctime_ns')
+    return ({name: getattr(status, name) for name in fields},
+            os.readlink(path) if path.is_symlink() else None)
+
+
+def age_access_time(path):
+    # Reads may legitimately refresh an old access time; make that deterministic.
+    os.utime(path, ns=(1, path.lstat().st_mtime_ns), follow_symlinks=False)
+
+
 class SourceRecoveryTest(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
@@ -223,7 +237,8 @@ class SourceRecoveryTest(unittest.TestCase):
     def test_launcher_fifo_is_preserved_then_regular_export_succeeds(self):
         launcher = self.root / 'provision.pyz'
         os.mkfifo(launcher)
-        before = launcher.lstat()
+        age_access_time(launcher)
+        before = preserved(launcher)
         before_project, before_home = snapshot(self.project), snapshot(self.home)
         command = [sys.executable, '-B', str(CLI), '--write-launcher', str(launcher)]
         rejected = subprocess.run(command, capture_output=True, text=True,
@@ -232,7 +247,7 @@ class SourceRecoveryTest(unittest.TestCase):
         report = json.loads(rejected.stdout)
         self.assertIn('regular file', report['repair'])
         self.assertIn('preserve', report['repair'])
-        self.assertEqual(launcher.lstat(), before)
+        self.assertEqual(preserved(launcher), before)
         self.assertEqual(snapshot(self.project), before_project)
         self.assertEqual(snapshot(self.home), before_home)
         launcher.unlink()
@@ -270,7 +285,8 @@ class SourceRecoveryTest(unittest.TestCase):
                 else:
                     os.mkfifo(self.state)
                 try:
-                    before_state, before_target = self.state.lstat(), linked_fifo.lstat()
+                    age_access_time(self.state); age_access_time(linked_fifo)
+                    before_state, before_target = preserved(self.state), preserved(linked_fifo)
                     before_project, before_home = snapshot(self.project), snapshot(self.home)
                     rejected = subprocess.run([sys.executable, '-B', str(launcher),
                                                '--project', str(self.project), '--source',
@@ -280,8 +296,9 @@ class SourceRecoveryTest(unittest.TestCase):
                     report = json.loads(rejected.stdout)
                     self.assertIn('regular file', report['repair'])
                     self.assertIn('restore', report['repair'])
-                    self.assertEqual(self.state.lstat(), before_state)
-                    self.assertEqual(linked_fifo.lstat(), before_target)
+                    self.assertEqual(preserved(self.state), before_state)
+                    self.assertEqual(preserved(linked_fifo), before_target)
+                    self.assertEqual(before_state[1], str(linked_fifo) if linked else None)
                     self.assertEqual(snapshot(self.project), before_project)
                     self.assertEqual(snapshot(self.home), before_home)
                 finally:
@@ -293,11 +310,13 @@ class SourceRecoveryTest(unittest.TestCase):
         regular.write_bytes(original)
         self.state.unlink()
         self.state.symlink_to(regular)
-        link_before, target_before = self.state.lstat(), regular.stat()
+        age_access_time(self.state)
+        link_before, target_before = preserved(self.state), regular.stat()
         project_before, home_before = snapshot(self.project), snapshot(self.home)
         self.assertTrue(self.command('check', launcher=launcher)['complete'])
         self.assertEqual(regular.read_bytes(), original)
-        self.assertEqual(self.state.lstat(), link_before)
+        self.assertEqual(preserved(self.state), link_before)
+        self.assertEqual(link_before[1], str(regular))
         self.assertEqual(regular.stat().st_mode, target_before.st_mode)
         self.assertEqual(regular.stat().st_mtime_ns, target_before.st_mtime_ns)
         self.assertEqual(snapshot(self.project), project_before)

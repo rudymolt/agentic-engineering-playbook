@@ -283,6 +283,14 @@ def main(argv=None):
             else:
                 retained = history.retained(project)
                 after = {'source': identity, 'skills': {n: history.encode(c) for n, c in packages.items()}}
+                # Installing in the candidate checkout itself makes Git dirty.
+                # Keep the prior installation's source observation when only
+                # that volatile flag changed; report current dirt independently.
+                previous_source = (state['current'] or {}).get('source', {})
+                if (args.candidate and project == args.source.resolve()
+                        and {k: v for k, v in previous_source.items() if k != 'dirty'}
+                        == {k: v for k, v in identity.items() if k != 'dirty'}):
+                    after['source'] = previous_source
             retained = history.retained(project)
             for name in retained['skills']:
                 if name not in registry.skills:

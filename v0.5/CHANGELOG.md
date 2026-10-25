@@ -2,6 +2,25 @@
 
 ## Unreleased
 
+- Add opt-in Conductor setup composition to inventory adoption's existing
+  preview/Apply, preserving prior commands, exports, comments and settings.
+  Dispatch on the host environment, verify adopted launcher/bundle identity,
+  restore exact releases only in Cloud, and keep local discovery non-mutating.
+  Wire whole-directory Claude aliases beside canonical Codex skill directories,
+  preserving metadata/support/notices and reporting unknown or linked conflicts.
+  Add a distinct maintainer-candidate hook without consumer bootstrap/state.
+  Withhold only conflicting aliases, name a missing local source with an explicit
+  recovery that local setup then reuses, refresh an unmodified hook on inventory
+  re-adoption, show the composed setup in preview, and ignore maintainer setup
+  output so the candidate checkout and public-content gate stay clean.
+
+*Why — repeat the adopted setup safely:* fresh workspaces need a reachable,
+  reproducible inventory while local workspaces retain their selected sources.
+  Deliberate composition and rollback preserve project ownership; directory
+  wiring remains separate from actual runtime qualification and stage authority.
+  One alias conflict or a teammate's different source path must not disable
+  other discovery routes or leave a repair the hook itself cannot follow.
+
 - Add deliberate portable inventory adoption to bootstrap/upgrade's existing
   preview and Apply. Bind exact release proof, bundle and launcher hashes;
   preserve settings, job bindings, local sources, setup and customizations.

@@ -9,6 +9,7 @@ import re
 
 import release_provenance
 import upstream_bundle
+import conductor_setup as setup
 from playbook_config import strict_json
 from playbook_state import top_level_scalar_value, replace_top_level_scalar
 
@@ -41,6 +42,35 @@ def read_record(text):
     return record
 
 
+def setup_record(project):
+    """Require the prior inventory choice and its regular launcher before replay."""
+    project = Path(project)
+    state = project / '.playbook-state.yml'
+    if not state.is_file():
+        raise ValueError('setup requires readable adoption state; restore the recorded project state')
+    record = read_record(state.read_text())
+    if record is None:
+        raise ValueError('setup requires explicit skill inventory adoption; preview bootstrap/upgrade '
+                         '--adopt-skills and apply its reviewed --inventory-revision first')
+    directory, launcher = project / '.playbook', project / LAUNCHER
+    if directory.is_symlink() or launcher.is_symlink() or not launcher.is_file():
+        raise ValueError('setup requires the regular adopted launcher; preserve linked or conflicting '
+                         'endpoints and restore the reviewed .playbook/provision.pyz')
+    if digest(launcher.read_bytes()) != record['launcher_sha256']:
+        raise ValueError('adopted launcher integrity differs; preserve customizations and restore its '
+                         'reviewed bytes or explicitly re-adopt through bootstrap/upgrade')
+    return record
+
+
+def validate_setup_inventory(project, source, proof, record):
+    """Use the migration preview's existing source-derived inventory identity."""
+    expected = prepare(project, source, proof)['summary']['record']
+    if record != expected:
+        raise ValueError('setup inventory or launcher differs from the exact adopted release; '
+                         'restore the recorded release and launcher or explicitly re-adopt through '
+                         'bootstrap/upgrade preview and Apply')
+
+
 def require_writable_state(project):
     state = Path(project) / '.playbook-state.yml'
     if state.is_symlink():
@@ -50,7 +80,7 @@ def require_writable_state(project):
         raise ValueError('adoption state must be a readable regular file; preserve the endpoint and restore it')
 
 
-def prepare(project, source, proof, *, for_apply=False):
+def prepare(project, source, proof, *, for_apply=False, conductor_setup=False):
     project, source = Path(project).resolve(), Path(source).resolve()
     if project == source:
         raise ValueError('maintainer checkout cannot receive consumer adoption; use an isolated consumer fixture')
@@ -95,9 +125,18 @@ def prepare(project, source, proof, *, for_apply=False):
                'customizations': 'Preserve project and newer local sources; no local bundle activation. Commit and explicitly retain edits before replay.',
                'recovery': 'Replay through the exact adopted release; previous installation recovery and stage-owned fallback remain explicit.',
                'qualification': 'unverified'}
+    setup_plan = setup.prepare(project, source, previous, current) if conductor_setup else None
+    if setup_plan is None:
+        setup_plan = setup.refresh(project, source, previous, current)
+        if setup_plan is not None:
+            summary['conductor_hook_refresh'] = {setup.SCRIPT: {name: digest(value) for name, value in
+                                                 (('before_sha256', setup_plan['files'][setup.SCRIPT]['before']),
+                                                  ('after_sha256', setup_plan['files'][setup.SCRIPT]['after']))}}
+    elif setup_plan is not None:
+        summary['conductor_setup'] = {'setup_after': setup_plan['setup'], 'files': {name: {'before_sha256': digest(v['before']) if v['before'] is not None else None, 'after_sha256': digest(v['after'])} for name, v in setup_plan['files'].items()}, 'cloud': 'explicit exact adopted release acquisition to separate cache; no upgrades', 'local': 'discovery only; no acquisition or aliases', 'activation': 'Cloud creation branch; local remote default branch; overrides may mask shared setup'}
     summary['inventory_revision'] = digest(json.dumps(summary, sort_keys=True).encode())
     return {'summary': summary, 'material': material, 'state_before': state_before,
-            'launcher_before': current}
+            'launcher_before': current, 'setup_plan': setup_plan}
 
 
 def require_revision(plan, revision):
@@ -124,12 +163,16 @@ def apply(project, state, plan):
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_bytes(plan['material'])
         changed.append(str(target))
+    if plan.get('setup_plan') is not None:
+        changed.extend(setup.apply(Path(project), plan['setup_plan']))
     return write_record(state, plan['summary']['record']), changed
 
 
 def rollback_certification(project, plan):
     """Keep safe migration edits, but never certify a failed adopted setup."""
     require_writable_state(project)
+    if plan.get('setup_plan') is not None:
+        setup.rollback(Path(project), plan['setup_plan'])
     state_path = Path(project) / '.playbook-state.yml'
     if state_path.is_file():
         state = state_path.read_text()
