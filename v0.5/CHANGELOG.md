@@ -2,6 +2,27 @@
 
 ## Unreleased
 
+- Reject nonregular launcher-output and adoption-proof endpoints before reading
+  them. Return actionable JSON for FIFOs, preserve their filesystem records,
+  and retain regular-file export, proof parsing and linked-proof behavior.
+
+*Why — bounded recovery refusal:* a FIFO without a writer previously blocked
+  the recovery interface indefinitely instead of reporting a repair. Checking
+  effective file types preserves user-owned endpoints without adding an
+  acquisition timeout policy or changing release authority.
+
+- Recover a missing configured Playbook source from exactly the adopted release,
+  annotated tag object and commit. Add an explicitly exported portable launcher,
+  verified offline reuse and opt-in acquisition into a separate cache before
+  invoking the existing provisioner. Preserve settings, adoption and conflicting
+  source or project edits; default discovery never downloads. Bootstrap/host
+  integration and live runtime qualification remain pending.
+
+*Why — reachable exact recovery:* another machine's saved checkout path must not
+  prevent access to the adopted bundle or silently choose a newer release.
+  Reusing the existing proof and provisioner keeps recovery separate from
+  upgrades, customization ownership and stage authority.
+
 - Make local source discovery the provisioner's default action. Report exact,
   newer, customized, missing, duplicate and unknown sources, file differences,
   saved job routes and explicit repair choices without changing local skills

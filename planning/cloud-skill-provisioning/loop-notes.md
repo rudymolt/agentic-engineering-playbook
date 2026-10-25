@@ -31,3 +31,14 @@ access to `agents/` proves its metadata and known YAML file still exist while
 listing fails: both supported local Python interpreters now report the source
 unknown/blocked, then exact after directory access is restored. Preserve the
 same failure semantics for installation, retained content and recovery reads.
+
+## Reachable exact-source recovery
+
+A helper inside the absent checkout cannot recover that checkout. Explicitly
+exporting the same provenance/state/bundle readers as a portable Python zipapp
+keeps recovery reachable without another release resolver. Public CLI fixtures
+run that launcher with no Python import path, ignore a newer remote release,
+and verify the recorded annotated tag object and commit before activation.
+Separate temporary acquisition from the published cache, then delegate to the
+validated release's existing provisioner. Offline cache replay and conflicting
+project edits retain the existing adoption and customization boundaries.

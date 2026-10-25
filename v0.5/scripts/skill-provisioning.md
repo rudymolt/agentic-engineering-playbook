@@ -185,8 +185,9 @@ Initial-install recovery returns to the preceding empty/missing inventory.
 Recovery reports `recovery_complete` separately from `complete`: restoring an older
 installation need not match the currently requested source. `recovered_source`
 names the restored source evidence; no adoption record changes. An unchanged
-repeat recovery performs no writes. Keep the available verified source when
-recovering; exact-release acquisition remains a later slice.
+repeat recovery performs no writes. Use an available verified source when
+recovering an installation, or explicitly recover that exact source with the
+launcher described below.
 
 Later edits and unknown files block destructive transitions before replacement.
 The error identifies the affected skill and repair. For a completed installation,
@@ -207,8 +208,7 @@ and saves no routing preference. The owning stage controls actual execution.
 Selecting fallback does not repair installation, mark it complete, or qualify
 its source. No fallback is selected by preview, check, install, or recover.
 
-Exact release acquisition, bootstrap/upgrade adoption, and automatic Conductor
-setup remain later slices.
+Bootstrap/upgrade adoption and automatic Conductor setup remain later slices.
 
 Local startup must continue preserving existing and newer sources. This command
 adds no startup hook, changes no user-wide settings, and does not install skills
@@ -216,6 +216,73 @@ merely because the checkout exists. Use explicit `install` only in the project
 where bundle activation has been selected. Actual Claude Code/Codex discovery
 and invocation, including fresh/recreated Cloud support, require separate live
 qualification; fixture success makes no support claim.
+
+## Recover an absent adopted source
+
+While the verified checkout is available, explicitly export a portable launcher
+to an existing directory you control. Keep it available separately from that
+checkout so a missing machine-local path does not hide the recovery interface:
+
+```sh
+python3 "$PLAYBOOK_PATH/v0.5/scripts/recover-playbook-source.py" \
+  --write-launcher "$LAUNCHER_PATH"
+```
+
+`LAUNCHER_PATH` is a Python zipapp file, for example `provision.pyz`. It packages
+the same release-provenance checker, state scalar reader and bundle reader with
+their license. Identical export is a no-write operation; a linked destination or
+different existing bytes block rather than overwrite a customized launcher.
+Export from the available checkout, not from the zipapp itself.
+Existing launcher output must be a regular file before its bytes are compared.
+Nonregular endpoints, including FIFOs, return JSON repair without opening them;
+preserve the endpoint and choose another output.
+
+The launcher reads `playbook_release`, `playbook_release_tag_object` and
+`playbook_release_commit` from the project's `.playbook-state.yml`. It accepts
+no latest-release choice or maintainer-candidate substitution. Missing,
+ambiguous or invalid proof requires restoring the recorded proof through the
+existing owner/migration flow. An adoption without the bundle requires an
+explicit upgrade; recovery never upgrades it.
+The effective adoption-proof endpoint must also be a regular file before it is
+read. A FIFO, including a link to one, blocks promptly with repair to restore a
+readable regular adoption record. A link to regular proof remains readable;
+the export command's direct launcher-link refusal is unchanged.
+
+```sh
+python3 -B "$LAUNCHER_PATH" --project "$PROJECT_PATH" \
+  --source "$PLAYBOOK_PATH" --cache-dir "$SOURCE_CACHE" preview
+
+python3 -B "$LAUNCHER_PATH" --project "$PROJECT_PATH" \
+  --source "$PLAYBOOK_PATH" --cache-dir "$SOURCE_CACHE" --acquire install
+```
+
+The first command reuses a clean exact configured source or an already verified
+cache offline. If neither exists, it reports repair without downloading. The
+second explicitly acquires the adopted annotated tag, verifies its tag object
+and peeled commit before checkout, then validates the clean release and bundle
+before publishing the cache and invoking that release's public provisioner.
+`--repository` can select an acquisition transport; the recorded proof remains
+the authority. A later remote HEAD or newer tag is never selected. Acquisition
+does not make a separate upstream skill request.
+
+The cache must be outside the consumer project and its customizations. A linked
+cache location, dirty existing source, changed tag, wrong commit, inaccessible
+transport or invalid bundle blocks with repair instructions. Existing source
+and cache edits are preserved; choose a separate location or restore their
+recorded bytes explicitly. Failed acquisition changes no adoption, project
+skills or user settings. It may leave an empty external cache directory.
+The saved source path and all adoption/settings fields remain unchanged even
+after success. Installation still uses the existing provisioner's conflict,
+retention, recovery and invocation boundaries.
+
+Omitting the action selects non-mutating `discover`; it rejects `--acquire`.
+The other provisioner actions and their `--skill`/`--custom-bindings-dir` options
+are forwarded unchanged. JSON adds `source_resolution` with the actual path,
+release, tag object, commit, reuse/acquisition mode and `adoption_changed: false`.
+Exit 2 still means a blocked or incomplete action; preserve reports privately.
+The launcher requires Python 3.9 or newer and Git. Portable launcher integration
+into bootstrap and host setup remains future work; this command grants no live
+runtime qualification.
 
 ## Maintainer candidates and updates
 
@@ -244,3 +311,6 @@ dependency closure, invocation policy, licenses, and the existing compatibility
 records. Preserve project customizations and recovery options; record tested
 versions and rerun affected live discovery/invocation qualification before making
 support claims. A newer local choice never implicitly advances the Cloud pin.
+Review launcher compatibility at the same maintenance/adoption checkpoints.
+Export a refreshed launcher to a separate path, preserve customized bytes, and
+requalify the affected public interface before deliberately replacing it.

@@ -2,11 +2,10 @@
 
 Status: specification and both test seams approved by the human on 2026-10-24.
 Alignment and the [implementation slices](slices.md) are accepted.
-S1 and S2 are implemented and independently verified at the approved fixture seam.
-S3 local discovery and explicit source selection are implemented with fixture
-evidence and returned source-observation corrections, including supporting-tree
-traversal completeness. Fresh independent verification of the latest corrected
-candidate is pending. S4–S7 remain future work;
+S1–S3 are implemented and independently verified at the approved fixture seam,
+including returned source-observation corrections and fresh CLI QA. S4 exact
+adopted-release recovery is implemented with isolated fixture evidence; fresh
+independent review is pending. S5–S7 remain future work;
 no live runtime qualification has occurred.
 
 Sources: [alignment](alignment.md), [domain glossary](../../GLOSSARY.md),
