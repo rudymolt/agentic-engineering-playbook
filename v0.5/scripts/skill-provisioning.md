@@ -208,7 +208,7 @@ and saves no routing preference. The owning stage controls actual execution.
 Selecting fallback does not repair installation, mark it complete, or qualify
 its source. No fallback is selected by preview, check, install, or recover.
 
-Bootstrap/upgrade adoption and automatic Conductor setup remain later slices.
+Automatic Conductor setup remains a later slice.
 
 Local startup must continue preserving existing and newer sources. This command
 adds no startup hook, changes no user-wide settings, and does not install skills
@@ -280,9 +280,91 @@ The other provisioner actions and their `--skill`/`--custom-bindings-dir` option
 are forwarded unchanged. JSON adds `source_resolution` with the actual path,
 release, tag object, commit, reuse/acquisition mode and `adoption_changed: false`.
 Exit 2 still means a blocked or incomplete action; preserve reports privately.
-The launcher requires Python 3.9 or newer and Git. Portable launcher integration
-into bootstrap and host setup remains future work; this command grants no live
-runtime qualification.
+The recovery launcher requires Python 3.9 or newer and Git. Bootstrap and upgrade
+can adopt it through their existing preview/Apply boundary below. Automatic host
+setup remains future work; this command grants no live runtime qualification.
+
+## Adopt through bootstrap or upgrade
+
+Select portable inventory adoption as part of the existing setup or migration
+plan. Add `--adopt-skills` to bootstrap's read-only command, or preview an
+existing consumer with:
+
+```sh
+python3 "$PLAYBOOK_PATH/v0.5/scripts/upgrade-project.py" "$PROJECT_PATH" \
+  --plan --adopt-skills
+```
+
+The `Skill inventory adoption:` JSON line names the registry-derived inventory,
+exact verified public release/tag object/commit, `local_policy: discover`,
+customization/recovery implications, and an `inventory_revision`. Include all
+of that in the same human-reviewed plan as managed files, settings and setup.
+Apply uses the existing command with `--apply` for bootstrap or `--apply-safe`
+for upgrade, adding the same `--adopt-skills` and
+`--inventory-revision "$INVENTORY_REVISION"`. The revision binds the desired
+inventory, source proof and launcher bytes; it is part of that single Apply
+gate, not another approval. A missing or changed revision blocks before writes.
+`--plan` alone previews upgrade policy without selecting a new inventory.
+
+Successful adoption adds one inline JSON `skill_provisioning` field to the
+existing `.playbook-state.yml`, and writes `.playbook/provision.pyz`. Its schema-1
+record contains `bundle_sha256`, `launcher_sha256`, `launcher` and `local_policy`;
+the existing root release proof remains authoritative. Hashes bind the reviewed
+bundle integrity record and portable launcher, rather than storing a second
+catalog or a personal source path. Commit these project files deliberately
+through the normal review workflow; the helpers never commit or upload them.
+The launcher and state remain usable after project recreation, including when
+the original configured path is absent.
+
+Adoption installs no bundled local duplicate and changes no saved model or job
+binding, machine-local source choice, user settings or existing setup command.
+Use the public launcher with its default `discover` action to inspect local
+sources. Explicit `install` is still required for bundle activation; it preserves
+the existing retention/conflict rules and upstream invocation controls. Project
+or newer local skill choices can be reviewed independently through Configure
+without advancing the Cloud release proof.
+
+An old consumer remains unadopted until this option is deliberately selected.
+A release without the bundle or without verified public provenance cannot supply
+an adoption. For a consumer that already adopted inventory, advancing its
+release proof also requires the inventory in the existing upgrade preview/Apply
+gate. An unchanged repeat Apply with the same revision changes no project bytes.
+The maintainer checkout refuses consumer bootstrap/adoption; use isolated fixtures.
+
+Required migration review, schema errors and preservation conflicts prevent the
+new adoption and completion stamp. Resolve the named review and retry through
+the same flow. A differing unrecorded/customized launcher, linked endpoint or
+unsupported adoption record is preserved for explicit repair before writes.
+Inventory Apply requires an unlinked regular project `.playbook-state.yml`.
+A link to a regular state target remains readable in preview and exact-source
+recovery checks, but mutating adoption refuses it before changing consumer files.
+Preserve both endpoints and explicitly restore a regular project state file before
+retrying Apply. If failed completion leaves a linked state endpoint, rollback
+also refuses to write through it; retain the incomplete adoption and inspect the
+reported recovery error before repairing the state and retrying.
+
+An unchanged recorded launcher can be refreshed only through deliberate adoption.
+If status computation or later bootstrap/upgrade work fails, restore the prior
+certification and launcher while retaining safe migration edits for inspection.
+An incomplete first bootstrap retains null edition/release completion fields
+and requires the cold prerequisite path. Review the diff before retrying.
+
+Bootstrap excludes source `__pycache__` directories and `.pyc` files from local
+skill copies, consistently with template provenance. A cache created by another
+source process must not turn a repeat bootstrap into a consumer state rewrite.
+This behavior does not depend on suppressing bytecode generation.
+For an already installed delivery skill, bootstrap calls the existing public
+lifecycle `verify` action instead of reinstalling identical files. Verification
+still checks the source manifest, installed pack digest, exact owned-file registry
+and every owned file. Healthy repeated bootstrap preserves consumer file bytes,
+modes and mtimes, including its manifest lock. Drift or a partial/stale pack
+requires review; a lock's presence alone never establishes a healthy install.
+A pending `install-state.json` remains incomplete even when file verification
+passes. Bootstrap preserves that evidence and reports the existing lifecycle
+install/upgrade repair for inspection rather than clearing it or certifying setup.
+Explicit supported repair may write files; repeat bootstrap after repair verifies
+them without rewriting. Delivery lifecycle policy and runtime remain unchanged.
+
 
 ## Maintainer candidates and updates
 

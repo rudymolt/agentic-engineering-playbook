@@ -293,8 +293,15 @@ class SourceRecoveryTest(unittest.TestCase):
         regular.write_bytes(original)
         self.state.unlink()
         self.state.symlink_to(regular)
+        link_before, target_before = self.state.lstat(), regular.stat()
+        project_before, home_before = snapshot(self.project), snapshot(self.home)
         self.assertTrue(self.command('check', launcher=launcher)['complete'])
         self.assertEqual(regular.read_bytes(), original)
+        self.assertEqual(self.state.lstat(), link_before)
+        self.assertEqual(regular.stat().st_mode, target_before.st_mode)
+        self.assertEqual(regular.stat().st_mtime_ns, target_before.st_mtime_ns)
+        self.assertEqual(snapshot(self.project), project_before)
+        self.assertEqual(snapshot(self.home), home_before)
 
 
 if __name__ == '__main__':

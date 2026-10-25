@@ -100,3 +100,16 @@ which provider each command loads; review customized content before explicitly
 reconciling duplicate entries. The playbook upgrader does not rewrite upstream
 installer lockfiles or remove user-owned skill directories. Re-run stage 00 cold
 and confirm both distinct commands after the host reloads skill discovery.
+
+## Portable skill inventory adoption
+
+Use the existing tiered preview/Apply workflow with `--adopt-skills` and its
+exact `--inventory-revision` to adopt a release-bundled inventory. Follow the
+[adoption reference](../../scripts/skill-provisioning.md#adopt-through-bootstrap-or-upgrade)
+for state/launcher ownership, refusal and recovery. Existing consumers receive
+no fleet migration; required review withholds the new stamp. A prior bundleless
+release needs deliberate upgrade to a verified bundled release. Review newer
+local sources independently through Configure; they never silently advance the
+Cloud proof. Apply monthly maintenance and affected compatibility checks before
+adopting source, runtime, model or settings changes, retaining customizations and
+separate runtime qualification. Automatic Conductor setup remains later work.

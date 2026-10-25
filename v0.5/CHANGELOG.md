@@ -2,6 +2,27 @@
 
 ## Unreleased
 
+- Add deliberate portable inventory adoption to bootstrap/upgrade's existing
+  preview and Apply. Bind exact release proof, bundle and launcher hashes;
+  preserve settings, job bindings, local sources, setup and customizations.
+  Required review and failed computation withhold the new adoption/stamp.
+  Keep local discovery as policy and local activation explicit. Exclude runtime
+  bytecode from bootstrap skill copies so cache events leave consumer state stable.
+  Verify an existing delivery pack through its full manifest-owned validation
+  instead of reinstalling identical bytes. Keep pending operations incomplete
+  until supported repair; preserve file bytes, modes and mtimes on healthy repeats.
+  Refuse linked project state before inventory Apply or rollback writes while
+  retaining read-only preview and exact-source proof checks.
+
+*Why — deliberate portable setup:* recreation needs a reachable exact-release
+  launcher and a reviewed inventory choice without copying personal source paths
+  or silently changing the Cloud pin. Preserving certification on failure and
+  ignoring source caches makes repeat setup reflect intentional project changes.
+  Validated no-write delivery checks preserve installed metadata without weakening
+  drift detection or hiding an interrupted operation.
+  A readable linked proof does not authorize changing its external target;
+  mutating adoption requires explicit restoration of regular project state.
+
 - Reject nonregular launcher-output and adoption-proof endpoints before reading
   them. Return actionable JSON for FIFOs, preserve their filesystem records,
   and retain regular-file export, proof parsing and linked-proof behavior.

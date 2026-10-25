@@ -43,6 +43,8 @@ playbook_version: null   # e.g. "V0.5.0"
 playbook_release: null   # e.g. "v0.5.2"; null is displayed as unknown
 playbook_release_tag_object: null  # verified annotated tag object SHA, for offline warm checks
 playbook_release_commit: null      # verified checkout commit SHA, for offline warm checks
+# Explicit bootstrap/upgrade --adopt-skills may add a portable inline-JSON
+# skill_provisioning record here; omission means no inventory adoption.
 last_upgraded: null      # ISO 8601 date of bootstrap or the last upgrade
 prereqs_required: true   # upgrades/bootstrap set true; a successful stage 00 cold path sets false
 

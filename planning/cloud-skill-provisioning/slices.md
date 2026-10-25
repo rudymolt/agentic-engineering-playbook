@@ -1,13 +1,11 @@
 # Cloud skill provisioning — implementation slices
 
 Status: breakdown approved and seven child tickets published on 2026-10-24.
-The [specification](spec.md) and both test seams are approved. S1–S3 are
+The [specification](spec.md) and both test seams are approved. S1–S4 are
 implemented and independently verified at the approved fixture seam, including
-returned fixes and fresh CLI QA. S2 preserves explicitly retained tracked
-customizations and supports repeatable installation recovery. S3 preserves local
-sources and explicitly selects them through existing binding authority. S4 exact
-adopted-release recovery is implemented with isolated fixture evidence and awaits
-fresh independent review. S5–S7 remain future work.
+returned fixes and fresh CLI QA. S5 deliberate portable inventory adoption through
+bootstrap/upgrade is implemented with isolated fixture evidence and awaits fresh
+independent review. S6–S7 remain future work.
 No actual runtime qualification has occurred.
 
 Read the [alignment](alignment.md), [glossary](../../GLOSSARY.md), and
@@ -261,24 +259,28 @@ parent's description and status were not edited. S1 is selected first because
 it has no blockers and supplies the public boundary used by all later slices;
 its ticket includes the spec criteria and approved test seam.
 
-The selected Build and fresh Verify runtimes were identity-verified for S1–S3.
+The selected Build and fresh Verify runtimes were identity-verified for S1–S4.
 Those slices passed independent standards/spec review and CLI QA, including fresh
-verification of returned fixes, and are complete. S4's portable public launcher
-reuses the recorded adopted proof and existing provisioner. Isolated fixtures
-cover clean offline reuse, exact acquisition despite a newer remote release,
-missing/ambiguous proof, moved tag, wrong commit, dirty source, absent bundle,
-offline failure, cache drift and preservation of conflicting project edits.
-Fresh independent S4 standards/spec/adversarial/CLI review remains required.
-S5–S7 are pending; actual runtime invocation remains unverified. Ordinary build
-checkpoints, cumulative retry guards, independent verification, and the stage-06
-architecture cadence still apply.
+verification of returned fixes, and are complete. S5 extends the existing
+bootstrap/upgrade preview and Apply with deliberate portable inventory adoption.
+Fixture evidence covers preview non-mutation, explicit replay and recreation,
+settings/binding/setup/skill preservation, older bundleless releases, required
+review, refusal of incomplete stamps, exact source selection and repeat safety.
+A controlled source-cache event also proves bootstrap excludes runtime bytecode
+without relying on suppression. Whole consumer bytes/modes/mtimes remain stable
+through the existing delivery verification seam; pending operations and drift
+remain blocked. Returned-fix fixture evidence also covers linked-state Apply and
+rollback refusal with strict endpoint preservation; read-only proof links remain
+supported. Fresh independent S5 standards/spec/adversarial/
+CLI review remains required. S6–S7 and live qualification are pending. Cumulative
+retry guards and the stage-06 architecture cadence still apply.
 
 ```yaml
 playbook_result:
-  outcome: fourth_slice_awaiting_independent_review
+  outcome: fifth_slice_awaiting_independent_review
   next_stage: "08"
   required_actions:
-    - Independently review the frozen S4 candidate before accepting or committing it.
+    - Independently review the frozen S5 candidate before accepting or committing it.
     - Continue the approved batch only through coordinator dispatch after the slice commit.
     - Retain actual runtime qualification as pending until S7 evidence exists.
 ```

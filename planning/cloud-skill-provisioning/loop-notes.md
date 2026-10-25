@@ -42,3 +42,33 @@ and verify the recorded annotated tag object and commit before activation.
 Separate temporary acquisition from the published cache, then delegate to the
 validated release's existing provisioner. Offline cache replay and conflicting
 project edits retain the existing adoption and customization boundaries.
+
+## Source caches and portable adoption
+
+Bootstrap must filter runtime caches at the same installation boundary as its
+managed-file inventory. A public fixture explicitly compiles a source skill
+between bootstrap calls, crosses a clock tick, then compares the whole consumer
+bytes/modes/mtimes snapshot and existing ignore-file mtime. This exposes cache-driven
+state recomputation even when ordinary runs suppress bytecode. Keep inventory
+adoption inside the existing preview/Apply gate: bind a source-derived revision,
+write the portable choice to existing state, and retain prior certification and
+launcher if required completion fails. File installation and actual runtime
+qualification remain separate observations.
+
+Repeated delivery install independently rewrites identical owned files and its
+manifest lock. Bootstrap uses the existing public verify seam for an installed
+current pack, retaining source/pack/owned-registry/file validation. A pending
+install-state marker remains incomplete even after integrity passes. Public
+fixtures preserve complete consumer metadata across cache/plain repeats and
+confirm drift/partial/stale inputs block; supported explicit repair is followed
+by an unchanged repeat. No delivery policy/runtime change is needed.
+
+## Readable proof versus writable adoption state
+
+A regular-file check follows a symlink and is sufficient only for the existing
+read-only proof reader. Inventory Apply and failed-completion rollback must
+reject linked state before writing, preserving both link and target for explicit
+owner repair. Public bootstrap/upgrade fixtures compare link metadata and the
+complete target/consumer bytes, modes and mtimes on refusal, then restore regular
+state and apply the same reviewed revision. Keep the read-only recovery control
+separate so a write-boundary repair does not remove supported proof reads.

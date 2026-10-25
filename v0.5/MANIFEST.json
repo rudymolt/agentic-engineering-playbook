@@ -178,8 +178,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "f1e3f732c08d2de9688210a4dda37ceec31d6da9614a10e511cf54fd0e728efd",
-      "size": 66990
+      "sha256": "786409221c90ba9b78e25bd3ec1b4070cf7f5bdbbaf2f1d201f8219f4b553b34",
+      "size": 68445
     },
     {
       "path": "MAINTENANCE.md",
@@ -188,8 +188,8 @@
     },
     {
       "path": "README.md",
-      "sha256": "f9f5b9f98d5435ff6fc0d124b2809feaa26bc18ba36b7149c7918ea59f0ae3a3",
-      "size": 7101
+      "sha256": "b73f9aba942d89535dc9570a81ce2d501179ebe2be832e1a7ebb2490c48dcbf1",
+      "size": 7329
     },
     {
       "path": "assets/playbook-docs.css",
@@ -1223,8 +1223,8 @@
     },
     {
       "path": "scripts/bootstrap-project.py",
-      "sha256": "1f3e62a9a51b528d34b8aec1fedf694349c9ec46c23d5f8bdd7be6a9b5ef07fe",
-      "size": 23246
+      "sha256": "95e047168bd9dd7f2070eb5287508474654e92b33be2727aca66812f38d0546c",
+      "size": 26247
     },
     {
       "path": "scripts/bootstrap_seed.py",
@@ -1388,8 +1388,8 @@
     },
     {
       "path": "scripts/recover-playbook-source.py",
-      "sha256": "175e96b86cd15e9d50528da97080c000f8be16a7c91ff11c93792c97e1215806",
-      "size": 10081
+      "sha256": "607a88f1c5eb43546162bb2a8eb267be69ef3bfbd85007925f8c90073ff7be4d",
+      "size": 10133
     },
     {
       "path": "scripts/release_provenance.py",
@@ -1423,8 +1423,13 @@
     },
     {
       "path": "scripts/skill-provisioning.md",
-      "sha256": "083c5c36c61c053a93cfe04d0e4313da7fdad15565e6500b0e036f76a81092c6",
-      "size": 19807
+      "sha256": "62a29677c4d52f7c5e89f4fbd5ea0ff6d48892e4bb89049bbd9bc3e311f5717a",
+      "size": 25006
+    },
+    {
+      "path": "scripts/skill_adoption.py",
+      "sha256": "a6e52b31fa8e1fd708e015be4a4736027ce8d480deac941a0d9141c5446aa787",
+      "size": 8290
     },
     {
       "path": "scripts/skill_bindings.py",
@@ -1438,8 +1443,8 @@
     },
     {
       "path": "scripts/test_apply_recovery_gitignore.py",
-      "sha256": "f269986833cd44618de3c5cc7af2010932e0d722179808ae45e27eed3c42a77c",
-      "size": 14866
+      "sha256": "394f5cf787566a98f854cb717d954ea9da2539fff14e983d7e3e59778bcd0f65",
+      "size": 23059
     },
     {
       "path": "scripts/test_audit_upstream_installed.py",
@@ -1647,6 +1652,11 @@
       "size": 2602
     },
     {
+      "path": "scripts/test_skill_adoption.py",
+      "sha256": "5cbc50428f8275526492761fe625aaeb7ba52a9932ed4834712fcd3a8c6b1e8a",
+      "size": 25590
+    },
+    {
       "path": "scripts/test_skill_bindings.py",
       "sha256": "f98c13e15142360c56d497018e71976c8dda06bb87e08d54cbcfc366f66d22bc",
       "size": 28273
@@ -1663,8 +1673,8 @@
     },
     {
       "path": "scripts/test_source_recovery.py",
-      "sha256": "15598744f21b2107ed0f6986d0824753c16cf678c7dba9a9098ec0a7f7274d0a",
-      "size": 17452
+      "sha256": "1df24a2c010cda11760feb93e6fd685d5fd6e052cf8122f99d4e3bdfdde4aa6c",
+      "size": 17940
     },
     {
       "path": "scripts/test_template_base.py",
@@ -1703,8 +1713,8 @@
     },
     {
       "path": "scripts/upgrade-project.py",
-      "sha256": "78781036bf14570de1c5454ebfcbd3ff3fd11bb9c25b4e6e6e216c9412612f9d",
-      "size": 63486
+      "sha256": "4593bd2ef282697b411dfc42d461c2959a1e92e3838ed68e6924e323c5680b7f",
+      "size": 67331
     },
     {
       "path": "scripts/upstream_bundle.py",
@@ -1753,8 +1763,8 @@
     },
     {
       "path": "skills/ai-playbook-bootstrap-project/SKILL.md",
-      "sha256": "c5674bcbe545632762581e329e145539694d389a5c11c01cc04db0a212d908a9",
-      "size": 8784
+      "sha256": "e5dbcb02d9d94bda86b0a5080632e6674ae65666e37eb595a2f1724b9fa5c67d",
+      "size": 9782
     },
     {
       "path": "skills/ai-playbook-bootstrap-project/agents/openai.yaml",
@@ -1813,13 +1823,13 @@
     },
     {
       "path": "skills/ai-playbook-upgrade-project/MIGRATIONS.md",
-      "sha256": "67fe4359d3f82feede09d376d85ab51753b672b40cd840a296290537ffa28b68",
-      "size": 6892
+      "sha256": "268680a273965f158c91d33bb86f292f37624df4e2e524d0dfab50eda9030a7d",
+      "size": 7734
     },
     {
       "path": "skills/ai-playbook-upgrade-project/SKILL.md",
-      "sha256": "a882f3b9c19ddc5e829e66a31a23ff2988806408bc085aa445f6442f6dd6dbdf",
-      "size": 4327
+      "sha256": "fa2453172ffdac368ba9b420d1869d5eca6e91d6abe2f71766c9049ff156ab46",
+      "size": 5324
     },
     {
       "path": "skills/ai-playbook-upgrade-project/agents/openai.yaml",
@@ -1938,8 +1948,8 @@
     },
     {
       "path": "templates/.playbook-state.yml",
-      "sha256": "84214974746c1b7bc6f69b8570f1082dfb463deaed348ec818e8a6e71d0f4ae7",
-      "size": 9073
+      "sha256": "fb52f179aa35c77a8879551e2024a1cbdd65abf3f96d9908e2b2cd590003e914",
+      "size": 9220
     },
     {
       "path": "templates/AGENTS.md",

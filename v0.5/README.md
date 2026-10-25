@@ -83,4 +83,7 @@ release. Explicit retention preserves committed project customizations, while
 replacement and recovery protect later edits and unknown content. Activation is
 explicit. Bundled files
 and passing fixture tests do not establish actual runtime qualification;
-automatic setup and consumer migration remain later work.
+bootstrap/upgrade can deliberately adopt the portable inventory in their existing
+preview/Apply gate. That records exact provenance and discovery policy without
+activating local duplicates or changing saved choices. Automatic host setup and
+actual runtime qualification remain pending.

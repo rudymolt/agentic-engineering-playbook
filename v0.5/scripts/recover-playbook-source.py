@@ -52,7 +52,7 @@ def validate_source(source, proof):
     return cli
 
 
-def write_launcher(destination):
+def launcher_bytes():
     """Package the same provenance/reader code, not another release resolver."""
     scripts = Path(__file__).resolve().parent
     output = io.BytesIO()
@@ -66,7 +66,11 @@ def write_launcher(destination):
             info = zipfile.ZipInfo(name)
             info.external_attr = 0o644 << 16
             archive.writestr(info, data, compress_type=zipfile.ZIP_DEFLATED)
-    data = output.getvalue()
+    return output.getvalue()
+
+
+def write_launcher(destination):
+    data = launcher_bytes()
     if destination.is_symlink():
         raise SourceError('launcher destination is linked; preserve and reconcile it explicitly')
     if destination.exists():
