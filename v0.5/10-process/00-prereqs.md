@@ -2,7 +2,7 @@
 
 > Run before any other stage. Normal sessions take the short warm path; bootstrap, upgrades, and capability changes take the cold path. Halt only when a required capability has no verified route.
 
-**This stage in one breath:** Select warm or cold, verify every required capability has a structural, tool-assisted, or manual route, and report the active profile. Output: a pass, or one named missing capability that halts the session.
+**This stage in one breath:** Select warm or cold, verify every required capability has a structural, tool-assisted, or manual route, and report the active profile. Output: a pass, or a named missing capability that blocks dependent work while independent work can continue.
 
 ---
 
@@ -15,16 +15,16 @@ Take the **cold path** when `prereqs_required` is true or missing; `last_run.pre
 1. Confirm the nine required root entries still exist: `CLAUDE.md`, `AGENTS.md`, `GLOSSARY.md`, `.playbook-state.yml`, `playbook-cadences.yml`, `planning/`, `archive/`, `planning/STATUS.md`, `archive/STATUS.md`.
 2. Confirm `playbook_version` matches the installed edition (V0.5.0 for this edition), the offline checkout check passed, and no cold-path trigger above fired. Name `playbook_release` separately when reporting status.
 3. Confirm every capability needed by today's work still has a non-empty route under `capability_routes`; read [`prereqs-capability-profiles.md`](prereqs-capability-profiles.md) only when a route is unclear.
-4. Apply Check D for high-stakes work and run the three cheap Check E security checks.
+4. Apply Check C.2 when today's work needs operation capabilities, Check D for high-stakes work, and the three cheap Check E security checks.
 5. Set `last_run.prereqs` to now and recompute the status block; leave `capability_routes.verified_at` unchanged because only the cold audit rewrites the inventory.
 
-Pass with: *“Prereqs verified (warm — {core|accelerated|extended}; required lanes covered; safety {on|off}).”* A missing root entry or changed capability routes to cold; a required lane with no route halts.
+Pass with: *“Prereqs verified (warm — {core|accelerated|extended}; required lanes covered; safety {on|off}).”* A missing root entry or changed capability routes to cold; a required lane with no route blocks dependent work, not work independent of that lane.
 
 ---
 
 ## Cold path — bootstrap, upgrade, or capability change
 
-Read [`prereqs-capability-profiles.md`](prereqs-capability-profiles.md). Select **core**, **accelerated**, or **extended**; record it in `.playbook-state.yml → decisions.capability_profile`; and record the actual structural, tool-assisted, or manual route for every required lane under `capability_routes`. Then run Checks A–E. Package names choose the route; required capability lanes decide pass/fail.
+Read [`prereqs-capability-profiles.md`](prereqs-capability-profiles.md). Select **core**, **accelerated**, or **extended**; record it in `.playbook-state.yml → decisions.capability_profile`; and record the actual structural, tool-assisted, or manual route for every required lane under `capability_routes`. Then run Checks A–E, including C.2 when relevant. Package names choose the route; required capability lanes decide pass/fail.
 
 ## Check A — Matt Pocock accelerator inventory
 
@@ -149,6 +149,47 @@ For UI projects, verify `DESIGN-GLOSSARY.md` (or a split `design-glossary/`), `u
 
 Verify `capability_routes.model_routing` names the actual route available in this host: current tab, automatic sidecar, or manual Conductor new-tab handoff. Confirm discovery/authentication, requested-versus-runtime-reported model identity evidence, permission strength, fresh Verify context, handoff delivery, and one fallback. Generated model self-description does not count as identity evidence. Read [`../93-model-routing-track.md`](../93-model-routing-track.md) only when model routing is needed or the route changed. Add `.playbook-routing/` to the project `.gitignore`; it holds local cross-tab handoffs, never durable feature docs. When resuming a cross-session, worker, or host handoff, reconcile the supplied [pickup brief](pickup-brief.md) before treating its route or evidence as current.
 
+## Check C.2 — operation capabilities
+
+When planned work needs a shared database, bulk-data operation, deployment or
+external verifier, check its dependencies during planning, before dependent
+work. This is conditional discovery, not a cloud audit for unrelated sessions.
+
+1. Identify the intended environment and actual resource target, provider/tool,
+   runner and required operations. Check application and direct database targets
+   agree where both exist; confirm Preview isolation from production when used.
+   For data risk, identify a usable backup and isolated-restoration route under
+   [stage 10](10-ship-and-deploy.md#persistent-data-recovery-gate).
+2. Inspect existing authentication and scoped capabilities privately through
+   the intended tool/runner. Use safe status or scoped read probes without
+   exposing credential values. Sufficient project-scoped access passes even if
+   global listing is denied. A variable's presence, including a write-only
+   variable, proves neither its value nor the target or operation capability.
+   Treat unproved capability as unknown; these probes grant no mutation authority.
+3. Preflight the **exact selected verifier** early. Coordinator authentication
+   does not prove verifier authentication. Use its working login without another
+   sign-in request. An existing alternate host route must preserve the selected
+   model, fresh independent context and required permission boundary; otherwise
+   follow [model routing](../93-model-routing-track.md) to select a route.
+4. For a gap, record one precise private-setup request: failed capability,
+   intended target/runner, redacted evidence, required setup and blocked work.
+   Keep that unchanged request pending across retries/handoffs. Continue only
+   independent work. Recheck affected evidence after a runner, VM, target,
+   credential or relevant tooling change; update a changed gap rather than
+   repeating an unchanged request. New capability evidence never enlarges authority.
+
+Complete this check when each needed capability has evidence or a named blocker
+in the existing plan/verification record. Blocked dependencies do not pass the
+overall prerequisite gate. Early evidence does not replace stage 10's final
+target and recovery-coverage check immediately before mutation/release.
+
+At the existing monthly [maintenance checkpoint](../MAINTENANCE.md) and explicit
+software, skill, model, setting or provider upgrades, review changed capability
+contracts and compatibility. Adopt reviewed pins through the existing
+[upgrade preview/migration route](../skills/ai-playbook-upgrade-project/SKILL.md),
+preserving user customizations and recoverable prior configuration; revalidate
+affected routes after adoption. No per-turn upstream check is added.
+
 ## Check D — high-stakes safety route
 
 For production code, customer data, or frozen reference tiers, prefer structural controls such as `/guard`, host sandbox/permission profiles, or an equivalent read/write boundary. When the host lacks them, state the allowed edit directory, require human approval for destructive operations, and use a separate read-only or human verifier. Halt when neither structural controls nor that manual boundary can be maintained.
@@ -190,5 +231,5 @@ the comparison and source review do not qualify installed skills or upgrade a ho
 - All checks pass, user reported a bug → open `11-debug.md`
 - All checks pass, user said ship/deploy → open `10-ship-and-deploy.md`
 - Project behind the installed edition or verified release → offer `/ai-playbook-upgrade-project`
-- Required capability has no route → halt and name the missing lane
+- Required capability has no route → name the lane and block dependent work; continue only independent work
 - Unsure → run `/whats-next`

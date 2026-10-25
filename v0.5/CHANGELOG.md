@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+- Discover deployment/data access and exact-verifier authentication during
+  planning; reuse existing authority for necessary scoped preparation, retries
+  and owned-copy cleanup. Require actual isolated restoration and current
+  pre-change/write coverage when persistent data is at risk, including behavior
+  changes without migrations. Keep cost, downtime and live recovery decisions
+  explicit, preserve retained backups, and carry bounded evidence through handoffs.
+
+*Why — capability and authority:* late access surprises and repeated prompts
+  delayed authorized work, while unconditional rollback guidance blurred the
+  permission boundary. Separate capability proof from existing authorization
+  and demonstrate recoverability before the live change.
+
 - Clarify stage 01 recovery when the configured playbook path is missing:
   verify an alternative checkout against the pinned release, run its saved
   binding helper, evaluate the applicable skill with bounded discovery, and

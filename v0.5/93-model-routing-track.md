@@ -31,6 +31,15 @@ Use **Plan**, **Build**, and **Verify** in prompts. Planning, implementation, an
 
 At Plan, `openai defaults` applies GPT-6.1 Sol/high → GPT-6.1 Sol/medium → GPT-6.1 Sol/high to this feature. It suppresses later model-selection questions, not the Build or Verify action gate. Rediscover each default before launch; stop instead of substituting when it is unavailable. Existing feature selections and historical run records retain the models that were actually approved and used; this table governs new lane selections.
 
+The current Sol model ID is `gpt-6.1-sol`, confirmed against
+[official model documentation](https://learn.chatgpt.com/docs/models#gpt-61-sol)
+on 2026-10-24. A configured default does not establish account/client access:
+check the exact runner's live catalog (Codex app server `model/list`) and
+authentication. A missing model or `model_not_found` response is a capability
+blocker, not evidence that the edition should downgrade. Request access for the
+selected route once, or use an explicitly selected available alternative;
+preserve the default and existing project customizations meanwhile.
+
 ## Default escalated repair within an approved unattended run
 
 Plan records an explicit escalation policy in the immutable run approval. The
@@ -224,6 +233,15 @@ Verify the route from the runtime boundary, not from generated prose. Preferred 
 For current Codex CLI sidecars, capture `thread.started.thread_id` and confirm the matching persisted thread's `model` field. A model's answer to “what model are you?” is generated content and is never authoritative identity evidence. If no authoritative surface exists, mark the route identity-unverifiable and stop rather than accepting a self-report.
 
 ### Authoritative worker-result envelope
+
+Before launch, use [stage 00 Check C.2](10-process/00-prereqs.md#check-c2--operation-capabilities)
+to check authentication in the exact selected runner. Reuse its working login;
+coordinator access alone does not qualify it. An existing host route may be used
+only if it preserves the selected model, fresh context and permission boundary.
+If unavailable, retain one precise private-setup request or use this track's
+explicit route-selection flow; never silently substitute a model. Recheck after
+relevant runner/VM/credential/tooling changes. Authentication proves capability,
+not authorization, and the runtime envelope below is still required.
 
 Every Plan, Build, fix, and Verify worker result returns immutable runtime metadata alongside its artifact or verdict:
 

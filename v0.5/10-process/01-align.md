@@ -18,6 +18,14 @@ Skip if the change is a one-line typo, comment, or formatting fix.
 
 ## What to run
 
+For planned deployment, shared-database or bulk-data work, or an external
+verifier, run [stage 00 Check C.2](00-prereqs.md#check-c2--operation-capabilities)
+during alignment. Record actual target/access and recovery capabilities, exact
+verifier authentication, existing authority and any precise pending setup/cost
+decision in the alignment output. Follow stage 10 for recovery resource limits.
+Continue independent planning while dependent work stays blocked; do not wait
+until release to discover these dependencies.
+
 ### Recover the stage source and choose the route
 
 A missing configured `{playbook-path}` establishes only that the configured

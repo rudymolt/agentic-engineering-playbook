@@ -1,8 +1,19 @@
 # Planning status
 
-active_features: 5
+active_features: 6
 
 ## Active features
+
+[Deployment capability and existing authority](deployment-capability-and-authority/slices.md)
+— early access checks and deployment authority combined; alignment, specification,
+verification seam and integrated AFK slice approved. Build one in the current
+Astra/high tab at standard pace is approved. S1 documentation is implemented;
+the full Linux verifier passed all 1,252 tests with no skips. Fresh Sol 6.1/high
+standards/spec and security review found no actionable defects and passed all
+21 scenarios. On 2026-10-25 the human accepted that completed report-only review,
+waiving enforced read-only access for this review only. S1 is complete in this
+atomic slice commit and ready for the Build handback. Shipping remains a separate
+human decision.
 
 [Edition and installed release](edition-release-identity/slices.md) — aligned
 and specified; implementation in progress on a separate branch.
