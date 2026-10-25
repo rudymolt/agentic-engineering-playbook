@@ -93,3 +93,17 @@ Age the access time before the baseline so that refresh is deterministic on Linu
 Exercise one conflicting route in a fresh fixture, not only after a complete
 install, and assert the unaffected routes are still wired. Every printed repair
 must be executable through the entry point that printed it.
+
+
+## Partial installation ownership
+
+Keep withheld skill directories outside both the target inventory and the
+transaction's recovery inventory. Capturing conflicting bytes as managed
+history would let a later install or recovery mistake preserved user edits for
+owned material. Fresh-project public CLI fixtures cover unchanged partial
+repeats, retain/move-aside completion, interrupted activation and recovery that
+refuses later edits. Isolate only skills with no recorded installation: withholding
+an installed skill makes an otherwise no-op install rewrite `previous`, silently
+losing the recovery target. Likewise, completing a partial install from the same
+release must keep its original recovery target. Setup must gate each alias on that skill's installation
+result while keeping global operation refusals and pending transactions intact.

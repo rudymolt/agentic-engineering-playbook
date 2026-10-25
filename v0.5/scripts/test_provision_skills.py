@@ -23,6 +23,13 @@ def snapshot(root):
             for p in root.rglob('*') if p.is_file() and not p.is_symlink()}
 
 
+def full_snapshot(root):
+    return {str(p.relative_to(root)): (os.readlink(p) if p.is_symlink() else
+                                     p.read_bytes() if p.is_file() else None,
+                                     p.lstat().st_mode, p.lstat().st_mtime_ns)
+            for p in (root, *root.rglob('*'))}
+
+
 class ProvisionSkillsTest(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
@@ -32,7 +39,8 @@ class ProvisionSkillsTest(unittest.TestCase):
         self.home = self.root / 'home'
         self.project.mkdir()
         self.home.mkdir()
-        self.env = {**os.environ, 'HOME': str(self.home), 'PYTHONDONTWRITEBYTECODE': '1'}
+        self.env = {**os.environ, 'HOME': str(self.home), 'PYTHONDONTWRITEBYTECODE': '1',
+                    'GIT_CONFIG_NOSYSTEM': '1', 'GIT_CONFIG_GLOBAL': os.devnull}
         self.source = self.root / 'release'
         target = self.source / 'v0.5'
         target.mkdir(parents=True)
@@ -556,8 +564,15 @@ runpy.run_path(cli, run_name='__main__')
         before = snapshot(clone)
         refused = self.command('retain', '--skill', 'tdd', code=2)
         self.assertIn('committed', refused['error'])
-        self.command('install', code=2)
         self.assertEqual(snapshot(clone), before)
+        self.command('install', code=2)
+        after = snapshot(clone)
+        record = '.agents/.skill-provisioning/state.json'
+        self.assertEqual({p: v for p, v in after.items() if p != record},
+                         {p: v for p, v in before.items() if p != record})
+        before = full_snapshot(clone)
+        self.assertEqual(self.command('install', code=2)['changed'], [])
+        self.assertEqual(full_snapshot(clone), before)
         self.assertEqual(snapshot(self.home), {})
 
     def test_interrupted_replacement_resumes_or_recovers_without_false_completion(self):
@@ -690,6 +705,147 @@ with patch('os.rename', interrupt):
                 self.assertEqual(repeated['recovered_source'], installed_a['source'])
                 self.assertEqual(snapshot(self.project), before)
                 self.assertEqual(snapshot(self.home), {})
+
+    def test_later_edit_to_installed_skill_refuses_install_and_keeps_recovery_history(self):
+        self.command('install')
+        original = snapshot(self.project / '.agents/skills')
+        self.change_bundle()
+        self.command('install')
+        state = self.project / '.agents/.skill-provisioning/state.json'
+        recorded = state.read_bytes()
+        edited = self.project / '.agents/skills/grilling/SKILL.md'
+        edited.write_bytes(edited.read_bytes() + b'\nLater VM-only edit\n')
+        before = snapshot(self.project)
+        blocked = self.command('install', code=2)
+        self.assertIn('grilling', blocked['error'])
+        self.assertEqual(state.read_bytes(), recorded)
+        self.assertEqual(snapshot(self.project), before)
+        edited.write_bytes(edited.read_bytes().removesuffix(b'\nLater VM-only edit\n'))
+        self.assertTrue(self.command('recover')['recovery_complete'])
+        self.assertEqual({p: b for p, (b, _) in snapshot(self.project / '.agents/skills').items()},
+                         {p: b for p, (b, _) in original.items()})
+
+    def test_completing_a_partial_upgrade_keeps_the_pre_upgrade_recovery_target(self):
+        first = self.commit
+        self.change_bundle(remove='writing-for-agents')
+        self.command('install')
+        upgraded_from = (self.project / '.agents/skills/tdd/tests.md').read_bytes()
+        own = self.project / '.agents/skills/writing-for-agents'
+        own.mkdir()
+        (own / 'SKILL.md').write_text('Project-owned skill\n')
+        self.git('checkout', first, '--', 'v0.5/bundles', 'v0.5/upstream-skills.json')
+        self.git('commit', '-qam', 'Restore the skill and earlier tdd')
+        self.git('tag', '-fa', 'v0.5.999', '-m', 'Next fixture release')
+        self.commit = self.git('rev-parse', 'HEAD')
+        self.tag = self.git('rev-parse', 'refs/tags/v0.5.999')
+        partial = self.command('install', code=2)
+        self.assertEqual(next(s for s in partial['skills'] if s['name'] == 'writing-for-agents')['installation'], 'conflict')
+        own.rename(self.project / 'saved-writing-for-agents')
+        self.assertTrue(self.command('install')['complete'])
+        self.assertTrue(self.command('recover')['recovery_complete'])
+        self.assertEqual((self.project / '.agents/skills/tdd/tests.md').read_bytes(), upgraded_from)
+        self.assertFalse((self.project / '.agents/skills/writing-for-agents').exists())
+        self.assertEqual((self.project / 'saved-writing-for-agents/SKILL.md').read_text(), 'Project-owned skill\n')
+
+    def test_rolled_back_interrupted_completion_keeps_the_pre_upgrade_recovery_target(self):
+        first = self.commit
+        self.change_bundle(remove='writing-for-agents')
+        self.command('install')
+        upgraded_from = (self.project / '.agents/skills/tdd/tests.md').read_bytes()
+        own = self.project / '.agents/skills/writing-for-agents'
+        own.mkdir()
+        (own / 'SKILL.md').write_text('Project-owned skill\n')
+        self.git('checkout', first, '--', 'v0.5/bundles', 'v0.5/upstream-skills.json')
+        self.git('commit', '-qam', 'Restore the skill and earlier tdd')
+        self.git('tag', '-fa', 'v0.5.999', '-m', 'Next fixture release')
+        self.commit = self.git('rev-parse', 'HEAD')
+        self.tag = self.git('rev-parse', 'refs/tags/v0.5.999')
+        self.command('install', code=2)
+        own.rename(self.project / 'saved-writing-for-agents')
+        driver = self.root / 'interrupt-completion.py'
+        driver.write_text("""import os, runpy, signal, sys
+from unittest.mock import patch
+sys.path.insert(0, sys.argv[1])
+cli = sys.argv[2]
+sys.argv = [cli, *sys.argv[3:]]
+rename = os.rename
+def interrupt(*args, **kwargs):
+    rename(*args, **kwargs)
+    os.kill(os.getpid(), signal.SIGTERM)
+with patch('os.rename', interrupt):
+    runpy.run_path(cli, run_name='__main__')
+""")
+        result = subprocess.run([sys.executable, str(driver), str(SCRIPTS), str(CLI),
+                                 '--source', str(self.source), '--project', str(self.project),
+                                 '--release', 'v0.5.999', '--tag-object', self.tag,
+                                 '--commit', self.commit, 'install'],
+                                env=self.env, capture_output=True, text=True)
+        self.assertEqual(result.returncode, -15, result.stderr)
+        self.assertTrue(self.command('recover')['recovery_complete'])
+        self.assertFalse((self.project / '.agents/skills/writing-for-agents').exists())
+        self.assertTrue(self.command('install')['complete'])
+        self.assertTrue(self.command('recover')['recovery_complete'])
+        self.assertEqual((self.project / '.agents/skills/tdd/tests.md').read_bytes(), upgraded_from)
+        self.assertEqual((self.project / 'saved-writing-for-agents/SKILL.md').read_text(), 'Project-owned skill\n')
+
+    def test_abandoned_completion_repeat_keeps_target_and_owned_skill(self):
+        first = self.commit
+        self.change_bundle(remove='writing-for-agents')
+        self.command('install')
+        upgraded_from = (self.project / '.agents/skills/tdd/tests.md').read_bytes()
+        own = self.project / '.agents/skills/writing-for-agents'
+        own.mkdir()
+        (own / 'SKILL.md').write_text('Project-owned skill\n')
+        self.git('checkout', first, '--', 'v0.5/bundles', 'v0.5/upstream-skills.json')
+        self.git('commit', '-qam', 'Restore the skill and earlier tdd')
+        self.git('tag', '-fa', 'v0.5.999', '-m', 'Next fixture release')
+        self.commit = self.git('rev-parse', 'HEAD')
+        self.tag = self.git('rev-parse', 'refs/tags/v0.5.999')
+        self.command('install', code=2)
+        saved = self.project / 'saved-writing-for-agents'
+        own.rename(saved)
+        driver = self.root / 'interrupt-completion.py'
+        driver.write_text("""import os, runpy, signal, sys
+from unittest.mock import patch
+sys.path.insert(0, sys.argv[1])
+cli = sys.argv[2]
+sys.argv = [cli, *sys.argv[3:]]
+rename = os.rename
+def interrupt(*args, **kwargs):
+    rename(*args, **kwargs)
+    os.kill(os.getpid(), signal.SIGTERM)
+with patch('os.rename', interrupt):
+    runpy.run_path(cli, run_name='__main__')
+""")
+        result = subprocess.run([sys.executable, str(driver), str(SCRIPTS), str(CLI),
+                                 '--source', str(self.source), '--project', str(self.project),
+                                 '--release', 'v0.5.999', '--tag-object', self.tag,
+                                 '--commit', self.commit, 'install'],
+                                env=self.env, capture_output=True, text=True)
+        self.assertEqual(result.returncode, -15, result.stderr)
+        self.assertTrue(self.command('recover')['recovery_complete'])
+        # Abandoning the completion restores the original partial state exactly.
+        saved.rename(own)
+        state = self.project / '.agents/.skill-provisioning/state.json'
+        recorded, before = state.read_bytes(), snapshot(self.project)
+        self.assertEqual(self.command('install', code=2)['changed'], [])
+        self.assertEqual((state.read_bytes(), snapshot(self.project)), (recorded, before))
+        self.assertTrue(self.command('recover')['recovery_complete'])
+        self.assertEqual((self.project / '.agents/skills/tdd/tests.md').read_bytes(), upgraded_from)
+        self.assertEqual((own / 'SKILL.md').read_text(), 'Project-owned skill\n')
+
+    def test_skill_absent_after_recovery_is_isolated_like_a_fresh_one(self):
+        self.command('install')
+        self.command('recover')
+        self.assertFalse((self.project / '.agents/skills/tdd').exists())
+        own = self.project / '.agents/skills/tdd'
+        own.mkdir()
+        (own / 'SKILL.md').write_text('Project-owned tdd\n')
+        partial = self.command('install', code=2)
+        self.assertNotIn('error', partial)
+        self.assertEqual(next(s for s in partial['skills'] if s['name'] == 'tdd')['installation'], 'conflict')
+        self.assertTrue((self.project / '.agents/skills/grilling/SKILL.md').is_file())
+        self.assertEqual((own / 'SKILL.md').read_text(), 'Project-owned tdd\n')
 
     def test_recovery_preserves_later_and_unknown_edits_and_fallback_is_explicit(self):
         self.command('install')
@@ -835,17 +991,149 @@ with patch('os.rename', interrupt):
         self.assertEqual(snapshot(self.project), before)
         self.assertEqual(snapshot(self.home), {})
 
+    def test_fresh_conflict_is_withheld_while_complete_skills_install_and_later_finish(self):
+        for repair in ('retain', 'move'):
+            with self.subTest(repair=repair):
+                self.project = self.root / ('fresh-' + repair)
+                self.project.mkdir()
+                bundled = self.source / 'v0.5/bundles/mattpocock-skills'
+                conflict = self.project / '.agents/skills/tdd'
+                shutil.copytree(bundled / 'tdd', conflict)
+                shutil.copy2(bundled / 'LICENSE', conflict / 'LICENSE')
+                custom = conflict / 'tests.md'
+                custom.write_bytes(custom.read_bytes() + b'\nCommitted project guidance\n')
+                custom.chmod(0o640)
+                self.project_git('init', '-q')
+                self.project_git('config', 'user.name', 'Fixture')
+                self.project_git('config', 'user.email', 'fixture@users.noreply.github.com')
+                self.project_git('add', '.')
+                self.project_git('commit', '-qm', 'Fresh project customization')
+                (self.home / 'keep.txt').write_bytes(b'Unrelated home content')
+                preserved, home = full_snapshot(conflict), full_snapshot(self.home)
+                git_before = full_snapshot(self.project / '.git')
+                partial = self.command('install', code=2)
+                self.assertFalse(partial['complete'])
+                self.assertFalse(partial['transaction_pending'])
+                self.assertEqual(set(partial['changed']), NAMES - {'tdd'})
+                rows = {r['name']: r for r in partial['skills']}
+                self.assertEqual(rows['tdd']['installation'], 'conflict')
+                self.assertIn('retain --skill tdd', ' '.join(rows['tdd']['repair_choices']))
+                self.assertIn('Move', ' '.join(rows['tdd']['repair_choices']))
+                for name in NAMES - {'tdd'}:
+                    self.assertEqual(rows[name]['installation'], 'installed')
+                    expected = {str(p.relative_to(bundled / name)): p.read_bytes()
+                                for p in (bundled / name).rglob('*') if p.is_file()}
+                    expected['LICENSE'] = (bundled / 'LICENSE').read_bytes()
+                    target = self.project / '.agents/skills' / name
+                    self.assertEqual({p: b for p, (b, _) in snapshot(target).items()}, expected)
+                self.assertEqual(full_snapshot(conflict), preserved)
+                self.assertEqual(full_snapshot(self.project / '.git'), git_before)
+                state_path = self.project / '.agents/.skill-provisioning/state.json'
+                state = json.loads(state_path.read_text())
+                self.assertEqual(set(state['current']['skills']), NAMES - {'tdd'})
+                self.assertNotIn('tdd', state['previous']['skills'])
+                before = full_snapshot(self.project)
+                self.assertFalse(self.command('check', code=2)['complete'])
+                self.assertEqual(self.command('install', code=2)['changed'], [])
+                self.assertEqual(full_snapshot(self.project), before)
+                if repair == 'retain':
+                    self.command('retain', '--skill', 'tdd')
+                else:
+                    conflict.rename(self.project / 'saved-tdd')
+                completed = self.command('install')
+                self.assertTrue(completed['complete'])
+                self.assertEqual(completed['changed'], [] if repair == 'retain' else ['tdd'])
+                self.assertEqual(full_snapshot(conflict if repair == 'retain' else
+                                               self.project / 'saved-tdd'), preserved)
+                before = full_snapshot(self.project)
+                self.assertTrue(self.command('check')['complete'])
+                self.assertEqual(self.command('install')['changed'], [])
+                self.assertEqual(full_snapshot(self.project), before)
+                self.assertEqual(full_snapshot(self.home), home)
+
+    def test_fresh_partial_install_recovers_without_owning_conflicts_or_erasing_later_edits(self):
+        for interrupted in (False, True):
+            with self.subTest(interrupted=interrupted):
+                self.project = self.root / ('partial-' + str(interrupted))
+                self.project.mkdir()
+                conflict = self.project / '.agents/skills/tdd'
+                bundled = self.source / 'v0.5/bundles/mattpocock-skills'
+                shutil.copytree(bundled / 'tdd', conflict)
+                shutil.copy2(bundled / 'LICENSE', conflict / 'LICENSE')
+                custom = conflict / 'tests.md'
+                custom.write_bytes(custom.read_bytes() + b'\nCommitted project guidance\n')
+                custom.chmod(0o640)
+                self.project_git('init', '-q')
+                self.project_git('config', 'user.name', 'Fixture')
+                self.project_git('config', 'user.email', 'fixture@users.noreply.github.com')
+                self.project_git('add', '.')
+                self.project_git('commit', '-qm', 'Fresh customization')
+                preserved, home = full_snapshot(conflict), full_snapshot(self.home)
+                if interrupted:
+                    driver = self.root / 'interrupt-partial.py'
+                    driver.write_text("""import os, runpy, signal, sys
+from unittest.mock import patch
+sys.path.insert(0, sys.argv[1])
+cli = sys.argv[2]
+sys.argv = sys.argv[2:]
+rename = os.rename
+def interrupt(*args, **kwargs):
+    rename(*args, **kwargs)
+    os.kill(os.getpid(), signal.SIGTERM)
+with patch('os.rename', interrupt):
+    runpy.run_path(cli, run_name='__main__')
+""")
+                    result = subprocess.run([
+                        sys.executable, str(driver), str(SCRIPTS), str(CLI),
+                        '--source', str(self.source), '--project', str(self.project),
+                        '--release', 'v0.5.999', '--tag-object', self.tag,
+                        '--commit', self.commit, 'install'], env=self.env,
+                        capture_output=True, text=True)
+                    self.assertEqual(result.returncode, -15, result.stdout + result.stderr)
+                else:
+                    partial = self.command('install', code=2)
+                    self.assertEqual(set(partial['changed']), NAMES - {'tdd'})
+                check = self.command('check', code=2)
+                self.assertEqual(check['transaction_pending'], interrupted)
+                self.assertEqual(full_snapshot(conflict), preserved)
+                installed = next(s['name'] for s in check['skills'] if s['installation'] == 'installed')
+                later = self.project / '.agents/skills' / installed / 'later.md'
+                later.write_bytes(b'Preserve edits made after activation')
+                later.chmod(0o640)
+                before = full_snapshot(self.project)
+                refused = self.command('recover', code=2)
+                self.assertIn(installed, refused['error'])
+                self.assertEqual(full_snapshot(self.project), before)
+                saved = self.project / 'saved-later.md'
+                later.rename(saved)
+                saved_before = (saved.read_bytes(), saved.stat().st_mode, saved.stat().st_mtime_ns)
+                recovered = self.command('recover')
+                self.assertTrue(recovered['recovery_complete'])
+                self.assertFalse(recovered['complete'])
+                self.assertFalse(recovered['transaction_pending'])
+                self.assertEqual({p.name for p in (self.project / '.agents/skills').iterdir()}, {'tdd'})
+                self.assertEqual(full_snapshot(conflict), preserved)
+                self.assertEqual((saved.read_bytes(), saved.stat().st_mode, saved.stat().st_mtime_ns), saved_before)
+                before = full_snapshot(self.project)
+                self.assertEqual(self.command('recover')['changed'], [])
+                self.assertEqual(full_snapshot(self.project), before)
+                self.assertEqual(set(self.command('install', code=2)['changed']), NAMES - {'tdd'})
+                self.assertEqual(full_snapshot(conflict), preserved)
+                self.assertEqual(full_snapshot(self.home), home)
+
     def test_conflicting_unknown_and_symlinked_content_is_preserved_before_activation(self):
         conflict = self.project / '.agents/skills/tdd'
         conflict.mkdir(parents=True)
         (conflict / 'SKILL.md').write_text('My newer local skill with personal changes\n')
         (conflict / 'notes.txt').write_text('Keep unknown files\n')
-        before = snapshot(self.project)
+        before = full_snapshot(conflict)
         blocked = self.command('install', code=2)
         self.assertFalse(blocked['complete'])
-        self.assertIn('tdd', blocked['error'])
-        self.assertIn('reconcil', blocked['repair'])
-        self.assertEqual(snapshot(self.project), before)
+        self.assertEqual(set(blocked['changed']), NAMES - {'tdd'})
+        row = next(s for s in blocked['skills'] if s['name'] == 'tdd')
+        self.assertEqual(row['installation'], 'conflict')
+        self.assertIn('retain --skill tdd', ' '.join(row['repair_choices']))
+        self.assertEqual(full_snapshot(conflict), before)
         self.assertEqual(self.command('check', code=2)['changed'], [])
         # The entire discovery parent may redirect outside the project.
         shutil.rmtree(self.project / '.agents')

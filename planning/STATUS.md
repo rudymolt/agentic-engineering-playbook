@@ -7,11 +7,12 @@ active_features: 6
 [Cloud skill provisioning](cloud-skill-provisioning/slices.md) — alignment,
 specification, both test seams, and seven implementation slices approved on
 2026-10-24. All seven child tickets are published with verified dependencies;
-S1–S5 are complete and independently verified, including returned fixes and
-fresh CLI QA. S6 setup/adoption/discovery implementation and isolated fixture
-evidence are available; independent review/QA and canonical full verification
-are its acceptance gates. One A8 install-isolation decision is open before S7;
-S7 actual runtime qualification remains pending.
+S1–S6 are complete and independently verified at the approved fixture seam,
+including returned fixes, fresh CLI QA, cross-slice review and canonical full
+verification. The human selected option B on 2026-10-25 to isolate A8 content
+conflicts per skill; that returned fix passed fresh independent review and
+canonical full verification. S7 actual runtime qualification remains pending;
+fixture evidence makes no runtime support claim.
 
 [Edition and installed release](edition-release-identity/slices.md) — aligned
 and specified; implementation in progress on a separate branch.

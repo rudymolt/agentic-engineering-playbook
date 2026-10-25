@@ -163,6 +163,11 @@ def cached_source(args, project, proof, reason):
     return target, 'acquired'
 
 
+def join_repair(first, second):
+    first = (first or '').strip()
+    return (first if first.endswith(('.', ';')) else first + '.') + ' ' + second if first else second
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--write-launcher', type=Path, help='explicit portable zipapp output; preserves existing differing files')
@@ -246,7 +251,9 @@ def main(argv=None):
                 raise ValueError('object required')
         except ValueError:
             raise SourceError('verified release provisioner failed without a JSON report; inspect that release and restore its supported interface') from None
-        if run.returncode == 0 and args.action in ('install', 'recover'):
+        # A partial install still exits 2; prune whenever installation itself settled.
+        if (args.action in ('install', 'recover') and 'error' not in result
+                and not result.get('transaction_pending', True)):
             result['changed'] = [*result.get('changed', []), *conductor_setup.prune_aliases(project)]
         result['source_resolution'] = resolution
         if setup is not None:
@@ -255,18 +262,46 @@ def main(argv=None):
             names = set(packages) | {name for name, skill in registry.skills.items()
                                      if skill.status == 'current' and registry.packages[skill.package].kind == 'local'}
             names.add('ai-playbook-deliver')  # Manifest-owned delivery skill, when bootstrap installed it.
+            withheld = []
+            settled = 'error' not in result and not result.get('transaction_pending', True)
+            if setup['host'] == 'cloud':
+                installed = {s['name'] for s in result.get('skills', [])
+                             if s['installation'] in ('installed', 'customized')}
+                # Pending or refused installs keep their own repair; only content conflicts are withheld then.
+                withheld = [s for s in result.get('skills', []) if s['name'] not in installed
+                            and (settled or s['installation'] == 'conflict')]
+                names -= {s['name'] for s in withheld}
+                if settled:
+                    names -= set(packages) - installed
             rows, changed, conflicts = conductor_setup.discovery_aliases(
-                project, names, apply=setup['host'] == 'cloud' and run.returncode == 0 and result.get('complete') is True)
+                project, names, apply=setup['host'] == 'cloud' and settled)
+            for skill in withheld:
+                alias = project / '.claude/skills' / skill['name']
+                endpoint = ('linked' if alias.is_symlink() and os.readlink(alias) == '../../.agents/skills/' + skill['name']
+                            else 'other' if alias.exists() or alias.is_symlink() else 'absent')
+                rows.append({'runtime': 'codex', 'path': '.agents/skills/' + skill['name'],
+                             'status': 'withheld', 'installation': skill['installation'],
+                             'qualification': 'unverified'})
+                # An existing endpoint is preserved; it resolves to unqualified project content.
+                rows.append({'runtime': 'claude', 'path': '.claude/skills/' + skill['name'],
+                             'status': 'withheld', 'endpoint': endpoint, 'qualification': 'unverified',
+                             'repair_choices': skill['repair_choices']})
             result['discovery_aliases'] = rows
             result['changed'] = [*result.get('changed', []), *changed]
             if setup['host'] == 'cloud':
                 result['installation_complete'] = result.get('complete', False)
+                if withheld:
+                    repairs = ['.claude/skills/' + s['name'] + ': ' +
+                               ' '.join(s['repair_choices'] or ['Restore this skill through install.'])
+                               for s in withheld]
+                    result['repair'] = join_repair(result.get('repair'), 'Withheld aliases: ' + ' '.join(repairs))
                 if conflicts:
-                    withheld = ', '.join(r['path'] for r in rows if r['status'] == 'conflict')
+                    endpoints = ', '.join(r['path'] for r in rows if r['status'] == 'conflict')
                     result['complete'] = False
-                    result['repair'] = ('Preserve conflicting Claude skill/command endpoints or linked discovery parents; explicitly reconcile '
-                                        + withheld + ' before retrying. Other aliases and canonical Codex files remain available; '
-                                        'actual invocation is unverified.')
+                    result['repair'] = join_repair(result.get('repair'),
+                                                   'Preserve conflicting Claude skill/command endpoints or linked discovery parents; explicitly reconcile '
+                                                   + endpoints + ' before retrying. Other aliases and canonical Codex files remain available; '
+                                                   'actual invocation is unverified.')
                     print(json.dumps(result, indent=2, sort_keys=True))
                     return 2
         print(json.dumps(result, indent=2, sort_keys=True))

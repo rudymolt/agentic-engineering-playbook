@@ -2,11 +2,10 @@
 
 Status: specification and both test seams approved by the human on 2026-10-24.
 Alignment and the [implementation slices](slices.md) are accepted.
-S1–S5 are complete and independently verified at the approved fixture seam,
-including returned fixes and fresh CLI QA. S6 setup composition, host dispatch,
-exact replay and safe discovery wiring are implemented with isolated fixture
-evidence; independent review/QA and canonical full verification are its
-acceptance gates. S7 actual runtime qualification remains pending. No live
+S1–S6 are complete and independently verified at the approved fixture seam,
+including returned fixes, fresh CLI QA, cross-slice review and canonical full
+verification; S6 adds setup composition, host dispatch, exact replay and safe
+discovery wiring. S7 actual runtime qualification remains pending. No live
 qualification has occurred.
 
 Sources: [alignment](alignment.md), [domain glossary](../../GLOSSARY.md),
@@ -165,12 +164,17 @@ as qualified support.
 ## Remaining review and execution gates
 
 The scope decisions, specification, test seams, and stage-04 breakdown are
-accepted. Child tickets are published; S1–S5 are complete and S6
-implementation evidence is available for its acceptance gates.
-One product decision is outstanding before S7: A8 requires unaffected
-capabilities to remain usable, but one conflicting, unretained project skill
-still blocks a fresh installation of the whole inventory under the accepted S1
-atomic installation contract.
+accepted. Child tickets are published; S1–S6 are complete.
+The human selected option B on 2026-10-25: isolate content conflicts per skill.
+The returned A8 fix is implemented: fresh installs preserve each withheld,
+never-installed skill (later edits to installed skills still refuse and keep
+recovery history),
+install all unaffected complete skills, and record partial installation honestly.
+Install/check and Cloud setup remain incomplete with exit 2; setup wires only
+available skills and names withheld aliases and repairs. Identical repeats write
+nothing, later explicit repair permits completion, and recovery preserves edits.
+It passed fresh independent review and canonical full verification at the
+fixture seam; fixture evidence does not qualify S7.
 Runtime access, concrete qualification ceilings, and live results are execution
 prerequisites, not assumed facts. Shipping additionally requires independent
 review, the changelog Why line, regenerated manifests, privacy/attribution

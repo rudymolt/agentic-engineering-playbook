@@ -2,7 +2,7 @@
 """Manage the registry-selected project skill bundle and previous installation.
 
 With no action, discover local sources without writes.
-Exit 0: successful report/command; 2: incomplete check or blocked operation.
+Exit 0: successful report/command; 2: incomplete check, partial install or blocked operation.
 All commands emit JSON. Discovery can report blocked jobs; it never runs them.
 Installation requires an explicit command and source proof.
 """
@@ -268,8 +268,13 @@ def main(argv=None):
             report['fallback_selection'] = {'skill': args.skill, 'route': row['fallback'],
                                             'scope': 'this report only; execution remains stage-owned'}
         conflicts = [s['name'] for s in report['skills'] if s['installation'] == 'conflict']
-        if args.action == 'install' and conflicts:
-            raise ProvisionError('conflicting project content: ' + ', '.join(conflicts))
+        if args.action == 'install':
+            # Isolate only skills never installed here. A later edit to an installed
+            # skill keeps that installation and its recovery history unchanged.
+            recorded = (history.load(project)['current'] or {}).get('skills', {})
+            later = [name for name in conflicts if recorded.get(name) is not None]
+            if later:
+                raise ProvisionError('conflicting project content: ' + ', '.join(later))
         if args.action in ('install', 'recover'):
             state = history.load(project)
             if args.action == 'recover':
@@ -282,7 +287,8 @@ def main(argv=None):
                 after = {'source': previous['source'], 'skills': dict(previous['skills'])}
             else:
                 retained = history.retained(project)
-                after = {'source': identity, 'skills': {n: history.encode(c) for n, c in packages.items()}}
+                after = {'source': identity, 'skills': {n: history.encode(c) for n, c in packages.items()
+                                                       if n not in conflicts}}
                 # Installing in the candidate checkout itself makes Git dirty.
                 # Keep the prior installation's source observation when only
                 # that volatile flag changed; report current dirt independently.
@@ -295,17 +301,20 @@ def main(argv=None):
             for name in retained['skills']:
                 if name not in registry.skills:
                     raise ProvisionError(f'{name}: retained skill absent from registry; preserve it and explicitly reconcile inventory changes')
+                if args.action == 'install' and name in conflicts:
+                    continue
                 license_bytes = next(iter(packages.values()))['LICENSE']
                 material = history.retained_content(project, name, retained, registry.skills[name], license_bytes)
                 after['skills'][name] = history.encode(material)
-            if state['transaction'] or args.action == 'recover' or not report['complete'] or state['current'] != after:
-                changed = history.apply(project, state, args.action, after)
+            if state['transaction'] or args.action == 'recover' or not report['complete'] or history.present(state['current']) != history.present(after):
+                changed = history.apply(project, state, args.action, after,
+                                        withheld=conflicts if args.action == 'install' else ())
                 report = {**inspect(project, identity, manifest, packages, registry, edition), 'changed': changed}
             if args.action == 'recover':
                 report['recovery_complete'] = True
                 report['recovered_source'] = after['source']
         print(json.dumps(report, indent=2, sort_keys=True))
-        return 2 if args.action == 'check' and not report['complete'] else 0
+        return 2 if args.action in ('install', 'check') and not report['complete'] else 0
     except (ProvisionError, history.StateError, bundle.BundleError, upstream_registry.RegistryError,
             OSError, ValueError, KeyError) as error:
         if inspection is not None:

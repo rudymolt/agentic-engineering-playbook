@@ -1,12 +1,10 @@
 # Cloud skill provisioning — implementation slices
 
 Status: breakdown approved and seven child tickets published on 2026-10-24.
-The [specification](spec.md) and both test seams are approved. S1–S5 are
-complete and independently verified at the approved fixture seam, including
-returned fixes and fresh CLI QA. S6 setup/adoption/discovery implementation and
-isolated fixture evidence are available; independent review/QA and canonical
-full verification are its acceptance gates. S7 actual runtime qualification
-remains pending.
+The [specification](spec.md) and both test seams are approved. S1–S6 and the
+A8 option B returned fix are complete and independently verified at the
+approved fixture seam, including returned fixes, fresh CLI QA, cross-slice review
+and canonical full verification. S7 actual runtime qualification remains pending.
 
 Read the [alignment](alignment.md), [glossary](../../GLOSSARY.md), and
 [accepted distribution decision](../../docs/adr/0002-release-bundled-project-skills.md)
@@ -59,9 +57,11 @@ without claiming consumer release provenance.
 - Report actual source identity and separate installation from discovery and
   qualification. Retain user-invoked controls and the existing incompatible
   embedded-review verdict and stage-owned fallback.
-- An unchanged rerun makes no installation changes. Unknown or conflicting
-  project content is preserved and reported. Failed or interrupted activation
-  leaves a repairable project and never reports a complete capability falsely.
+- An unchanged rerun makes no installation changes. Under the human's option B
+  decision on 2026-10-25, content conflicts withhold only the affected skill;
+  unaffected complete skills install and partial history excludes withheld edits.
+  Install/check stay incomplete with exit 2 until explicit repair. Interrupted
+  activation retains rollback and never reports a complete capability falsely.
 - Once the verified release is available, provisioning needs no upstream skill
   download. Document monthly upstream review and checks before adopting source,
   runtime, model, or setting changes; ordinary provisioning never updates pins.
@@ -197,6 +197,9 @@ this maintainer repository and expose it through deliberate consumer adoption.
   unavailable, preserving a workspace the user can repair.
 - Cloud startup replays adoption; local startup changes no skills or discovery
   configuration. Preserve customizations and report unresolved routes precisely.
+  The implemented A8 option B fix wires installed skills even during a completed
+  partial install, withholds conflicting skill aliases, names their repairs, and
+  keeps setup incomplete with exit 2.
 - Maintainer setup identifies the development candidate and uses the same
   provisioner without inventing a consumer release or running bootstrap.
 - Document Cloud creation-branch activation and local default-branch activation
@@ -259,20 +262,20 @@ parent's description and status were not edited. S1 is selected first because
 it has no blockers and supplies the public boundary used by all later slices;
 its ticket includes the spec criteria and approved test seam.
 
-S1–S5 passed independent standards/spec review and CLI QA, including fresh
-verification of returned fixes, and are complete. S6 builder implementation
-composes adopted setup through the existing preview/Apply gate, dispatches on
+S1–S6 passed independent standards/spec review and CLI QA, including fresh
+verification of returned fixes, cross-slice/gap review and canonical full
+verification, and are complete. S6 composes adopted setup through the existing preview/Apply gate, dispatches on
 actual host environment, repeats exact Cloud recovery/installation, preserves
 local sources, and wires safe whole-directory runtime aliases without claiming
 actual invocation. Isolated fixtures cover shell side effects/exports/quoting,
 repeated Apply/setup, failures and rollback, source recovery, retained content,
 conflicts, metadata/support/notices and maintainer setup without consumer state.
-Independent S6 review/QA, canonical full verification and cross-slice/gap
-review are acceptance prerequisites for the exact candidate. Open human decision
-before S7: A8 requires unaffected capabilities to remain usable, but one
-conflicting, unretained project skill still blocks a fresh installation of the
-whole inventory under the accepted S1 atomic installation contract. S7 HITL
-actual runtime qualification is pending. Cumulative guards and the stage-06
+The human selected option B on 2026-10-25: isolate fresh-install conflicts per
+skill. The returned A8 fix covers partial installation, unchanged repeats,
+explicit completion, preserved recovery targets and available Cloud aliases, and
+passed fresh independent review and canonical full verification. No runtime
+qualification is claimed. S7 HITL actual runtime qualification
+is pending. Cumulative guards and the stage-06
 architecture cadence continue to apply.
 
 ```yaml
@@ -280,8 +283,7 @@ playbook_result:
   outcome: actual_runtime_qualification_pending
   next_stage: "08"
   required_actions:
-    - Prerequisite: S6 independent review/QA, canonical full verification and cross-slice/gap review on the exact candidate.
-    - Decide whether fresh installation isolates one conflicting skill (A8) or keeps the accepted atomic S1 contract.
+    - Approve live access, ceilings and publication of the reviewed branch for S7.
     - Run S7 actual runtime qualification once live access and ceilings are approved.
     - Retain actual runtime qualification as pending until S7 evidence exists.
 ```

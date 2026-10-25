@@ -332,6 +332,140 @@ class ConductorSetupTest(unittest.TestCase):
         self.setup_report('0')
         self.assertTrue((aliases / 'tdd/SKILL.md').is_file())
 
+    def test_fresh_cloud_content_conflict_wires_other_skills_and_completes_after_retention(self):
+        self.adopt()
+        bundled = self.source / 'v0.5/bundles/mattpocock-skills'
+        conflict = self.project / '.agents/skills/tdd'
+        shutil.copytree(bundled / 'tdd', conflict)
+        shutil.copy2(bundled / 'LICENSE', conflict / 'LICENSE')
+        custom = conflict / 'tests.md'
+        custom.write_bytes(custom.read_bytes() + b'\nCommitted project guidance\n')
+        custom.chmod(0o640)
+        for args in (('init', '-q'), ('config', 'user.name', 'Fixture'),
+                     ('config', 'user.email', 'fixture@users.noreply.github.com'),
+                     ('add', '.agents/skills/tdd'), ('commit', '-qm', 'Fresh customization')):
+            self.run_command(['git', '-C', str(self.project), *args])
+        legacy = self.project / '.claude/commands/code-review.md'
+        legacy.parent.mkdir(parents=True)
+        legacy.write_bytes(b'Keep this Claude command')
+        (self.home / 'keep.txt').write_bytes(b'Preserve home')
+        before, home = snapshot(self.project), snapshot(self.home)
+        self.setup_report('1')
+        self.assertEqual((snapshot(self.project), snapshot(self.home)), (before, home))
+        preserved = snapshot(conflict)
+        partial = self.setup_report('0', code=2)
+        self.assertFalse(partial['complete'])
+        self.assertFalse(partial['installation_complete'])
+        self.assertEqual(next(r['installation'] for r in partial['skills'] if r['name'] == 'tdd'), 'conflict')
+        aliases = {r['path']: r for r in partial['discovery_aliases'] if r['runtime'] == 'claude'}
+        self.assertEqual(aliases['.claude/skills/grilling']['status'], 'linked')
+        self.assertEqual(aliases['.claude/skills/tdd']['status'], 'withheld')
+        self.assertIn('retain --skill tdd', partial['repair'])
+        self.assertIn('.claude/skills/tdd', partial['repair'])
+        self.assertIn('.claude/skills/code-review', partial['repair'])
+        self.assertFalse((self.project / '.claude/skills/tdd').exists())
+        for row in partial['skills']:
+            if row['name'] in ('tdd', 'code-review'):
+                continue
+            alias = self.project / '.claude/skills' / row['name']
+            self.assertTrue(alias.is_symlink())
+            target = self.project / '.agents/skills' / row['name']
+            self.assertEqual(snapshot(alias), snapshot(target))
+        self.assertEqual(snapshot(conflict), preserved)
+        self.assertEqual(snapshot(self.home), home)
+        before = snapshot(self.project)
+        self.assertEqual(self.setup_report('0', code=2)['changed'], [])
+        self.assertEqual(snapshot(self.project), before)
+        self.setup_report('1')
+        self.assertEqual(snapshot(self.project), before)
+        self.run_command([sys.executable, '-B', str(self.project / '.playbook/provision.pyz'),
+                          '--project', str(self.project), '--source', str(self.source),
+                          'retain', '--skill', 'tdd'])
+        legacy.rename(self.project / 'saved-command.md')
+        completed = self.setup_report('0')
+        self.assertTrue(completed['complete'])
+        self.assertTrue((self.project / '.claude/skills/tdd').is_symlink())
+        self.assertEqual(snapshot(conflict), preserved)
+        before = snapshot(self.project)
+        self.assertEqual(self.setup_report('0')['changed'], [])
+        self.assertEqual(snapshot(self.project), before)
+        self.assertEqual(snapshot(self.home), home)
+
+    def test_cloud_rerun_after_later_edit_keeps_installation_history_and_aliases(self):
+        self.adopt()
+        self.setup_report('0')
+        state = self.project / '.agents/.skill-provisioning/state.json'
+        recorded = state.read_bytes()
+        edited = self.project / '.agents/skills/grilling/SKILL.md'
+        edited.write_bytes(edited.read_bytes() + b'\nLater VM-only edit\n')
+        before = snapshot(self.project)
+        refused = self.setup_report('0', code=2)
+        self.assertIn('grilling', refused['error'])
+        self.assertEqual(state.read_bytes(), recorded)
+        self.assertEqual(snapshot(self.project), before)
+        grilling = [r for r in refused['discovery_aliases'] if r['path'].endswith('/grilling')]
+        self.assertEqual({(r['runtime'], r['status']) for r in grilling},
+                         {('codex', 'withheld'), ('claude', 'withheld')})
+        self.assertEqual(next(r['endpoint'] for r in grilling if r['runtime'] == 'claude'), 'linked')
+
+    def test_withheld_skill_reports_existing_alias_and_partial_install_prunes_owned_links(self):
+        self.adopt()
+        bundled = self.source / 'v0.5/bundles/mattpocock-skills'
+        conflict = self.project / '.agents/skills/tdd'
+        shutil.copytree(bundled / 'tdd', conflict)
+        shutil.copy2(bundled / 'LICENSE', conflict / 'LICENSE')
+        (conflict / 'tests.md').write_text('Committed project guidance\n')
+        alias = self.project / '.claude/skills/tdd'
+        alias.parent.mkdir(parents=True)
+        alias.symlink_to('../../.agents/skills/tdd', target_is_directory=True)
+        partial = self.setup_report('0', code=2)
+        rows = {(r['runtime'], r['path']): r for r in partial['discovery_aliases']}
+        self.assertEqual(rows[('codex', '.agents/skills/tdd')]['status'], 'withheld')
+        self.assertEqual(rows[('claude', '.claude/skills/tdd')]['endpoint'], 'linked')
+        self.assertEqual(os.readlink(alias), '../../.agents/skills/tdd')
+        retired = self.project / '.claude/skills/retired-skill'
+        retired.symlink_to('../../.agents/skills/retired-skill')
+        user = self.project / '.claude/skills/user-link'
+        user.symlink_to('../../elsewhere/user-link')
+        pruned = json.loads(self.run_command(
+            [sys.executable, '-B', str(self.project / '.playbook/provision.pyz'), '--project',
+             str(self.project), '--source', str(self.source), 'install'], code=2).stdout)
+        self.assertIn('.claude/skills/retired-skill', pruned['changed'])
+        self.assertFalse(retired.is_symlink())
+        self.assertEqual(os.readlink(user), '../../elsewhere/user-link')
+        self.assertEqual(os.readlink(alias), '../../.agents/skills/tdd')
+        self.assertEqual((conflict / 'tests.md').read_text(), 'Committed project guidance\n')
+
+    @unittest.skipIf(sys.version_info < (3, 11), 'setup configuration parsing requires Python 3.11+')
+    def test_refused_cloud_setup_still_reports_skills_at_the_older_release(self):
+        self.adopt('--conductor-setup')
+        self.setup_report('0')
+        changed = self.source / 'v0.5/bundles/mattpocock-skills/tdd/tests.md'
+        changed.write_bytes(changed.read_bytes() + b'\nNext reviewed release\n')
+        manifest_path = self.source / 'v0.5/bundles/mattpocock-skills/integrity.json'
+        manifest = json.loads(manifest_path.read_text())
+        manifest['files']['tdd/tests.md'] = {'sha256': hashlib.sha256(changed.read_bytes()).hexdigest(),
+                                             'size': len(changed.read_bytes())}
+        manifest_path.write_text(json.dumps(manifest))
+        for args in (('add', '.'), ('commit', '-qm', 'Next synthetic release'),
+                     ('tag', '-a', 'v0.5.1000', '-m', 'Next synthetic release')):
+            self.run_command(['git', '-C', str(self.source), *args])
+        upgrade = [sys.executable, '-B', str(self.source / 'v0.5/scripts/upgrade-project.py'),
+                   str(self.project), '--adopt-skills']
+        plan = json.loads(next(line.split(': ', 1)[1] for line in
+                               self.run_command([*upgrade, '--plan']).stdout.splitlines()
+                               if line.startswith('Skill inventory adoption: ')))
+        self.run_command([*upgrade, '--apply-safe', '--inventory-revision', plan['inventory_revision']])
+        edited = self.project / '.agents/skills/grilling/SKILL.md'
+        edited.write_bytes(edited.read_bytes() + b'\nLater VM-only edit\n')
+        before = snapshot(self.project)
+        refused = self.setup_report('0', code=2)
+        self.assertIn('grilling', refused['error'])
+        rows = {(r['runtime'], r['path']): r['status'] for r in refused['discovery_aliases']}
+        self.assertEqual(rows[('codex', '.agents/skills/tdd')], 'canonical')
+        self.assertEqual(rows[('claude', '.claude/skills/tdd')], 'linked')
+        self.assertEqual(snapshot(self.project), before)
+
     def test_cloud_setup_withholds_only_conflicting_claude_aliases(self):
         self.adopt()
         legacy = self.project / '.claude/commands/tdd.md'
@@ -746,6 +880,13 @@ class ConductorSetupTest(unittest.TestCase):
         self.assertEqual(unaffected['installation'], 'installed')
         self.assertFalse(unaffected['embedded_compatible'])
         self.assertTrue(unaffected['fallback'])
+        after = snapshot(self.project)
+        # Only the honest partial-installation record and its parent's mtime change.
+        records = {'.agents/.skill-provisioning', '.agents/.skill-provisioning/state.json'}
+        self.assertEqual({p: v for p, v in after.items() if p not in records},
+                         {p: v for p, v in project.items() if p not in records})
+        project = after
+        self.assertEqual(self.setup_report('0', code=2)['changed'], [])
         self.assertEqual(snapshot(self.project), project)
         self.assertEqual(snapshot(self.home), home)
         local = self.setup_report('1')

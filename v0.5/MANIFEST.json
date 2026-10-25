@@ -178,8 +178,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "a9562cf1c867975f21ab2e4e38b090ac9a3b7ebbfa8648fff372f8de568eb04b",
-      "size": 69768
+      "sha256": "24ef1f221d44117014727a69863479101a5d26094694101bc2fd4bd131134192",
+      "size": 70646
     },
     {
       "path": "MAINTENANCE.md",
@@ -1388,18 +1388,18 @@
     },
     {
       "path": "scripts/provision-skills.py",
-      "sha256": "08a0e9fc353aadf406f7d0d671ec7789147a09601453c45d52cbc0acac1bae54",
-      "size": 20233
+      "sha256": "59d9dfdab2ecc1d379c024eef70bbcc15b373d44e8707629030e09595c98f45a",
+      "size": 20904
     },
     {
       "path": "scripts/provisioning_state.py",
-      "sha256": "36743e4a0f44e8043e121b3d5a1159c5c55f4411c737bf603ecb94b30ce35197",
-      "size": 13788
+      "sha256": "5fd72120f74935a4efcd76e11ef6b7baaa11e68716a54fbc3ec46218ce93c02c",
+      "size": 15171
     },
     {
       "path": "scripts/recover-playbook-source.py",
-      "sha256": "15ac82ccfe434e100d08da44a14affea5ce1dc677ad3b901584077e29c7b4cbe",
-      "size": 16252
+      "sha256": "967d3e90fa024ddff20c58a6d9fc22384426cf3dc610b3404621c04b3a6c084b",
+      "size": 18674
     },
     {
       "path": "scripts/release_provenance.py",
@@ -1433,8 +1433,8 @@
     },
     {
       "path": "scripts/skill-provisioning.md",
-      "sha256": "4912817419d46a4a5018059660cef850898ae7b82922df7655505646b1915077",
-      "size": 33651
+      "sha256": "936df2bed239312124465d57d59abd736b5a4a97c62987ac481fe880340acfca",
+      "size": 36125
     },
     {
       "path": "scripts/skill_adoption.py",
@@ -1493,8 +1493,8 @@
     },
     {
       "path": "scripts/test_conductor_setup.py",
-      "sha256": "d401c1def6e5b9a127895747213134477d3b46cb696735dcaccc1a4079e21d40",
-      "size": 46265
+      "sha256": "b68ed184f120233d1ebd7f37c92acbf22fd47ac0c8b7005a4f372ed566fc42c3",
+      "size": 55179
     },
     {
       "path": "scripts/test_config_repair_boundaries.py",
@@ -1628,8 +1628,8 @@
     },
     {
       "path": "scripts/test_provision_skills.py",
-      "sha256": "d018d998169dedc3749b9138f308428e8dd8236e2b97df6a6847207862f32832",
-      "size": 59832
+      "sha256": "5b6ea6874233aa4fd1e49fcd7f1b26444fd36c8ecf74c3b76afd52a75be9ee61",
+      "size": 77100
     },
     {
       "path": "scripts/test_public_compute_status.py",
@@ -1688,8 +1688,8 @@
     },
     {
       "path": "scripts/test_source_recovery.py",
-      "sha256": "78cf39b2309c920c0010bb5a47a509606e224950bc636eaaf6a7f6ad597f8561",
-      "size": 18835
+      "sha256": "7860dbc2a17fb2516a4c4e230922c83528efb2b758cf6bdcb40f1705e74013d1",
+      "size": 20429
     },
     {
       "path": "scripts/test_template_base.py",

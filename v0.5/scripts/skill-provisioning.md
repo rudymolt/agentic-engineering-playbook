@@ -33,7 +33,7 @@ requests the existing public-tag provenance check; partial or mismatching proof
 blocks. A release without the bundle needs an explicit release upgrade.
 
 The commands emit JSON. Exit 0 means a successful discovery report, preview, completed install,
-complete installation check, explicit retention, recovery, or fallback report. Exit 2 means a blocked operation or incomplete
+complete installation check, explicit retention, recovery, or fallback report. Exit 2 means a blocked operation, partial install, or incomplete
 check. A successful discovery report may contain blocked jobs; inspect their
 individual results. Discovery keeps `complete: false` because it does not assess
 installation completion. For the other actions, `complete` describes file installation only. Per-skill reports contain
@@ -131,7 +131,19 @@ distinguishes exact installed bytes (`installed`), unchanged managed bytes from 
 previous inventory (`update_available`), explicitly retained committed project
 bytes (`customized`), missing directories (`missing`), and unknown or later
 unretained edits (`conflict`). Preview and check report these states without writes.
-Unchanged reruns preserve file bytes and modification times. Unrelated skills,
+A content conflict in a skill with no recorded installation withholds only that
+skill: its directory stays untouched while
+all unaffected skills install with their support files, LICENSE and invocation
+metadata. The overall `install` and `check` results remain `complete: false` with
+exit 2. Each conflicting row names `retain --skill NAME` or moving the edit aside;
+withheld content is never reported as installed. After that explicit repair,
+rerun `install` to complete the inventory. This isolation does not relax bundle
+validation, unsafe-parent refusals or the refusal for a retained skill absent
+from the registry. A later edit to an already installed skill instead refuses the
+install and keeps the installation history unchanged, so `recover` still restores
+the previous installation; the other installed skills remain available.
+
+Unchanged reruns preserve file bytes, modes and modification times. Unrelated skills,
 including playbook-owned skills, remain intact.
 
 To retain a project customization, review and commit its complete skill directory
@@ -167,6 +179,9 @@ records the current installation, previous bytes/source, and pending transaction
 before activation. Preview/check never create this record. S1 installations with
 no history can be recognized only by exact bundle bytes; inspect and install from
 their original verified source once to establish history before changing inventory.
+Partial installation records contain only the managed skills in that transaction;
+withheld directories are excluded from both its target and recovery inventory.
+Repeating the same partial installation writes nothing, including its history.
 History is local recovery evidence and grants no release or runtime authority.
 
 A terminated process may leave complete skill directories, a renamed previous
@@ -180,16 +195,26 @@ After a completed replacement, `recover` restores the previous installation.
 Recovery is repeatable and preserves valid retained customizations, including
 ones deliberately retained since replacement. Retrying an interrupted rollback
 of a pending install keeps that install's original recovery target as well.
-Initial-install recovery returns to the preceding empty/missing inventory.
+Initial-install recovery returns the managed skills to their preceding
+empty/missing inventory; any withheld project directories remain untouched.
 
 Recovery reports `recovery_complete` separately from `complete`: restoring an older
 installation need not match the currently requested source. `recovered_source`
 names the restored source evidence; no adoption record changes. An unchanged
-repeat recovery performs no writes. Use an available verified source when
+repeat recovery performs no writes; the exception is a recovery that rolled back
+an interrupted completion, after which the next `recover` returns to the original
+recovery target. Use an available verified source when
 recovering an installation, or explicitly recover that exact source with the
 launcher described below.
 
-Later edits and unknown files block destructive transitions before replacement.
+Later edits and unknown files in a transaction's managed skills block recovery,
+interrupted transitions and new installs before replacement. Only skills without
+a recorded installed copy (never installed, or absent after recovery) are isolated
+per skill as described above. Completing a partial installation from the same
+release, after retaining or moving a withheld skill aside, keeps the recovery
+target of the original install, so `recover` still returns to the pre-upgrade
+inventory. Rolling back an interrupted completion returns to that partial
+installation and keeps the same recovery target.
 The error identifies the affected skill and repair. For a completed installation,
 commit and explicitly retain the customization, or move conflicting content out
 of that skill directory and restore the recorded bytes before retrying. During
@@ -442,10 +467,17 @@ retrying; no fallback or user-only invocation happens automatically.
 
 ### Discovery wiring and activation
 
-Codex uses the canonical `.agents/skills/NAME` directories. After a complete Cloud
-installation, setup creates missing `.claude/skills/NAME` **directory** aliases to
-`../../.agents/skills/NAME` for the registry-derived inventory and present
-Playbook-owned skills. Entire directories preserve references, dependency lookup,
+Codex uses the canonical `.agents/skills/NAME` directories. After Cloud
+installation, including a completed partial install, setup creates missing `.claude/skills/NAME` **directory** aliases to
+`../../.agents/skills/NAME` for installed or valid retained inventory skills and
+present Playbook-owned skills. A conflicting inventory skill's alias is withheld
+and named alongside its exact retention/move-aside repair; unrelated aliases
+still appear. Its report lists `withheld` Codex and Claude rows, with any existing
+Claude endpoint preserved and labelled. Pending transactions and refused operations
+create no aliases. A completed install or recovery, partial or not, removes only
+setup-owned aliases whose canonical directory is gone.
+Content conflicts keep both `installation_complete` and `complete` false, with
+setup exiting 2. Existing endpoints remain preserved for explicit reconciliation. Entire directories preserve references, dependency lookup,
 licenses, `disable-model-invocation` and `agents/openai.yaml` invocation policy.
 Correct existing links retain their literal targets and mtimes. Unknown content,
 wrong/dangling links, legacy same-name Claude commands and linked discovery parents

@@ -134,7 +134,22 @@ def save(project, state):
     write_json(root(project) / 'state.json', state)
 
 
-def apply(project, state, action, after):
+def present(inventory):
+    """An absent skill and a recorded-absent (null) skill mean the same history."""
+    if inventory is None:
+        return None
+    return {**inventory, 'skills': {n: v for n, v in inventory['skills'].items() if v is not None}}
+
+
+def completes(current, after):
+    if current is None or current['source'] != after['source']:
+        return False
+    managed = {name: value for name, value in current['skills'].items() if value is not None}
+    return (all(after['skills'].get(name) == value for name, value in managed.items())
+            and any(after['skills'].get(name) is not None for name in set(after['skills']) - set(managed)))
+
+
+def apply(project, state, action, after, *, withheld=()):
     """Journal before activation; only replace bytes matching observed history."""
     tx = state['transaction']
     if tx is not None:
@@ -142,7 +157,9 @@ def apply(project, state, action, after):
             raise StateError('interrupted replacement: retry the identical install or select recover first')
         before = tx['before']
     else:
-        names = set(after['skills']) | set((state['current'] or {}).get('skills', {}))
+        # Withheld edits are not managed installation or recovery material.
+        # A pending transaction keeps its original scope and validation instead.
+        names = (set(after['skills']) | set((state['current'] or {}).get('skills', {}))) - set(withheld)
         before = capture(project, names, (state['current'] or {}).get('source', {}))
     names = sorted(set(before['skills']) | set(after['skills']))
     # Validate staging ancestors even when activation already finished and only
@@ -166,7 +183,7 @@ def apply(project, state, action, after):
                 allowed.append(None)
         if current not in allowed:
             raise StateError(f'{name}: later or unknown edits; commit and retain them, or move them outside the skill directory before retrying {action}')
-    if tx is None and state['current'] == after:
+    if tx is None and present(state['current']) == present(after):
         return []
     if not tx:
         state['transaction'] = {'action': action, 'before': before, 'after': after}
@@ -220,8 +237,16 @@ def apply(project, state, action, after):
             if bundle.files(backup) not in [content(before, name), content(after, name), content(tx['after'], name) if tx else None]:
                 raise StateError(f'{name}: changed backup material; preserve it for reconciliation')
             shutil.rmtree(backup)
-    state['current'] = after
-    state['previous'] = before if action == 'install' else after
+    # Completing a partial install only adds skills withheld from that same
+    # installation, so its recovery target stays the pre-install inventory.
+    if action != 'install':
+        # Rolling back an interrupted completion returns to that partial
+        # installation, whose recovery target is still the earlier inventory.
+        if not (tx and tx['action'] == 'install' and completes(state['current'], tx['after'])):
+            state['previous'] = present(after)
+    elif not completes(state['current'], after):
+        state['previous'] = present(before)
+    state['current'] = present(after)
     state['transaction'] = None
     save(project, state)
     # History contains recovery bytes; obsolete staging is not a discovery source.

@@ -258,16 +258,40 @@ class SourceRecoveryTest(unittest.TestCase):
         self.assertTrue(launcher.is_file())
 
     def test_acquired_source_preserves_conflicting_project_skill_edits(self):
-        self.command('install')
-        custom = self.project / '.agents/skills/tdd/SKILL.md'
+        bundled = self.source / 'v0.5/bundles/mattpocock-skills'
+        conflict = self.project / '.agents/skills/tdd'
+        shutil.copytree(bundled / 'tdd', conflict)
+        shutil.copy2(bundled / 'LICENSE', conflict / 'LICENSE')
+        custom = conflict / 'tests.md'
         custom.write_bytes(custom.read_bytes() + b'\nPreserve unretained local edit\n')
-        before = snapshot(self.project)
-        rejected = self.command('--repository', str(self.source), '--acquire', 'install',
-                                source=self.root / 'missing', code=2)
-        self.assertEqual(rejected['source_resolution']['mode'], 'acquired')
-        self.assertFalse(rejected['complete'])
-        self.assertIn('conflict', rejected['error'])
-        self.assertEqual(snapshot(self.project), before)
+        custom.chmod(0o640)
+        for args in (('init', '-q'), ('config', 'user.name', 'Fixture'),
+                     ('config', 'user.email', 'fixture@users.noreply.github.com'),
+                     ('add', '.'), ('commit', '-qm', 'Fresh project customization')):
+            subprocess.run(['git', '-C', str(self.project), *args], env=self.env,
+                           check=True, capture_output=True)
+        before, home = snapshot(self.project), snapshot(self.home)
+        partial = self.command('--repository', str(self.source), '--acquire', 'install',
+                               source=self.root / 'missing', code=2)
+        self.assertEqual(partial['source_resolution']['mode'], 'acquired')
+        self.assertFalse(partial['complete'])
+        self.assertEqual(len(partial['changed']), 10)
+        row = next(s for s in partial['skills'] if s['name'] == 'tdd')
+        self.assertEqual(row['installation'], 'conflict')
+        self.assertIn('retain --skill tdd', ' '.join(row['repair_choices']))
+        after = snapshot(self.project)
+        self.assertEqual({p: after[p] for p in before}, before)
+        self.assertEqual(snapshot(self.home), home)
+        cached = self.command('install', source=self.root / 'missing', code=2)
+        self.assertEqual(cached['source_resolution']['mode'], 'reused')
+        self.assertEqual(cached['changed'], [])
+        self.assertEqual(snapshot(self.project), after)
+        conflict.rename(self.project / 'saved-tdd')
+        self.assertTrue(self.command('install', source=self.root / 'missing')['complete'])
+        self.assertEqual(snapshot(self.project / 'saved-tdd'),
+                         {p.removeprefix('.agents/skills/tdd/'): v for p, v in before.items()
+                          if p.startswith('.agents/skills/tdd/')})
+        self.assertEqual(snapshot(self.home), home)
 
     def test_portable_proof_fifo_and_link_are_preserved_then_regular_proof_succeeds(self):
         launcher = self.root / 'provision.pyz'

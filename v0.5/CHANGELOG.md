@@ -2,6 +2,20 @@
 
 ## Unreleased
 
+- Isolate content conflicts in not-yet-installed project skills during
+  installation; later edits to installed skills still refuse and keep recovery
+  history. Preserve withheld
+  directories, install every unaffected complete skill, and record only managed
+  skills in partial-installation history. Repeat partial installs without writes;
+  retain rollback and later-edit protection. Cloud setup wires installed skills
+  and names withheld aliases with their repairs while install/check/setup remain
+  incomplete with exit 2. Local setup remains read-only.
+
+*Why — keep unaffected capabilities available:* the human selected per-skill
+  isolation on 2026-10-25 so one unretained project edit cannot prevent a fresh
+  workspace from installing unrelated skills. Partial file availability grants
+  neither a review pass nor runtime qualification; those gates remain pending.
+
 - Add opt-in Conductor setup composition to inventory adoption's existing
   preview/Apply, preserving prior commands, exports, comments and settings.
   Dispatch on the host environment, verify adopted launcher/bundle identity,
