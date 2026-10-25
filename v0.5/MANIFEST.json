@@ -178,8 +178,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "165026d310030bbe534407338c98a15f38ed5041a513d0e1ed79d0bc7c8c788f",
-      "size": 63739
+      "sha256": "ffd888ecf8154b51ba07fe69fa04cca80dfcd19770ae6303ff814ee7db730723",
+      "size": 64208
     },
     {
       "path": "MAINTENANCE.md",
@@ -1265,6 +1265,11 @@
       "path": "scripts/test_check_release_state.py",
       "sha256": "9aa0f7b79166ccac06f2eba8af6539e5891ea96c5d7d7e88f0d9e78a28140e30",
       "size": 5487
+    },
+    {
+      "path": "scripts/test_ci_python_path.py",
+      "sha256": "b0e02d0aff82d070b9e1d574c936dc3aace71175e6d933701b0cdfc67c0a257a",
+      "size": 2785
     },
     {
       "path": "scripts/test_config_repair_boundaries.py",
