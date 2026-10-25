@@ -13,6 +13,9 @@
 
 ## Field reports
 
+- [2026-10-25 — Capability and authority](field-reports/2026-10-25-capability-and-authority.md)
+  — verifier-route escalation, scoped review exception and CI environment repair.
+
 - [2026-10-13 — Checkpoint performance](field-reports/2026-10-13-checkpoint-performance.md)
   — shipped retained improvements, rejected experiments and acceptance disposition.
 

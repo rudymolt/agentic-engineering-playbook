@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- Close the shipped capability/authority feature's planning record and retain
+  its retrospective, review exception and CI environment repair evidence.
+
+*Why — feature closeout:* remove completed planning from the active-work index
+  without losing the decisions, failed attempts or limits of the accepted proof.
+
 - Preserve the selected Python installation on PATH for privileged CI commands
   and their subprocesses, including delivery and checkpoint qualification.
 

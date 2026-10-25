@@ -1,8 +1,17 @@
 # Archive status
 
-archived_features: 3
+archived_features: 4
 
 ## Shipped features
+
+- **Deployment capability and existing authority** — shipped 2026-10-25 in
+  PR #46 as `8f6a2f0`; final verified head `a3b732c`. Archived at
+  `2026-10-25-deployment-capability-and-authority/`. Doc-close and
+  [feature retrospective](../planning/retros/2026-10-25-capability-and-authority.md)
+  are complete in this closeout PR, awaiting human merge. Original review
+  exceptions and failed verification attempts remain qualified in the
+  [closeout record](2026-10-25-deployment-capability-and-authority/closeout.md).
+  No tagged release or unrelated feature closeout is included.
 
 - **Checkpoint and delivery verifier performance** — shipped 2026-10-13 in
   PR #41 as `20eeb04`; verified head `084857c`. Archived at
