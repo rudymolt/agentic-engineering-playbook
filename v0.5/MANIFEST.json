@@ -8,13 +8,13 @@
     },
     {
       "path": "00-foundations.md",
-      "sha256": "83adfbf373c383f8484b17691900df924b65da09bb65d8a15dbaf6b3d1a53213",
-      "size": 29700
+      "sha256": "a637d5fb2f544b1218291b661c982122cfdff5a3ab8bb53713937f8254def4a6",
+      "size": 32287
     },
     {
       "path": "10-process/00-prereqs.md",
-      "sha256": "f59dc8f331092315d5699e865e9f281525da59bcc84004ff42edb8dc2b5c3244",
-      "size": 16313
+      "sha256": "d6b3c51e94f9bbedf71404abd8401d3f38b92811c5616e4e1d61db0ff0215605",
+      "size": 19291
     },
     {
       "path": "10-process/01-align.html",
@@ -23,8 +23,8 @@
     },
     {
       "path": "10-process/01-align.md",
-      "sha256": "855082d9903b7efd9ea6a99caf8ccfad2d8b8db40738ab2631044fd5365a4e2a",
-      "size": 11319
+      "sha256": "73887821d27c72cca0ff0d175ecbd34e2e90635928141bd0d629bf2c5c0a37ca",
+      "size": 11839
     },
     {
       "path": "10-process/02-context-and-adrs.md",
@@ -58,8 +58,8 @@
     },
     {
       "path": "10-process/07-implementation-tdd.md",
-      "sha256": "5c87f9e9f955dcdfa309f2639965feb82b5b2cac08ebfcc97fc6420aaf54505d",
-      "size": 18801
+      "sha256": "8c1c77459509f766fa23aa94d0d1a7626895a6ff7cf65ed9d45c0fd30423fc87",
+      "size": 19243
     },
     {
       "path": "10-process/08-review.md",
@@ -73,13 +73,13 @@
     },
     {
       "path": "10-process/10-ship-and-deploy.md",
-      "sha256": "f3f81ce007f6cea6dca8015573f1d6d2fae3eb38e9e092125961d1e8efdaf9d8",
-      "size": 10916
+      "sha256": "bf2814e56b1f08db8cb43fdec316b54fc9db82d19701d5d5593ea2718aa3830f",
+      "size": 17090
     },
     {
       "path": "10-process/11-debug.md",
-      "sha256": "682e0dda4cc496914a15e057b1d1d40e3aa0e7a0eb87dd4e631e79b951655b06",
-      "size": 7171
+      "sha256": "1fd2c75e20137753983bee817e5a059c3184d05959c7bfe13922bc5eb72b080e",
+      "size": 7479
     },
     {
       "path": "10-process/12-retro-and-learn.md",
@@ -103,8 +103,8 @@
     },
     {
       "path": "10-process/pickup-brief.md",
-      "sha256": "6bddf48946803a83846e5615e93be971dedf7dd17d7b17bff2d9d3bd7a36cbdc",
-      "size": 4430
+      "sha256": "1fab1efe91b174e6921396f42b797b382c37197f5871e3987276835b61edcb95",
+      "size": 5292
     },
     {
       "path": "10-process/prereqs-capability-profiles.md",
@@ -168,18 +168,18 @@
     },
     {
       "path": "93-model-routing-track.md",
-      "sha256": "7762e07812c7428d843a18de1da3b8e8c8686f813be4538c4c8b91123860c04c",
-      "size": 19936
+      "sha256": "79544df374afc81062e97410458b9b34f0c620648fd2eae34a817e69b9ccd797",
+      "size": 21178
     },
     {
       "path": "AGENT-DIGEST.md",
-      "sha256": "056abe326eedddcfa1b8c17b322a967f25705e834aa068c102198f731b6e0cbe",
-      "size": 18284
+      "sha256": "cde3e3b3a40fb80cd9b9ed4c22443bfdabaa01f744d52fd11c8769dc9cd2cbcf",
+      "size": 18826
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "b645bc2cfcdaa36a20cef551aa2be84afe06c4902061aec1aaeed02a242a40c4",
-      "size": 62977
+      "sha256": "ffd888ecf8154b51ba07fe69fa04cca80dfcd19770ae6303ff814ee7db730723",
+      "size": 64208
     },
     {
       "path": "MAINTENANCE.md",
@@ -1267,6 +1267,11 @@
       "size": 5487
     },
     {
+      "path": "scripts/test_ci_python_path.py",
+      "sha256": "b0e02d0aff82d070b9e1d574c936dc3aace71175e6d933701b0cdfc67c0a257a",
+      "size": 2785
+    },
+    {
       "path": "scripts/test_config_repair_boundaries.py",
       "sha256": "e69111b682f94fbc13751182e7cf9427721f25cf95b4a8f46756b0e00573779b",
       "size": 15965
@@ -1723,8 +1728,8 @@
     },
     {
       "path": "templates/CLAUDE.md",
-      "sha256": "a092d5c5b67ee44cea3e3b84b36dba1c5c1a483081c0a50c238a4e1c071b5264",
-      "size": 8795
+      "sha256": "5b41c32d6abeb2115ec064e3b1f50430dd21a81f235aec4f326881c41e820613",
+      "size": 10412
     },
     {
       "path": "templates/DESIGN-GLOSSARY.md",

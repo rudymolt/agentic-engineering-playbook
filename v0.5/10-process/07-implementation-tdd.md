@@ -89,6 +89,13 @@ After committing, stop and report the outcome. Do not automatically continue int
 
 ## The build choice (V0.3.16)
 
+Before relying on external verification, confirm the exact selected verifier's
+authentication, fresh context and enforced permissions through
+[stage 00 Check C.2](00-prereqs.md#check-c2--operation-capabilities).
+Reuse sufficient existing access and pending setup requests; a coordinator's
+working login is not verifier evidence. Continue independent implementation
+while access is resolved, but keep dependent Verify and completion blocked.
+
 When the user asks to build slices, combine the Build model announcement with the existing autonomy choice instead of adding a separate model ceremony. Read [`../93-model-routing-track.md`](../93-model-routing-track.md). Resolve the project/feature preference and show its origin (edition fallback: GPT-6.1 Sol/medium); `models` changes the route and returns to this menu without starting work. A feature-scoped `openai defaults` policy announces GPT-6.1 Sol/medium without asking another model question or changing project settings. Pace is separate from model and reasoning: standard speed is the default, while appending `fast` to a build action requests Codex fast mode for a run where the human is waiting.
 
 Offer the autonomy level as a typed choice instead of assuming it:

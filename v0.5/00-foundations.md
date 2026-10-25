@@ -14,6 +14,30 @@ You are working **with** the human, not for them. The goal is shared progress on
 
 **Don't invent domain rules.** If you don't know something domain-specific, say so. Mark it as an open question. Never fabricate a rule that sounds plausible — the cost of an invented rule landing in production is much higher than the cost of pausing to ask.
 
+**Reuse existing authorization; prove capability separately.** Before asking
+for a decision, compare the proposed action, target, effects and limits with the
+user's existing instruction. An authorized operation includes its necessary
+timestamped backup, isolated restore verification, scoped retries,
+verification-input repairs and cleanup of its owned disposable verification
+copy within those boundaries. A retry or handoff alone adds no approval gate.
+When routine technical choices are delegated, decide and record them within
+that delegation. Ask only for an uncovered decision; credentials and successful
+rehearsals confer no authority. Live recovery, downtime, data loss, changed
+targets, broader credentials, unapproved cost, unauthorized migrations and PR
+merge remain distinct decisions. Reuse valid authority for an exact recovery
+action already approved. Stop, selected hard limits, actual quotas and cumulative
+failure/no-progress guards still bind.
+
+**Discover dependencies early.** When planned work needs deployment, a shared
+database, bulk-data changes or an external verifier, follow
+[stage 00 Check C.2](10-process/00-prereqs.md#check-c2--operation-capabilities).
+Check existing scoped access privately before requesting setup. A missing
+capability blocks dependent verification, mutation or release; continue only
+work whose correctness and effects are independent of it. Retain the precise
+unresolved request across retries/handoffs rather than asking again; elapsed
+time is neither approval nor proof. Keep authorization provenance, capability
+evidence and blockers in the existing plan, verification record or pickup brief.
+
 **Match verification depth to the change.** Don't run the full test suite for a typo fix. Don't ship a parser rewrite with only a type-check. See §4 below for the verification ladder.
 
 **Push back constructively.** If a proposal conflicts with the project's stated goals or architecture, say so briefly, offer the alternative, then defer to the user's judgement.
@@ -91,11 +115,18 @@ Match verification depth to the cost of being wrong:
 | New behaviour in one module | TDD red→green at the agreed seam + relevant unit tests; structural refactoring happens under stage 08 review |
 | New behaviour across modules | TDD + integration test + report-only stage-09 browser/device pass + independent verifier (stage 08 verifier definition) |
 | Change at a boundary with a sibling app or external API | All of the above + contract test (consumer expectations pinned; provider verified where owned) |
-| Schema or data-shape change | TDD + integration test + manual smoke + backup + migration |
+| Schema or data-shape change | TDD + integration test + manual smoke + stage-10 recovery gate + migration reversal rehearsal |
 | Anything touching auth, payments, user data, or public endpoints | All of the above + compatibility-gated or manual stage-08 security pass |
-| Production deploy | All of the above + `/canary` post-deploy monitoring + rollback rehearsed |
+| Production deploy | Applicable checks above + `/canary` post-deploy monitoring + rehearsed recovery where applicable; stage-10 backup/restore gate follows actual persistent-data risk |
 
 When in doubt, climb the ladder. The cost of over-verifying a small change is minutes; the cost of under-verifying a big one is hours or weeks.
+
+Application changes that affect persistent data require the
+[stage-10 recovery gate](10-process/10-ship-and-deploy.md#persistent-data-recovery-gate)
+even without migration files. Presentation-only deployments are exempt from
+backup/restore verification by default; explicit stricter project policy holds.
+An isolated restore needs scoped integrity and relevant read/smoke checks, not
+an automatic full application regression suite for every rehearsal.
 
 A meaningful automated regression test is the default for a diagnosed bug. The
 narrow exception for a misleading or impractical test is owned by stage 11: it
@@ -234,7 +265,7 @@ A sub-agent that needs to write product code is not one of these roles. It is an
 
 New in V0.2.5 (improvement plan Area 5). These are minimums, not a security programme — they exist because their absence hurts without warning.
 
-- **Secrets never enter tracked files.** Credentials, tokens, and keys live in environment variables or untracked env files covered by `.gitignore`. An agent that needs a secret to proceed stops and asks — it never writes one into code, config, tests, fixtures, or chat output "temporarily".
+- **Secrets never enter tracked files.** Credentials, tokens, and keys live in environment variables or untracked env files covered by `.gitignore`. First check safe existing access through the intended tool/runner without displaying secret values (stage 00 Check C.2). If capability is missing, request precise private setup once and block dependent work. Never write a secret into code, config, tests, fixtures, or chat output "temporarily".
 - **Diagnostic evidence is redacted before display.** Commands, outputs, logs, traces, HAR files, and other captured artifacts replace credentials with `<REDACTED>`; feedback loops read secrets from environment variables, and reports quote only the signal-bearing lines. If redaction removes evidence needed to investigate the bug, stop and ask for a safer access route.
 - **Diagnostics never dump the environment or the process table.** Host runtimes (Conductor, Codex, CI runners) carry authentication values in environment variables and on infrastructure command lines, so `env` or `printenv` run for their output, bare `set`, `ps -ef`, `ps aux`, any `ps` invocation that prints a command line — an `args`, `command`, or `cmd` output format, or the `-f`, `w`/`ww`, and `ax` full formats — `top -c`, `htop`, `pgrep -a`, and reads of `/proc/*/cmdline` or `/proc/*/environ` put live credentials into tool output before any redaction can run. (`env VAR=value cmd` and `set -euo pipefail` are invocation prefixes, not dumps; they stay allowed.) Identify a process by its identity rather than its command line: `ps -o pid,ppid,pgid,comm`, `pgrep -x <name>`, `pgrep -f <pattern>` or `pgrep -P <ppid>` — both print pids only — or an exact fixture selector. To find a port holder use `lsof -i :<port> -t` or `ss -ltn`, which report a pid and at most a command name; if neither is installed, ask the human rather than reaching for a broader tool. Read a single named variable only when the task needs it. If a value surfaces anyway, hand it to a human as a security incident: report the workspace or session identifier and timestamp, never the value, and stop. The human decides on and performs any follow-up with the host; the agent does not.
 - **A committed secret is a human-handled incident, not a deletion.** Removing the line does not remove it from history. Report the file, line, and commit to a human and stop; the human replaces the credential and decides whether the project's hosting requires history cleanup. The agent never performs, requests, or scripts credential replacement on its own.
@@ -242,7 +273,7 @@ New in V0.2.5 (improvement plan Area 5). These are minimums, not a security prog
 - **Validate at every boundary the project owns.** Anything crossing into the system — user input, file contents, API responses, environment values — is validated where it enters, not where it breaks.
 - **Least privilege by default.** Tokens and keys the project issues or requests get the narrowest scope that works, and an expiry where the platform supports one.
 
-- **Irreversible operations get a rehearsed reverse.** Schema migrations, bulk data edits, and deletions are preceded by a timestamped backup, and their rollback has actually been executed against a copy before the forward change ships (stage 10, "Shipping a migration").
+- **Data recovery is demonstrated before the change.** Changes affecting persistent data or creating a data-recovery risk follow stage 10's persistent-data recovery gate, including actual isolated restoration and current pre-change/write coverage. Schema migrations, bulk data edits and deletions also require their reversal to have been executed against a copy; migration apply → roll back → re-apply remains a separate rehearsal. A rehearsal grants no live recovery authority.
 
 The review stage (08) carries the per-PR security pass; the prereqs stage (00, Check E) carries the per-session floor check.
 

@@ -38,6 +38,7 @@ Use this shape:
 - Branch / revision: `{branch}` / `{full revision}`; base or merged state: {locator/result}.
 - Task tracker: {portable task, Markdown task ID, or issue locator}; approved scope: {spec/slice locator}.
 - Evidence: {completed gate and artifact locators}; required gates: {named remaining gates}.
+- Operation (when relevant): {authorization provenance/scope/effects; actual target and runner; capability results; recovery-point identity, restoration and current write-coverage evidence; approved resource/cost limits; unresolved private-setup or decision request and blocked work}.
 - Budget: {ordinary time checkpoint or selected hard deadline, cumulative retry/no-progress counts, planned verification capacity, and any remaining hard limit or locator}.
 
 ## One next action
@@ -58,6 +59,14 @@ gates against the brief. A stale branch, merged/reverted revision, changed
 dependency, missing artifact, or incomplete gate changes the reported resume
 point. Previous worker claims remain historical context: execute the current
 stage's required verification rather than accepting a prior success claim.
+
+For deployment/data work or an external verifier, reconcile the conditional
+Operation line using [stage 00 Check C.2](00-prereqs.md#check-c2--operation-capabilities)
+and [stage 10's recovery gate](10-ship-and-deploy.md#persistent-data-recovery-gate).
+Recheck evidence after runner, VM, target, credential or relevant tooling changes;
+retain unchanged authority and pending requests. Carry cleanup ownership and any
+unresolved resource exposure. Keep secrets out, preserve cumulative limits and
+fresh Verify independence, and continue only work independent of a named blocker.
 
 After the check, state the reconciliation result and keep **exactly one** next
 action. A complete result may route to the next stage; a missing required input
