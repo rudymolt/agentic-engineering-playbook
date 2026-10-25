@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
-"""Preview, install, or check the registry-selected project skill bundle.
+"""Manage the registry-selected project skill bundle and previous installation.
 
-Exit 0: successful preview/install/check; 2: incomplete check or blocked operation.
+Exit 0: successful command; 2: incomplete check or blocked operation.
 All commands emit JSON. Installation requires an explicit command and source proof.
 """
 from __future__ import annotations
@@ -9,14 +9,13 @@ from __future__ import annotations
 import argparse
 import importlib.util
 import json
-import os
 from pathlib import Path
 import sys
-import tempfile
 
 import release_provenance as provenance
 import upstream_bundle as bundle
 import upstream_registry
+import provisioning_state as history
 
 
 _spec = importlib.util.spec_from_file_location(
@@ -62,7 +61,16 @@ def installation_status(path: Path, expected: dict[str, bytes]) -> str:
     return 'installed' if actual == expected else 'conflict'
 
 
+def installed_matches_history(project, name, state):
+    try:
+        return history.actual(project, name) == history.content(state['current'], name)
+    except (bundle.BundleError, OSError):
+        return False
+
+
 def inspect(project, identity, manifest, packages, registry, edition):
+    state = history.load(project)
+    retained = history.retained(project)
     rows = []
     integrations = compatibility.load_manifest(edition / 'upstream-integrations.json')
     problems = upstream_registry.manifest_problems(registry, integrations)
@@ -80,16 +88,35 @@ def inspect(project, identity, manifest, packages, registry, edition):
             fallback = integration.get('fallback')
         target = project / '.agents/skills' / name
         status = installation_status(target, content)
+        if status == 'conflict' and installed_matches_history(project, name, state):
+            status = 'update_available'
         try:
             actual = bundle.files(target)
             installed_integrity = {p: bundle.digest(b) for p, b in actual.items()}
         except (bundle.BundleError, OSError):
             installed_integrity = None
+        retention_error = None
+        if name in retained['skills']:
+            try:
+                history.retained_content(project, name, retained, skill, content['LICENSE'])
+                status = 'customized'
+                compatible = False if compatible is False else None
+            except (history.StateError, bundle.BundleError, OSError) as error:
+                status = 'conflict'
+                retention_error = str(error)
         rows.append({
             'name': name,
             'path': f'.agents/skills/{name}',
             'installation': status,
-            'installed_source': manifest['commit'] if status == 'installed' else 'unknown',
+            'installed_source': ('project-customization' if status == 'customized' else
+                                 manifest['commit'] if status == 'installed' else 'unknown'),
+            'managed_source': state['current']['source'] if state['current'] and installed_matches_history(project, name, state) else None,
+            'retention': retained['skills'].get(name),
+            'retention_error': retention_error,
+            'repair_choices': ([
+                'Commit and explicitly retain --skill ' + name + ' after finishing any pending transaction.',
+                'Move later or unknown material outside this skill directory and restore recorded bytes before retrying.',
+            ] if status == 'conflict' else []),
             'installed_integrity': installed_integrity,
             'integrity': {p: bundle.digest(data) for p, data in sorted(content.items())},
             'upstream': {k: manifest[k] for k in ('source', 'version', 'commit', 'tag_object')},
@@ -100,10 +127,15 @@ def inspect(project, identity, manifest, packages, registry, edition):
             'discovery': 'unverified',
             'qualification': 'unverified',
         })
-    complete = all(s['installation'] == 'installed' for s in rows)
+    complete = all(s['installation'] in ('installed', 'customized') for s in rows) and state['transaction'] is None
     return {'schema_version': 1, 'source': identity, 'skills': rows,
             'complete': complete, 'changed': [],
-            'repair': None if complete else 'Rerun install to finish missing skills; preserve conflicts for explicit reconciliation.'}
+            'retained_outside_inventory': sorted(set(retained['skills']) - set(packages)),
+            'transaction_pending': state['transaction'] is not None,
+            'repair': (None if complete else
+                       'Interrupted replacement: retry the identical install or select recover; move later edits aside first.'
+                       if state['transaction'] else
+                       'Rerun install for missing or unchanged managed skills; explicitly retain committed customizations or move conflicts aside.')}
 
 
 def main(argv=None):
@@ -115,7 +147,8 @@ def main(argv=None):
     parser.add_argument('--release', help='previously verified release tag')
     parser.add_argument('--tag-object', help='previously verified annotated tag object')
     parser.add_argument('--commit', help='previously verified release commit')
-    parser.add_argument('action', choices=('preview', 'install', 'check'))
+    parser.add_argument('--skill', help='one registry-selected skill for retention or manual fallback')
+    parser.add_argument('action', choices=('preview', 'install', 'check', 'recover', 'retain', 'fallback'))
     args = parser.parse_args(argv)
     report = {'schema_version': 1, 'complete': False, 'changed': [], 'skills': []}
     inspection = None
@@ -133,42 +166,72 @@ def main(argv=None):
                        project / '.agents/.skill-provisioning'):
             if parent.is_symlink() or (parent.exists() and not parent.is_dir()):
                 raise ProvisionError(f'{parent.name}: symbolic link or non-directory parent; reconcile it explicitly')
+        if args.action == 'retain':
+            if args.skill not in packages:
+                raise ProvisionError('retain requires --skill naming one selected inventory skill')
+            history.retain(project, args.skill, identity, registry.skills[args.skill], packages[args.skill]['LICENSE'])
+        elif args.skill is not None and args.action != 'fallback':
+            raise ProvisionError('--skill is only valid with retain or fallback')
         report = inspect(project, identity, manifest, packages, registry, edition)
         inspection = (project, identity, manifest, packages, registry, edition)
+        if args.action == 'fallback':
+            row = next((s for s in report['skills'] if s['name'] == args.skill), None)
+            if row is None or not row['fallback']:
+                raise ProvisionError('fallback requires --skill with an existing stage-owned manual fallback')
+            report['fallback_selection'] = {'skill': args.skill, 'route': row['fallback'],
+                                            'scope': 'this report only; execution remains stage-owned'}
         conflicts = [s['name'] for s in report['skills'] if s['installation'] == 'conflict']
         if args.action == 'install' and conflicts:
             raise ProvisionError('conflicting project content: ' + ', '.join(conflicts))
-        if args.action == 'install' and not report['complete']:
-            for name, content in packages.items():
-                target = project / '.agents/skills' / name
-                if installation_status(target, content) == 'installed':
-                    continue
-                target.parent.mkdir(parents=True, exist_ok=True)
-                # Staging lives outside runtime skill roots; activation is one rename.
-                staging_root = project / '.agents/.skill-provisioning'
-                staging_root.mkdir(exist_ok=True)
-                with tempfile.TemporaryDirectory(dir=staging_root, prefix='initial-') as tmp:
-                    staged = Path(tmp) / name
-                    staged.mkdir()
-                    for relative, data in content.items():
-                        path = staged / relative
-                        path.parent.mkdir(parents=True, exist_ok=True)
-                        path.write_bytes(data)
-                    os.rename(staged, target)
-                report['changed'].append(name)
-            report = {**inspect(project, identity, manifest, packages, registry, edition), 'changed': report['changed']}
+        if args.action in ('install', 'recover'):
+            state = history.load(project)
+            if args.action == 'recover':
+                tx = state['transaction']
+                # Resume recovery toward its saved destination; an interrupted
+                # install is instead rolled back to its starting inventory.
+                previous = (tx['after'] if tx['action'] == 'recover' else tx['before']) if tx else state['previous']
+                if previous is None:
+                    raise ProvisionError('no previous installation recorded; rerun install to finish missing skills')
+                after = {'source': previous['source'], 'skills': dict(previous['skills'])}
+            else:
+                retained = history.retained(project)
+                after = {'source': identity, 'skills': {n: history.encode(c) for n, c in packages.items()}}
+            retained = history.retained(project)
+            for name in retained['skills']:
+                if name not in registry.skills:
+                    raise ProvisionError(f'{name}: retained skill absent from registry; preserve it and explicitly reconcile inventory changes')
+                license_bytes = next(iter(packages.values()))['LICENSE']
+                material = history.retained_content(project, name, retained, registry.skills[name], license_bytes)
+                after['skills'][name] = history.encode(material)
+            if state['transaction'] or args.action == 'recover' or not report['complete'] or state['current'] != after:
+                changed = history.apply(project, state, args.action, after)
+                report = {**inspect(project, identity, manifest, packages, registry, edition), 'changed': changed}
+            if args.action == 'recover':
+                report['recovery_complete'] = True
+                report['recovered_source'] = after['source']
         print(json.dumps(report, indent=2, sort_keys=True))
         return 2 if args.action == 'check' and not report['complete'] else 0
-    except (ProvisionError, bundle.BundleError, upstream_registry.RegistryError,
+    except (ProvisionError, history.StateError, bundle.BundleError, upstream_registry.RegistryError,
             OSError, ValueError, KeyError) as error:
         if inspection is not None:
             try:
                 report = {**inspect(*inspection), 'changed': report['changed']}
             except (OSError, ValueError, KeyError):
                 pass  # Preserve the prior observation if the source is no longer readable.
+        try:
+            tx = history.load(project)['transaction'] if inspection else None
+            if tx:
+                report['changed'] = [n for n in sorted(tx['after']['skills'])
+                                     if history.content(tx['before'], n) != history.content(tx['after'], n)
+                                     and history.actual(project, n) == history.content(tx['after'], n)]
+        except (OSError, ValueError, KeyError):
+            pass
         report['complete'] = False
         report['error'] = str(error)
-        report['repair'] = 'Restore verified bundle material and retry; preserve conflicting project files for explicit reconciliation.'
+        report['repair'] = ('Restore verified bundle material if damaged. For later or unknown project edits, '
+                            'commit and explicitly retain --skill NAME, or move conflicting files outside the skill directory '
+                            'before retrying. For interrupted replacement, retry the identical install or select recover; '
+                            'preserve malformed records for explicit reconciliation. ' + str(error))
         print(json.dumps(report, indent=2, sort_keys=True))
         return 2
 

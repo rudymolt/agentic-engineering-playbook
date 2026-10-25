@@ -63,6 +63,332 @@ class ProvisionSkillsTest(unittest.TestCase):
         self.assertEqual(result.returncode, code, result.stdout + result.stderr)
         return json.loads(result.stdout)
 
+    def change_bundle(self, remove=None):
+        import hashlib
+        path = self.source / 'v0.5/bundles/mattpocock-skills/tdd/tests.md'
+        path.write_bytes(path.read_bytes() + b'\nReviewed fixture update\n')
+        manifest_path = path.parent.parent / 'integrity.json'
+        manifest = json.loads(manifest_path.read_text())
+        if remove:
+            registry_path = self.source / 'v0.5/upstream-skills.json'
+            registry = json.loads(registry_path.read_text())
+            registry['skills'][remove]['project_bundle'] = False
+            registry_path.write_text(json.dumps(registry))
+            shutil.rmtree(path.parent.parent / remove)
+            del manifest['skills'][remove]
+            manifest['files'] = {p: v for p, v in manifest['files'].items()
+                                 if not p.startswith(remove + '/')}
+        data = path.read_bytes()
+        manifest['files']['tdd/tests.md'] = {
+            'sha256': hashlib.sha256(data).hexdigest(), 'size': len(data)}
+        manifest_path.write_text(json.dumps(manifest))
+        self.git('add', '.')
+        self.git('commit', '-qm', 'Reviewed fixture inventory change')
+        self.git('tag', '-fa', 'v0.5.999', '-m', 'New fixture release')
+        self.commit = self.git('rev-parse', 'HEAD')
+        self.tag = self.git('rev-parse', 'refs/tags/v0.5.999')
+
+    def test_managed_inventory_change_and_repeat_previous_recovery(self):
+        self.command('install')
+        original = snapshot(self.project / '.agents/skills')
+        self.change_bundle(remove='writing-for-agents')
+        preview = self.command('preview')
+        tdd = next(s for s in preview['skills'] if s['name'] == 'tdd')
+        self.assertEqual(tdd['installation'], 'update_available')
+        updated = self.command('install')
+        self.assertTrue(updated['complete'])
+        self.assertEqual(updated['changed'], ['tdd', 'writing-for-agents'])
+        self.assertFalse((self.project / '.agents/skills/writing-for-agents').exists())
+        self.assertIn('Reviewed fixture update',
+                      (self.project / '.agents/skills/tdd/tests.md').read_text())
+        recovered = self.command('recover')
+        self.assertTrue(recovered['recovery_complete'])
+        self.assertFalse(recovered['complete'])  # requested new source is not restored old source
+        self.assertEqual({p: b for p, (b, _) in snapshot(self.project / '.agents/skills').items()},
+                         {p: b for p, (b, _) in original.items()})
+        before = snapshot(self.project)
+        self.assertEqual(self.command('recover')['changed'], [])
+        self.assertEqual(snapshot(self.project), before)
+        self.assertTrue(self.command('install')['complete'])
+        self.assertEqual(snapshot(self.home), {})
+
+    def project_git(self, *args):
+        return subprocess.check_output(['git', '-C', str(self.project), *args],
+                                       env=self.env, text=True).strip()
+
+    def test_retained_committed_customization_survives_update_and_recreation(self):
+        self.command('install')
+        self.project_git('init', '-q')
+        self.project_git('config', 'user.name', 'Fixture')
+        self.project_git('config', 'user.email', 'fixture@users.noreply.github.com')
+        custom = self.project / '.agents/skills/tdd/tests.md'
+        custom.write_bytes(custom.read_bytes() + b'\nProject-owned guidance\n')
+        self.project_git('add', '.agents/skills')
+        self.project_git('commit', '-qm', 'Retain project skill customization')
+        retained_bytes = custom.read_bytes()
+        blocked = self.command('install', code=2)
+        self.assertEqual(next(s for s in blocked['skills'] if s['name'] == 'tdd')['installation'], 'conflict')
+        retained = self.command('retain', '--skill', 'tdd')
+        tdd = next(s for s in retained['skills'] if s['name'] == 'tdd')
+        self.assertEqual(tdd['installation'], 'customized')
+        self.assertEqual(tdd['installed_source'], 'project-customization')
+        self.assertEqual(tdd['qualification'], 'unverified')
+        self.assertIsNone(tdd['embedded_compatible'])
+        self.project_git('add', '.agents/.skill-provisioning/retained.json')
+        self.project_git('commit', '-qm', 'Record explicit retention')
+        self.change_bundle()
+        self.assertTrue(self.command('install')['complete'])
+        self.assertEqual(custom.read_bytes(), retained_bytes)
+        clone = self.root / 'recreated'
+        subprocess.run(['git', 'clone', '-q', str(self.project), str(clone)],
+                       env=self.env, check=True, capture_output=True)
+        self.project = clone
+        self.assertFalse((clone / '.agents/.skill-provisioning/state.json').exists())
+        replayed = self.command('install')
+        self.assertTrue(replayed['complete'])
+        self.assertEqual((clone / '.agents/skills/tdd/tests.md').read_bytes(), retained_bytes)
+        self.assertEqual(next(s for s in replayed['skills'] if s['name'] == 'tdd')['installation'], 'customized')
+        # Neither a later edit nor an unknown untracked addition inherits retention.
+        custom = clone / '.agents/skills/tdd/tests.md'
+        custom.write_bytes(retained_bytes + b'\nLater VM-only edit\n')
+        before = snapshot(clone)
+        refused = self.command('retain', '--skill', 'tdd', code=2)
+        self.assertIn('committed', refused['error'])
+        self.command('install', code=2)
+        self.assertEqual(snapshot(clone), before)
+        self.assertEqual(snapshot(self.home), {})
+
+    def test_interrupted_replacement_resumes_or_recovers_without_false_completion(self):
+        for boundary, action in ((1, 'recover'), (1, 'install'), (2, 'recover'), (2, 'install')):
+            with self.subTest(boundary=boundary, action=action):
+                self.project = self.root / f'project-{boundary}-{action}'
+                self.project.mkdir()
+                self.command('install')
+                original = (self.project / '.agents/skills/tdd/tests.md').read_bytes()
+                unaffected = snapshot(self.project / '.agents/skills/code-review')
+                self.change_bundle()
+                driver = self.root / 'interrupt-replacement.py'
+                driver.write_text("""import os, runpy, signal, sys
+from unittest.mock import patch
+sys.path.insert(0, sys.argv[1])
+cli = sys.argv[2]
+limit = int(sys.argv[3])
+sys.argv = [cli, *sys.argv[4:]]
+rename = os.rename
+count = 0
+def interrupt(*args, **kwargs):
+    global count
+    rename(*args, **kwargs)
+    count += 1
+    if count == limit:
+        os.kill(os.getpid(), signal.SIGTERM)
+with patch('os.rename', interrupt):
+    runpy.run_path(cli, run_name='__main__')
+""")
+                result = subprocess.run([
+                    sys.executable, str(driver), str(SCRIPTS), str(CLI), str(boundary),
+                    '--source', str(self.source), '--project', str(self.project),
+                    '--release', 'v0.5.999', '--tag-object', self.tag,
+                    '--commit', self.commit, 'install'], env=self.env,
+                    capture_output=True, text=True)
+                self.assertEqual(result.returncode, -15, result.stderr)
+                incomplete = self.command('check', code=2)
+                self.assertFalse(incomplete['complete'])
+                self.assertTrue(incomplete['transaction_pending'])
+                self.assertEqual(next(s for s in incomplete['skills'] if s['name'] == 'code-review')['installation'], 'installed')
+                if boundary == 2 and action == 'install':
+                    work = self.project / '.agents/.skill-provisioning/work'
+                    outside = self.home / 'saved-work'
+                    work.rename(outside)
+                    work.symlink_to(outside, target_is_directory=True)
+                    before = snapshot(self.home)
+                    blocked = self.command('install', code=2)
+                    self.assertIn('staging', blocked['error'])
+                    self.assertEqual(snapshot(self.home), before)
+                    self.assertTrue(work.is_symlink())
+                    work.unlink()
+                    outside.rename(work)
+                repaired = self.command(action)
+                self.assertFalse(repaired['transaction_pending'])
+                material = (self.project / '.agents/skills/tdd/tests.md').read_bytes()
+                if action == 'recover':
+                    self.assertTrue(repaired['recovery_complete'])
+                    self.assertEqual(material, original)
+                    before = snapshot(self.project)
+                    self.command('recover')
+                    self.assertEqual(snapshot(self.project), before)
+                else:
+                    self.assertTrue(repaired['complete'])
+                    self.assertIn(b'Reviewed fixture update', material)
+                self.assertEqual(snapshot(self.project / '.agents/skills/code-review'), unaffected)
+                self.assertEqual(snapshot(self.home), {})
+
+    def test_interrupted_recovery_preserves_original_target_and_source(self):
+        for boundary, pending_install in ((1, False), (2, False), (1, True)):
+            with self.subTest(boundary=boundary, pending_install=pending_install):
+                self.project = self.root / f'recovery-{boundary}-{pending_install}'
+                self.project.mkdir()
+                installed_a = self.command('install')
+                original = (self.project / '.agents/skills/tdd/tests.md').read_bytes()
+                unaffected = snapshot(self.project / '.agents/skills/grilling')
+                self.change_bundle()
+                driver = self.root / 'interrupt-recovery.py'
+                driver.write_text("""import os, runpy, signal, sys
+from unittest.mock import patch
+sys.path.insert(0, sys.argv[1])
+cli = sys.argv[2]
+limit = int(sys.argv[3])
+sys.argv = [cli, *sys.argv[4:]]
+rename = os.rename
+count = 0
+def interrupt(*args, **kwargs):
+    global count
+    rename(*args, **kwargs)
+    count += 1
+    if count == limit:
+        os.kill(os.getpid(), signal.SIGTERM)
+with patch('os.rename', interrupt):
+    runpy.run_path(cli, run_name='__main__')
+""")
+                def interrupt(action, limit):
+                    result = subprocess.run([
+                        sys.executable, str(driver), str(SCRIPTS), str(CLI), str(limit),
+                        '--source', str(self.source), '--project', str(self.project),
+                        '--release', 'v0.5.999', '--tag-object', self.tag,
+                        '--commit', self.commit, action], env=self.env,
+                        capture_output=True, text=True)
+                    self.assertEqual(result.returncode, -15, result.stderr + result.stdout)
+                if pending_install:
+                    interrupt('install', 2)
+                else:
+                    self.command('install')
+                interrupt('recover', boundary)
+                incomplete = self.command('check', code=2)
+                self.assertTrue(incomplete['transaction_pending'])
+                self.assertFalse(incomplete['complete'])
+                # Later unknown material still blocks recovery without being erased.
+                unknown = self.project / '.agents/skills/code-review/keep.md'
+                unknown.write_bytes(b'Keep the later project addition\n')
+                before = snapshot(self.project)
+                self.command('recover', code=2)
+                self.assertEqual(snapshot(self.project), before)
+                unknown.rename(self.project / 'saved-addition.md')
+                recovered = self.command('recover')
+                self.assertTrue(recovered['recovery_complete'])
+                self.assertFalse(recovered['transaction_pending'])
+                self.assertFalse(recovered['complete'])
+                self.assertEqual(recovered['recovered_source'], installed_a['source'])
+                self.assertEqual((self.project / '.agents/skills/tdd/tests.md').read_bytes(), original)
+                self.assertEqual(snapshot(self.project / '.agents/skills/grilling'), unaffected)
+                self.assertEqual((self.project / 'saved-addition.md').read_bytes(),
+                                 b'Keep the later project addition\n')
+                before = snapshot(self.project)
+                repeated = self.command('recover')
+                self.assertEqual(repeated['changed'], [])
+                self.assertEqual(repeated['recovered_source'], installed_a['source'])
+                self.assertEqual(snapshot(self.project), before)
+                self.assertEqual(snapshot(self.home), {})
+
+    def test_recovery_preserves_later_and_unknown_edits_and_fallback_is_explicit(self):
+        self.command('install')
+        self.change_bundle()
+        self.command('install')
+        changed = self.project / '.agents/skills/tdd/tests.md'
+        changed.write_bytes(changed.read_bytes() + b'\nLater project edit\n')
+        unknown = self.project / '.agents/skills/code-review/personal.md'
+        unknown.write_bytes(b'Preserve unknown project material\n')
+        before = snapshot(self.project)
+        blocked = self.command('recover', code=2)
+        self.assertIn('later or unknown', blocked['error'])
+        self.assertIn('retain', blocked['repair'])
+        self.assertIn('move', blocked['repair'])
+        self.assertEqual(snapshot(self.project), before)
+        row = next(s for s in blocked['skills'] if s['name'] == 'code-review')
+        self.assertFalse(row['embedded_compatible'])
+        self.assertNotIn('fallback_selection', blocked)
+        fallback = self.command('fallback', '--skill', 'code-review')
+        self.assertFalse(fallback['complete'])
+        self.assertEqual(fallback['fallback_selection']['skill'], 'code-review')
+        self.assertIn('08-review.md', fallback['fallback_selection']['route'])
+        self.assertEqual(next(s for s in fallback['skills'] if s['name'] == 'code-review')['qualification'], 'unverified')
+        self.assertEqual(next(s for s in fallback['skills'] if s['name'] == 'grilling')['installation'], 'installed')
+        self.assertEqual(snapshot(self.project), before)
+        # Explicitly moving both conflicting additions aside permits recovery.
+        changed.write_bytes(changed.read_bytes().removesuffix(b'\nLater project edit\n'))
+        unknown.rename(self.project / 'saved-personal.md')
+        self.assertTrue(self.command('recover')['recovery_complete'])
+        self.assertEqual((self.project / 'saved-personal.md').read_bytes(), b'Preserve unknown project material\n')
+        self.assertEqual(snapshot(self.home), {})
+
+    def test_recovery_preserves_a_newly_retained_committed_edit(self):
+        self.command('install')
+        self.change_bundle()
+        self.command('install')
+        self.project_git('init', '-q')
+        self.project_git('config', 'user.name', 'Fixture')
+        self.project_git('config', 'user.email', 'fixture@users.noreply.github.com')
+        custom = self.project / '.agents/skills/tdd/tests.md'
+        custom.write_bytes(custom.read_bytes() + b'\nKeep this committed project change\n')
+        self.project_git('add', '.agents/skills')
+        self.project_git('commit', '-qm', 'Project customization after replacement')
+        preserved = custom.read_bytes()
+        self.command('retain', '--skill', 'tdd')
+        self.assertTrue(self.command('recover')['recovery_complete'])
+        self.assertEqual(custom.read_bytes(), preserved)
+        before = snapshot(self.project)
+        self.command('recover')
+        self.assertEqual(snapshot(self.project), before)
+        custom.write_bytes(preserved + b'Unretained later change\n')
+        before = snapshot(self.project)
+        self.command('recover', code=2)
+        self.assertEqual(snapshot(self.project), before)
+
+    def test_malformed_history_records_fail_as_json_without_mutation(self):
+        self.command('install')
+        path = self.project / '.agents/.skill-provisioning/state.json'
+        original = path.read_bytes()
+        examples = [[], {'schema_version': 1},
+                    {'schema_version': 1, 'current': None, 'previous': None,
+                     'transaction': {'action': [], 'before': None, 'after': None}},
+                    {'schema_version': 1, 'current': None, 'previous': None,
+                     'transaction': {'action': 'install', 'before': None,
+                                     'after': {'source': {}, 'skills': {}}}},
+                    {'schema_version': 1, 'current': {'source': {}, 'skills': {
+                        'tdd': {'../escape': 'eA=='}}}, 'previous': None, 'transaction': None}]
+        for value in examples:
+            with self.subTest(value=value):
+                path.write_text(json.dumps(value))
+                before = snapshot(self.project)
+                self.command('recover', code=2)
+                self.assertEqual(snapshot(self.project), before)
+        path.write_bytes(original)
+        path.unlink()
+        outside = self.home / 'unrelated.json'
+        outside.write_bytes(original)
+        path.symlink_to(outside)
+        before = snapshot(self.home)
+        self.command('install', code=2)
+        self.assertEqual(snapshot(self.home), before)
+        self.assertTrue(path.is_symlink())
+
+    def test_changed_recovery_evidence_is_not_restored(self):
+        import base64
+        self.command('install')
+        old = (self.project / '.agents/skills/tdd/tests.md').read_bytes()
+        self.change_bundle()
+        self.command('install')
+        path = self.project / '.agents/.skill-provisioning/state.json'
+        # Simulate corruption of saved bytes with still-valid JSON/base64.
+        original = path.read_text()
+        damaged = original.replace(json.dumps(base64.b64encode(old).decode()),
+                                   json.dumps(base64.b64encode(b'Damaged saved material').decode()))
+        self.assertNotEqual(damaged, original)
+        path.write_text(damaged)
+        before = snapshot(self.project)
+        blocked = self.command('recover', code=2)
+        self.assertIn('integrity', blocked['error'])
+        self.assertEqual(snapshot(self.project), before)
+
     def test_complete_inventory_preview_install_check_and_unchanged_rerun(self):
         local = self.project / '.agents/skills/whats-next/SKILL.md'
         local.parent.mkdir(parents=True)

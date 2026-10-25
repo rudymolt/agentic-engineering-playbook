@@ -77,8 +77,10 @@ Original public work is under [Apache-2.0](../LICENSE). The adapted upstream ski
 
 ## Explicit project skill inventory
 
-The [project provisioner](scripts/skill-provisioning.md) previews, installs, and
-checks eleven complete reviewed upstream skills from an available verified
-release. Activation is explicit and preserves existing conflicts. Bundled files
+The [project provisioner](scripts/skill-provisioning.md) previews, installs, checks, and
+recovers eleven complete reviewed upstream skills from an available verified
+release. Explicit retention preserves committed project customizations, while
+replacement and recovery protect later edits and unknown content. Activation is
+explicit. Bundled files
 and passing fixture tests do not establish actual runtime qualification;
 automatic setup and consumer migration remain later work.

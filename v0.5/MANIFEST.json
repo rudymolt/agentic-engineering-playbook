@@ -178,8 +178,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "1514fdcff81c3b1e262f16c714f373b0da8ca4793a3ecc4e8a7405e40f16d8fd",
-      "size": 63714
+      "sha256": "19b4de1d263e57238778cc9b6c956e17b539f8774f5111fc449f786c573013ff",
+      "size": 64605
     },
     {
       "path": "MAINTENANCE.md",
@@ -188,8 +188,8 @@
     },
     {
       "path": "README.md",
-      "sha256": "56c25d4622b498f5c6b7500142e2b88c08f71f5a5a72f0c7eb6160ba95713ac4",
-      "size": 6989
+      "sha256": "f9f5b9f98d5435ff6fc0d124b2809feaa26bc18ba36b7149c7918ea59f0ae3a3",
+      "size": 7101
     },
     {
       "path": "assets/playbook-docs.css",
@@ -1378,8 +1378,13 @@
     },
     {
       "path": "scripts/provision-skills.py",
-      "sha256": "9fd43025023cdb6f5870f085e7f84d83f62c889d5ba66f27858f3d09eb9060fb",
-      "size": 9195
+      "sha256": "8ab03ad5027aa6dffdef341b896ea6bd39845df7cc02c716846725e7495518d9",
+      "size": 13746
+    },
+    {
+      "path": "scripts/provisioning_state.py",
+      "sha256": "36743e4a0f44e8043e121b3d5a1159c5c55f4411c737bf603ecb94b30ce35197",
+      "size": 13788
     },
     {
       "path": "scripts/release_provenance.py",
@@ -1413,8 +1418,8 @@
     },
     {
       "path": "scripts/skill-provisioning.md",
-      "sha256": "eba4492b3a38bd41120065912d1685a7fe34d5d0d5a1209937a7b9291504577a",
-      "size": 6025
+      "sha256": "7edc6e7015ef99018dbff26ac8c616e9605f51c4c4430934a35dc12761389a10",
+      "size": 10616
     },
     {
       "path": "scripts/skill_bindings.py",
@@ -1598,8 +1603,8 @@
     },
     {
       "path": "scripts/test_provision_skills.py",
-      "sha256": "7259860153e9cdd20a1dd7b4cb53ef882b612a51c89235a7dc24cd287844cab1",
-      "size": 16231
+      "sha256": "d0f4d1486740f56d70ee92b05bebab74fc49e2950e4117d783fc628c936dbecd",
+      "size": 34375
     },
     {
       "path": "scripts/test_public_compute_status.py",

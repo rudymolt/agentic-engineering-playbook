@@ -2,6 +2,20 @@
 
 ## Unreleased
 
+- Preserve explicitly retained, committed project skill customizations through
+  inventory replacement and recreation. Add previous-installation recovery,
+  journaled interrupted-replacement repair, precise conflicts for later or
+  unknown edits, and explicit stage-owned fallback reporting. Keep installation
+  completeness separate from recovery, discovery, and source qualification.
+  Retrying interrupted recovery preserves its original destination and source,
+  including rollback of an interrupted install.
+
+*Why — recoverable project ownership:* safe repeat setup needs to distinguish
+  managed material from deliberately retained project bytes, and restoring a
+  previous installation must preserve work made since replacement. Local
+  recovery evidence and portable retention choices make those boundaries
+  inspectable without automatically committing or publishing user edits.
+
 - Add explicit project-skill preview/install/check commands and an offline,
   registry-derived bundle of eleven complete reviewed Matt Pocock skills.
   Preserve supporting material, dependency closure, invocation metadata,

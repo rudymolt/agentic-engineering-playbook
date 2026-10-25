@@ -1,9 +1,11 @@
 # Cloud skill provisioning — implementation slices
 
 Status: breakdown approved and seven child tickets published on 2026-10-24.
-The [specification](spec.md) and both test seams are approved. S1 is implemented and independently verified at the approved fixture seam,
-including returned fixes and fresh CLI QA. S2–S7 remain future work. No actual
-runtime qualification has occurred.
+The [specification](spec.md) and both test seams are approved. S1 and S2 are
+implemented and independently verified at the approved fixture seam, including
+returned fixes and fresh CLI QA. S2 preserves explicitly retained tracked
+customizations and supports repeatable recovery, including interrupted recovery.
+S3–S7 remain future work. No actual runtime qualification has occurred.
 
 Read the [alignment](alignment.md), [glossary](../../GLOSSARY.md), and
 [accepted distribution decision](../../docs/adr/0002-release-bundled-project-skills.md)
@@ -256,19 +258,19 @@ parent's description and status were not edited. S1 is selected first because
 it has no blockers and supplies the public boundary used by all later slices;
 its ticket includes the spec criteria and approved test seam.
 
-The selected Build runtime was identity-verified before S1 implementation.
-Fresh independent verification of S1 and its returned fixes passed. The
-full verifier and atomic slice commit remain the selected Build endpoint; no
-subsequent slice or live qualification is implied by fixture success. Ordinary
-build checkpoints, retry guards, independent verification, and the stage-06
-architecture cadence still apply.
+The selected Build and fresh Verify runtimes were identity-verified for S1 and
+S2. Both slices passed independent standards/spec review and CLI QA, including
+fresh verification of returned fixes. Each build-one run retains final
+verification and an atomic slice commit as its endpoint; fixture success does
+not authorize another slice or establish live qualification. S3 is the suggested
+serial next slice. Ordinary build checkpoints, retry guards, independent
+verification, and the stage-06 architecture cadence still apply.
 
 ```yaml
 playbook_result:
-  outcome: first_slice_independently_verified
+  outcome: second_slice_independently_verified
   next_stage: "05"
   required_actions:
-    - Complete the final verifier and atomic S1 commit, then stop the build-one run.
     - Select a subsequent slice only through a new explicit Build choice.
     - Retain actual runtime qualification as pending until S7 evidence exists.
 ```
