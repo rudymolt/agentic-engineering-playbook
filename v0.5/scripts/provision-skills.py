@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 """Manage the registry-selected project skill bundle and previous installation.
 
-Exit 0: successful command; 2: incomplete check or blocked operation.
-All commands emit JSON. Installation requires an explicit command and source proof.
+With no action, discover local sources without writes.
+Exit 0: successful report/command; 2: incomplete check or blocked operation.
+All commands emit JSON. Discovery can report blocked jobs; it never runs them.
+Installation requires an explicit command and source proof.
 """
 from __future__ import annotations
 
@@ -16,6 +18,8 @@ import release_provenance as provenance
 import upstream_bundle as bundle
 import upstream_registry
 import provisioning_state as history
+from skill_bindings import JobBindings, JOBS
+from playbook_config import Configuration, ConfigError, public_error_message
 
 
 _spec = importlib.util.spec_from_file_location(
@@ -138,6 +142,81 @@ def inspect(project, identity, manifest, packages, registry, edition):
                        'Rerun install for missing or unchanged managed skills; explicitly retain committed customizations or move conflicts aside.')}
 
 
+def local_revision(path, baseline):
+    """Report proven Git ancestry only; tags and ordering grant no eligibility."""
+    root = provenance.git_output(path.parent, 'rev-parse', '--show-toplevel')
+    unknown = {'version': None, 'commit': None, 'revision_relation': 'unknown',
+               'working_tree_changed': None}
+    if root is None:
+        return unknown
+    root = Path(root).resolve()
+    head = provenance.git_output(root, 'rev-parse', 'HEAD')
+    ancestor = provenance.git_output(root, 'merge-base', baseline, head) if head else None
+    relation = 'exact' if head == baseline else 'newer' if ancestor == baseline else 'unknown'
+    if relation == 'unknown':
+        return unknown
+    relative = path.parent.relative_to(root)
+    status = provenance.git_output(root, '--no-optional-locks', 'status', '--porcelain', '--untracked-files=all', '--ignored=matching', '--', relative.as_posix())
+    return {'version': provenance.git_output(root, 'describe', '--tags', '--exact-match', 'HEAD'),
+            'commit': head, 'revision_relation': relation,
+            'working_tree_changed': None if status is None else bool(status)}
+
+
+def discover_local(project, identity, manifest, packages, registry, edition, custom_dir=None):
+    catalog = JobBindings(project, registry=registry, manifest=edition / "upstream-integrations.json",
+                          custom_dir=custom_dir)
+    rows = []
+    for name, expected in packages.items():
+        skill = registry.skills[name]
+        sources = []
+        for path in catalog.source_paths(skill):
+            try:
+                if path in catalog.source_failures.get(f'{skill.package}:{name}', set()):
+                    raise bundle.BundleError('unknown source entry or directory')
+                actual = bundle.files(path.parent)
+                difference = {'added': sorted(set(actual) - set(expected)),
+                              'missing': sorted(set(expected) - set(actual)),
+                              'changed': sorted(p for p in actual.keys() & expected.keys()
+                                                if actual[p] != expected[p])}
+                revision = local_revision(path, manifest['commit'])
+                content = ('exact' if actual == expected else
+                           'newer' if revision['revision_relation'] == 'newer'
+                           and revision['working_tree_changed'] is False else 'customized')
+                sources.append({'path': str(path), **revision,
+                                'content': content,
+                                'difference': difference,
+                                'integrity': {p: bundle.digest(b) for p, b in sorted(actual.items())}})
+            except (bundle.BundleError, OSError, RuntimeError, UnicodeError):
+                sources.append({'path': str(path), 'version': None, 'content': 'unknown',
+                                'difference': None, 'integrity': None,
+                                'repair': 'Preserve and inspect the entry and complete source tree; restore readable regular skill files and directory enumeration access, or alias the complete directory before selecting it.'})
+        status = ('missing' if not sources else 'duplicate' if len(sources) > 1 else
+                  sources[0]['content'])
+        rows.append({'name': name, 'source_id': f'{skill.package}:{name}',
+                     'status': status, 'sources': sources, 'invocation': skill.invocation,
+                     'blocked': status in ('duplicate', 'unknown'),
+                     'repair': ('Resolve distinct-source command collision explicitly before using this route.'
+                                if status == 'duplicate' else
+                                'Preserve and inspect the entry and complete source tree; restore readable regular skill files and directory enumeration access, or alias the complete directory before selecting it.'
+                                if status == 'unknown' else None),
+                     'baseline': {k: manifest[k] for k in ('source', 'version', 'commit')},
+                     'qualification': 'unverified'})
+    service = Configuration(project, None, bindings=catalog)
+    routes, options = {}, {}
+    with catalog.inventory_scope():
+        for job, contract in JOBS.items():
+            options[job] = catalog.options(job)
+            try:
+                routes[job] = service.dispatch_job(job, contract['owner'])
+            except (ConfigError, OSError, RuntimeError, UnicodeError) as error:
+                routes[job] = {'state': 'blocked', 'launched': False,
+                               'message': public_error_message(error)}
+    return {'schema_version': 1, 'source': identity, 'local_sources': rows,
+            'job_routes': routes, 'job_options': options, 'job_rejections': catalog.rejections,
+            'changed': [], 'runtime_resolution': 'unverified', 'complete': False,
+            'repair': 'Select eligible sources through Configure preview/Apply and the owning stage; actual invocation evidence is required.'}
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--project', type=Path, required=True, help='existing destination project')
@@ -147,8 +226,10 @@ def main(argv=None):
     parser.add_argument('--release', help='previously verified release tag')
     parser.add_argument('--tag-object', help='previously verified annotated tag object')
     parser.add_argument('--commit', help='previously verified release commit')
+    parser.add_argument('--custom-bindings-dir', type=Path,
+                        help='existing external machine-local bindings/audits, read-only; same store as Configure')
     parser.add_argument('--skill', help='one registry-selected skill for retention or manual fallback')
-    parser.add_argument('action', choices=('preview', 'install', 'check', 'recover', 'retain', 'fallback'))
+    parser.add_argument('action', nargs='?', default='discover', choices=('discover', 'preview', 'install', 'check', 'recover', 'retain', 'fallback'))
     args = parser.parse_args(argv)
     report = {'schema_version': 1, 'complete': False, 'changed': [], 'skills': []}
     inspection = None
@@ -162,6 +243,12 @@ def main(argv=None):
         edition = args.source.resolve() / 'v0.5'
         manifest, packages, registry = bundle.load(edition)
         identity['bundle_sha256'] = bundle.digest((edition / bundle.BUNDLE / 'integrity.json').read_bytes())
+        if args.action == 'discover':
+            if args.skill is not None:
+                raise ProvisionError('--skill is only valid with retain or fallback')
+            report = discover_local(project, identity, manifest, packages, registry, edition, args.custom_bindings_dir)
+            print(json.dumps(report, indent=2, sort_keys=True))
+            return 0
         for parent in (project / '.agents', project / '.agents/skills',
                        project / '.agents/.skill-provisioning'):
             if parent.is_symlink() or (parent.exists() and not parent.is_dir()):

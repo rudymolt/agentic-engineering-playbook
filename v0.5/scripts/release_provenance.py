@@ -15,8 +15,11 @@ GIT_TIMEOUT_SECONDS = 10
 
 def git_output(root: Path, *args: str) -> str | None:
     try:
+        # Observations must not invoke repository-configured monitor helpers
+        # or refresh the caller's index. These overrides persist no settings.
         completed = subprocess.run(
-            ["git", "-C", str(root), *args],
+            ["git", "--no-optional-locks", "-c", "core.fsmonitor=false",
+             "-C", str(root), *args],
             capture_output=True,
             text=True,
             check=False,

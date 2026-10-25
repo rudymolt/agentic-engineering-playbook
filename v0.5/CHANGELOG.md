@@ -2,6 +2,23 @@
 
 ## Unreleased
 
+- Make local source discovery the provisioner's default action. Report exact,
+  newer, customized, missing, duplicate and unknown sources, file differences,
+  saved job routes and explicit repair choices without changing local skills
+  or settings. Reuse Configure's exact-source binding and stage-owned selection
+  rules; project activation remains explicit and preserves the Cloud pin.
+  Keep cyclic, dangling and unreadable sources visible and isolate their
+  failures to the affected capability. Bound reads to complete skill directories
+  and suppress Git fsmonitor helpers during source observation. Propagate
+  supporting-directory traversal failures instead of reporting partial file
+  sets as unblocked customizations. Actual
+  invocation resolution and runtime qualification remain unverified.
+
+*Why — safe local coexistence:* repeatable Cloud provisioning must not replace
+  a user's existing skills or silently resolve conflicting copies. Discovery
+  separates source observations from eligibility and makes deliberate selection
+  possible without introducing another approval or version resolver.
+
 - Preserve explicitly retained, committed project skill customizations through
   inventory replacement and recreation. Add previous-installation recovery,
   journaled interrupted-replacement repair, precise conflicts for later or

@@ -5,7 +5,11 @@ The [specification](spec.md) and both test seams are approved. S1 and S2 are
 implemented and independently verified at the approved fixture seam, including
 returned fixes and fresh CLI QA. S2 preserves explicitly retained tracked
 customizations and supports repeatable recovery, including interrupted recovery.
-S3–S7 remain future work. No actual runtime qualification has occurred.
+S3 local discovery and explicit source selection are implemented with focused
+fixture evidence, including returned corrections to Git observation, source
+error isolation and supporting-directory traversal completeness. Fresh independent verification of those corrections and actual
+live qualification remain pending. S4–S7 remain future work.
+No actual runtime qualification has occurred.
 
 Read the [alignment](alignment.md), [glossary](../../GLOSSARY.md), and
 [accepted distribution decision](../../docs/adr/0002-release-bundled-project-skills.md)
@@ -262,15 +266,21 @@ The selected Build and fresh Verify runtimes were identity-verified for S1 and
 S2. Both slices passed independent standards/spec review and CLI QA, including
 fresh verification of returned fixes. Each build-one run retains final
 verification and an atomic slice commit as its endpoint; fixture success does
-not authorize another slice or establish live qualification. S3 is the suggested
-serial next slice. Ordinary build checkpoints, retry guards, independent
+not authorize another slice or establish live qualification. S3 is implemented
+and awaits fresh independent standards/spec/adversarial/CLI review before its
+atomic commit. Its public fixture checks cover default
+non-mutation, full-file differences, newer Git ancestry, aliases, distinct-source
+collisions, explicit Configure selection, source drift, project activation and
+the embedded-review refusal. Version observations grant no eligibility; actual
+runtime invocation remains unverified. S4 is not started. Ordinary build checkpoints, retry guards, independent
 verification, and the stage-06 architecture cadence still apply.
 
 ```yaml
 playbook_result:
-  outcome: second_slice_independently_verified
-  next_stage: "05"
+  outcome: third_slice_awaiting_independent_review
+  next_stage: "08"
   required_actions:
-    - Select a subsequent slice only through a new explicit Build choice.
+    - Independently review the frozen S3 candidate before accepting or committing it.
+    - Continue the approved batch only through coordinator dispatch after the slice commit.
     - Retain actual runtime qualification as pending until S7 evidence exists.
 ```

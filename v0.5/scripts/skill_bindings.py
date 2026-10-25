@@ -7,6 +7,7 @@ import importlib.util
 import os
 from pathlib import Path, PurePosixPath
 import re
+import stat
 
 from playbook_config import ConfigError, resolve_private_path, strict_json
 from playbook_state import parse_top_level_map
@@ -108,6 +109,7 @@ class JobBindings:
         self._inventory_scope_depth = 0
         self._options_cache = {}
         self.rejections = []
+        self.source_failures = {}
         self.custom_dir = Path(custom_dir) if custom_dir is not None else Path.home() / ".config/ai-playbook/custom-skills"
         try:
             # A live inventory is taken at the public operation boundary.
@@ -151,21 +153,100 @@ class JobBindings:
             self._check_single_link(os.fstat(stream.fileno()))
             return stream.read()
 
+    def source_paths(self, skill):
+        """Inspect bounded named locations; errors are sources, never absence.
+
+        Resolve complete directory aliases only. Keep the lexical entry name
+        so a file symlink cannot redirect recursive observation to its parent.
+        """
+        package = self.registry.packages[skill.package]
+        identity = f"{skill.package}:{skill.name}"
+        found, failures = set(), {}
+
+        def add(directory, uncertain=False):
+            source = directory / "SKILL.md"
+            try:
+                if uncertain:
+                    raise OSError("unresolved discovery root")
+                try:
+                    directory.lstat()
+                except FileNotFoundError:
+                    # A missing named child is absence only when its bucket
+                    # parent resolves; broken aliases are unresolved inputs.
+                    directory.parent.resolve(strict=True)
+                    return
+                resolved = directory.resolve(strict=True)
+                source = resolved / "SKILL.md"
+                if not stat.S_ISDIR(resolved.stat().st_mode):
+                    raise NotADirectoryError("source directory required")
+                mode = source.lstat().st_mode
+                if stat.S_ISDIR(mode):
+                    raise IsADirectoryError("regular skill entry required")
+                if not stat.S_ISREG(mode):
+                    raise OSError("regular skill entry required")
+                # Existence/stat alone cannot establish readable source material.
+                with source.open("rb") as stream:
+                    stream.read(1)
+            except (OSError, RuntimeError) as error:
+                failures[source] = type(error).__name__
+            found.add(source)
+
+        for base in (self.project, Path.home()):
+            for root in package.install.get("roots", []):
+                directory = base / root
+                # Check each named component so a dangling/cyclic parent cannot
+                # be mistaken for an absent child by an existence predicate.
+                location = base
+                absent, uncertain = False, False
+                for part in Path(root).parts:
+                    location = location / part
+                    try:
+                        location.lstat()
+                        if location.is_symlink():
+                            location.resolve(strict=True)
+                    except FileNotFoundError:
+                        if location.is_symlink():
+                            uncertain = True
+                        else:
+                            absent = True
+                        break
+                    except (OSError, RuntimeError):
+                        uncertain = True
+                        break
+                if absent:
+                    continue
+                if uncertain:
+                    add(directory / skill.name, uncertain=True)
+                    continue
+                add(directory / skill.name)
+                add(directory / ("gstack-" + skill.name))
+                try:
+                    with os.scandir(directory) as entries:
+                        children = sorted(entries, key=lambda entry: entry.name)
+                    for child in children:
+                        # Named skill directories are not package buckets. An
+                        # unreadable sibling skill must not poison every job.
+                        if child.name in self.registry.skills or (
+                                child.name.startswith("gstack-")
+                                and child.name[len("gstack-"):] in self.registry.skills):
+                            continue
+                        try:
+                            bucket = child.is_dir(follow_symlinks=False) or child.is_symlink()
+                        except OSError:
+                            add(directory / child.name / skill.name, uncertain=True)
+                            continue
+                        if bucket:
+                            add(directory / child.name / skill.name)
+                except OSError:
+                    add(directory / skill.name, uncertain=True)
+        self.source_failures[identity] = failures
+        return sorted(found)
+
     def _installed(self):
-        found = {}
-        for skill in self.registry.skills.values():
-            if skill.status != "current" or not skill.manifest_key:
-                continue
-            package = self.registry.packages[skill.package]
-            paths = []
-            for base in (self.project, Path.home()):
-                for root in package.install.get("roots", []):
-                    directory = base / root
-                    paths.extend(directory.glob(f"{skill.name}/SKILL.md"))
-                    paths.extend(directory.glob(f"*/{skill.name}/SKILL.md"))
-                    paths.extend(directory.glob(f"gstack-{skill.name}/SKILL.md"))
-            found[f"{skill.package}:{skill.name}"] = sorted(set(resolve_private_path(path) for path in paths))
-        return found
+        self.source_failures = {}
+        return {f"{skill.package}:{skill.name}": self.source_paths(skill)
+                for skill in self.registry.skills.values()
+                if skill.status == "current" and (skill.manifest_key or skill.project_bundle)}
 
     def _candidate(self, identity, source, form, label, invocation, provenance=None):
         from playbook_config import encoded
@@ -229,6 +310,11 @@ class JobBindings:
                     paths = self.installed.get(identity, [])
                     if len(paths) != 1:
                         self._reject(identity, "source collision" if paths else "not installed")
+                        continue
+                    if paths[0] in self.source_failures.get(identity, set()) or paths[0].is_symlink():
+                        reason = self.source_failures.get(identity, {}).get(paths[0], "linked entry")
+                        self._reject(identity, "unknown source entry or directory (" + reason
+                                     + "); restore readable regular SKILL.md material or alias the complete skill directory")
                         continue
                     candidate = self._embedded(job, skill, paths[0])
                     if candidate:
@@ -304,6 +390,14 @@ class JobBindings:
             source = Path(locator)
             if not source.is_absolute() or not source.is_file():
                 raise CustomEvidenceError("local source resolution")
+        # Exact custom selection does not make a broken same-command source
+        # disappear. Preserve the saved choice while its registry route is
+        # ambiguous; unrelated logical sources remain eligible.
+        resolved_source = resolve_private_path(source)
+        for installed_id, paths in self.installed.items():
+            if resolved_source in paths and (len(paths) > 1 or self.source_failures.get(installed_id)):
+                raise CustomEvidenceError("source collision or unresolved entry for " + installed_id
+                                          + "; inspect and reconcile competing sources before using this route")
         audit = binding["audits"][job]
         if not isinstance(audit, str) or re.fullmatch(r"[a-z0-9_-]+", audit) is None:
             raise CustomEvidenceError("retained audit locator")

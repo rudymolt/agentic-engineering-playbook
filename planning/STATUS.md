@@ -9,7 +9,11 @@ specification, both test seams, and seven implementation slices approved on
 2026-10-24. All seven child tickets are published with verified dependencies;
 S1 and S2 are implemented and independently verified, including returned fixes
 and fresh CLI QA. S2 adds retained customizations and installation recovery.
-S3–S7 remain future work; actual runtime qualification remains pending.
+S3 local discovery and explicit source selection are implemented with fixture
+evidence and returned source-observation corrections, including supporting-tree
+traversal completeness; fresh independent verification of the latest candidate
+is pending. S4–S7 remain future work;
+actual runtime qualification remains pending.
 
 [Edition and installed release](edition-release-identity/slices.md) — aligned
 and specified; implementation in progress on a separate branch.

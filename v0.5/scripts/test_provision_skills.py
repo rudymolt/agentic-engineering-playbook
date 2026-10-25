@@ -58,7 +58,7 @@ class ProvisionSkillsTest(unittest.TestCase):
                 '--project', str(self.project)]
         args += ['--candidate'] if candidate else [
             '--release', 'v0.5.999', '--tag-object', self.tag, '--commit', self.commit]
-        result = subprocess.run([*args, action, *extra], capture_output=True,
+        result = subprocess.run([*args, *([action] if action else []), *extra], capture_output=True,
                                 text=True, env=self.env)
         self.assertEqual(result.returncode, code, result.stdout + result.stderr)
         return json.loads(result.stdout)
@@ -87,6 +87,408 @@ class ProvisionSkillsTest(unittest.TestCase):
         self.git('tag', '-fa', 'v0.5.999', '-m', 'New fixture release')
         self.commit = self.git('rev-parse', 'HEAD')
         self.tag = self.git('rev-parse', 'refs/tags/v0.5.999')
+
+    def test_default_local_discovery_reports_exact_and_missing_without_writes(self):
+        source = self.home / '.agents/skills/tdd'
+        shutil.copytree(self.source / 'v0.5/bundles/mattpocock-skills/tdd', source)
+        shutil.copy2(self.source / 'v0.5/bundles/mattpocock-skills/LICENSE', source / 'LICENSE')
+        (self.project / '.playbook-config.json').write_text('{"keep": "configuration"}')
+        before_project, before_home = snapshot(self.project), snapshot(self.home)
+        # No action is the local discovery default, never installation.
+        report = self.command('')
+        rows = {row['name']: row for row in report['local_sources']}
+        self.assertEqual(rows['tdd']['status'], 'exact')
+        self.assertEqual(rows['to-spec']['status'], 'missing')
+        self.assertEqual(rows['tdd']['sources'][0]['version'], None)
+        self.assertEqual(rows['tdd']['invocation'], 'model')
+        self.assertEqual(rows['grill-with-docs']['invocation'], 'user')
+        self.assertEqual(report['changed'], [])
+        self.assertEqual(report['runtime_resolution'], 'unverified')
+        self.assertEqual(snapshot(self.project), before_project)
+        self.assertEqual(snapshot(self.home), before_home)
+
+    def test_local_discovery_deduplicates_aliases_and_reports_source_differences(self):
+        bundled = self.source / 'v0.5/bundles/mattpocock-skills'
+        for name in ('tdd', 'grilling', 'code-review'):
+            target = self.home / '.agents/skills' / name
+            shutil.copytree(bundled / name, target)
+            shutil.copy2(bundled / 'LICENSE', target / 'LICENSE')
+        alias = self.home / '.codex/skills/tdd'
+        alias.parent.mkdir(parents=True)
+        alias.symlink_to(self.home / '.agents/skills/tdd', target_is_directory=True)
+        customized = self.home / '.agents/skills/grilling/SKILL.md'
+        customized.write_bytes(customized.read_bytes() + b'\nLocal edits\n')
+        shutil.copytree(bundled / 'code-review', self.project / '.agents/skills/code-review')
+        before_project, before_home = snapshot(self.project), snapshot(self.home)
+        report = self.command('discover')
+        rows = {row['name']: row for row in report['local_sources']}
+        self.assertEqual(rows['tdd']['status'], 'exact')
+        self.assertEqual(len(rows['tdd']['sources']), 1)
+        self.assertEqual(rows['grilling']['status'], 'customized')
+        self.assertEqual(rows['grilling']['sources'][0]['version'], None)
+        self.assertEqual(rows['grilling']['sources'][0]['difference']['changed'], ['SKILL.md'])
+        self.assertEqual(rows['code-review']['status'], 'duplicate')
+        self.assertTrue(rows['code-review']['blocked'])
+        self.assertIn('collision', rows['code-review']['repair'])
+        self.assertEqual(snapshot(self.project), before_project)
+        self.assertEqual(snapshot(self.home), before_home)
+        # Complete-directory aliases also deduplicate a bucketed installation.
+        bucket = self.home / '.agents/skills/core/tdd'
+        shutil.copytree(self.home / '.agents/skills/tdd', bucket)
+        shutil.rmtree(self.home / '.agents/skills/tdd')
+        alias.unlink()
+        alias.symlink_to(bucket, target_is_directory=True)
+        bucketed = next(r for r in self.command('discover')['local_sources'] if r['name'] == 'tdd')
+        self.assertEqual(bucketed['status'], 'exact')
+        self.assertEqual(len(bucketed['sources']), 1)
+
+    def test_local_newer_revision_is_reported_without_granting_eligibility(self):
+        upstream = self.home / '.agents'
+        target = upstream / 'skills/tdd'
+        bundled = self.source / 'v0.5/bundles/mattpocock-skills'
+        shutil.copytree(bundled / 'tdd', target)
+        shutil.copy2(bundled / 'LICENSE', target / 'LICENSE')
+        def upstream_git(*args):
+            return subprocess.check_output(['git', '-C', str(upstream), *args],
+                                           env=self.env, text=True).strip()
+        upstream_git('init', '-q')
+        upstream_git('config', 'user.name', 'Fixture')
+        upstream_git('config', 'user.email', 'fixture@users.noreply.github.com')
+        upstream_git('add', '.')
+        upstream_git('commit', '-qm', 'Synthetic reviewed baseline')
+        baseline = upstream_git('rev-parse', 'HEAD')
+        registry_path = self.source / 'v0.5/upstream-skills.json'
+        registry = json.loads(registry_path.read_text())
+        registry['packages']['mattpocock-skills']['pin']['commit'] = baseline
+        registry_path.write_text(json.dumps(registry))
+        record_path = bundled / 'integrity.json'
+        record = json.loads(record_path.read_text())
+        record['commit'] = baseline
+        record_path.write_text(json.dumps(record))
+        self.git('add', '.')
+        self.git('commit', '-qm', 'Synthetic upstream baseline pin')
+        self.git('tag', '-fa', 'v0.5.999', '-m', 'Fixture release')
+        self.commit = self.git('rev-parse', 'HEAD')
+        self.tag = self.git('rev-parse', 'refs/tags/v0.5.999')
+        instructions = target / 'SKILL.md'
+        instructions.write_bytes(instructions.read_bytes() + b'\nReviewed upstream evolution\n')
+        upstream_git('add', '.')
+        upstream_git('commit', '-qm', 'Synthetic upstream successor')
+        upstream_git('tag', 'v1.4.0')
+        marker = target / 'monitor-was-invoked'
+        monitor = upstream / '.git/hooks/discovery-monitor'
+        monitor.write_text('#!/bin/sh\nprintf invoked > "' + str(marker) + '"\nprintf "token\\000"\n')
+        monitor.chmod(0o755)
+        upstream_git('config', 'core.fsmonitor', str(monitor))
+        self.git('config', 'core.fsmonitor', str(monitor))
+        before_modes = {str(p.relative_to(self.home)): (p.lstat().st_mode, p.lstat().st_mtime_ns)
+                        for p in self.home.rglob('*')}
+        before_home = snapshot(self.home)
+        row = next(r for r in self.command('discover')['local_sources'] if r['name'] == 'tdd')
+        self.assertFalse(marker.exists(), 'Discovery invoked repository fsmonitor')
+        self.assertEqual({str(p.relative_to(self.home)): (p.lstat().st_mode, p.lstat().st_mtime_ns)
+                          for p in self.home.rglob('*')}, before_modes)
+        self.assertEqual(row['status'], 'newer')
+        self.assertEqual(row['sources'][0]['version'], 'v1.4.0')
+        self.assertEqual(row['sources'][0]['revision_relation'], 'newer')
+        self.assertEqual(row['qualification'], 'unverified')
+        self.assertEqual(snapshot(self.home), before_home)
+        (upstream / '.git/info/exclude').write_text('scratch.tmp\n')
+        scratch = target / 'scratch.tmp'
+        scratch.write_text('Ignored local customization\n')
+        ignored = next(r for r in self.command('discover')['local_sources'] if r['name'] == 'tdd')
+        self.assertEqual(ignored['status'], 'customized')
+        self.assertEqual(ignored['sources'][0]['difference']['added'], ['scratch.tmp'])
+        scratch.unlink()
+        instructions.write_bytes(instructions.read_bytes() + b'\nUncommitted customization\n')
+        row = next(r for r in self.command('discover')['local_sources'] if r['name'] == 'tdd')
+        self.assertEqual(row['status'], 'customized')
+        self.assertEqual(row['sources'][0]['revision_relation'], 'newer')
+        self.assertEqual(row['sources'][0]['version'], 'v1.4.0')
+
+    def test_explicit_local_choice_uses_configure_and_changed_source_blocks_only_its_job(self):
+        from test_playbook_config import ConfigurationFixture
+        from test_custom_skill_bindings import CustomBindingTests
+        fixture = ConfigurationFixture()
+        fixture.setUp()
+        self.addCleanup(fixture.doCleanups)
+        (self.project / '.playbook-state.yml').write_bytes(fixture.runtime)
+        store = self.home / '.config/ai-playbook/custom-skills'
+        store.mkdir(parents=True)
+        source = self.home / '.agents/skills/tdd/SKILL.md'
+        source.parent.mkdir(parents=True)
+        source.write_text('Synthetic newer local instructions; never invoked\n')
+        identity = 'custom:local-tdd'
+        CustomBindingTests.prepare_audit(self, 'implementation', identity=identity,
+                                        source=source, local=store)
+        adapter = ("import json,sys; r=json.load(sys.stdin); "
+                   "json.dump({'request_id':r['request_id'],'checked_at':r['started_at'],"
+                   "'authority':'host-reported-selection','revision':'fixture-1','routes':"
+                   + repr(fixture.discovery['routes']) + "},sys.stdout)")
+        def configure(action, request=None, code=0):
+            run = subprocess.run([sys.executable, str(SCRIPTS / 'configure-playbook.py'),
+                                  '--project', str(self.project), '--now', '2026-09-29T12:00:00Z',
+                                  '--discovery-command', json.dumps([sys.executable, '-c', adapter]),
+                                  action], input=json.dumps(request or {}), capture_output=True,
+                                 text=True, env=self.env)
+            self.assertEqual(run.returncode, code, run.stdout + run.stderr)
+            return json.loads(run.stdout)
+        initial = configure('reply', {'proposal': configure('read'), 'reply': 'Edit Build'})
+        preview = configure('reply', {'proposal': initial, 'reply': '1'})
+        editor = configure('reply', {'proposal': preview, 'reply': 'Edit skills implementation'})
+        index = next(i + 1 for i, o in enumerate(editor['skill_options'])
+                     if o['binding']['source_id'] == identity)
+        preview = configure('reply', {'proposal': editor, 'reply': f'Choose {index}'})
+        self.assertEqual(preview['state'], 'proposal_ready')
+        self.assertFalse((self.project / '.playbook-config.json').exists())
+        self.assertEqual(configure('reply', {'proposal': preview, 'reply': 'Apply'})['state'], 'applied')
+        saved = (self.project / '.playbook-config.json').read_bytes()
+        before_project, before_home = snapshot(self.project), snapshot(self.home)
+        report = self.command('discover')
+        route = report['job_routes']['implementation']
+        self.assertEqual(route['routes'][0]['source_id'], identity)
+        self.assertFalse(route['launched'])
+        self.assertEqual(report['runtime_resolution'], 'unverified')
+        self.assertEqual(configure('job-route', {'job': 'implementation', 'owner': '07'})['routes'][0]['source_id'], identity)
+        self.assertEqual(configure('job-route', {'job': 'implementation', 'owner': '08'}, code=2)['state'], 'blocked')
+        self.assertEqual(snapshot(self.project), before_project)
+        self.assertEqual(snapshot(self.home), before_home)
+        competitor = self.home / '.codex/skills/tdd/SKILL.md'
+        competitor.parent.mkdir(parents=True)
+        competitor.symlink_to('SKILL.md')
+        obstructed = self.command('discover')
+        self.assertEqual(next(r for r in obstructed['local_sources'] if r['name'] == 'tdd')['status'], 'duplicate')
+        self.assertEqual(obstructed['job_routes']['implementation']['state'], 'blocked')
+        self.assertFalse(obstructed['job_routes']['specification']['launched'])
+        self.assertEqual(configure('job-route', {'job': 'implementation', 'owner': '07'}, code=2)['state'], 'blocked')
+        self.assertEqual((self.project / '.playbook-config.json').read_bytes(), saved)
+        shutil.rmtree(competitor.parent)
+        self.assertEqual(configure('job-route', {'job': 'implementation', 'owner': '07'})['routes'][0]['source_id'], identity)
+        source.write_text('Changed selected source\n')
+        drifted = self.command('discover')
+        self.assertEqual(drifted['job_routes']['implementation']['state'], 'blocked')
+        self.assertIn('manual: stage 07', drifted['job_routes']['implementation']['message'])
+        self.assertFalse(drifted['job_routes']['specification']['launched'])
+        self.assertEqual(configure('job-route', {'job': 'implementation', 'owner': '07'}, code=2)['state'], 'blocked')
+        self.assertEqual((self.project / '.playbook-config.json').read_bytes(), saved)
+        self.assertEqual((self.project / '.playbook-state.yml').read_bytes(), fixture.runtime)
+        self.assertFalse((self.project / '.agents/.skill-provisioning').exists())
+        editor = configure('reply', {'proposal': configure('read'), 'reply': 'Edit skills implementation'})
+        index = next(i + 1 for i, o in enumerate(editor['skill_options'])
+                     if o['binding']['source_id'] == 'playbook:implementation-manual')
+        preview = configure('reply', {'proposal': editor, 'reply': f'Choose {index}'})
+        self.assertEqual(configure('reply', {'proposal': preview, 'reply': 'Apply'})['state'], 'applied')
+        fallback = configure('job-route', {'job': 'implementation', 'owner': '07'})
+        self.assertEqual(fallback['routes'][0]['source_id'], 'playbook:implementation-manual')
+        self.assertFalse(fallback['launched'])
+        self.assertEqual((self.project / '.playbook-state.yml').read_bytes(), fixture.runtime)
+
+    def test_explicit_project_activation_reports_collision_and_keeps_review_fallback(self):
+        bundled = self.source / 'v0.5/bundles/mattpocock-skills'
+        local = self.home / '.agents/skills/code-review'
+        shutil.copytree(bundled / 'code-review', local)
+        shutil.copy2(bundled / 'LICENSE', local / 'LICENSE')
+        state = self.project / '.playbook-state.yml'
+        state.write_text('schema_version: 3\nplaybook_release: v0.5.999\n')
+        home_before = snapshot(self.home)
+        state_before = state.read_bytes()
+        report = self.command('discover')
+        self.assertEqual(next(r for r in report['local_sources'] if r['name'] == 'code-review')['status'], 'exact')
+        self.assertTrue(any('embedded' in r['reason'] for r in report['job_rejections']))
+        ids = [o['binding']['source_id'] for o in report['job_options']['code_review']]
+        self.assertIn('playbook:code_review-manual', ids)
+        self.assertNotIn('mattpocock-skills:code-review', ids)
+        self.assertFalse((self.project / '.agents/skills').exists())
+        self.assertTrue(self.command('install')['complete'])
+        report = self.command('discover')
+        review = next(r for r in report['local_sources'] if r['name'] == 'code-review')
+        self.assertEqual(review['status'], 'duplicate')
+        self.assertTrue(review['blocked'])
+        self.assertTrue(any('collision' in r['reason'] for r in report['job_rejections']))
+        self.assertEqual(report['runtime_resolution'], 'unverified')
+        self.assertEqual(snapshot(self.home), home_before)
+        self.assertEqual(state.read_bytes(), state_before)
+        self.assertFalse((self.project / '.playbook-config.json').exists())
+
+    def test_unreadable_local_material_is_unknown_and_preserved_without_hiding_other_sources(self):
+        bundled = self.source / 'v0.5/bundles/mattpocock-skills'
+        for name in ('tdd', 'to-spec'):
+            target = self.home / '.agents/skills' / name
+            shutil.copytree(bundled / name, target)
+            shutil.copy2(bundled / 'LICENSE', target / 'LICENSE')
+        support = self.home / '.agents/skills/tdd/tests.md'
+        support.unlink()
+        support.symlink_to(self.home / 'unavailable-support')
+        before_project, before_home = snapshot(self.project), snapshot(self.home)
+        report = self.command('discover')
+        rows = {r['name']: r for r in report['local_sources']}
+        self.assertEqual(rows['tdd']['status'], 'unknown')
+        self.assertTrue(rows['tdd']['blocked'])
+        self.assertIsNone(rows['tdd']['sources'][0]['version'])
+        self.assertIn('inspect', rows['tdd']['repair'])
+        self.assertEqual(rows['to-spec']['status'], 'exact')
+        self.assertEqual(snapshot(self.project), before_project)
+        self.assertEqual(snapshot(self.home), before_home)
+        self.assertTrue(support.is_symlink())
+
+    def test_entry_file_alias_never_reads_its_unrelated_target_directory(self):
+        unrelated = self.root / 'unrelated'
+        (unrelated / 'nested').mkdir(parents=True)
+        (unrelated / 'readme.txt').write_text('Not a skill\n')
+        (unrelated / 'sibling.txt').write_text('Synthetic unrelated record\n')
+        (unrelated / 'nested/record.txt').write_text('Synthetic nested record\n')
+        entry = self.home / '.agents/skills/tdd/SKILL.md'
+        entry.parent.mkdir(parents=True)
+        entry.symlink_to(unrelated / 'readme.txt')
+        before_project, before_home = snapshot(self.project), snapshot(self.home)
+        # Audit events prove no recursive enumeration or read of the unrelated
+        # tree, rather than merely asserting its names were hidden in JSON.
+        wrapper = """
+import os, pathlib, runpy, sys
+blocked = pathlib.Path(sys.argv[1])
+cli = sys.argv[2]
+sys.path.insert(0, str(pathlib.Path(cli).parent))
+sys.argv = sys.argv[2:]
+def audit(event, args):
+    if event in ('open', 'os.scandir', 'os.listdir') and args and isinstance(args[0], (str, bytes, os.PathLike)):
+        target = pathlib.Path(os.fsdecode(args[0]))
+        if (target == blocked or blocked in target.parents
+                or target.name in {'unrelated', 'readme.txt', 'sibling.txt', 'record.txt'}):
+            raise AssertionError('discovery read unrelated source target')
+sys.addaudithook(audit)
+try:
+    (blocked / 'sibling.txt').read_bytes()
+except AssertionError:
+    pass
+else:
+    raise AssertionError('audit read-denial control failed')
+runpy.run_path(cli, run_name='__main__')
+"""
+        run = subprocess.run([sys.executable, '-c', wrapper, str(unrelated), str(CLI),
+                              '--source', str(self.source), '--project', str(self.project),
+                              '--release', 'v0.5.999', '--tag-object', self.tag,
+                              '--commit', self.commit, 'discover'], capture_output=True,
+                             text=True, env=self.env)
+        self.assertEqual(run.returncode, 0, run.stdout + run.stderr)
+        row = next(r for r in json.loads(run.stdout)['local_sources'] if r['name'] == 'tdd')
+        self.assertEqual(row['status'], 'unknown')
+        self.assertTrue(row['blocked'])
+        self.assertIsNone(row['sources'][0]['integrity'])
+        self.assertIn('entry', row['repair'])
+        self.assertNotIn(str(unrelated), run.stdout)
+        self.assertEqual(snapshot(self.project), before_project)
+        self.assertEqual(snapshot(self.home), before_home)
+
+    def test_malformed_entrypoints_remain_visible_without_hiding_healthy_sources(self):
+        bundled = self.source / 'v0.5/bundles/mattpocock-skills'
+        healthy = self.home / '.agents/skills/tdd'
+        shutil.copytree(bundled / 'tdd', healthy)
+        shutil.copy2(bundled / 'LICENSE', healthy / 'LICENSE')
+        directory = healthy.parent / 'code-review'
+        for kind in ('entry-cycle', 'entry-dangling', 'directory-cycle', 'directory-dangling',
+                     'entry-denied', 'directory-denied'):
+            with self.subTest(kind=kind):
+                if kind.startswith('directory-') and kind != 'directory-denied':
+                    directory.symlink_to('code-review' if kind == 'directory-cycle' else 'absent-target',
+                                         target_is_directory=True)
+                else:
+                    directory.mkdir()
+                    entry = directory / 'SKILL.md'
+                    if kind.startswith('entry-') and kind not in ('entry-denied',):
+                        entry.symlink_to('SKILL.md' if kind == 'entry-cycle' else 'absent.md')
+                    else:
+                        entry.write_bytes((bundled / 'code-review/SKILL.md').read_bytes())
+                denied = directory if kind == 'directory-denied' else directory / 'SKILL.md'
+                if kind.endswith('denied'):
+                    denied.chmod(0)
+                    try:
+                        denied.open('rb') if kind == 'entry-denied' else list(denied.iterdir())
+                    except PermissionError:
+                        pass
+                    else:
+                        denied.chmod(0o700 if denied == directory else 0o600)
+                        shutil.rmtree(directory)
+                        self.skipTest('effective process bypasses ordinary fixture DAC denial')
+                before = (denied.lstat().st_mode, denied.lstat().st_mtime_ns) if kind.endswith('denied') else None
+                try:
+                    report = self.command('discover')
+                    rows = {r['name']: r for r in report['local_sources']}
+                    self.assertEqual(rows['code-review']['status'], 'unknown')
+                    self.assertTrue(rows['code-review']['blocked'])
+                    self.assertTrue(rows['code-review']['repair'])
+                    self.assertEqual(rows['tdd']['status'], 'exact')
+                    self.assertTrue(report['job_options']['implementation'])
+                    self.assertFalse(report['job_routes']['implementation']['launched'])
+                    self.assertTrue(any(r['source_id'] == 'mattpocock-skills:code-review'
+                                        and 'unknown' in r['reason'] for r in report['job_rejections']))
+                    # The inaccessible competitor must remain visible beside
+                    # a readable equal-name source instead of becoming absence.
+                    shutil.copytree(bundled / 'code-review', self.project / '.agents/skills/code-review')
+                    mixed = self.command('discover')
+                    row = next(r for r in mixed['local_sources'] if r['name'] == 'code-review')
+                    self.assertEqual(row['status'], 'duplicate')
+                    self.assertTrue(row['blocked'])
+                    self.assertEqual(len(row['sources']), 2)
+                    self.assertTrue(any(r['source_id'] == 'mattpocock-skills:code-review'
+                                        and 'collision' in r['reason'] for r in mixed['job_rejections']))
+                    if before is not None:
+                        self.assertEqual((denied.lstat().st_mode, denied.lstat().st_mtime_ns), before)
+                finally:
+                    if kind.endswith('denied'):
+                        denied.chmod(0o700 if denied == directory else 0o600)
+                    if directory.is_symlink():
+                        directory.unlink()
+                    else:
+                        shutil.rmtree(directory)
+                    shutil.rmtree(self.project / '.agents', ignore_errors=True)
+
+    def test_inaccessible_supporting_directory_is_unknown_until_enumeration_is_restored(self):
+        bundled = self.source / 'v0.5/bundles/mattpocock-skills'
+        for name in ('tdd', 'to-spec'):
+            target = self.home / '.agents/skills' / name
+            shutil.copytree(bundled / name, target)
+            shutil.copy2(bundled / 'LICENSE', target / 'LICENSE')
+        support = self.home / '.agents/skills/tdd/agents'
+        expected = (support / 'openai.yaml').read_bytes()
+        before_project, before_home = snapshot(self.project), snapshot(self.home)
+        before_metadata = {str(p.relative_to(self.home)): (p.lstat().st_mode, p.lstat().st_mtime_ns)
+                           for p in self.home.rglob('*')}
+        readable_mode = support.stat().st_mode & 0o777
+        try:
+            # Execute/search access keeps the known file directly readable;
+            # directory listing itself must fail, as in the reported defect.
+            support.chmod(0o111)
+            self.assertTrue((support / 'openai.yaml').is_file())
+            self.assertEqual((support / 'openai.yaml').read_bytes(), expected)
+            try:
+                list(support.iterdir())
+            except PermissionError:
+                pass
+            else:
+                self.skipTest('effective process bypasses supporting-directory DAC denial')
+            denied_metadata = (support.lstat().st_mode, support.lstat().st_mtime_ns)
+            report = self.command('')
+            rows = {r['name']: r for r in report['local_sources']}
+            self.assertEqual(rows['tdd']['status'], 'unknown')
+            self.assertTrue(rows['tdd']['blocked'])
+            self.assertIn('inspect', rows['tdd']['repair'])
+            self.assertIn('enumeration', rows['tdd']['repair'])
+            self.assertIsNone(rows['tdd']['sources'][0]['integrity'])
+            self.assertIsNone(rows['tdd']['sources'][0]['difference'])
+            self.assertEqual(rows['to-spec']['status'], 'exact')
+            self.assertTrue(report['job_options']['implementation'])
+            self.assertFalse(report['job_routes']['specification']['launched'])
+            self.assertEqual(report['changed'], [])
+            self.assertEqual((support.lstat().st_mode, support.lstat().st_mtime_ns), denied_metadata)
+        finally:
+            support.chmod(readable_mode)
+        control = next(r for r in self.command('')['local_sources'] if r['name'] == 'tdd')
+        self.assertEqual(control['status'], 'exact')
+        self.assertIn('agents/openai.yaml', control['sources'][0]['integrity'])
+        self.assertEqual(snapshot(self.project), before_project)
+        self.assertEqual(snapshot(self.home), before_home)
+        self.assertEqual({str(p.relative_to(self.home)): (p.lstat().st_mode, p.lstat().st_mtime_ns)
+                          for p in self.home.rglob('*')}, before_metadata)
 
     def test_managed_inventory_change_and_repeat_previous_recovery(self):
         self.command('install')

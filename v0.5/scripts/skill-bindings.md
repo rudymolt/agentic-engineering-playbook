@@ -48,7 +48,14 @@ not recorded here; those stages explicitly offer the local fallback rather
 than pretending installed `/grill-with-docs`, `/to-spec` or `/tdd` is endorsed.
 Wayfinder remains attributed to Matt Pocock and user-invoked separately.
 
-Discovery inspects supported project/user roots without executing skills. Two
+The provisioner’s default [local discovery report](skill-provisioning.md#local-discovery-and-explicit-source-choice)
+reuses this catalog and Configure’s saved-job resolution without executing skills.
+It does not save choices or infer actual invocation from metadata.
+Discovery inspects supported project/user roots without executing skills. It
+checks named locations explicitly rather than allowing glob to hide access
+errors or broken links. Complete-directory aliases deduplicate, entry-file
+links remain unresolved, and inaccessible competitors block the affected
+selection while unrelated choices remain available. Two
 distinct installed sources claiming one identity are a collision, even with
 identical content. They are excluded, not resolved by search order. Separate
 collection identities never alias by display name. A missing, changed, unknown,

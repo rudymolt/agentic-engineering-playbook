@@ -178,8 +178,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "19b4de1d263e57238778cc9b6c956e17b539f8774f5111fc449f786c573013ff",
-      "size": 64605
+      "sha256": "a943a9959940b3c18130ce681d79e1a08c93d7a9e7463c4c911c3b8038bca2f9",
+      "size": 65718
     },
     {
       "path": "MAINTENANCE.md",
@@ -1378,8 +1378,8 @@
     },
     {
       "path": "scripts/provision-skills.py",
-      "sha256": "8ab03ad5027aa6dffdef341b896ea6bd39845df7cc02c716846725e7495518d9",
-      "size": 13746
+      "sha256": "96b9b5aa0e75203a45b78d130b167f5f146196358bf654d1ecd9050c7727e812",
+      "size": 19625
     },
     {
       "path": "scripts/provisioning_state.py",
@@ -1388,8 +1388,8 @@
     },
     {
       "path": "scripts/release_provenance.py",
-      "sha256": "665db81f9607704e51071a8dc87c57572bd345ad56c24fbb31ee23eb4829031b",
-      "size": 6138
+      "sha256": "bdf74aa2744b1bef7e5f309c0460401d0cab15be92d580623b602c7d61f910a0",
+      "size": 6359
     },
     {
       "path": "scripts/remove-project.py",
@@ -1413,18 +1413,18 @@
     },
     {
       "path": "scripts/skill-bindings.md",
-      "sha256": "9c55b3882f56a7c2387bebcee5ac51491af86ce75b5ba04d112197a04386970b",
-      "size": 17540
+      "sha256": "182045418674342e7f2e43b601fefaafbe20c31c39ecf086f660bea3d9ecb850",
+      "size": 18089
     },
     {
       "path": "scripts/skill-provisioning.md",
-      "sha256": "7edc6e7015ef99018dbff26ac8c616e9605f51c4c4430934a35dc12761389a10",
-      "size": 10616
+      "sha256": "32b0235b627c5211d33492f4df89832290aa87fc556eb12981489120235053c9",
+      "size": 15763
     },
     {
       "path": "scripts/skill_bindings.py",
-      "sha256": "8bbd408e4cf355ee87f7b944b0ef944cee47752cc469b1c2bedd08ad4f79c014",
-      "size": 30880
+      "sha256": "04f1e0f407d6a267a302bef48a57d3f0f37bf0f73c9b482f3751b8d441e24bda",
+      "size": 35788
     },
     {
       "path": "scripts/template_base.py",
@@ -1603,8 +1603,8 @@
     },
     {
       "path": "scripts/test_provision_skills.py",
-      "sha256": "d0f4d1486740f56d70ee92b05bebab74fc49e2950e4117d783fc628c936dbecd",
-      "size": 34375
+      "sha256": "d018d998169dedc3749b9138f308428e8dd8236e2b97df6a6847207862f32832",
+      "size": 59832
     },
     {
       "path": "scripts/test_public_compute_status.py",
@@ -1698,8 +1698,8 @@
     },
     {
       "path": "scripts/upstream_bundle.py",
-      "sha256": "d2e409ca4bd0e69d1afe1d467456f8973a1cc768f99e4d528ac2b0c4b688968e",
-      "size": 8162
+      "sha256": "ccddffb7a9897003a50dbc32ad1c8d2e8a3442f4054558745142a8a220bdab5f",
+      "size": 8483
     },
     {
       "path": "scripts/upstream_registry.py",

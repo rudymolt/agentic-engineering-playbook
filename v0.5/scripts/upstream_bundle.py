@@ -5,6 +5,7 @@ import hashlib
 import json
 from pathlib import Path
 import re
+import stat
 
 import upstream_registry
 
@@ -25,14 +26,22 @@ def files(root: Path) -> dict[str, bytes]:
     if root.is_symlink() or not root.is_dir():
         raise BundleError(f'{root.name}: missing directory or symbolic link')
     result = {}
-    for p in sorted(root.rglob('*')):
-        if p.is_symlink():
-            raise BundleError(f'{p.name}: symbolic link is not bundle material')
-        if p.is_dir():
-            continue
-        if not p.is_file():
-            raise BundleError(f'{p.name}: non-regular bundle material')
-        result[p.relative_to(root).as_posix()] = p.read_bytes()
+
+    def visit(directory):
+        # iterdir/lstat propagate enumeration and metadata failures. rglob
+        # can silently omit an inaccessible subtree and return partial bytes.
+        for p in sorted(directory.iterdir()):
+            mode = p.lstat().st_mode
+            if stat.S_ISLNK(mode):
+                raise BundleError(f'{p.name}: symbolic link is not bundle material')
+            if stat.S_ISDIR(mode):
+                visit(p)
+            elif stat.S_ISREG(mode):
+                result[p.relative_to(root).as_posix()] = p.read_bytes()
+            else:
+                raise BundleError(f'{p.name}: non-regular bundle material')
+
+    visit(root)
     return result
 
 
