@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "skills": {
+    "tdd": {
+      "based_on": {
+        "bundle_sha256": "040f1971c1fdb6fc28c565c97affaaa3630cea010c3906f05bd16ddcaab0401f",
+        "commit": "12cbea06073fddb62c313928ce135f6a266d4f91",
+        "dirty": false,
+        "kind": "maintainer-candidate",
+        "release": null
+      },
+      "integrity": {
+        "LICENSE": "0e7ac423bf2c6e223b7c5b156f8cf72da49d748e56a1641402c31f22ad07dbb5",
+        "SKILL.md": "15c6b77a5ef8b858008bc02174b3f813e9cf338f4d7d5e92722c8ad8b17f97cd",
+        "agents/openai.yaml": "ea6f01cf1b8c06a4b0f5b649d74b1b8ce8685e72af1b38d70d877693e092af0b",
+        "mocking.md": "3ceb807fdf4a47d6a93d4d9a891e5ba6d362a6247bd08adc451feebfc17361ef",
+        "qualification-note.md": "510e7920148d1970786c1ad9525c1c54cadc3146b359afa096a99b25467739c8",
+        "tests.md": "859f9e592c188fda4fc7277dd180e4ce9c7a2e13f6efe1f6f29eccc9d28c106a"
+      }
+    }
+  }
+}
