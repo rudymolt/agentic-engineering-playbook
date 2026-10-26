@@ -15,10 +15,14 @@ canonical full verification. The Python 3.9 setup fix passed fresh review and
 full verification and was pushed. [S7 live results](cloud-skill-provisioning/runtime-qualification.md)
 record targeted fresh/recreated Cloud success for both runtimes through an
 explicit Cloud repository Setup setting, including tracked customization
-restoration. All test workspaces are archived and the temporary setting was
-restored to empty. Branch-TOML activation remains unresolved. S7 stays open for
-complete local coexistence and consumer release recovery; the report records
-observation limits and awaits the normal final-candidate review gates.
+restoration. The approved durable Cloud repository Setup setting is now
+enabled; all Cloud test workspaces are archived. The bounded local round records exact/newer/customized
+invocations, absent-project refusal, personal-name precedence and changed-selection
+refusal in both runtimes, with personal state and the Cloud pin preserved.
+S7 is qualified for these selected maintainer paths. Consumer release recovery
+remains deferred by agreement until a release contains the bundle; branch-TOML-only
+activation and automatic project precedence remain unqualified. The live report
+retains those limits; final-candidate review and verification remain required.
 
 [Edition and installed release](edition-release-identity/slices.md) — aligned
 and specified; implementation in progress on a separate branch.

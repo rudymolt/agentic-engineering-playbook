@@ -120,8 +120,8 @@ still a collision until explicitly reconciled under the owning stage's rules.
 Project activation and local binding selection do not change the consumer
 release, Cloud inventory or pin. The current upstream `code-review` remains
 embedded-incompatible even when exact and uniquely installed; choose its
-stage-08 manual/adapter fallback explicitly. Actual runtime command resolution
-and local coexistence qualification remain pending until the live gate.
+stage-08 manual/adapter fallback explicitly. The dated qualification below records the selected runtime paths and their
+limits; no general default-precedence or embedded-eligibility claim follows.
 
 ## Preservation and explicit retention
 
@@ -508,8 +508,12 @@ explicit stage fallback. Recreated sessions loaded a committed, explicitly
 retained TDD customization and its added reference. These runs qualify that
 bounded maintainer setup route, not consumer release recovery or all skill behavior.
 
-The temporary Setup setting was restored to empty after testing; it is not
-permanently enabled. Branch-TOML activation remains unresolved, and host setup
+After the temporary setting was restored, the human approved durable Cloud
+repository setup: run the checked-out maintainer hook when it exists, otherwise
+report an older revision without provisioning and exit 0. The saved setting was
+verified by navigation and readback. Fixtures cover its conditional guard; the
+previous Cloud matrix covers the same hook/argument. Branch-TOML activation
+remains unresolved, and host setup
 logs did not establish the exact selection/activation cause. A missing Setup tab
 also occurred on success and is not proof that setup was skipped. The recreated
 Claude observer briefly wrote and removed a scratch file under `.git`, so its
@@ -520,9 +524,17 @@ explicit invocation for skills with `allow_implicit_invocation: false`. An
 explicitly requested Claude native call succeeded for the user-only skill; this
 is not proof about implicit triggering. Local Claude selected a personal duplicate
 by name in the bounded coexistence check; do not infer project precedence from
-alias presence. Local Codex qualification remains blocked by account/model
-access. Full local coexistence and consumer release coverage remain incomplete;
-S7 stays open with these limits recorded in the qualification report.
+alias presence. A later local round used Claude Code 2.1.284 / Opus 5.5 high
+and Conductor-hosted Codex 0.164.0 / Sol high. Project-only native Claude calls
+and explicit Codex file selection loaded exact/newer/customized sources and
+full references; absent project sources were refused. Both observed retained
+custom execution selections blocking after source drift and incompatible-reviewer
+refusal/fallback. Default discovery preserved personal collisions; these runs
+prove neither global skill absence nor default project precedence. Personal
+skills/settings and the Cloud pin were unchanged. Standalone Codex account access
+was not repaired. Consumer release coverage remains deferred until a release
+contains the bundle. The qualification report retains the precise scope and
+observation limitations.
 
 The maintainer repository's shared `.conductor/settings.toml` calls
 `sh v0.5/scripts/conductor-setup.sh --candidate`. This uses the same provisioner,

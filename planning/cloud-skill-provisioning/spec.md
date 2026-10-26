@@ -8,10 +8,14 @@ verification; S6 adds setup composition, host dispatch, exact replay and safe
 discovery wiring. [S7 live qualification](runtime-qualification.md) ran on
 2026-10-26. Targeted fresh/recreated Cloud checks now pass for Claude Code and
 Codex through an explicit Cloud repository Setup setting, including tracked
-customization restoration. The temporary setting was restored to empty;
-branch-TOML activation is unresolved. S7 remains partial because full local
-coexistence and consumer release recovery remain unqualified. Observation
-limits are recorded in the live report.
+customization restoration. The approved durable Cloud repository Setup setting is now
+enabled; all Cloud test workspaces are archived. The bounded local round records exact/newer/customized
+invocations, absent-project refusal, personal-name precedence and changed-selection
+refusal in both runtimes, with personal state and the Cloud pin preserved.
+S7 is qualified for these selected maintainer paths. Consumer release recovery
+remains deferred by agreement until a release contains the bundle; branch-TOML-only
+activation and automatic project precedence remain unqualified. The live report
+retains those limits; final-candidate review and verification remain required.
 
 Sources: [alignment](alignment.md), [domain glossary](../../GLOSSARY.md),
 [ADR 0002](../../docs/adr/0002-release-bundled-project-skills.md).

@@ -129,3 +129,25 @@ mtimes as strings when crossing JSON tools; numeric transport can round them.
 Keep before/after comparisons in one process when possible. Record observer
 writes even when later removed; clean Git status does not prove whole-filesystem
 non-mutation.
+
+
+## Local selection and durable activation
+
+The human approved the permanent Cloud Setup setting after the temporary route
+passed the targeted matrix. Verify saved settings by leaving the page and reading
+them back; keep conditional-wrapper fixture evidence separate from live hook
+execution. Older revisions skip without claiming installation.
+
+Local qualification must distinguish a runtime's catalog, explicit source loading,
+and stage eligibility. Project-only Claude settings can isolate its native skill
+lookup while provisioner discovery still reports the real personal roots. Codex's
+supported Conductor runner can load explicit paths even when the standalone CLI
+rejects the account/model. Neither observation proves automatic project precedence.
+
+A changed-selection live check needs a real independently retained source audit;
+synthetic test approvals cannot substitute. The raw TDD audit was rejected, so a
+separate bounded custom fixture was audited before its exact execution selection
+was exercised. Source drift then blocked both actual runtime callers. Preserve
+that custom identity and plan-only limit rather than attributing eligibility to
+the bundled skill. Close stdin on noninteractive observer subprocesses to keep
+launcher text out of their prompts.

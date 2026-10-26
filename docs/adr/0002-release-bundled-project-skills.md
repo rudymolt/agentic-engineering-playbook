@@ -1,7 +1,7 @@
 # ADR 0002 — Bundle project skill inventory with the adopted release
 
-Status: Accepted; the initial provisioner slice is implemented. Remaining
-adoption and cloud qualification work is pending.
+Status: Accepted; provisioning and adoption are implemented. Selected maintainer
+Cloud/local routes are qualified; consumer release qualification remains deferred.
 Date: 2026-10-24
 
 Fresh cloud workspaces cannot rely on a developer's global skill installation

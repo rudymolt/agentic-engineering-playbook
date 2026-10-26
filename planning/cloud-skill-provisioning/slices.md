@@ -6,8 +6,8 @@ A8 option B returned fix are complete and independently verified at the
 approved fixture seam, including returned fixes, fresh CLI QA, cross-slice review
 and canonical full verification. [S7 live results](runtime-qualification.md)
 are recorded for 2026-10-26. The targeted Cloud matrix passes through the
-explicit repository Setup setting; durable activation, full local coexistence
-and consumer release recovery keep S7 open.
+explicit repository Setup setting. Durable setup is enabled and the bounded
+local source matrix is recorded; consumer release qualification remains deferred.
 
 Read the [alignment](alignment.md), [glossary](../../GLOSSARY.md), and
 [accepted distribution decision](../../docs/adr/0002-release-bundled-project-skills.md)
@@ -282,22 +282,21 @@ and pushed. Initial manual installation passed but startup outputs were missing.
 A renewed round established automatic startup through an explicit Cloud
 repository Setup setting and completed the targeted fresh/recreated Claude
 Code and Codex checks, including tracked customization restoration, selected
-sources, explicit invocations and reviewer refusal/fallback. The temporary
-setting was restored to empty and all test workspaces are archived. This does
-not establish branch-TOML activation or permanently configure the successful
-route. S7 remains partial because full local coexistence and consumer release
-recovery remain incomplete. The [live report](runtime-qualification.md) retains
-observer deviations and precise evidence limits. Cumulative guards and the
-stage-06 architecture cadence continue to apply.
+sources, explicit invocations and reviewer refusal/fallback. The approved durable
+Cloud repository Setup setting is now enabled; all Cloud test workspaces are archived. The bounded local round records exact/newer/customized
+invocations, absent-project refusal, personal-name precedence and changed-selection
+refusal in both runtimes, with personal state and the Cloud pin preserved.
+S7 is qualified for these selected maintainer paths. Consumer release recovery
+remains deferred by agreement until a release contains the bundle; branch-TOML-only
+activation and automatic project precedence remain unqualified. The live report
+retains those limits; final-candidate review and verification remain required.
 
 ```yaml
 playbook_result:
-  outcome: actual_runtime_qualification_partial
+  outcome: maintainer_runtime_qualification_recorded
   next_stage: "08"
   required_actions:
-    - Review the successful targeted Cloud evidence and its observation limits.
-    - Deliberately select durable host setup configuration; branch-TOML activation remains unresolved.
-    - Complete the local coexistence matrix when runtime access permits.
+    - Complete final independent review and canonical verification for the PR candidate.
+    - Preserve selected-route limitations; do not claim branch-TOML-only activation or default project precedence.
     - Test consumer exact-release recovery after a release containing the bundle is available.
-    - Keep S7 open until every required runtime route has supporting evidence.
 ```

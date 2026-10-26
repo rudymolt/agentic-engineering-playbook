@@ -2,19 +2,18 @@
 
 ## Unreleased
 
-- Record the bounded maintainer-candidate Cloud qualification on 2026-10-26.
-  After the reviewed Python 3.9 fix, an explicit Cloud repository Setup setting
-  provisions skills before startup. Targeted fresh/recreated Claude Code and
-  Codex checks pass, including explicit invocations, reference access, tracked
-  customization restoration and incompatible-reviewer refusal/fallback. Preserve
-  initial failures and observer limitations. The temporary setting is restored
-  to empty; branch-TOML activation, full local coexistence and consumer release
-  recovery remain unqualified, so S7 stays open.
+- Record the selected maintainer Cloud and local qualification on 2026-10-26.
+  Fresh/recreated Claude Code and Codex checks pass through the explicit Cloud
+  Setup setting, including retained customization and reviewer refusal/fallback.
+  Enable the human-approved durable setting and record its readback and guard
+  checks. Local exact/newer/customized loading, absent-project refusal, duplicate
+  precedence and retained-selection drift checks preserve personal state and the
+  Cloud pin. Retain source-loading limits and the deferred consumer release test.
 
-*Why — bind qualification to the setup route actually observed:* successful
-  startup and retained-source loading close the targeted Cloud checks without
-  turning manual repairs, temporary settings or filesystem presence into broader
-  support claims.
+*Why — make rollout claims match actual runtime evidence:* explicit source
+  selection and fail-closed checks support the selected maintainer paths without
+  claiming default project precedence, branch-TOML-only startup or consumer
+  provenance from candidate runs.
 
 - Isolate content conflicts in not-yet-installed project skills during
   installation; later edits to installed skills still refuse and keep recovery

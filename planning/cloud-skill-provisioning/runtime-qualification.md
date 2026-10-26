@@ -1,10 +1,12 @@
 # Cloud skill provisioning — runtime qualification
 
-Status: **targeted fresh/recreated Cloud checks passed with an explicit Cloud
-repository Setup setting; S7 remains partially qualified**. The maintainer-candidate
-runs on 2026-10-26 establish the selected setup route, runtime source loading and
-retained-customization restoration. They do not qualify branch-TOML activation,
-the full local coexistence matrix, or consumer release recovery.
+Status: **selected maintainer Cloud and local routes qualified; consumer release
+qualification deferred**. The 2026-10-26 runs establish fresh/recreated Cloud
+startup through the explicit repository Setup setting, retained customization,
+and bounded local source selection/refusal. The approved durable Cloud setting
+is now enabled. Branch-TOML activation and default project precedence under
+personal-name collisions remain unqualified. These are scoped observations,
+not universal runtime or embedded-skill compatibility claims.
 
 ## Candidate and scope
 
@@ -67,10 +69,16 @@ retry, so absence of that tab is not evidence that setup did not execute.
 No source-code change was justified by this experiment.
 
 The temporary setting was pinned to the retained fixture commit for the final
-recreation, then restored to its original empty value and verified by navigation
-and readback. The successful setting is **not permanently enabled**. Branch-TOML
-activation remains unqualified; do not promise equivalent behavior with only the
-tracked `.conductor/settings.toml` present.
+recreation, then restored to its original empty value. The human subsequently
+approved permanent Cloud repository setup. The saved setting now runs the
+checked-out `v0.5/scripts/conductor-setup.sh --candidate` through `sh` when that
+file exists; older revisions report that provisioning is unavailable and exit 0.
+Navigation away and back confirmed the exact saved value. Local repository
+settings were unchanged. Guard fixtures passed older-revision skip, hook success,
+and hook exit-2 propagation. No additional Cloud workspace tested this conditional
+wrapper; the same hook/argument is covered by the successful live matrix.
+Branch-TOML activation remains unqualified; do not promise equivalent behavior
+with only the tracked `.conductor/settings.toml` present.
 
 ## Successful targeted Cloud matrix
 
@@ -149,25 +157,90 @@ Observation limits are retained rather than hidden:
   fresh and recreated Claude observers exceeded their requested per-observer
   targets; the round's approved cumulative ceiling was not exceeded.
 
-## Remaining S7 work
+## Bounded local qualification
 
-Local maintainer setup previously exited 0 without changing skills or discovery
-wiring. The bounded local Claude duplicate check selected the personal copy by
-name; project-file access succeeded by explicit path. Keep this as a precedence
-limitation, not proof that aliases control duplicate-name selection. Local Codex
-remains blocked by the observed account/model rejection; no login or global
-configuration was changed.
+A separately approved local round allowed 16 sessions, 120 active minutes and
+120 agent turns/tool cycles, stopping after three identical failures. It used
+10 sessions, 60 conservative runtime execution units and less than 20 elapsed
+minutes, with zero additional Cloud workspaces. Claude's nine native receipts
+account for 45 turns; the one Codex session accounts for 11 tool calls and four
+completed user turns. No personal skill, login or global-setting change occurred.
 
-The full local exact/newer/customized/absent/duplicate/changed-source matrix
-remains incomplete. Consumer exact-release recovery remains deferred until a
-release includes the bundle; maintainer-candidate runs claim no consumer
-provenance. These gaps keep S7 open. A permanent host setup configuration still
-needs deliberate selection; the temporary successful route was restored, and
-the branch-TOML path remains unresolved.
+The local candidate was `8d949d6d61218c9b583bdadfa80c742d67c9a10e`.
+Claude Code CLI 2.1.284 used `claude-opus-5-5` at high effort. Conductor-hosted
+Codex 0.164.0 used `gpt-6.1-sol` at high effort. Native runtime metadata supplies
+these identities. The supported Conductor route succeeded despite the earlier
+standalone Codex account/model rejection; that failing route was not retried.
 
-Review this evidence update, retain the remaining gaps, and follow the normal
-final-candidate verification and review gates before shipping. Follow the existing
-monthly upstream review; before deliberate runtime, model, settings or source
-migrations, requalify affected contracts while preserving customizations and pins.
-See the [provisioning guide](../../v0.5/scripts/skill-provisioning.md) and
+| Local source case | Claude Code | Conductor-hosted Codex |
+|---|---|---|
+| Exact | Process-local project-only settings expose `tdd`; native Skill loads the project alias and full references. | Explicit project path loads and applies the exact entrypoint and full references. Default catalog still names the personal source. |
+| Newer | Native project-only invocation loads the clean upstream successor and full references. | Explicit file-based invocation loads and applies that same successor and full references. |
+| Customized | Native project-only invocation loads the changed entrypoint and added reference. | Explicit file-based invocation loads the changed entrypoint and added reference. |
+| Absent project source | Project-only catalog lacks `tdd`; invocation is refused without substitution. | Missing explicitly requested project path is refused; no personal source is applied. |
+| Duplicate | Normal user/project lookup selects the personal copy; project aliases do not control precedence. | Catalog/payload names the personal copy; public discovery reports competing project/personal sources and no project route is inferred. |
+| Changed selected source | An independently audited custom execution selection loads through the stage gate; after controlled drift, the same selection is refused before application. | The same before/after sequence passes through the public stage boundary and exact-source accessor. |
+
+The newer source is a clean upstream descendant at
+`5beb35b040e3de97e54fa9e386d7e42d15c295c2`; its entrypoint hash is
+`5505d25bbaa8fc14a79e4d20163936958992a2995b7f1dd1d6197edc9ed722e0`.
+The customized entrypoint hash is
+`407bc249b44a1d8d6f8c9483d30b7c61a4b0134e8aee2c46529aa349c96d6626`;
+both runtimes read its required marker `LOCAL_TDD_CUSTOM_2026_10_26`.
+Each positive invocation applied the selected instructions to a one-test
+`add(2,3) == 5` red-to-green plan. No test or implementation was executed;
+these tasks qualify source loading and application only.
+
+Public default discovery retained the actual personal collisions in every case:
+one readable source and one unresolved entry. Overall status therefore remained
+`duplicate`, even when an individual project source was correctly classified as
+exact, newer or customized. Absence means **project-source absence**, not an
+empty personal installation. Project-only Claude settings affect that process's
+native catalog; they do not hide personal roots from the provisioner. Codex's
+explicit file-loading result is not proof of automatic catalog selection.
+Unresolved same-command job routes remain blocked; these observations grant no
+embedded stage eligibility to bundled or newer TDD.
+
+The drift test used a separately authored, disposable custom implementation
+fixture outside registry discovery roots. A fresh source-contract audit rejected
+using the original TDD source as a stage-owned route; a fresh audit then passed
+the bounded custom fixture with stage authority retained. The coordinator bound
+its exact bytes to that real audit and retained a separate approved execution
+selection for each runtime. Public `job-route` and the stage's `invocation_source`
+accessor resolved the same selection before loading. After only the selected
+entrypoint changed, `job-route` exited 2, reported `blocked` and `launched: false`,
+and neither runtime applied the changed or remembered source. This tests retained
+execution selection, not project preference adoption or generalized eligibility.
+
+Both runtimes also observed exact-source `code-review` refusal (exit 2,
+`incompatible`, `may_invoke: false`) and explicitly selected the manual fallback
+(exit 0). The fallback response omits `launched`; native traces establish that
+no reviewer ran. Repeated discovery and gate probes preserved protected bytes,
+modes, nanosecond mtimes and aliases. The coordinator's default-discovery check
+compared 361 entries; Codex's repeated case checks compared 125 protected entries.
+Before/after personal skill and settings hashes matched. These checks exclude
+unrelated home files and do not claim whole-filesystem non-mutation. The Cloud
+pin remains v1.3.1 at `24fe0ef7737efae15c87225755e9f6f5965e4888`.
+
+One observation defect is retained: the first Claude exact-source launcher
+inherited its parent's stdin, so launcher text appeared after the prompt. The
+observer declined to execute that text; native source/reference reads still
+occurred. Subsequent launches used closed stdin. Observer self-reported turn
+counts were not used for budget accounting.
+
+## Release follow-up and support limits
+
+S7's selected maintainer paths now have actual runtime evidence. Consumer
+exact-release recovery remains deferred by agreement until a published release
+contains the bundle; maintainer-candidate runs establish no consumer provenance.
+Keep that release follow-up open and requalify before claiming consumer support.
+Do not claim branch-TOML-only startup, automatic project precedence under
+collisions, globally absent local skills, standalone Codex login repair, or all
+bundled skills' behavior from this matrix.
+
+Complete normal final-candidate review, privacy/attribution and full verification
+before shipping the PR. Follow the existing monthly upstream review; before
+deliberate runtime, model, settings or source migrations, requalify affected
+contracts while preserving customizations and pins. See the
+[provisioning guide](../../v0.5/scripts/skill-provisioning.md) and
 [S7 acceptance criteria](slices.md#7-qualify-actual-runtime-discovery-and-invocation).
