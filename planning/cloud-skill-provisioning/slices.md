@@ -5,8 +5,9 @@ The [specification](spec.md) and both test seams are approved. S1–S6 and the
 A8 option B returned fix are complete and independently verified at the
 approved fixture seam, including returned fixes, fresh CLI QA, cross-slice review
 and canonical full verification. [S7 live results](runtime-qualification.md)
-are recorded for 2026-10-26; startup and discovery failures and incomplete
-matrix coverage keep S7 open.
+are recorded for 2026-10-26. The targeted Cloud matrix passes through the
+explicit repository Setup setting; durable activation, full local coexistence
+and consumer release recovery keep S7 open.
 
 Read the [alignment](alignment.md), [glossary](../../GLOSSARY.md), and
 [accepted distribution decision](../../docs/adr/0002-release-bundled-project-skills.md)
@@ -277,22 +278,26 @@ skill. The returned A8 fix covers partial installation, unchanged repeats,
 explicit completion, preserved recovery targets and available Cloud aliases, and
 passed fresh independent review and canonical full verification. Live S7 found
 a Python version-gate defect; its reviewed, fully verified fix is committed
-and pushed. The two fresh reruns confirmed manual installation on Python 3.9
-and Codex catalog/explicit invocation after installation. Startup provisioning
-outputs were missing in both, and Claude native invocation still failed on a
-later turn. All four approved Cloud workspaces are archived; the session ceiling
-is reached. S7 remains partially qualified with recreation, full local
-coexistence and consumer release testing incomplete. Cumulative guards and the
+and pushed. Initial manual installation passed but startup outputs were missing.
+A renewed round established automatic startup through an explicit Cloud
+repository Setup setting and completed the targeted fresh/recreated Claude
+Code and Codex checks, including tracked customization restoration, selected
+sources, explicit invocations and reviewer refusal/fallback. The temporary
+setting was restored to empty and all test workspaces are archived. This does
+not establish branch-TOML activation or permanently configure the successful
+route. S7 remains partial because full local coexistence and consumer release
+recovery remain incomplete. The [live report](runtime-qualification.md) retains
+observer deviations and precise evidence limits. Cumulative guards and the
 stage-06 architecture cadence continue to apply.
 
 ```yaml
 playbook_result:
   outcome: actual_runtime_qualification_partial
-  next_stage: "11"
+  next_stage: "08"
   required_actions:
-    - Diagnose missing fresh-start provisioning outputs using host setup execution evidence.
-    - Renew live-run capacity before further workspaces or sessions; existing ceilings are consumed.
-    - Requalify startup and Claude discovery, then complete recreated and local matrix coverage.
+    - Review the successful targeted Cloud evidence and its observation limits.
+    - Deliberately select durable host setup configuration; branch-TOML activation remains unresolved.
+    - Complete the local coexistence matrix when runtime access permits.
     - Test consumer exact-release recovery after a release containing the bundle is available.
     - Keep S7 open until every required runtime route has supporting evidence.
 ```

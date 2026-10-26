@@ -13,10 +13,12 @@ verification. The human selected option B on 2026-10-25 to isolate A8 content
 conflicts per skill; that returned fix passed fresh independent review and
 canonical full verification. The Python 3.9 setup fix passed fresh review and
 full verification and was pushed. [S7 live results](cloud-skill-provisioning/runtime-qualification.md)
-record manual Cloud installation and Codex invocation success, missing startup
-provisioning outputs and failed Claude native discovery. Both rerun workspaces
-are archived. S7 remains open; recreation, complete local coverage and the
-consumer release path remain unqualified.
+record targeted fresh/recreated Cloud success for both runtimes through an
+explicit Cloud repository Setup setting, including tracked customization
+restoration. All test workspaces are archived and the temporary setting was
+restored to empty. Branch-TOML activation remains unresolved. S7 stays open for
+complete local coexistence and consumer release recovery; the report records
+observation limits and awaits the normal final-candidate review gates.
 
 [Edition and installed release](edition-release-identity/slices.md) — aligned
 and specified; implementation in progress on a separate branch.
@@ -49,16 +51,28 @@ This maintainer checkout intentionally has no root `.playbook-state.yml`.
 The stage-10 closeout state is mirrored here; no consumer runtime state is created.
 
 ```yaml
-last_updated: 2026-10-13T05:08:56Z
+last_updated: 2026-10-25T06:36:21Z
 counters:
-  features_shipped_total: 3
+  features_shipped_total: 4
 last_run:
-  ship: 2026-10-13T05:03:43Z
-  feature_ship: 2026-10-13T05:03:43Z
-  doc_close: 2026-10-13T05:08:56Z
-  retro: 2026-10-13T05:08:56Z
+  ship: 2026-10-25T06:19:18Z
+  feature_ship: 2026-10-25T06:19:18Z
+  doc_close: 2026-10-25T06:36:21Z
+  retro: 2026-10-25T06:36:21Z
 pending_closeouts: []
 ```
+
+
+Capability and existing authority shipped in PR #46 as `8f6a2f0` on 2026-10-25.
+The merge tree matches final candidate `a3b732c`; noreply merge identities and
+both required main CI jobs are verified. Production verification means the
+published repository, not an installed consumer upgrade. Doc-close and the
+[feature retrospective](retros/2026-10-25-capability-and-authority.md) are
+complete on this closeout branch, awaiting human merge. Its pending closeout
+is cleared here; all other feature closeouts retain their existing ownership.
+The [closeout record](../archive/2026-10-25-deployment-capability-and-authority/closeout.md)
+preserves review exceptions, CI repair evidence and release limits. Current
+release pointers stay at V0.5.2; the feature remains under Unreleased.
 
 Checkpoint performance shipped in PR #41 as `20eeb04` on 2026-10-13.
 Its tree matches verified head `084857c`; noreply merge identities are verified.

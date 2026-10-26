@@ -107,3 +107,25 @@ an installed skill makes an otherwise no-op install rewrite `previous`, silently
 losing the recovery target. Likewise, completing a partial install from the same
 release must keep its original recovery target. Setup must gate each alias on that skill's installation
 result while keeping global operation refusals and pending transactions intact.
+
+
+## Startup evidence and retained recreation
+
+Capture the runtime catalog before manual skill reads and compare provisioning
+outputs with runtime startup times. Missing outputs prove startup was not ready;
+a missing Setup tab does not prove the hook was skipped. An explicit Cloud
+repository Setup setting provisioned the reviewed candidate before startup,
+while branch-TOML activation remained unresolved. Preserve that distinction and
+restore temporary settings after qualification.
+
+For recreation, commit the complete customized skill, run public `retain`, and
+commit its portable record on an isolated disposable branch. Archive the source
+workspace before creating the new checkout. Assert retained installed hashes
+separately from bundle hashes, then observe the runtime loading the added
+instruction/reference. Filesystem restoration grants no embedded compatibility.
+
+Use native receipts for counts, not worker self-reports. Encode nanosecond
+mtimes as strings when crossing JSON tools; numeric transport can round them.
+Keep before/after comparisons in one process when possible. Record observer
+writes even when later removed; clean Git status does not prove whole-filesystem
+non-mutation.

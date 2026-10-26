@@ -58,19 +58,98 @@ Merge the PR, wait for CI and deploy, verify production health.
 
 ### 3. `/canary` — SRE
 
-Post-deploy monitoring loop. Watches the production signals for the time window your project defines (typically 15–60 minutes after deploy). If anything looks wrong, rolls back.
+Post-deploy monitoring loop. Watches the production signals for the time window your project defines (typically 15–60 minutes after deploy). If signals fail, follow the recovery authority rule below: execute an already-authorized exact recovery action when its gates hold, or request the uncovered decision while investigating safely.
 
 ### 4. `/benchmark` — Performance Engineer
 
 Baseline page-load times and Core Web Vitals. Used at later cadences to detect regression.
 
+## Persistent-data recovery gate
+
+Apply this gate before a release or mutation that affects persistent data or
+creates a risk requiring data recovery: schema/data-shape changes, bulk edits,
+deletions, and application behavior that changes stored data even without
+migration files. Presentation-only deployments do not require backup/restore
+verification by default; an explicitly stricter project policy still applies.
+This gate also applies in local and shared environments where the operation
+has that risk. Preview isolation is checked separately below.
+
+1. **Plan capability and resource limits early.** Use
+   [Check C.2](00-prereqs.md#check-c2--operation-capabilities) during planning to
+   identify target access, backup and isolated-restoration capabilities. Under
+   [foundations §1](../00-foundations.md#1-the-collaboration-contract), an
+   authorized operation includes necessary backup, isolated restore verification,
+   scoped retries, verification-input repairs and owned-copy cleanup within its
+   scope, target, effects and limits. Use existing approved resource/cost limits
+   for necessary temporary resources. If incremental cost cannot be bounded
+   within those limits, request one concrete estimate/ceiling decision early and
+   retain it across retries/handoffs; block dependent resource creation until
+   settled. Unknown cost is not zero cost.
+2. **Identify the recovery point.** Establish the actual affected store and
+   environment through target-specific evidence, not credential presence or a
+   variable name. Create a timestamped backup under the authorized operation and
+   identify its retained recovery point, source target, captured scope and time.
+   Record the retention-policy reference and the recovery method to be tested.
+3. **Actually restore it in isolation.** Restore that identified recovery point
+   into a disposable target owned by this verification operation. Confirm its
+   isolation from live data and external effects before restoring or testing;
+   a restore test must not send live notifications or mutate another environment.
+   Check affected schema/data integrity and relevant read/smoke behavior to
+   demonstrate usability. Scale checks to the change; a full application
+   regression suite is not automatic for each restore test. Backup API success
+   or an unexecuted restore command is insufficient. Retain redacted target and
+   recovery-point identifiers, coverage, timestamps, executed checks and results
+   in the existing verification record. Failed or missing proof blocks the
+   dependent release/mutation; repair or retry only within existing authority
+   and cumulative failure guards.
+4. **Establish current recovery coverage immediately before the change.**
+   Reconfirm the actual release/mutation target, successful restoration evidence
+   and coverage of its actual pre-change state. Show how intervening writes will
+   be preserved or replayed, with evidence appropriate to the selected recovery
+   method. A recent backup timestamp or early access check alone does not prove
+   coverage. A changed recovery point/method needs corresponding restoration
+   evidence; stale or failed evidence blocks the dependent action. If coverage
+   requires a maintenance/write-pause window, propose its concrete scope and
+   obtain that decision unless already authorized, then verify coverage within
+   it. Deployment authority alone permits neither downtime nor data loss.
+5. **Clean up only the owned disposable copy.** Record ownership and exact
+   resource identity before cleanup; remove only this operation's disposable
+   verification copy within the approved scope. Retain the identifiable backup
+   under its existing retention policy. Backup authority grants no deletion of
+   retained backups or unrelated resources. Carry any cleanup failure as a named
+   blocker with its resource/cost exposure; a retry or handoff does not reset it.
+
+Keep a compact record of authorization provenance/scope, actual target, runner,
+capability result, recovery point, restoration result, current coverage, resource
+limits and pending requests in the plan/verification record. Use the
+[pickup brief](pickup-brief.md) when handing off. Revalidate changed capabilities
+without re-requesting unchanged authority or weakening fresh Verify independence.
+Unrelated work can continue while dependent verification, mutation or release is
+blocked. This procedure confers no broader credentials, changed target,
+unauthorized migration, unapproved spending or merge authority.
+
+### Recovery authority after a failed change
+
+Before rollback or live restoration, compare the exact proposed action, target,
+effects (including writes lost or replayed), downtime and limits with existing
+authorization. Reuse valid authority for that exact action and proceed only
+with current capability and applicable recovery evidence. Otherwise request
+only the uncovered decision and keep that recovery action blocked while safe
+investigation continues. Backup permission and a successful rehearsal do not
+authorize live restoration, loss of subsequent writes or a different target.
+Stop, hard limits, quotas and cumulative failure/no-progress guards still apply.
+This rule governs both canary recovery and [stage 11](11-debug.md).
+
 ## Shipping a migration (schema or data-shape changes)
 
 Promoted from Sample Athletics case-study folklore to rule (V0.2.7):
 
-1. **Backup precedes migration.** A timestamped backup of the affected store is taken before the migration runs — locally and in any shared environment.
+1. **Backup and isolated restoration precede migration.** Apply the persistent-data recovery gate above, including current target and pre-change/write coverage, locally and in any shared environment. The migration itself must also be authorized.
 2. **The rollback has actually been executed.** Every migration ships with a rollback that has been run against a copy of real(istic) data — written-but-never-run rollbacks are untested code on the worst possible path. Rehearse: apply → roll back → re-apply.
-3. **Migration and dependent code ship separately** where the stack allows: the migration lands first (backwards-compatible), the code that requires it second — each individually revertable. A failed migration is then a stage 11 incident with a rehearsed first move, not an improvisation.
+3. **Migration and dependent code ship separately** where the stack allows: the migration lands first (backwards-compatible), the code that requires it second — each individually revertable. A failed migration follows stage 11 with a rehearsed recovery option subject to the recovery authority rule above.
+
+Isolated backup restoration and apply → roll back → re-apply prove different
+things. Neither substitutes for the other or authorizes a live migration/recovery.
 
 ## The gate check (before anything ships)
 
@@ -89,6 +168,12 @@ The project's `ci-gates.md` defines the minimum machine-enforced gates for agent
 6. **Overdue architecture cadence.** An insist-level overdue architecture review runs before the merge, not after it (stage 06's timing rule) — deferring it past the merge turns its findings into a follow-up PR. A nudge-level overdue is surfaced but does not block the ship.
 7. **Review conversations.** Read current PR review threads and comments before declaring the PR ready to merge. For each actionable finding, fix it and verify the updated head; for a stale or incorrect claim, reply with the evidence. Resolve addressed threads in the PR host. If a thread needs human action or cannot be resolved with the available permission, report its link as a remaining merge blocker.
 8. **Verification timing.** During PR iteration, run focused checks for the changed surface. A documentation-only edit needs its relevant Markdown, link, public-content/privacy, and generated-file checks; do not restart a long repository-wide suite after each small edit. Run all required full gates on the final candidate before shipping. If the candidate changes afterward, refresh any gate that must attest the final head.
+9. **Persistent-data recovery.** When actual data risk triggers the gate above,
+   require retained recovery-point identity, successful isolated restoration and
+   current pre-change/write coverage immediately before release/mutation. If
+   merge triggers that action automatically, establish the evidence before merge;
+   a separately authorized deploy refreshes it at that boundary. Record the
+   presentation-only exception when applicable and honor stricter project policy.
 
 ## The doc-close ritual (mandatory at this stage)
 

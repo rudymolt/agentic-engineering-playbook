@@ -3,16 +3,18 @@
 ## Unreleased
 
 - Record the bounded maintainer-candidate Cloud qualification on 2026-10-26.
-  The reviewed Python 3.9 gate fix permits complete manual installation on
-  Cloud's 3.9.25 interpreter. Codex discovers project skills on a later turn
-  and explicitly loads user-only `grill-with-docs` with dollar syntax. Both fresh starts
-  lacked provisioning outputs, and Claude native discovery still failed after
-  manual installation. Keep automatic startup, recreation, full local
-  coexistence and the consumer release path unqualified.
+  After the reviewed Python 3.9 fix, an explicit Cloud repository Setup setting
+  provisions skills before startup. Targeted fresh/recreated Claude Code and
+  Codex checks pass, including explicit invocations, reference access, tracked
+  customization restoration and incompatible-reviewer refusal/fallback. Preserve
+  initial failures and observer limitations. The temporary setting is restored
+  to empty; branch-TOML activation, full local coexistence and consumer release
+  recovery remain unqualified, so S7 stays open.
 
-*Why — distinguish installed files from working runtime routes:* actual source
-  selection and explicit invocation need their own evidence. A successful
-  manual repair cannot establish startup readiness or complete the S7 matrix.
+*Why — bind qualification to the setup route actually observed:* successful
+  startup and retained-source loading close the targeted Cloud checks without
+  turning manual repairs, temporary settings or filesystem presence into broader
+  support claims.
 
 - Isolate content conflicts in not-yet-installed project skills during
   installation; later edits to installed skills still refuse and keep recovery
@@ -132,6 +134,31 @@
   material without relying on a developer's global install or a second upstream
   download. Explicit activation and integrity checks make this possible while
   preserving existing sources and stage authority.
+- Close the shipped capability/authority feature's planning record and retain
+  its retrospective, review exception and CI environment repair evidence.
+
+*Why — feature closeout:* remove completed planning from the active-work index
+  without losing the decisions, failed attempts or limits of the accepted proof.
+
+- Preserve the selected Python installation on PATH for privileged CI commands
+  and their subprocesses, including delivery and checkpoint qualification.
+
+*Why — CI interpreter discovery:* newer hosted runner images no longer provide
+  Python 3.12 on sudo's default PATH. Starting the parent verifier by absolute
+  path did not make that interpreter available to its generated worker commands.
+  An executable workflow regression now covers the reset-PATH boundary.
+
+- Discover deployment/data access and exact-verifier authentication during
+  planning; reuse existing authority for necessary scoped preparation, retries
+  and owned-copy cleanup. Require actual isolated restoration and current
+  pre-change/write coverage when persistent data is at risk, including behavior
+  changes without migrations. Keep cost, downtime and live recovery decisions
+  explicit, preserve retained backups, and carry bounded evidence through handoffs.
+
+*Why — capability and authority:* late access surprises and repeated prompts
+  delayed authorized work, while unconditional rollback guidance blurred the
+  permission boundary. Separate capability proof from existing authorization
+  and demonstrate recoverability before the live change.
 
 - Clarify stage 01 recovery when the configured playbook path is missing:
   verify an alternative checkout against the pinned release, run its saved

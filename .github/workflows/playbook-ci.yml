@@ -79,7 +79,7 @@ jobs:
           python-version: "3.12"
       - name: Record actual verification runner
         run: |
-          sudo --preserve-env=ImageOS,ImageVersion "$(command -v python3.12)" - <<'PY'
+          sudo --preserve-env=ImageOS,ImageVersion env "PATH=$pythonLocation/bin:$PATH" "$pythonLocation/bin/python3" - <<'PY'
           import json, os, platform, subprocess
           report = {"revision": subprocess.check_output(["git", "rev-parse", "HEAD"], text=True).strip(),
                     "python": platform.python_version(),
@@ -113,9 +113,10 @@ jobs:
           python3 v0.5/scripts/delivery_ci_scope.py \
             --base "$base_sha" --head "$GITHUB_SHA" \
             >> "$GITHUB_OUTPUT"
+      # sudo resets PATH; nested worker commands also need setup-python.
       - name: Verify delivery contracts and fault tests
         if: steps.delivery-scope.outputs.run_delivery == 'true'
-        run: sudo "$(command -v python3)" v0.5/delivery/scripts/verify.py --set K4.1 --jobs 3
+        run: sudo env "PATH=$pythonLocation/bin:$PATH" "$pythonLocation/bin/python3" v0.5/delivery/scripts/verify.py --set K4.1 --jobs 3
       - name: Record delivery suite skip
         if: steps.delivery-scope.outputs.run_delivery != 'true'
         run: echo "Delivery suite skipped — ${{ steps.delivery-scope.outputs.reason }}."
@@ -138,7 +139,7 @@ jobs:
           git worktree add --detach .context/guidance-comparator 9d8dc1a5ec583aa3cd727a52d06dcd5438bf2a8e
       - name: Measure privileged serial baseline and complete standalone files
         run: |
-          sudo --preserve-env=ImageOS,ImageVersion "$(command -v python3)" bench/profile_delivery_tests.py \
+          sudo --preserve-env=ImageOS,ImageVersion env "PATH=$pythonLocation/bin:$PATH" "$pythonLocation/bin/python3" bench/profile_delivery_tests.py \
             --root .context/baseline --verify-suite --repeat 1 --output .context/measurements/baseline-delivery.json
       - name: Measure all guidance files at both fixed references
         run: |
@@ -148,7 +149,7 @@ jobs:
             --repeat 1 --output .context/measurements/comparator-guidance.json
       - name: Attribute baseline Git operations separately from acceptance timing
         run: |
-          sudo --preserve-env=ImageOS,ImageVersion "$(command -v python3)" bench/profile_delivery_tests.py \
+          sudo --preserve-env=ImageOS,ImageVersion env "PATH=$pythonLocation/bin:$PATH" "$pythonLocation/bin/python3" bench/profile_delivery_tests.py \
             --root .context/baseline --pattern test_interim_recovery.py --pattern test_interim_coordinator.py \
             --git-diagnostics --repeat 1 --output .context/measurements/baseline-diagnostic.json
       - name: Retain sanitised measurement reports
@@ -186,7 +187,7 @@ jobs:
             for role in $roles; do
               root=.
               if [[ "$role" == baseline ]]; then root=.context/qualification-baseline; fi
-              sudo --preserve-env=ImageOS,ImageVersion "$(command -v python3.12)" bench/profile_delivery_tests.py \
+              sudo --preserve-env=ImageOS,ImageVersion env "PATH=$pythonLocation/bin:$PATH" "$pythonLocation/bin/python3" bench/profile_delivery_tests.py \
                 --root "$root" --verify-suite --repeat 1 \
                 --output ".context/qualification/delivery-pair-$pair-$role.json"
             done
@@ -208,13 +209,13 @@ jobs:
           for role in baseline candidate; do
             root=.
             if [[ "$role" == baseline ]]; then root=.context/qualification-baseline; fi
-            sudo --preserve-env=ImageOS,ImageVersion "$(command -v python3.12)" bench/profile_delivery_tests.py \
+            sudo --preserve-env=ImageOS,ImageVersion env "PATH=$pythonLocation/bin:$PATH" "$pythonLocation/bin/python3" bench/profile_delivery_tests.py \
               --root "$root" --pattern test_interim_recovery.py --pattern test_interim_coordinator.py \
               --git-diagnostics --repeat 1 --output ".context/qualification/diagnostic-$role.json"
           done
       - name: Time the complete final release verifier without skip flags
         run: |
-          sudo --preserve-env=ImageOS,ImageVersion "$(command -v python3.12)" - <<'PY'
+          sudo --preserve-env=ImageOS,ImageVersion env "PATH=$pythonLocation/bin:$PATH" "$pythonLocation/bin/python3" - <<'PY'
           import hashlib, json, os, platform, subprocess, sys, tempfile, time
           from datetime import datetime, timezone
           from pathlib import Path

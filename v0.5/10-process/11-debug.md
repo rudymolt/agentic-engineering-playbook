@@ -4,7 +4,12 @@
 
 **This stage in one breath:** Investigate before fixing — reproduce, isolate, name the root cause. Output: a diagnosis; the fix itself is a TDD slice.
 
-> **Failed migration?** That is an incident-shaped debug with a rehearsed first move: the rollback you executed before shipping (stage 10, "Shipping a migration"). Roll back first, investigate second.
+> **Failed migration or deployment?** Use the rehearsed recovery option only
+> after checking [stage 10's recovery authority](10-ship-and-deploy.md#recovery-authority-after-a-failed-change).
+> Reuse valid authorization for the exact action, target and effects with current
+> capability and recovery evidence; otherwise request the uncovered decision
+> before acting. A rehearsal grants no live restore, downtime or data-loss
+> permission. Keep safe investigation moving while that recovery action is blocked.
 
 ---
 
