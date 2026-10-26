@@ -154,7 +154,7 @@ class ConductorSetupTest(unittest.TestCase):
         empty = self.root / 'empty-path'; empty.mkdir()
         run = self.run_command([shutil.which('sh'), str(hook)], cwd=self.project,
                                env={**self.env, 'PATH': str(empty), 'CONDUCTOR_IS_LOCAL': '0'}, code=2)
-        self.assertIn('Python 3.10+', run.stderr)
+        self.assertIn('Python 3.9+', run.stderr)
         self.assertNotIn('Traceback', run.stderr)
         self.assertEqual(snapshot(self.project), before)
 
@@ -545,6 +545,48 @@ class ConductorSetupTest(unittest.TestCase):
              str(self.project), 'retain', '--skill', 'tdd'], code=2).stdout)
         self.assertIn('--source', report['repair'])
         self.assertNotIn('candidate', report['repair'])
+
+    def python39(self):
+        for candidate in ('python3.9', '/usr/bin/python3'):
+            path = shutil.which(candidate)
+            if path and subprocess.run([path, '-c', 'import sys; sys.exit(sys.version_info[:2] != (3, 9))'],
+                                       capture_output=True).returncode == 0:
+                return path
+        return None
+
+    def test_maintainer_cloud_setup_runs_on_python_3_9_like_conductor_cloud(self):
+        python = self.python39()
+        if python is None:
+            self.skipTest('Python 3.9 unavailable; Conductor Cloud currently provides 3.9')
+        shim = self.root / 'python39-bin'
+        shim.mkdir()
+        (shim / 'python3').symlink_to(python)
+        env = {**self.env, 'CONDUCTOR_IS_LOCAL': '0', 'PATH': str(shim) + os.pathsep + self.env['PATH']}
+        hook = ['sh', 'v0.5/scripts/conductor-setup.sh', '--candidate']
+        report = json.loads(self.run_command(hook, cwd=self.source, env=env).stdout)
+        self.assertTrue(report['complete'])
+        self.assertEqual(report['source']['kind'], 'maintainer-candidate')
+        self.assertTrue((self.source / '.claude/skills/tdd/tests.md').is_file())
+        self.assertEqual(json.loads(self.run_command(hook, cwd=self.source, env=env).stdout)['changed'], [])
+
+    @unittest.skipIf(sys.version_info < (3, 11), 'setup configuration parsing requires Python 3.11+')
+    def test_consumer_hook_restores_and_discovers_on_python_3_9_like_conductor_cloud(self):
+        python = self.python39()
+        if python is None:
+            self.skipTest('Python 3.9 unavailable; Conductor Cloud currently provides 3.9')
+        self.adopt('--conductor-setup')
+        shim = self.root / 'python39-bin'
+        shim.mkdir()
+        (shim / 'python3').symlink_to(python)
+        env = {**self.env, 'PATH': str(shim) + os.pathsep + self.env['PATH']}
+        hook = ['sh', '.playbook/conductor-setup.sh']
+        before, home = snapshot(self.project), snapshot(self.home)
+        local = json.loads(self.run_command(hook, cwd=self.project, env={**env, 'CONDUCTOR_IS_LOCAL': '1'}).stdout)
+        self.assertEqual(local['setup']['host'], 'local')
+        self.assertEqual((snapshot(self.project), snapshot(self.home)), (before, home))
+        cloud = json.loads(self.run_command(hook, cwd=self.project, env={**env, 'CONDUCTOR_IS_LOCAL': '0'}).stdout)
+        self.assertTrue(cloud['complete'])
+        self.assertTrue((self.project / '.claude/skills/grill-with-docs/agents/openai.yaml').is_file())
 
     @unittest.skipIf(sys.version_info < (3, 11), 'shared settings inspection requires Python 3.11+')
     def test_maintainer_cloud_setup_output_keeps_the_candidate_checkout_clean(self):

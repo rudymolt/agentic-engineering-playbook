@@ -178,8 +178,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "24ef1f221d44117014727a69863479101a5d26094694101bc2fd4bd131134192",
-      "size": 70646
+      "sha256": "67a7d7a74e37c1534357c297fa25a87d690920921d4e57307b75801cb6ddd613",
+      "size": 70724
     },
     {
       "path": "MAINTENANCE.md",
@@ -1283,8 +1283,8 @@
     },
     {
       "path": "scripts/conductor-setup.sh",
-      "sha256": "2387a19640fe709268d808ddb5030e5164e5a959fe7e9f941275261601b9282c",
-      "size": 2120
+      "sha256": "d7e46c41989731fc4ae4e862e1994266d9ebbc94e73c391ffe630c3a318c986e",
+      "size": 2117
     },
     {
       "path": "scripts/conductor_setup.py",
@@ -1433,8 +1433,8 @@
     },
     {
       "path": "scripts/skill-provisioning.md",
-      "sha256": "936df2bed239312124465d57d59abd736b5a4a97c62987ac481fe880340acfca",
-      "size": 36125
+      "sha256": "0b3b161245fbb7a5112103ac7d6b1dfef66335e889bbd5a96bc5db4d95bfcb9c",
+      "size": 36109
     },
     {
       "path": "scripts/skill_adoption.py",
@@ -1493,8 +1493,8 @@
     },
     {
       "path": "scripts/test_conductor_setup.py",
-      "sha256": "b68ed184f120233d1ebd7f37c92acbf22fd47ac0c8b7005a4f372ed566fc42c3",
-      "size": 55179
+      "sha256": "9f4661e765b194c992f5c29b218c316092f2c7e4069a407d6b6a61b2a87fe2b6",
+      "size": 57676
     },
     {
       "path": "scripts/test_config_repair_boundaries.py",

@@ -23,6 +23,7 @@
   Wire whole-directory Claude aliases beside canonical Codex skill directories,
   preserving metadata/support/notices and reporting unknown or linked conflicts.
   Add a distinct maintainer-candidate hook without consumer bootstrap/state.
+  The hook needs Python 3.9+, matching Conductor Cloud's current interpreter.
   Withhold only conflicting aliases, name a missing local source with an explicit
   recovery that local setup then reuses, refresh an unmodified hook on inventory
   re-adoption, show the composed setup in preview, and ignore maintainer setup

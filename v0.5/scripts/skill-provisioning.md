@@ -305,8 +305,8 @@ The other provisioner actions and their `--skill`/`--custom-bindings-dir` option
 are forwarded unchanged. JSON adds `source_resolution` with the actual path,
 release, tag object, commit, reuse/acquisition mode and `adoption_changed: false`.
 Exit 2 still means a blocked or incomplete action; preserve reports privately.
-The recovery launcher requires Python 3.9 or newer and Git; the optional Conductor
-hook below requires Python 3.10 or newer. Bootstrap and upgrade
+The recovery launcher and the optional Conductor hook below require Python 3.9 or
+newer and Git; Conductor Cloud currently provides Python 3.9. Bootstrap and upgrade
 can adopt it through their existing preview/Apply boundary below. The optional
 Conductor hook uses the same resolver; neither grants live runtime qualification.
 
@@ -398,9 +398,8 @@ Add `--conductor-setup` **together with** `--adopt-skills` to the existing
 bootstrap preview or upgrade `--plan`. Include the same flags and the returned
 `--inventory-revision` in its existing Apply command. This adds no approval gate
 and does not change old consumers unless selected. Explicit setup configuration
-composition needs Python 3.11+ (`tomllib`); the configured hook needs Python 3.10+
-(the launcher alone runs on 3.9+), its standard library, Git for source
-verification, and POSIX `sh`.
+composition needs Python 3.11+ (`tomllib`); the configured hook needs Python 3.9+,
+its standard library, Git for source verification, and POSIX `sh`.
 No toolchain, runtime, skill, model or setting is upgraded automatically.
 
 ```sh
