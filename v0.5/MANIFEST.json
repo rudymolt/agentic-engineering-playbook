@@ -178,8 +178,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "67a7d7a74e37c1534357c297fa25a87d690920921d4e57307b75801cb6ddd613",
-      "size": 70724
+      "sha256": "ade8c9d34703bb76b7af7002b8eeef270ec69e7ee2ce7166c3a6999c28c9252f",
+      "size": 71482
     },
     {
       "path": "MAINTENANCE.md",
@@ -1433,8 +1433,8 @@
     },
     {
       "path": "scripts/skill-provisioning.md",
-      "sha256": "0b3b161245fbb7a5112103ac7d6b1dfef66335e889bbd5a96bc5db4d95bfcb9c",
-      "size": 36109
+      "sha256": "f9d4e8bf01e8bc2443c2559bdbd79c489f5af68534ce66848b9643f4691b2c65",
+      "size": 37381
     },
     {
       "path": "scripts/skill_adoption.py",

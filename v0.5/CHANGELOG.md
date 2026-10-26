@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+- Record the bounded maintainer-candidate Cloud qualification on 2026-10-26.
+  The reviewed Python 3.9 gate fix permits complete manual installation on
+  Cloud's 3.9.25 interpreter. Codex discovers project skills on a later turn
+  and explicitly loads user-only `grill-with-docs` with dollar syntax. Both fresh starts
+  lacked provisioning outputs, and Claude native discovery still failed after
+  manual installation. Keep automatic startup, recreation, full local
+  coexistence and the consumer release path unqualified.
+
+*Why — distinguish installed files from working runtime routes:* actual source
+  selection and explicit invocation need their own evidence. A successful
+  manual repair cannot establish startup readiness or complete the S7 matrix.
+
 - Isolate content conflicts in not-yet-installed project skills during
   installation; later edits to installed skills still refuse and keep recovery
   history. Preserve withheld

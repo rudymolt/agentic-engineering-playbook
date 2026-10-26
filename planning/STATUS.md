@@ -11,8 +11,12 @@ S1–S6 are complete and independently verified at the approved fixture seam,
 including returned fixes, fresh CLI QA, cross-slice review and canonical full
 verification. The human selected option B on 2026-10-25 to isolate A8 content
 conflicts per skill; that returned fix passed fresh independent review and
-canonical full verification. S7 actual runtime qualification remains pending;
-fixture evidence makes no runtime support claim.
+canonical full verification. The Python 3.9 setup fix passed fresh review and
+full verification and was pushed. [S7 live results](cloud-skill-provisioning/runtime-qualification.md)
+record manual Cloud installation and Codex invocation success, missing startup
+provisioning outputs and failed Claude native discovery. Both rerun workspaces
+are archived. S7 remains open; recreation, complete local coverage and the
+consumer release path remain unqualified.
 
 [Edition and installed release](edition-release-identity/slices.md) — aligned
 and specified; implementation in progress on a separate branch.

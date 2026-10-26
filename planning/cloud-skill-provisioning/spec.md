@@ -5,8 +5,10 @@ Alignment and the [implementation slices](slices.md) are accepted.
 S1–S6 are complete and independently verified at the approved fixture seam,
 including returned fixes, fresh CLI QA, cross-slice review and canonical full
 verification; S6 adds setup composition, host dispatch, exact replay and safe
-discovery wiring. S7 actual runtime qualification remains pending. No live
-qualification has occurred.
+discovery wiring. [S7 live qualification](runtime-qualification.md) ran on
+2026-10-26 and remains partial: manual Cloud installation and Codex invocation
+passed bounded checks; fresh-start provisioning and Claude native discovery
+did not pass. The remaining matrix and consumer release path stay open.
 
 Sources: [alignment](alignment.md), [domain glossary](../../GLOSSARY.md),
 [ADR 0002](../../docs/adr/0002-release-bundled-project-skills.md).

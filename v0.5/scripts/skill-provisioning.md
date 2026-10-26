@@ -496,6 +496,24 @@ source, duplicate-name behavior, version compatibility and explicit invocation
 remain the S7 gate for fresh/recreated Cloud and both local runtimes. An installed
 incompatible embedded reviewer retains its existing stage-owned fallback.
 
+Dated maintainer-candidate checks on 2026-10-26 used Conductor CLI 0.92.0,
+Python 3.9.25, Claude Code 2.1.308 and Codex 0.164.0. Both fresh Cloud agents
+started without provisioning outputs; why startup left them missing is
+unresolved. One manual hook execution installed all eleven skills and aliases
+in each workspace with clean Git state. On a later turn Codex catalogued the
+seven model-invocable project skills and loaded `tdd` with its support file.
+Explicit `$grill-with-docs` then injected the project source and loaded its
+dependencies; slash-form prompts had not established that result. Claude native
+invocations still returned `Unknown skill` on the later turn. Manual reads are
+file-access evidence only. These observations do not qualify automatic startup,
+Claude discovery in a new session after setup, recreation, or the consumer
+release path. Capture runtime-selected sources before fallback reads, and use
+Codex dollar-form explicit invocation for skills with
+`allow_implicit_invocation: false`. Local Claude selected a personal duplicate
+by name in the bounded coexistence check; do not infer project precedence from
+alias presence. Local Codex qualification remains blocked by account/model
+access. Full local coexistence coverage remains incomplete.
+
 The maintainer repository's shared `.conductor/settings.toml` calls
 `sh v0.5/scripts/conductor-setup.sh --candidate`. This uses the same provisioner,
 labels the current development candidate, and creates no consumer state or release

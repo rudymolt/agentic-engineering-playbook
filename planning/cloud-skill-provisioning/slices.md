@@ -4,7 +4,9 @@ Status: breakdown approved and seven child tickets published on 2026-10-24.
 The [specification](spec.md) and both test seams are approved. S1–S6 and the
 A8 option B returned fix are complete and independently verified at the
 approved fixture seam, including returned fixes, fresh CLI QA, cross-slice review
-and canonical full verification. S7 actual runtime qualification remains pending.
+and canonical full verification. [S7 live results](runtime-qualification.md)
+are recorded for 2026-10-26; startup and discovery failures and incomplete
+matrix coverage keep S7 open.
 
 Read the [alignment](alignment.md), [glossary](../../GLOSSARY.md), and
 [accepted distribution decision](../../docs/adr/0002-release-bundled-project-skills.md)
@@ -273,17 +275,24 @@ conflicts, metadata/support/notices and maintainer setup without consumer state.
 The human selected option B on 2026-10-25: isolate fresh-install conflicts per
 skill. The returned A8 fix covers partial installation, unchanged repeats,
 explicit completion, preserved recovery targets and available Cloud aliases, and
-passed fresh independent review and canonical full verification. No runtime
-qualification is claimed. S7 HITL actual runtime qualification
-is pending. Cumulative guards and the stage-06
-architecture cadence continue to apply.
+passed fresh independent review and canonical full verification. Live S7 found
+a Python version-gate defect; its reviewed, fully verified fix is committed
+and pushed. The two fresh reruns confirmed manual installation on Python 3.9
+and Codex catalog/explicit invocation after installation. Startup provisioning
+outputs were missing in both, and Claude native invocation still failed on a
+later turn. All four approved Cloud workspaces are archived; the session ceiling
+is reached. S7 remains partially qualified with recreation, full local
+coexistence and consumer release testing incomplete. Cumulative guards and the
+stage-06 architecture cadence continue to apply.
 
 ```yaml
 playbook_result:
-  outcome: actual_runtime_qualification_pending
-  next_stage: "08"
+  outcome: actual_runtime_qualification_partial
+  next_stage: "11"
   required_actions:
-    - Approve live access, ceilings and publication of the reviewed branch for S7.
-    - Run S7 actual runtime qualification once live access and ceilings are approved.
-    - Retain actual runtime qualification as pending until S7 evidence exists.
+    - Diagnose missing fresh-start provisioning outputs using host setup execution evidence.
+    - Renew live-run capacity before further workspaces or sessions; existing ceilings are consumed.
+    - Requalify startup and Claude discovery, then complete recreated and local matrix coverage.
+    - Test consumer exact-release recovery after a release containing the bundle is available.
+    - Keep S7 open until every required runtime route has supporting evidence.
 ```
