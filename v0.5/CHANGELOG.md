@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- Record V0.5.3 published-release consumer CLI qualification: exact adoption and
+  acquisition, offline cache replay, proof refusal and retained-customization
+  recreation. Close the release follow-up while distinguishing locally simulated
+  Conductor dispatch from actual consumer Cloud/runtime evidence.
+
+*Why — finish the release evidence:* a published annotated tag now supplies the
+  provenance that maintainer-candidate tests could not establish. Preserve the
+  measured support limits and the unchanged-preview requirement on repeat Apply.
+
 ## V0.5.3 — 2026-10-27
 
 This release bundles reviewed project skills with portable adoption and exact-release recovery, and records the qualified maintainer runtime routes.

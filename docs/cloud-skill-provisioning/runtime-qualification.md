@@ -1,7 +1,7 @@
 # Cloud skill provisioning — runtime qualification
 
-Status: **selected maintainer Cloud and local routes qualified; consumer release
-qualification deferred**. The 2026-10-26 runs establish fresh/recreated Cloud
+Status: **selected maintainer Cloud and local routes qualified; published-release
+consumer CLI checks passed separately on 2026-10-27**. The 2026-10-26 runs establish fresh/recreated Cloud
 startup through the explicit repository Setup setting, retained customization,
 and bounded local source selection/refusal. The approved durable Cloud setting
 is now enabled. Branch-TOML activation and default project precedence under
@@ -230,10 +230,12 @@ counts were not used for budget accounting.
 
 ## Release follow-up and support limits
 
-S7's selected maintainer paths now have actual runtime evidence. Consumer
-exact-release recovery remains deferred by agreement until a published release
-contains the bundle; maintainer-candidate runs establish no consumer provenance.
-Keep that release follow-up open and requalify before claiming consumer support.
+S7's selected maintainer paths have actual runtime evidence. The separate
+[V0.5.3 consumer report](consumer-qualification.md) records published-release
+adoption, acquisition, offline replay and retained-customization recreation.
+Its Conductor dispatch checks are local simulation, not consumer Cloud startup
+or runtime invocation evidence. Maintainer-candidate runs establish no consumer
+provenance; the published-release procedure supplies that separate proof.
 Do not claim branch-TOML-only startup, automatic project precedence under
 collisions, globally absent local skills, standalone Codex login repair, or all
 bundled skills' behavior from this matrix.
