@@ -1,7 +1,8 @@
 # ADR 0002 — Bundle project skill inventory with the adopted release
 
 Status: Accepted; provisioning and adoption are implemented. Selected maintainer
-Cloud/local routes are qualified; consumer release qualification remains deferred.
+Cloud/local routes are qualified; V0.5.3 consumer CLI qualification passed on
+2026-10-27. Actual consumer Cloud/runtime qualification remains separate.
 Date: 2026-10-24
 
 Fresh cloud workspaces cannot rely on a developer's global skill installation
@@ -54,6 +55,8 @@ established. This makes the effective host setting a deployment prerequisite
 that must be read back after changes. It does not change the bundle's release
 or project-ownership contract. The [runtime report](../cloud-skill-provisioning/runtime-qualification.md)
 retains versions, source-selection limits and observer deviations; the
-[consumer follow-up](../cloud-skill-provisioning/consumer-qualification.md)
-requires the actual published release. No new glossary term or global routing
-rule is needed for this closeout.
+[consumer report](../cloud-skill-provisioning/consumer-qualification.md)
+records successful adoption and recovery against the actual published V0.5.3
+release, including offline replay and preserved customization. Its locally
+simulated Conductor dispatch does not establish actual consumer Cloud startup.
+No new glossary term or global routing rule is needed for this closeout.

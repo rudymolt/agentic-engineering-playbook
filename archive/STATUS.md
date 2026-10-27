@@ -8,9 +8,10 @@ archived_features: 5
   merged tree matches the final reviewed/verified candidate. Archived at
   `2026-10-27-cloud-skill-provisioning/`. Doc-close and
   [feature retro](../planning/retros/2026-10-27-cloud-skill-provisioning.md)
-  share this V0.5.3 closeout PR. Consumer release qualification stays open in
-  [durable tracking](../docs/cloud-skill-provisioning/consumer-qualification.md);
-  archival makes no consumer support claim.
+  merged in PR #49. V0.5.3 is published; the
+  [consumer report](../docs/cloud-skill-provisioning/consumer-qualification.md)
+  records passing published-release CLI checks and retained recreation. Actual
+  consumer Cloud startup/runtime invocation remains outside that evidence.
 
 - **Deployment capability and existing authority** — shipped 2026-10-25 in
   PR #46 as `8f6a2f0`; final verified head `a3b732c`. Archived at

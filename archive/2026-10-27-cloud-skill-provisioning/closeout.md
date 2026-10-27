@@ -17,7 +17,10 @@ review language is superseded by these receipts. Current support claims live in
 
 Doc-close, V0.5.3 release metadata and the
 [feature retro](../../planning/retros/2026-10-27-cloud-skill-provisioning.md)
-share this single closeout PR. Publication follows its human merge and final
-release gates. Consumer exact-release qualification remains pending publication;
-its [procedure](../../docs/cloud-skill-provisioning/consumer-qualification.md)
-is prepared. No additional Cloud capacity or personal-setting changes are used.
+merged together in PR #49 as `a3540cf5ca6dd3ef705d7d49fb4a2e7ce0da4bb0`.
+V0.5.3 is published as an annotated tag and non-draft Latest Release. The
+[consumer report](../../docs/cloud-skill-provisioning/consumer-qualification.md)
+records passing published-release adoption, acquisition, offline replay and
+retained-customization recreation. Conductor consumer dispatch was simulated
+locally; actual consumer Cloud startup and runtime invocation remain untested.
+No additional Cloud capacity or personal-setting changes were used.

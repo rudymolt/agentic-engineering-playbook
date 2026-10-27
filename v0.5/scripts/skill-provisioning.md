@@ -532,11 +532,14 @@ custom execution selections blocking after source drift and incompatible-reviewe
 refusal/fallback. Default discovery preserved personal collisions; these runs
 prove neither global skill absence nor default project precedence. Personal
 skills/settings and the Cloud pin were unchanged. Standalone Codex account access
-was not repaired. Consumer release coverage remains deferred until a release
-contains the bundle. The [qualification report](../../docs/cloud-skill-provisioning/runtime-qualification.md)
-retains the precise scope and observation limitations. The
-[consumer procedure](../../docs/cloud-skill-provisioning/consumer-qualification.md)
-tracks the published-release follow-up separately.
+was not repaired. Published-release consumer CLI checks passed separately on
+2026-10-27 against V0.5.3: adoption, exact acquisition, offline replay,
+proof refusal and retained customization recreation. The
+[qualification report](../../docs/cloud-skill-provisioning/runtime-qualification.md)
+retains the precise maintainer runtime scope and observation limitations. The
+[consumer report](../../docs/cloud-skill-provisioning/consumer-qualification.md)
+records the published-release proof and procedure; its locally simulated
+Conductor dispatch does not certify actual consumer Cloud startup or invocation.
 
 The maintainer repository's shared `.conductor/settings.toml` calls
 `sh v0.5/scripts/conductor-setup.sh --candidate`. This uses the same provisioner,

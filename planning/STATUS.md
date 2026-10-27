@@ -35,7 +35,7 @@ This maintainer checkout intentionally has no root `.playbook-state.yml`.
 The stage-10 closeout state is mirrored here; no consumer runtime state is created.
 
 ```yaml
-last_updated: 2026-10-27T04:03:20Z
+last_updated: 2026-10-27T04:23:24Z
 counters:
   features_shipped_total: 5
 last_run:
@@ -53,11 +53,14 @@ post-merge noreply identity readback passes. Main CI `40447115724` passed
 both required jobs. Production verification covers the published maintainer
 repository and the retained effective-setup evidence; no consumer upgrade is
 implied. This feature's completed production/doc-close/retro entry is cleared;
-its release-consumer follow-up remains visible below. Doc-close and the
-[feature retrospective](retros/2026-10-27-cloud-skill-provisioning.md) are
-complete on this closeout branch. V0.5.3 metadata is prepared for publication
-after human merge and the final release gates. Durable support evidence is in
-[the runtime report](../docs/cloud-skill-provisioning/runtime-qualification.md).
+its release-consumer CLI follow-up is also complete. Doc-close and the
+[feature retrospective](retros/2026-10-27-cloud-skill-provisioning.md) merged
+in PR #49 as `a3540cf`. V0.5.3 is published as an annotated tag and non-draft
+Latest Release. The [consumer report](../docs/cloud-skill-provisioning/consumer-qualification.md)
+records passing adoption, exact-release recovery, offline replay and retained
+recreation checks. Actual consumer Cloud/runtime invocation remains untested;
+[maintainer runtime evidence](../docs/cloud-skill-provisioning/runtime-qualification.md)
+keeps its existing scope.
 
 Capability and existing authority shipped in PR #46 as `8f6a2f0` on 2026-10-25.
 The merge tree matches final candidate `a3b732c`; noreply merge identities and
@@ -99,12 +102,6 @@ Its pending closeout is cleared; no unrelated closeout is changed.
 preserve verification, provenance and release-scope limits.
 
 ## Separate follow-ups
-
-- Cloud skill provisioning: publish V0.5.3 after this closeout PR merges, then run
-  the [exact-release consumer procedure](../docs/cloud-skill-provisioning/consumer-qualification.md).
-  Owner: release maintainer; due at publication, before claiming consumer
-  qualification. Existing Cloud capacity is exhausted; no additional live run
-  is implied. This follow-up remains open independently of maintainer doc-close.
 
 - Apply recovery gitignore: product PR #23 merged as `5d5265c` on 2026-10-08.
   Its [feature tracking](apply-recovery-gitignore/alignment.md) remains separately
