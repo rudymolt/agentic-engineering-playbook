@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+## V0.5.3 — 2026-10-27
+
+This release bundles reviewed project skills with portable adoption and exact-release recovery, and records the qualified maintainer runtime routes.
+
+- Close the shipped provisioning feature, preserve its runtime evidence in durable
+  documentation, and record its retrospective and field report. Prepare the
+  exact-published-release consumer qualification without claiming it has run.
+
+*Why — complete the release handoff:* future maintainers need current support
+  limits and a reachable qualification procedure after the build plans are archived.
+  Consumer qualification remains a release follow-up until actual execution.
+
 - Record the selected maintainer Cloud and local qualification on 2026-10-26.
   Fresh/recreated Claude Code and Codex checks pass through the explicit Cloud
   Setup setting, including retained customization and reviewer refusal/fallback.
@@ -27,7 +39,8 @@
 *Why — keep unaffected capabilities available:* the human selected per-skill
   isolation on 2026-10-25 so one unretained project edit cannot prevent a fresh
   workspace from installing unrelated skills. Partial file availability grants
-  neither a review pass nor runtime qualification; those gates remain pending.
+  neither a review pass nor runtime qualification; the dated report above records
+  the separately completed maintainer gates.
 
 - Add opt-in Conductor setup composition to inventory adoption's existing
   preview/Apply, preserving prior commands, exports, comments and settings.
@@ -84,7 +97,8 @@
   verified offline reuse and opt-in acquisition into a separate cache before
   invoking the existing provisioner. Preserve settings, adoption and conflicting
   source or project edits; default discovery never downloads. Bootstrap/host
-  integration and live runtime qualification remain pending.
+  integration is included in this release; runtime claims remain bounded by the
+  dated maintainer report and pending consumer qualification.
 
 *Why — reachable exact recovery:* another machine's saved checkout path must not
   prevent access to the adopted bundle or silently choose a newer release.
@@ -101,7 +115,8 @@
   and suppress Git fsmonitor helpers during source observation. Propagate
   supporting-directory traversal failures instead of reporting partial file
   sets as unblocked customizations. Actual
-  invocation resolution and runtime qualification remain unverified.
+  invocation and runtime claims are limited to the separately recorded maintainer
+  matrix; source classification alone grants no qualification.
 
 *Why — safe local coexistence:* repeatable Cloud provisioning must not replace
   a user's existing skills or silently resolve conflicting copies. Discovery
@@ -127,7 +142,8 @@
   Preserve supporting material, dependency closure, invocation metadata,
   licenses, conflicting files, and repairable initial installation. Keep
   consumer release proof separate from maintainer candidates and runtime
-  qualification; automatic setup and consumer migration remain future work.
+  qualification; automatic setup and deliberate consumer adoption are covered
+  by the later integration entries above.
 
 *Why — repeatable project inventory:* fresh workspaces need the reviewed skill
   material without relying on a developer's global install or a second upstream

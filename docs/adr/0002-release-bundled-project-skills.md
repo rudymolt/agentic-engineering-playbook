@@ -45,3 +45,15 @@ installation. Revisit this decision if distribution size, licensing, runtime
 discovery changes, or maintenance cost makes bundling unsuitable. Require
 actual fresh and recreated cloud evidence for each supported runtime before
 claiming support.
+
+## Rollout evidence at ship
+
+PR #48 merged on 2026-10-27. The selected Cloud rollout uses the explicit
+repository Setup script setting; tracked branch-TOML activation was not
+established. This makes the effective host setting a deployment prerequisite
+that must be read back after changes. It does not change the bundle's release
+or project-ownership contract. The [runtime report](../cloud-skill-provisioning/runtime-qualification.md)
+retains versions, source-selection limits and observer deviations; the
+[consumer follow-up](../cloud-skill-provisioning/consumer-qualification.md)
+requires the actual published release. No new glossary term or global routing
+rule is needed for this closeout.
