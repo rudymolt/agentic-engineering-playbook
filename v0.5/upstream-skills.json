@@ -98,7 +98,12 @@
         "10-process/README"
       ],
       "upstream_path": "engineering/grill-with-docs",
-      "previous_names": []
+      "previous_names": [],
+      "project_bundle": true,
+      "dependencies": [
+        "grilling",
+        "domain-modeling"
+      ]
     },
     "setup-matt-pocock-skills": {
       "package": "mattpocock-skills",
@@ -113,7 +118,8 @@
         "10-process/README"
       ],
       "upstream_path": "engineering/setup-matt-pocock-skills",
-      "previous_names": []
+      "previous_names": [],
+      "project_bundle": true
     },
     "to-spec": {
       "package": "mattpocock-skills",
@@ -135,6 +141,10 @@
           "name": "to-prd",
           "upstream_version": "v1.1.0"
         }
+      ],
+      "project_bundle": true,
+      "dependencies": [
+        "setup-matt-pocock-skills"
       ]
     },
     "to-tickets": {
@@ -161,6 +171,10 @@
           "name": "to-plan",
           "upstream_version": "v1.1.0"
         }
+      ],
+      "project_bundle": true,
+      "dependencies": [
+        "setup-matt-pocock-skills"
       ]
     },
     "implement": {
@@ -208,7 +222,11 @@
         "prereqs-capability-profiles"
       ],
       "upstream_path": "engineering/tdd",
-      "previous_names": []
+      "previous_names": [],
+      "project_bundle": true,
+      "dependencies": [
+        "codebase-design"
+      ]
     },
     "diagnosing-bugs": {
       "package": "mattpocock-skills",
@@ -229,7 +247,8 @@
           "name": "diagnose",
           "upstream_version": "v1.0.0"
         }
-      ]
+      ],
+      "project_bundle": true
     },
     "improve-codebase-architecture": {
       "package": "mattpocock-skills",
@@ -273,7 +292,8 @@
         "10-process/README"
       ],
       "upstream_path": "engineering/domain-modeling",
-      "previous_names": []
+      "previous_names": [],
+      "project_bundle": true
     },
     "codebase-design": {
       "package": "mattpocock-skills",
@@ -286,7 +306,8 @@
         "00-foundations"
       ],
       "upstream_path": "engineering/codebase-design",
-      "previous_names": []
+      "previous_names": [],
+      "project_bundle": true
     },
     "code-review": {
       "package": "mattpocock-skills",
@@ -302,7 +323,11 @@
       ],
       "upstream_path": "engineering/code-review",
       "previous_names": [],
-      "manifest_key": "code-review"
+      "manifest_key": "code-review",
+      "project_bundle": true,
+      "dependencies": [
+        "setup-matt-pocock-skills"
+      ]
     },
     "research": {
       "package": "mattpocock-skills",
@@ -391,7 +416,8 @@
         "01"
       ],
       "upstream_path": "productivity/grilling",
-      "previous_names": []
+      "previous_names": [],
+      "project_bundle": true
     },
     "writing-for-agents": {
       "package": "mattpocock-skills",
@@ -414,7 +440,8 @@
           "name": "writing-great-skills",
           "upstream_version": "v1.2.0"
         }
-      ]
+      ],
+      "project_bundle": true
     },
     "caveman": {
       "package": "mattpocock-skills",

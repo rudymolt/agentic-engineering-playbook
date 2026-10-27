@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import re
+import subprocess
 from pathlib import Path
 
 
@@ -25,6 +26,10 @@ PUBLIC_RUNTIME_RUN_URL = re.compile(
     r'(?<=[(" ])https://github\.com/' + "rudy" + "molt"
     + r'/agentic-engineering-playbook/actions/runs/[1-9][0-9]*(?=[)"])'
 )
+# Exact upstream HTTP endpoint examples; these are not personal machine paths.
+# Keep the independent email and remaining-line marker scans active.
+BUNDLED_ENDPOINT_FILE = Path('v0.5/bundles/mattpocock-skills/tdd/mocking.md')
+BUNDLED_ENDPOINTS = ('`/' + 'users/${id}`', '`/' + 'users/${userId}/orders`')
 ALLOWED_EMAILS = {"git@github.com"}
 ALLOWED_DOMAINS = {"example.com", "example.invalid", "users.noreply.github.com"}
 # The approved public confirmation fields are exact whole lines, root AGENTS only.
@@ -32,13 +37,42 @@ PUBLIC_MERGE_PRIVACY_FIELDS = {
     "- Repository: " + "rudy" + "molt/agentic-engineering-playbook",
     "- GitHub login: " + "rudy" + "molt",
 }
+# Reproducible maintainer setup output of the reviewed bundle, skipped only
+# while Git ignores it and tracks nothing beneath it.
+SETUP_OUTPUTS = (Path(".agents"), Path(".claude/skills"))
+
+
+def ignored_setup_outputs(root: Path) -> set[Path]:
+    skipped = set()
+    for relative in SETUP_OUTPUTS:
+        path = root / relative
+        if path.is_symlink() or not path.is_dir():
+            continue
+        try:
+            top = subprocess.run(["git", "-C", str(root), "rev-parse", "--show-toplevel"],
+                                 capture_output=True, text=True, timeout=30)
+            ignored = subprocess.run(["git", "-C", str(root), "check-ignore", "-q", str(relative) + "/"],
+                                     capture_output=True, timeout=30).returncode == 0
+            tracked = subprocess.run(["git", "-C", str(root), "ls-files", "--", str(relative)],
+                                     capture_output=True, text=True, timeout=30)
+        except (OSError, subprocess.TimeoutExpired):
+            continue
+        # An enclosing repository's ignore rules never hide a nested tree.
+        if top.returncode or Path(top.stdout.strip()).resolve() != root.resolve():
+            continue
+        if ignored and tracked.returncode == 0 and not tracked.stdout:
+            skipped.add(relative)
+    return skipped
 
 
 def problems(root: Path) -> list[str]:
     found: list[str] = []
+    skipped = ignored_setup_outputs(root)
     for path in sorted(root.rglob("*")):
         relative = path.relative_to(root)
         if any(part in SKIP_PARTS for part in relative.parts):
+            continue
+        if any(relative == output or output in relative.parents for output in skipped):
             continue
         if path.is_symlink():
             found.append(f"{relative}: symbolic link requires explicit review")
@@ -64,6 +98,9 @@ def problems(root: Path) -> list[str]:
                 marker_text = PUBLIC_RUNTIME_RUN_URL.sub("", marker_text)
             if relative == Path("AGENTS.md") and line in PUBLIC_MERGE_PRIVACY_FIELDS:
                 marker_text = ""
+            if relative == BUNDLED_ENDPOINT_FILE:
+                for endpoint in BUNDLED_ENDPOINTS:
+                    marker_text = marker_text.replace(endpoint, '')
             if PRIVATE_MARKERS.search(marker_text):
                 found.append(f"{relative}:{number}: private marker or personal path")
             for match in EMAIL.finditer(line):

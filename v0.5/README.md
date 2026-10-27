@@ -23,7 +23,7 @@ The bootstrap installs `CLAUDE.md`, `AGENTS.md`, `GLOSSARY.md`, state and cadenc
 
 Run `python3 v0.5/scripts/verify-playbook.py` from the repository root before a release. The verifier covers unit tests, documentation and skill conventions, links, generated manifests, and the delivery checks supported by the host.
 
-**Conductor setup lane:** when bootstrap runs in Conductor, the bootstrap skill inspects project-specific workspace settings and presents the exact setup and run-command changes in its read-only plan before applying them.
+**Conductor setup lane:** when bootstrap runs in Conductor, the bootstrap skill inspects project-specific workspace settings and presents the exact setup and run-command changes in its read-only plan before applying them. Select `--adopt-skills --conductor-setup` in that same preview/Apply when adopting the shared provisioning hook (configuration composition requires Python 3.11+). It preserves existing setup, restores the adopted inventory in Cloud, and only discovers locally. See [setup and activation](scripts/skill-provisioning.md#optional-conductor-setup-adoption); fixtures do not establish actual runtime qualification.
 
 ## Existing projects
 
@@ -74,3 +74,16 @@ Projects already using a private V0.4.2 checkout should use the tested [transiti
 ## License and attribution
 
 Original public work is under [Apache-2.0](../LICENSE). The adapted upstream skills carry their own `NOTICE` files; retain those notices when redistributing.
+
+## Explicit project skill inventory
+
+The [project provisioner](scripts/skill-provisioning.md) previews, installs, checks, and
+recovers eleven complete reviewed upstream skills from an available verified
+release. Explicit retention preserves committed project customizations, while
+replacement and recovery protect later edits and unknown content. Activation is
+explicit. Bundled files
+and passing fixture tests do not establish actual runtime qualification;
+bootstrap/upgrade can deliberately adopt the portable inventory in their existing
+preview/Apply gate. That records exact provenance and discovery policy without
+activating local duplicates or changing saved choices. Automatic host setup and
+actual runtime qualification remain pending.

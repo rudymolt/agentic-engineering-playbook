@@ -21,6 +21,13 @@ Set up one project without overwriting anything it already owns. The skill handl
    resolution never enter the project file. Missing qualification or unknown
    fields block instead of silently dropping a binding. Existing projects use
    Configure's Load/preview/Apply; bootstrap never replaces their configuration.
+   Include the project inventory choice in this same plan. For deliberate
+   portable adoption from a verified public release, add `--adopt-skills` and
+   show its inventory, source proof, discovery policy, customization/recovery
+   implications and `inventory_revision`. Read
+   [the adoption reference](../../scripts/skill-provisioning.md#adopt-through-bootstrap-or-upgrade)
+   when that option is selected. Completion criterion: the existing approval
+   covers the inventory alongside setup; preview has changed no consumer files.
 5. **Apply safe setup.** Re-run the deterministic playbook command with `--apply`. Exit 0 means deterministic setup completed; exit 2 means safe files were written but manual reviews block certification; exit 1 means inspect possible partial changes before retrying. Apply the separately approved Conductor diff only at its chosen scope, preserving existing configuration for an explicit merge or legacy migration. Never put secrets in tracked settings. Completion criterion: every approved safe change is applied and diffed, with no existing project content overwritten.
    Seeded Apply also requires the same seeding options and exact
    `--seed-revision {approved-seed_revision}`. Exit 2 can instead mean the seed
@@ -29,6 +36,12 @@ Set up one project without overwriting anything it already owns. The skill handl
    and approval. Seed only after safe bootstrap completes without manual
    reviews. Report partial setup or recovery honestly. Subsequent ordinary
    bootstrap checks omit seeding flags, preserving the adopted configuration.
+   Inventory Apply adds the same `--adopt-skills` and the preview's exact
+   `--inventory-revision`. A changed revision requires a refreshed plan at this
+   same gate. Successful adoption records portable state and a project launcher;
+   local bundle activation remains explicit. The maintainer checkout receives
+   no consumer state. A required review or failed computation withholds the new
+   adoption/certification; preserve safe partial edits for inspection.
 6. **Resolve manual reviews.** For each `manual review:` item, show the current content, expected behavior, and one minimal merge proposal. Apply only after explicit approval. Re-run until the deterministic bootstrap exits 0 and then once more to prove no changed files. Completion criterion: every review is accepted or recorded as an explicit deferral, and the project is not stamped current while required setup remains unresolved.
 7. **Activate and validate Conductor.** A setup script added after workspace creation does not run retroactively; after approval, run its safe setup command once in the current workspace or state why it could not be run. Validate commands from the workspace directory in Conductor's non-interactive shell. Before shared settings activate, run each long-lived command directly with the approved Conductor environment, confirm the expected port or health signal, then stop it; after merge, use Conductor's Run action once to confirm the menu integration. Shared settings become active only after they are merged to the remote default branch; changing them on the workspace branch does not update project settings. A personal repository-root setting may provide immediate Run behavior on this Mac, but never write it without the explicit `personal` choice. Completion criterion: current-workspace setup is accounted for and the human knows exactly when future workspaces receive the configuration.
 8. **Verify and hand off.** Run stage 00's cold path, confirm the project-local skills are discoverable under `.agents/skills/`, and confirm deterministic status with `python3 {playbook-path}/v0.5/scripts/compute-status.py {project-path} --check`. When the user has selected application verification, offer `/ai-playbook-verification-harness` as a separate scoped proposal after bootstrap; its installation never generates or adopts a harness by itself. Include the Conductor setup/Run validation result and any merge-to-activate action in the handoff. Completion criterion: prereqs pass, status is current, and the user receives “Playbook edition {playbook_version}; installed release {playbook_release or unknown (unverified source)}” plus the first-feature or `/whats-next` handoff. The edition stamp is not a release number.

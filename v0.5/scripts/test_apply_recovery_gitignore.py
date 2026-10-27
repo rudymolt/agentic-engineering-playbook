@@ -1,11 +1,13 @@
 """Public bootstrap/upgrade and Git visibility of retained Apply evidence."""
 
 import json
+import os
 from pathlib import Path
 import py_compile
 import shutil
 import subprocess
 import sys
+import time
 import tempfile
 import unittest
 
@@ -31,13 +33,14 @@ def discover(request):
 
 
 class ApplyRecoveryGitignoreTests(unittest.TestCase):
-    def bootstrap(self, project, apply=True, playbook_root=ROOT):
-        command = [sys.executable, str(SCRIPTS / "bootstrap-project.py"), str(project),
+    def bootstrap(self, project, apply=True, playbook_root=ROOT, environment=None):
+        command = [sys.executable, str(playbook_root / "v0.5/scripts/bootstrap-project.py"), str(project),
                    "--playbook-path", str(playbook_root), "--project-name", "Example Project",
                    "--ui", "no", "--ci", "copy"]
         if apply:
             command.append("--apply")
-        return subprocess.run(command, capture_output=True, text=True, check=False)
+        return subprocess.run(command, capture_output=True, text=True, check=False,
+                              env=environment, timeout=45)
 
     def git(self, project, *args):
         return subprocess.run(["git", "-C", str(project), *args],
@@ -222,17 +225,129 @@ class ApplyRecoveryGitignoreTests(unittest.TestCase):
             shutil.copytree(ROOT / "v0.5", source / "v0.5",
                             ignore=shutil.ignore_patterns("__pycache__", "*.pyc"))
             project = root / "project"
-            first = self.bootstrap(project, playbook_root=source)
+            home = root / 'home'
+            home.mkdir()
+            environment = {**os.environ, 'HOME': str(home), 'GIT_CONFIG_NOSYSTEM': '1',
+                           'GIT_CONFIG_GLOBAL': os.devnull}
+            for variable in ('PYTHONDONTWRITEBYTECODE', 'PYTHONPYCACHEPREFIX'):
+                environment.pop(variable, None)
+            first = self.bootstrap(project, playbook_root=source, environment=environment)
             self.assertEqual(first.returncode, 0, first.stderr)
             ignore = project / ".gitignore"
             before = (ignore.read_bytes(), ignore.stat().st_mtime_ns)
+            whole_project = {p.relative_to(project): (p.read_bytes(), p.stat().st_mode, p.stat().st_mtime_ns)
+                             for p in project.rglob('*') if p.is_file()}
+            unchanged = self.bootstrap(project, playbook_root=source, environment=environment)
+            self.assertEqual(unchanged.returncode, 0, unchanged.stdout + unchanged.stderr)
+            self.assertEqual({p.relative_to(project): (p.read_bytes(), p.stat().st_mode, p.stat().st_mtime_ns)
+                              for p in project.rglob('*') if p.is_file()}, whole_project)
             # Another verification shard can create this cache between public calls.
             py_compile.compile(str(source / "v0.5/skills/ship-release/scripts/check-release-state.py"),
                                doraise=True)
-            repeated = self.bootstrap(project, playbook_root=source)
+            time.sleep(1.1)  # State recomputation must not hide within the same clock tick.
+            repeated = self.bootstrap(project, playbook_root=source, environment=environment)
             self.assertEqual(repeated.returncode, 0, repeated.stderr)
             self.assertNotIn("changed: " + str(ignore), repeated.stdout)
             self.assertEqual((ignore.read_bytes(), ignore.stat().st_mtime_ns), before)
+            after = {p.relative_to(project): (p.read_bytes(), p.stat().st_mode, p.stat().st_mtime_ns)
+                     for p in project.rglob('*') if p.is_file()}
+            differences = {str(name): ['bytes', 'mode', 'mtime'][index]
+                           for name in set(after) & set(whole_project)
+                           for index in range(3) if after[name][index] != whole_project[name][index]}
+            self.maxDiff = 300
+            self.assertEqual(after, whole_project, repr(differences))
+
+
+    def test_pending_delivery_marker_blocks_until_explicit_supported_repair(self):
+        for with_lock in (True, False):
+            with self.subTest(with_lock=with_lock), tempfile.TemporaryDirectory() as tmp:
+                root = Path(tmp)
+                source, project, home = root / 'source', root / 'project', root / 'home'
+                home.mkdir()
+                shutil.copytree(ROOT / 'v0.5', source / 'v0.5',
+                                ignore=shutil.ignore_patterns('__pycache__', '*.pyc'))
+                environment = {**os.environ, 'HOME': str(home), 'GIT_CONFIG_NOSYSTEM': '1',
+                               'GIT_CONFIG_GLOBAL': os.devnull}
+                first = self.bootstrap(project, playbook_root=source, environment=environment)
+                self.assertEqual(first.returncode, 0, first.stdout + first.stderr)
+                delivery = project / '.agents/skills/ai-playbook-deliver'
+                lock = delivery / 'manifest-lock.yml'
+                manifest = json.loads(lock.read_text())
+                pending = delivery / 'install-state.json'
+                pending.write_text(json.dumps({'status': 'installing', 'pack_digest': manifest['pack_digest']}))
+                if not with_lock:
+                    lock.unlink()
+                state = project / '.playbook-state.yml'
+                state.write_text(state.read_text().replace('playbook_version: V0.5.0', 'playbook_version: null'))
+                before = {p.relative_to(project): (p.read_bytes(), p.stat().st_mode, p.stat().st_mtime_ns)
+                          for p in project.rglob('*') if p.is_file()}
+                blocked = self.bootstrap(project, playbook_root=source, environment=environment)
+                self.assertEqual(blocked.returncode, 2, blocked.stdout + blocked.stderr)
+                self.assertIn('install-state.json', blocked.stdout)
+                self.assertIn('playbook_version: null', state.read_text())
+                self.assertEqual({p.relative_to(project): (p.read_bytes(), p.stat().st_mode, p.stat().st_mtime_ns)
+                                  for p in project.rglob('*') if p.is_file()}, before)
+                repair = subprocess.run([sys.executable, str(source / 'v0.5/delivery/scripts/lifecycle.py'),
+                                         'install', '--project', str(project)], env=environment,
+                                        capture_output=True, text=True, timeout=45)
+                self.assertEqual(repair.returncode, 0, repair.stdout + repair.stderr)
+                self.assertFalse(pending.exists())
+                completed = self.bootstrap(project, playbook_root=source, environment=environment)
+                self.assertEqual(completed.returncode, 0, completed.stdout + completed.stderr)
+                repaired = {p.relative_to(project): (p.read_bytes(), p.stat().st_mode, p.stat().st_mtime_ns)
+                            for p in project.rglob('*') if p.is_file()}
+                repeated = self.bootstrap(project, playbook_root=source, environment=environment)
+                self.assertEqual(repeated.returncode, 0, repeated.stdout + repeated.stderr)
+                self.assertEqual({p.relative_to(project): (p.read_bytes(), p.stat().st_mode, p.stat().st_mtime_ns)
+                                  for p in project.rglob('*') if p.is_file()}, repaired)
+
+
+    def test_delivery_verification_refuses_drift_without_touching_consumer_files(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            source, original, home = root / 'source', root / 'original', root / 'home'
+            home.mkdir()
+            shutil.copytree(ROOT / 'v0.5', source / 'v0.5',
+                            ignore=shutil.ignore_patterns('__pycache__', '*.pyc'))
+            environment = {**os.environ, 'HOME': str(home), 'GIT_CONFIG_NOSYSTEM': '1',
+                           'GIT_CONFIG_GLOBAL': os.devnull}
+            first = self.bootstrap(original, playbook_root=source, environment=environment)
+            self.assertEqual(first.returncode, 0, first.stdout + first.stderr)
+            for case in ('edited', 'partial', 'stale', 'owned-registry', 'source-manifest'):
+                with self.subTest(case=case):
+                    project = root / case
+                    shutil.copytree(original, project)
+                    delivery = project / '.agents/skills/ai-playbook-deliver'
+                    (delivery / 'user-owned.txt').write_text('Preserve this unrelated content\n')
+                    lock = delivery / 'manifest-lock.yml'
+                    if case == 'edited':
+                        skill = delivery / 'SKILL.md'
+                        skill.write_bytes(skill.read_bytes() + b'\nProject-owned delivery edit\n')
+                        expected = 'installed file mismatch'
+                    elif case == 'partial':
+                        (delivery / 'agents/openai.yaml').unlink()
+                        expected = 'installed file mismatch'
+                    elif case in ('stale', 'owned-registry'):
+                        record = json.loads(lock.read_text())
+                        if case == 'stale':
+                            record['pack_digest'] = 'sha256:' + '0' * 64
+                            expected = 'installed pack digest is stale'
+                        else:
+                            record['owned_files'].pop()
+                            expected = 'owned-file registry'
+                        lock.write_text(json.dumps(record))
+                    else:
+                        material = source / 'v0.5/delivery/src/delivery_pilot/canonical.py'
+                        material.write_bytes(material.read_bytes() + b'\n# Fixture source drift\n')
+                        expected = 'source manifest mismatch'
+                    before = {p.relative_to(project): (p.read_bytes(), p.stat().st_mode, p.stat().st_mtime_ns)
+                              for p in project.rglob('*') if p.is_file()}
+                    blocked = self.bootstrap(project, playbook_root=source, environment=environment)
+                    self.assertEqual(blocked.returncode, 2, blocked.stdout + blocked.stderr)
+                    self.assertIn('delivery verify blocked', blocked.stdout)
+                    self.assertIn(expected, blocked.stdout)
+                    self.assertEqual({p.relative_to(project): (p.read_bytes(), p.stat().st_mode, p.stat().st_mtime_ns)
+                                      for p in project.rglob('*') if p.is_file()}, before)
 
 
 if __name__ == "__main__":

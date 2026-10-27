@@ -1,6 +1,7 @@
 # Maintainer decisions
 
 - [Checkpoint fixture ownership and measured acceptance](adr/0001-checkpoint-fixtures-and-acceptance.md)
+- [Release-bundled project skill inventory](adr/0002-release-bundled-project-skills.md)
 - [Checkpoint performance measurements and limits](../bench/test-runtime/CHECKPOINT-PERFORMANCE.md)
 
 Release consumers stay pinned to a tag. Recheck compatibility when the relevant

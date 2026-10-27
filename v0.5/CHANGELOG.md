@@ -2,6 +2,137 @@
 
 ## Unreleased
 
+- Record the selected maintainer Cloud and local qualification on 2026-10-26.
+  Fresh/recreated Claude Code and Codex checks pass through the explicit Cloud
+  Setup setting, including retained customization and reviewer refusal/fallback.
+  Enable the human-approved durable setting and record its readback and guard
+  checks. Local exact/newer/customized loading, absent-project refusal, duplicate
+  precedence and retained-selection drift checks preserve personal state and the
+  Cloud pin. Retain source-loading limits and the deferred consumer release test.
+
+*Why — make rollout claims match actual runtime evidence:* explicit source
+  selection and fail-closed checks support the selected maintainer paths without
+  claiming default project precedence, branch-TOML-only startup or consumer
+  provenance from candidate runs.
+
+- Isolate content conflicts in not-yet-installed project skills during
+  installation; later edits to installed skills still refuse and keep recovery
+  history. Preserve withheld
+  directories, install every unaffected complete skill, and record only managed
+  skills in partial-installation history. Repeat partial installs without writes;
+  retain rollback and later-edit protection. Cloud setup wires installed skills
+  and names withheld aliases with their repairs while install/check/setup remain
+  incomplete with exit 2. Local setup remains read-only.
+
+*Why — keep unaffected capabilities available:* the human selected per-skill
+  isolation on 2026-10-25 so one unretained project edit cannot prevent a fresh
+  workspace from installing unrelated skills. Partial file availability grants
+  neither a review pass nor runtime qualification; those gates remain pending.
+
+- Add opt-in Conductor setup composition to inventory adoption's existing
+  preview/Apply, preserving prior commands, exports, comments and settings.
+  Dispatch on the host environment, verify adopted launcher/bundle identity,
+  restore exact releases only in Cloud, and keep local discovery non-mutating.
+  Wire whole-directory Claude aliases beside canonical Codex skill directories,
+  preserving metadata/support/notices and reporting unknown or linked conflicts.
+  Add a distinct maintainer-candidate hook without consumer bootstrap/state.
+  The hook needs Python 3.9+, matching Conductor Cloud's current interpreter.
+  Withhold only conflicting aliases, name a missing local source with an explicit
+  recovery that local setup then reuses, refresh an unmodified hook on inventory
+  re-adoption, show the composed setup in preview, and ignore maintainer setup
+  output so the candidate checkout and public-content gate stay clean.
+
+*Why — repeat the adopted setup safely:* fresh workspaces need a reachable,
+  reproducible inventory while local workspaces retain their selected sources.
+  Deliberate composition and rollback preserve project ownership; directory
+  wiring remains separate from actual runtime qualification and stage authority.
+  One alias conflict or a teammate's different source path must not disable
+  other discovery routes or leave a repair the hook itself cannot follow.
+
+- Add deliberate portable inventory adoption to bootstrap/upgrade's existing
+  preview and Apply. Bind exact release proof, bundle and launcher hashes;
+  preserve settings, job bindings, local sources, setup and customizations.
+  Required review and failed computation withhold the new adoption/stamp.
+  Keep local discovery as policy and local activation explicit. Exclude runtime
+  bytecode from bootstrap skill copies so cache events leave consumer state stable.
+  Verify an existing delivery pack through its full manifest-owned validation
+  instead of reinstalling identical bytes. Keep pending operations incomplete
+  until supported repair; preserve file bytes, modes and mtimes on healthy repeats.
+  Refuse linked project state before inventory Apply or rollback writes while
+  retaining read-only preview and exact-source proof checks.
+
+*Why — deliberate portable setup:* recreation needs a reachable exact-release
+  launcher and a reviewed inventory choice without copying personal source paths
+  or silently changing the Cloud pin. Preserving certification on failure and
+  ignoring source caches makes repeat setup reflect intentional project changes.
+  Validated no-write delivery checks preserve installed metadata without weakening
+  drift detection or hiding an interrupted operation.
+  A readable linked proof does not authorize changing its external target;
+  mutating adoption requires explicit restoration of regular project state.
+
+- Reject nonregular launcher-output and adoption-proof endpoints before reading
+  them. Return actionable JSON for FIFOs, preserve their filesystem records,
+  and retain regular-file export, proof parsing and linked-proof behavior.
+
+*Why — bounded recovery refusal:* a FIFO without a writer previously blocked
+  the recovery interface indefinitely instead of reporting a repair. Checking
+  effective file types preserves user-owned endpoints without adding an
+  acquisition timeout policy or changing release authority.
+
+- Recover a missing configured Playbook source from exactly the adopted release,
+  annotated tag object and commit. Add an explicitly exported portable launcher,
+  verified offline reuse and opt-in acquisition into a separate cache before
+  invoking the existing provisioner. Preserve settings, adoption and conflicting
+  source or project edits; default discovery never downloads. Bootstrap/host
+  integration and live runtime qualification remain pending.
+
+*Why — reachable exact recovery:* another machine's saved checkout path must not
+  prevent access to the adopted bundle or silently choose a newer release.
+  Reusing the existing proof and provisioner keeps recovery separate from
+  upgrades, customization ownership and stage authority.
+
+- Make local source discovery the provisioner's default action. Report exact,
+  newer, customized, missing, duplicate and unknown sources, file differences,
+  saved job routes and explicit repair choices without changing local skills
+  or settings. Reuse Configure's exact-source binding and stage-owned selection
+  rules; project activation remains explicit and preserves the Cloud pin.
+  Keep cyclic, dangling and unreadable sources visible and isolate their
+  failures to the affected capability. Bound reads to complete skill directories
+  and suppress Git fsmonitor helpers during source observation. Propagate
+  supporting-directory traversal failures instead of reporting partial file
+  sets as unblocked customizations. Actual
+  invocation resolution and runtime qualification remain unverified.
+
+*Why — safe local coexistence:* repeatable Cloud provisioning must not replace
+  a user's existing skills or silently resolve conflicting copies. Discovery
+  separates source observations from eligibility and makes deliberate selection
+  possible without introducing another approval or version resolver.
+
+- Preserve explicitly retained, committed project skill customizations through
+  inventory replacement and recreation. Add previous-installation recovery,
+  journaled interrupted-replacement repair, precise conflicts for later or
+  unknown edits, and explicit stage-owned fallback reporting. Keep installation
+  completeness separate from recovery, discovery, and source qualification.
+  Retrying interrupted recovery preserves its original destination and source,
+  including rollback of an interrupted install.
+
+*Why — recoverable project ownership:* safe repeat setup needs to distinguish
+  managed material from deliberately retained project bytes, and restoring a
+  previous installation must preserve work made since replacement. Local
+  recovery evidence and portable retention choices make those boundaries
+  inspectable without automatically committing or publishing user edits.
+
+- Add explicit project-skill preview/install/check commands and an offline,
+  registry-derived bundle of eleven complete reviewed Matt Pocock skills.
+  Preserve supporting material, dependency closure, invocation metadata,
+  licenses, conflicting files, and repairable initial installation. Keep
+  consumer release proof separate from maintainer candidates and runtime
+  qualification; automatic setup and consumer migration remain future work.
+
+*Why — repeatable project inventory:* fresh workspaces need the reviewed skill
+  material without relying on a developer's global install or a second upstream
+  download. Explicit activation and integrity checks make this possible while
+  preserving existing sources and stage authority.
 - Close the shipped capability/authority feature's planning record and retain
   its retrospective, review exception and CI environment repair evidence.
 

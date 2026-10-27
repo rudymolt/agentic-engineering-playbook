@@ -45,6 +45,14 @@ PROJECT_LAYOUT_HEADS = frozenset({"planning", "archive", "docs", ".agents", ".pl
 MD_LINK_RE = re.compile(r"\[[^\]]*\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)")
 HTML_REF_RE = re.compile(r"""(?:href|src)=["']([^"']+)["']""")
 SKILL_FILE_RE = re.compile(r"`([A-Za-z0-9_.{}/-]+\.(?:py|md|yml|yaml|html))`")
+BUNDLED_ROOT = Path('v0.5/bundles/mattpocock-skills')
+# Verbatim upstream glossary-map examples; actual support links remain checked.
+BUNDLED_SAMPLE_LINKS = {
+    'domain-modeling/GLOSSARY-FORMAT.md': {
+        './src/ordering/GLOSSARY.md', './src/billing/GLOSSARY.md',
+        './src/fulfillment/GLOSSARY.md',
+    },
+}
 EXTERNAL_PREFIXES = ("http://", "https://", "mailto:", "javascript:", "data:", "tel:")
 
 
@@ -146,7 +154,11 @@ def check_repo(root: Path, placeholders: frozenset[str] = ALLOWED_PLACEHOLDERS,
     for path in files:
         text = path.read_text(errors="ignore")
         rel = path.relative_to(root)
+        bundled = rel.is_relative_to(BUNDLED_ROOT)
+        sample_links = BUNDLED_SAMPLE_LINKS.get(str(rel.relative_to(BUNDLED_ROOT)), set()) if bundled else set()
         for line, target in extract_references(path, text):
+            if target in sample_links:
+                continue
             checked += 1
             resolved = (path.parent / target).exists()
             if target in placeholders:
@@ -167,7 +179,10 @@ def check_repo(root: Path, placeholders: frozenset[str] = ALLOWED_PLACEHOLDERS,
         # — prose describing hypothetical trees (`docs/adr/...`, fixture
         # project layouts) is skipped, not reported. CHANGELOG.md is exempt:
         # historical entries name files as they were at the time.
-        if path.suffix == ".md" and path.name != "CHANGELOG.md":
+        # Upstream backtick paths describe optional consumer files to inspect or
+        # create, rather than Playbook-owned templates. Relative links above
+        # still check the complete supporting-file tree.
+        if path.suffix == ".md" and path.name != "CHANGELOG.md" and not bundled:
             is_skill = path.name == "SKILL.md"
             for match in SKILL_FILE_RE.finditer(text):
                 target = match.group(1)

@@ -18,6 +18,8 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import template_base  # noqa: E402
 import release_provenance  # noqa: E402
+import skill_adoption  # noqa: E402
+import upstream_bundle  # noqa: E402
 import glossary_migration  # noqa: E402
 from playbook_state import (  # noqa: E402
     insert_after_line,
@@ -1087,6 +1089,7 @@ def upgrade_project(
     project: Path,
     today: date | None = None,
     adopt_current: set[str] | None = None,
+    skill_plan: dict | None = None,
 ) -> UpgradeReport:
     project = project.resolve()
     today = today or date.today()
@@ -1118,6 +1121,13 @@ def upgrade_project(
         recorded_tag_object if isinstance(recorded_tag_object, str) else None,
         recorded_commit if isinstance(recorded_commit, str) else None,
     )
+    inventory_record = skill_adoption.read_record(original_state)
+    if inventory_record is not None and skill_plan is None:
+        bundle_record = Path(__file__).resolve().parents[1] / upstream_bundle.BUNDLE / 'integrity.json'
+        if (verified_evidence != starting_proof or not bundle_record.is_file()
+                or skill_adoption.digest(bundle_record.read_bytes()) != inventory_record['bundle_sha256']):
+            report.manual_reviews.append('Preserve the adopted inventory and release proof; preview --plan --adopt-skills and include its exact --inventory-revision in the existing Apply gate.')
+            return report
     previous_tag = re.fullmatch(r"v(\d+)\.(\d+)\.(\d+)", recorded_release or "")
     destination_tag = re.fullmatch(r"v(\d+)\.(\d+)\.(\d+)", verified_release or "")
     if previous_tag and destination_tag and (
@@ -1331,9 +1341,21 @@ def upgrade_project(
     # starting version so the same edition transition re-presents on retry.
     # Safe file changes remain visible, but the project is never stamped V0.5
     # until every required manual review is resolved.
+    adoption_changed = False
+    if skill_plan is not None and not report.manual_reviews:
+        try:
+            adopted_state, changed = skill_adoption.apply(project, migrated_state, skill_plan)
+            adoption_changed = adopted_state != migrated_state or bool(changed)
+            migrated_state = adopted_state
+            report.changed_files.extend(changed)
+        except (OSError, ValueError) as error:
+            skill_adoption.rollback_certification(project, skill_plan)
+            report.manual_reviews.append('skill inventory adoption: ' + str(error))
     target_version = CURRENT_VERSION if not report.manual_reviews else starting_version
     migrated_state = replace_top_level_scalar(migrated_state, "playbook_version", target_version)
     target_proof = (verified_evidence or (None, None, None)) if not report.manual_reviews else (None, None, None)
+    if skill_plan is not None and report.manual_reviews:
+        target_proof = starting_proof
     for key, value in zip(
         ("playbook_release", "playbook_release_tag_object", "playbook_release_commit"),
         target_proof,
@@ -1357,7 +1379,7 @@ def upgrade_project(
     )
     if target_proof != starting_proof:
         migrated_state = replace_top_level_scalar(migrated_state, "prereqs_required", "true")
-    if (not report.manual_reviews or identity_only) and (
+    if (not report.manual_reviews or (identity_only and skill_plan is None)) and (
         certification_changed or needs_upgrade_date_repair
     ):
         if re.search(r"(?m)^last_upgraded:", migrated_state):
@@ -1371,6 +1393,11 @@ def upgrade_project(
             if not found:
                 raise RuntimeError("cannot place required last_upgraded stamp in customized state")
     write_if_changed(state_path, migrated_state, report)
+    if adoption_changed and not report.manual_reviews:
+        completed = subprocess.run([sys.executable, str(Path(__file__).with_name('compute-status.py')), str(project)],
+                                   capture_output=True, text=True)
+        if completed.returncode:
+            raise RuntimeError('status recompute failed after inventory adoption: ' + completed.stdout + completed.stderr)
     return report
 
 
@@ -1378,6 +1405,10 @@ def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("project", type=Path)
     parser.add_argument("--apply-safe", action="store_true", help="apply deterministic V0.5 changes or a V0.4 transition")
+    parser.add_argument('--plan', action='store_true', help='read-only upgrade and inventory adoption plan; retain tier-3 owner review')
+    parser.add_argument('--adopt-skills', action='store_true', help='include portable inventory adoption in the existing preview/Apply gate')
+    parser.add_argument('--conductor-setup', action='store_true', help='compose shared setup in the same --adopt-skills preview/Apply gate; requires Python 3.11+')
+    parser.add_argument('--inventory-revision', help='exact inventory_revision shown in that preview')
     parser.add_argument("--plan-glossary", action="store_true", help="preview the domain glossary rename without writing")
     parser.add_argument(
         "--adopt-current",
@@ -1388,6 +1419,31 @@ def main(argv: list[str] | None = None) -> int:
         "base to the current render (use after resolving a reported merge conflict by hand)",
     )
     args = parser.parse_args(argv)
+    if args.plan and args.apply_safe:
+        parser.error('--plan and --apply-safe are separate sides of the existing preview/Apply gate')
+    skill_plan = None
+    try:
+        if args.conductor_setup and not args.adopt_skills:
+            raise ValueError('--conductor-setup requires --adopt-skills in the existing preview/Apply gate')
+        if args.adopt_skills:
+            source = Path(__file__).resolve().parents[2]
+            skill_plan = skill_adoption.prepare(args.project, source, release_provenance.verified_release_evidence(source),
+                                                for_apply=args.apply_safe, conductor_setup=args.conductor_setup)
+            if args.apply_safe:
+                skill_adoption.require_revision(skill_plan, args.inventory_revision)
+        elif args.inventory_revision:
+            raise ValueError('--inventory-revision requires --adopt-skills in the same preview/Apply')
+    except (OSError, ValueError) as error:
+        print('inventory adoption blocked: ' + str(error), file=sys.stderr)
+        return 2
+    if args.plan:
+        print('Upgrade plan: preserve project content, settings, bindings and setup; merge managed templates through the existing tiers.')
+        print('Required migration review or preservation conflicts withhold certification and inventory adoption. Review tier-3 diffs before Apply.')
+        if skill_plan is not None:
+            skill_adoption.print_plan(skill_plan)
+        else:
+            print('Skill inventory: no new adoption selected; local policy remains discovery. Use --adopt-skills to include its preview.')
+        return 0
     if args.plan_glossary:
         try:
             planned = glossary_migration.migrate(
@@ -1405,8 +1461,13 @@ def main(argv: list[str] | None = None) -> int:
         parser.error("no changes made; pass --apply-safe after the user approves tiers 1 and 2")
 
     try:
-        report = upgrade_project(args.project, adopt_current=set(args.adopt_current))
-    except (FileNotFoundError, ValueError, RuntimeError) as error:
+        report = upgrade_project(args.project, adopt_current=set(args.adopt_current), skill_plan=skill_plan)
+    except (OSError, ValueError, RuntimeError) as error:
+        if skill_plan is not None:
+            try:
+                skill_adoption.rollback_certification(args.project, skill_plan)
+            except (OSError, ValueError) as repair:
+                print('Incomplete inventory recovery: ' + str(repair), file=sys.stderr)
         print(f"upgrade failed: {error}", file=sys.stderr)
         print("No certification completed; safe file changes may remain, so inspect the diff before retrying.", file=sys.stderr)
         return 1

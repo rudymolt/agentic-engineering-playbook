@@ -23,7 +23,20 @@ Read [`MIGRATIONS.md`](MIGRATIONS.md) completely for every upgrade. This public 
 
 1. Read `playbook_version` (edition), `playbook_release` (installed release, if recorded), the checkout path, and `template_provenance` from the project's `.playbook-state.yml`. Inspect the destination pinned public checkout and working-tree status. Verify its exact public release tag with `release_provenance.py`; if proof is unavailable, plan `playbook_release: null` and describe the release as unknown without treating V0.5.0 as stale. Completion criterion: source and target are exact where provable and project files are preserved.
 2. Run `upgrade-project.py PROJECT --plan-glossary` and review the domain migration in `MIGRATIONS.md`; include glossary content, bases, provenance, maps and active references. Then build the read-only plan: classify each new or changed file by tier, identify old checkout path references, and show any manual review. Include the safe additive `.gitignore` entries `.playbook-routing/` and anchored `/.playbook-config-*`, showing only missing rules as additions. Preserve existing user entries; `.playbook-config.json` remains trackable and retained Apply evidence stays on disk. Completion criterion: the user has seen the full plan before writes.
+   Run `upgrade-project.py PROJECT --plan --adopt-skills` when portable inventory
+   adoption or an adopted release-proof change is selected. Include its exact
+   source, inventory, discovery policy, preservation/recovery implications and
+   `inventory_revision` in the same tiered plan. See
+   [the adoption reference](../../scripts/skill-provisioning.md#adopt-through-bootstrap-or-upgrade).
+   Unselected consumers stay unadopted; local/newer source choices remain separate.
 3. For accepted tier 1/2 work, run `python3 {playbook-path}/v0.5/scripts/upgrade-project.py {project-path} --apply-safe` from the pinned public checkout. Any `manual review:` is tier 3, not success. The V0.4 transition retargets managed instructions, state, and cadences to the public checkout; certification refuses old checkout references in those surfaces. Completion criterion: all safe changes are listed and any unresolved review retains the old version stamp.
+   Selected inventory Apply also passes `--adopt-skills --inventory-revision REV`
+   from that plan. This is the same approval gate. Required reviews/conflicts
+   preserve prior certification and prevent adoption; failed computation restores
+   the previous certification/launcher while leaving safe edits for inspection.
+   After success, keep the portable state/launcher in the ordinary reviewed
+   project commit. The helper changes no job binding, model or setup command and
+   activates no local bundled duplicate.
 4. Resolve each tier-3 item with a minimal reviewed edit, then rerun. Use `--adopt-current FILE` only after the project owner has accepted the merged current content. Completion criterion: no unresolved review and no old checkout path in current managed entry files.
 5. Require `playbook_version: V0.5.0`, a separately verified `playbook_release` with matching `playbook_release_tag_object` and `playbook_release_commit` (or all three `null`), `prereqs_required: true` after a cross-edition or verified patch-release transition, and a no-change second run. Run `compute-status.py PROJECT --check` and stage 00's cold path. Completion criterion: project content remains, recorded provenance matches installed files, and status labels edition and release separately.
 

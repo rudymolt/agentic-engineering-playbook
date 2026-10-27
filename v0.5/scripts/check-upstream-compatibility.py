@@ -55,6 +55,8 @@ def load_manifest(path: Path) -> dict[str, object]:
         raise ManifestError(f"missing integration manifest: {path}") from error
     except json.JSONDecodeError as error:
         raise ManifestError(f"invalid integration manifest JSON: {error}") from error
+    if not isinstance(payload, dict):
+        raise ManifestError("integration manifest must be an object")
     if payload.get("schema_version") != 1:
         raise ManifestError("schema_version must be 1")
     integrations = payload.get("integrations")

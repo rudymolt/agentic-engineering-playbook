@@ -15,6 +15,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import template_base  # noqa: E402
 import release_provenance  # noqa: E402
+import skill_adoption  # noqa: E402
 from playbook_state import parse_scalar, validate_cadences, validate_state  # noqa: E402
 
 ROOT_TEMPLATE_FILES = {
@@ -149,6 +150,8 @@ def install_tree(
     report: BootstrapReport,
 ) -> None:
     for source_file in sorted(path for path in source.rglob("*") if path.is_file()):
+        if "__pycache__" in source_file.relative_to(source).parts or source_file.suffix == ".pyc":
+            continue
         install_file(
             source_file,
             target / source_file.relative_to(source),
@@ -169,9 +172,19 @@ def install_delivery_skill(
     if not lifecycle.is_file():
         raise FileNotFoundError(f"V0.5 delivery lifecycle not found: {lifecycle}")
     lock = project / DELIVERY_SKILL / "manifest-lock.yml"
-    existed = lock.exists()
+    existed = lock.exists() or lock.is_symlink()
+    pending_path = project / DELIVERY_SKILL / "install-state.json"
+    pending = pending_path.exists() or pending_path.is_symlink()
+    pending_review = (
+        f"{DELIVERY_SKILL}/install-state.json: incomplete delivery operation; preserve its evidence "
+        "and inspect the existing lifecycle install/upgrade repair before retrying bootstrap"
+    )
+    if pending and not existed:
+        report.manual_reviews.append(pending_review)
+        return
+    action = "verify" if existed else "install"
     completed = subprocess.run(
-        [sys.executable, str(lifecycle), "install", "--project", str(project)],
+        [sys.executable, str(lifecycle), action, "--project", str(project)],
         check=False,
         capture_output=True,
         text=True,
@@ -179,8 +192,12 @@ def install_delivery_skill(
     if completed.returncode:
         detail = completed.stdout.strip() or completed.stderr.strip()
         report.manual_reviews.append(
-            f"{DELIVERY_SKILL}: manifest-owned delivery install blocked: {detail}"
+            f"{DELIVERY_SKILL}: manifest-owned delivery {action} blocked: {detail}"
         )
+        return
+    if pending:
+        # File integrity does not establish completion of an interrupted operation.
+        report.manual_reviews.append(pending_review)
         return
     if not existed:
         report.changed_files.append(str(lock))
@@ -259,12 +276,15 @@ def bootstrap_project(
     ui: str,
     ci: str,
     today: date | None = None,
+    skill_plan: dict | None = None,
 ) -> BootstrapReport:
     today = today or date.today()
     if not project_name or re.search(r"[\x00-\x1f\x7f]", project_name):
         raise ValueError("project_name must be a non-empty single line without control characters")
     project = project.resolve()
     playbook_root = playbook_root.resolve()
+    if project == playbook_root:
+        raise ValueError('maintainer checkout cannot receive consumer state; use an isolated project')
     templates = playbook_root / "v0.5" / "templates"
     if ui not in {"no", "defaults"}:
         raise ValueError("ui must be 'no' or 'defaults'")
@@ -360,6 +380,14 @@ def bootstrap_project(
     record_base_snapshots(project, playbook_root, project_name, version, report)
 
     state = state_path.read_text()
+    if skill_plan is not None:
+        problems = validate_state(state)
+        if (project / 'playbook-cadences.yml').is_file():
+            problems += validate_cadences((project / 'playbook-cadences.yml').read_text())
+        report.manual_reviews.extend(f'schema: {p.render()}' for p in problems if not p.advisory)
+        if not report.manual_reviews:
+            state, changed = skill_adoption.apply(project, state, skill_plan)
+            report.changed_files.extend(changed)
     if state_version(state) == "null":
         state = replace_nested_state_scalar(state, "no_ui", "true" if ui == "no" else "false")
         # Baseline the recurring time cadences at the bootstrap date so they can
@@ -387,6 +415,9 @@ def bootstrap_project(
                 else:
                     raise ValueError(f"cannot place {key} in customized state")
             state = replace_state_scalar(state, "last_upgraded", today.isoformat())
+        record_write(state_path, state.encode(), report)
+
+    if skill_plan is not None:
         record_write(state_path, state.encode(), report)
 
     if report.changed_files:
@@ -460,6 +491,9 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--ui", required=True, choices=("no", "defaults"))
     parser.add_argument("--ci", required=True, choices=("copy", "existing"))
     parser.add_argument("--apply", action="store_true")
+    parser.add_argument('--adopt-skills', action='store_true', help='preview portable inventory adoption in the existing Apply gate; no local activation')
+    parser.add_argument('--conductor-setup', action='store_true', help='compose shared setup in the same --adopt-skills preview/Apply gate; requires Python 3.11+')
+    parser.add_argument('--inventory-revision', help='exact inventory_revision shown in that preview')
     parser.add_argument("--preferences-dir", type=Path)
     parser.add_argument("--preset", help="Named personal seed; omission uses saved personal defaults.")
     parser.add_argument("--seed-revision", help="Exact seed_revision from the read-only bootstrap plan; required for seeded Apply.")
@@ -480,6 +514,21 @@ def main(argv: list[str] | None = None) -> int:
         return strict_json(result.stdout)
 
     clock = (lambda: args.now) if args.now else None
+    skill_plan = None
+    try:
+        if args.conductor_setup and not args.adopt_skills:
+            raise ValueError('--conductor-setup requires --adopt-skills in the existing preview/Apply gate')
+        if args.adopt_skills:
+            skill_plan = skill_adoption.prepare(args.project, args.playbook_path,
+                                                release_provenance.verified_release_evidence(args.playbook_path),
+                                                for_apply=args.apply, conductor_setup=args.conductor_setup)
+            if args.apply:
+                skill_adoption.require_revision(skill_plan, args.inventory_revision)
+        elif args.inventory_revision:
+            raise ValueError('--inventory-revision requires --adopt-skills in the same preview/Apply')
+    except (OSError, ValueError) as error:
+        print('inventory adoption blocked: ' + public_error_message(error), file=sys.stderr)
+        return 2
     seed = None
     try:
         if args.preset and args.preferences_dir is None:
@@ -494,6 +543,8 @@ def main(argv: list[str] | None = None) -> int:
     if not args.apply:
         try:
             print_plan(args.project, args.playbook_path, ui=args.ui, ci=args.ci)
+            if skill_plan is not None:
+                skill_adoption.print_plan(skill_plan)
             if seed is not None:
                 print("Configuration seed (create .playbook-config.json; no personal write):")
                 print(json.dumps(seed, sort_keys=True, indent=2))
@@ -508,6 +559,7 @@ def main(argv: list[str] | None = None) -> int:
             project_name=args.project_name,
             ui=args.ui,
             ci=args.ci,
+            skill_plan=skill_plan,
         )
         if seed is not None:
             if report.manual_reviews:
@@ -516,6 +568,11 @@ def main(argv: list[str] | None = None) -> int:
                        report.project_identity)
             report.changed_files.append(str(args.project / ".playbook-config.json"))
     except (OSError, ValueError, RuntimeError) as error:
+        if skill_plan is not None:
+            try:
+                skill_adoption.rollback_certification(args.project, skill_plan)
+            except (OSError, ValueError) as repair:
+                print('Incomplete inventory recovery: ' + public_error_message(repair), file=sys.stderr)
         print("bootstrap failed: " + public_error_message(error), file=sys.stderr)
         if seed is not None:
             print("Requested seeded setup is incomplete; bootstrap files may already be initialized. Inspect the diff and retained recovery evidence before retrying.", file=sys.stderr)

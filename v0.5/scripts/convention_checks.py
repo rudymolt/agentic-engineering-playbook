@@ -364,7 +364,8 @@ def upstream_contract_problems(
     problems: list[str] = []
     old_names = sorted(registry.previous_name_map()) + sorted(registry.removed_names())
     for md_file in sorted(root.rglob("*.md")):
-        if md_file == changelog or "analysis" in md_file.relative_to(root).parts:
+        if (md_file == changelog or "analysis" in md_file.relative_to(root).parts
+                or md_file.is_relative_to(root / "bundles" / "mattpocock-skills")):
             continue
         for line in md_file.read_text().splitlines():
             for old_name in old_names:

@@ -1,8 +1,28 @@
 # Planning status
 
-active_features: 5
+active_features: 6
 
 ## Active features
+
+[Cloud skill provisioning](cloud-skill-provisioning/slices.md) — alignment,
+specification, both test seams, and seven implementation slices approved on
+2026-10-24. All seven child tickets are published with verified dependencies;
+S1–S6 are complete and independently verified at the approved fixture seam,
+including returned fixes, fresh CLI QA, cross-slice review and canonical full
+verification. The human selected option B on 2026-10-25 to isolate A8 content
+conflicts per skill; that returned fix passed fresh independent review and
+canonical full verification. The Python 3.9 setup fix passed fresh review and
+full verification and was pushed. [S7 live results](cloud-skill-provisioning/runtime-qualification.md)
+record targeted fresh/recreated Cloud success for both runtimes through an
+explicit Cloud repository Setup setting, including tracked customization
+restoration. The approved durable Cloud repository Setup setting is now
+enabled; all Cloud test workspaces are archived. The bounded local round records exact/newer/customized
+invocations, absent-project refusal, personal-name precedence and changed-selection
+refusal in both runtimes, with personal state and the Cloud pin preserved.
+S7 is qualified for these selected maintainer paths. Consumer release recovery
+remains deferred by agreement until a release contains the bundle; branch-TOML-only
+activation and automatic project precedence remain unqualified. The live report
+retains those limits; final-candidate review and verification remain required.
 
 [Edition and installed release](edition-release-identity/slices.md) — aligned
 and specified; implementation in progress on a separate branch.
