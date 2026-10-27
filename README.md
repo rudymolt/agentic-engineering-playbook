@@ -13,7 +13,7 @@
 
 Turn an idea into a clear specification, build it in manageable pieces, verify the result, and carry lessons into the next feature. You bring the goals and judgement. The playbook gives your agent a repeatable way to work.
 
-**Current release:** V0.5.2 · [Release notes](v0.5/CHANGELOG.md#v052--2026-10-13)
+**Current release:** V0.5.3 · [Release notes](v0.5/CHANGELOG.md#v053--2026-10-27)
 
 **Humans:** [Get started](#get-started) · **Agents:** [Read the agent digest](v0.5/AGENT-DIGEST.md)
 
@@ -33,15 +33,16 @@ Use it when you are building a new product or working on an existing codebase an
 
 The human owns goals, acceptance criteria, and consequential decisions. The agent plans, implements, checks, and records the work within the agreed scope.
 
-## What's new in V0.5.2
+## What's new in V0.5.3
 
-This release makes the Playbook's own verification faster and its failure reports more useful for maintainers.
+This release makes a reviewed project skill inventory portable across workspaces.
 
-- **Faster checks while improving the Playbook.** Checkpoint test files ran about 5% faster, and guidance checks ran 30% faster in the accepted measurements. The tests still exercise the same scenarios. Four original speed targets remain unmet, so the maintainer has stopped further performance experiments for this release. [See the measurements](bench/test-runtime/CHECKPOINT-PERFORMANCE.md).
-- **More useful failure reports.** Failed runs retain supported error details and source locations without changing how the tests run. Reports keep private or unsupported details out.
-- **Fewer repeated privacy confirmations for maintainer merges.** A recorded confirmation of the GitHub email privacy setting can be reused for the same repository and account. After each merge, every new commit is still checked for `noreply` author and committer addresses.
+- **Repeatable project skills.** Eleven complete reviewed skills ship with the playbook, including references, dependencies and notices. Explicit adoption keeps the Cloud inventory pinned; local setup discovers existing sources without replacing them.
+- **Preserved project changes.** Retained customizations survive recreation. Exact-release recovery restores a missing playbook checkout without selecting a newer release, while conflicts produce repair instructions.
+- **Measured runtime scope.** Fresh and recreated Claude Code and Codex maintainer checks passed through the explicit Conductor Cloud Setup setting. Local source-selection checks passed on the documented routes. Consumer release qualification remains pending; [read the evidence and limits](docs/cloud-skill-provisioning/runtime-qualification.md).
+- **Clearer release and recovery decisions.** Projects record edition and verified installed release separately. Deployment guidance discovers access early, reuses existing authority, and requires isolated restoration evidence when persistent data is at risk.
 
-See the [V0.5.2 changelog](v0.5/CHANGELOG.md#v052--2026-10-13) for all changes since V0.5.1, including earlier verifier improvements. Existing projects should review the changes and upgrade from a pinned release while preserving local customizations.
+See the [V0.5.3 changelog](v0.5/CHANGELOG.md#v053--2026-10-27) for all changes since V0.5.2. Existing projects upgrade deliberately from a pinned release while preserving customizations; publishing this release does not migrate them automatically.
 
 ## How it works
 
@@ -151,7 +152,7 @@ You need a coding-agent environment, such as Codex or Claude Code, that can read
 Clone this repository into a separate directory using the repository URL from GitHub's **Code** button:
 
 ```sh
-git clone --branch v0.5.2 --depth 1 REPOSITORY_URL playbook
+git clone --branch v0.5.3 --depth 1 REPOSITORY_URL playbook
 ```
 
 Replace `REPOSITORY_URL` with the copied URL. Keep this checkout at the release tag so development changes cannot silently change the instructions your project uses.
