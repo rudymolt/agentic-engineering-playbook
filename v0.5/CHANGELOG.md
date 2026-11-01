@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+- Bundle all twenty current registry Matt skills at the existing v1.3.1 pin,
+  including complete supporting files, source-observed dependencies and unchanged
+  invocation controls. Preserve `pr`'s nested credits and attribution file through
+  strict metadata validation. Repair wholly absent managed directories on explicit
+  install while preserving other skills and the previous recovery target.
+
+*Why — replay the complete selected inventory:* the eleven-skill bundle omitted
+  registered workflows and rejected `pr`'s attribution metadata. A missing managed
+  directory was also treated as an unknown edit. Disposable-consumer checks cover
+  installation, repair and retained changes; runtime discovery and Cloud lifecycle
+  qualification remain separate evidence.
+
 - Record V0.5.3 published-release consumer CLI qualification: exact adoption and
   acquisition, offline cache replay, proof refusal and retained-customization
   recreation. Close the release follow-up while distinguishing locally simulated

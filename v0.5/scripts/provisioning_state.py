@@ -152,6 +152,7 @@ def completes(current, after):
 def apply(project, state, action, after, *, withheld=()):
     """Journal before activation; only replace bytes matching observed history."""
     tx = state['transaction']
+    same_inventory = present(state['current']) == present(after)
     if tx is not None:
         if action == 'install' and (tx['action'] != action or tx['after'] != after):
             raise StateError('interrupted replacement: retry the identical install or select recover first')
@@ -172,6 +173,12 @@ def apply(project, state, action, after, *, withheld=()):
     for name in names:
         current = actual(project, name)
         allowed = [content(before if tx else state['current'], name), content(after, name)]
+        # An explicit install may recreate a wholly absent managed directory.
+        # Existing partial/edited trees and pending transactions keep their
+        # stronger evidence requirements; retained bytes are validated by caller.
+        if (tx is None and action == 'install' and content(state['current'], name) is not None
+                and content(after, name) is not None):
+            allowed.append(None)
         if tx:
             allowed.append(content(tx['after'], name))
         # A directory temporarily renamed away is recoverable only with its backup.
@@ -183,7 +190,7 @@ def apply(project, state, action, after, *, withheld=()):
                 allowed.append(None)
         if current not in allowed:
             raise StateError(f'{name}: later or unknown edits; commit and retain them, or move them outside the skill directory before retrying {action}')
-    if tx is None and present(state['current']) == present(after):
+    if tx is None and same_inventory and present(before) == present(after):
         return []
     if not tx:
         state['transaction'] = {'action': action, 'before': before, 'after': after}
@@ -240,11 +247,13 @@ def apply(project, state, action, after, *, withheld=()):
     # Completing a partial install only adds skills withheld from that same
     # installation, so its recovery target stays the pre-install inventory.
     if action != 'install':
-        # Rolling back an interrupted completion returns to that partial
+        # Rolling back interrupted completion/repair returns to that partial
         # installation, whose recovery target is still the earlier inventory.
-        if not (tx and tx['action'] == 'install' and completes(state['current'], tx['after'])):
+        if not (tx and tx['action'] == 'install'
+                and (present(state['current']) == present(tx['after'])
+                     or completes(state['current'], tx['after']))):
             state['previous'] = present(after)
-    elif not completes(state['current'], after):
+    elif not same_inventory and not completes(state['current'], after):
         state['previous'] = present(before)
     state['current'] = present(after)
     state['transaction'] = None

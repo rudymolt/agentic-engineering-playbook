@@ -1,8 +1,14 @@
 # Planning status
 
-active_features: 5
+active_features: 6
 
 ## Active features
+
+[Complete Matt bundle](complete-matt-bundle/slices.md) — approved S2 scope;
+implementation, independent disposable-consumer review and full verification
+coverage complete; stopped at S2. The privileged monitor rerun and platform
+coverage are recorded at the checkpoint. Release and actual Cloud qualification
+remain pending.
 
 [Edition and installed release](edition-release-identity/slices.md) — aligned
 and specified; implementation in progress on a separate branch.

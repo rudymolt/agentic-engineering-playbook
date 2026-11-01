@@ -85,7 +85,7 @@ class SkillAdoptionTest(unittest.TestCase):
 
         self.assertEqual(plan['source'], {'release': 'v0.5.999', 'tag_object': self.tag,
                                           'commit': self.commit})
-        self.assertEqual(len(plan['inventory']), 11)
+        self.assertEqual(len(plan['inventory']), 20)
         self.assertIn('writing-for-agents', plan['inventory'])
         self.assertEqual(plan['local_policy'], 'discover')
         self.bootstrap('--adopt-skills', '--inventory-revision', plan['inventory_revision'], '--apply')

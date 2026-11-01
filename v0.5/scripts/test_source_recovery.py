@@ -275,7 +275,8 @@ class SourceRecoveryTest(unittest.TestCase):
                                source=self.root / 'missing', code=2)
         self.assertEqual(partial['source_resolution']['mode'], 'acquired')
         self.assertFalse(partial['complete'])
-        self.assertEqual(len(partial['changed']), 10)
+        self.assertEqual(set(partial['changed']),
+                         {s['name'] for s in partial['skills']} - {'tdd'})
         row = next(s for s in partial['skills'] if s['name'] == 'tdd')
         self.assertEqual(row['installation'], 'conflict')
         self.assertIn('retain --skill tdd', ' '.join(row['repair_choices']))

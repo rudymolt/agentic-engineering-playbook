@@ -15,6 +15,8 @@ NAMES = {
     'grill-with-docs', 'grilling', 'domain-modeling', 'to-spec', 'to-tickets',
     'tdd', 'codebase-design', 'diagnosing-bugs', 'code-review',
     'setup-matt-pocock-skills', 'writing-for-agents',
+    'implement', 'triage', 'improve-codebase-architecture', 'prototype',
+    'research', 'wayfinder', 'grill-me', 'handoff', 'pr',
 }
 
 
@@ -967,12 +969,19 @@ with patch('os.rename', interrupt):
         self.assertIn('MIT License', (root / 'tdd/LICENSE').read_text())
         self.assertIn('Copyright (c) 2026 Matt Pocock', (root / 'tdd/LICENSE').read_text())
         for name in NAMES:
-            self.assertTrue((root / name / 'agents/openai.yaml').is_file())
+            source = self.source / 'v0.5/bundles/mattpocock-skills' / name
+            expected = {str(p.relative_to(source)): p.read_bytes()
+                        for p in source.rglob('*') if p.is_file()}
+            expected['LICENSE'] = (source.parent / 'LICENSE').read_bytes()
+            self.assertEqual({str(p.relative_to(root / name)): p.read_bytes()
+                              for p in (root / name).rglob('*') if p.is_file()}, expected)
         for relative in ('tdd/tests.md', 'tdd/mocking.md', 'domain-modeling/ADR-FORMAT.md',
                          'codebase-design/DEEPENING.md', 'writing-for-agents/SKILL-MECHANICS.md',
                          'setup-matt-pocock-skills/issue-tracker-gitlab.md'):
             self.assertTrue((root / relative).is_file(), relative)
-        for name in ('grill-with-docs', 'to-spec', 'to-tickets', 'setup-matt-pocock-skills'):
+        for name in ('grill-with-docs', 'to-spec', 'to-tickets', 'setup-matt-pocock-skills',
+                     'implement', 'triage', 'improve-codebase-architecture', 'wayfinder',
+                     'grill-me', 'handoff'):
             self.assertIn('disable-model-invocation: true', (root / name / 'SKILL.md').read_text())
             self.assertIn('allow_implicit_invocation: false',
                           (root / name / 'agents/openai.yaml').read_text())
@@ -990,6 +999,65 @@ with patch('os.rename', interrupt):
         self.assertEqual(self.command('install')['changed'], [])
         self.assertEqual(snapshot(self.project), before)
         self.assertEqual(snapshot(self.home), {})
+
+    def test_missing_managed_skill_is_repaired_without_rewriting_other_skills(self):
+        self.command('install')
+        root = self.project / '.agents/skills'
+        original_tdd = (root / 'tdd/tests.md').read_bytes()
+        self.change_bundle()
+        self.command('install')
+        missing = root / 'wayfinder'
+        expected = {p: data for p, (data, _) in snapshot(missing).items()}
+        shutil.rmtree(missing)
+        remaining = snapshot(root)
+        check = self.command('check', code=2)
+        self.assertFalse(check['complete'])
+        self.assertEqual(next(s for s in check['skills'] if s['name'] == 'wayfinder')['installation'],
+                         'missing')
+        repaired = self.command('install')
+        self.assertTrue(repaired['complete'])
+        self.assertEqual(repaired['changed'], ['wayfinder'])
+        self.assertEqual({p: data for p, (data, _) in snapshot(missing).items()}, expected)
+        self.assertEqual({p: v for p, v in snapshot(root).items()
+                          if not p.startswith('wayfinder/')}, remaining)
+        self.assertTrue(self.command('check')['complete'])
+        self.assertEqual(self.command('install')['changed'], [])
+        # Repairing the same inventory keeps the preceding upgrade's rollback.
+        self.assertTrue(self.command('recover')['recovery_complete'])
+        self.assertEqual((root / 'tdd/tests.md').read_bytes(), original_tdd)
+
+    def test_interrupted_missing_skill_repair_keeps_the_pre_upgrade_recovery_target(self):
+        self.command('install')
+        root = self.project / '.agents/skills'
+        original_tdd = (root / 'tdd/tests.md').read_bytes()
+        self.change_bundle()
+        self.command('install')
+        shutil.rmtree(root / 'wayfinder')
+        driver = self.root / 'interrupt-repair.py'
+        driver.write_text("""import os, runpy, signal, sys
+from unittest.mock import patch
+sys.path.insert(0, sys.argv[1])
+cli = sys.argv[2]
+sys.argv = [cli, *sys.argv[3:]]
+rename = os.rename
+def interrupt(*args, **kwargs):
+    rename(*args, **kwargs)
+    os.kill(os.getpid(), signal.SIGTERM)
+with patch('os.rename', interrupt):
+    runpy.run_path(cli, run_name='__main__')
+""")
+        result = subprocess.run([sys.executable, str(driver), str(SCRIPTS), str(CLI),
+                                 '--source', str(self.source), '--project', str(self.project),
+                                 '--release', 'v0.5.999', '--tag-object', self.tag,
+                                 '--commit', self.commit, 'install'],
+                                env=self.env, capture_output=True, text=True)
+        self.assertEqual(result.returncode, -15, result.stderr)
+        self.assertTrue(self.command('check', code=2)['transaction_pending'])
+        self.assertTrue(self.command('recover')['recovery_complete'])
+        self.assertFalse((root / 'wayfinder').exists())
+        self.assertTrue(self.command('install')['complete'])
+        self.assertTrue(self.command('recover')['recovery_complete'])
+        self.assertEqual((root / 'tdd/tests.md').read_bytes(), original_tdd)
 
     def test_fresh_conflict_is_withheld_while_complete_skills_install_and_later_finish(self):
         for repair in ('retain', 'move'):
@@ -1195,12 +1263,12 @@ with patch('os.rename', interrupt):
         check = self.command('check', code=2)
         self.assertFalse(check['complete'])
         self.assertEqual(sum(s['installation'] == 'installed' for s in check['skills']), 1)
-        self.assertEqual(sum(s['installation'] == 'missing' for s in check['skills']), 10)
+        self.assertEqual(sum(s['installation'] == 'missing' for s in check['skills']), len(NAMES) - 1)
         self.assertIn('install', check['repair'])
         before = snapshot(self.project / '.agents/skills/code-review')
         restored = self.command('install')
         self.assertTrue(restored['complete'])
-        self.assertEqual(len(restored['changed']), 10)
+        self.assertEqual(len(restored['changed']), len(NAMES) - 1)
         self.assertEqual(snapshot(self.project / '.agents/skills/code-review'), before)
         self.assertEqual(self.command('install')['changed'], [])
         self.assertEqual(snapshot(self.home), {})
@@ -1255,6 +1323,19 @@ with patch('os.rename', interrupt):
         for relative, change in (
             ('to-spec/agents/openai.yaml', lambda s: s + 'policy: {}\n'),
             ('to-spec/SKILL.md', lambda s: s.replace('name: to-spec', 'name: "to-spec')),
+            ('pr/SKILL.md', lambda s: s.replace('metadata:\n  credits:',
+                                               'metadata:\nargument-hint: example\n  credits:')),
+            ('pr/SKILL.md', lambda s: s.replace('  credits:', '  credits:\n  credits:')),
+            ('pr/SKILL.md', lambda s: s.replace('    skill: show-me',
+                                               '    skill: show-me\n    skill: other')),
+            ('pr/SKILL.md', lambda s: s.replace('    skill: show-me', '    skill: *alias')),
+            ('pr/SKILL.md', lambda s: s.replace('  credits:', '  credits: &credits')),
+            ('pr/SKILL.md', lambda s: s.replace('    skill: show-me', '    skill: !tag value')),
+            ('pr/SKILL.md', lambda s: s.replace('    skill: show-me', '    skill: [show-me]')),
+            ('pr/SKILL.md', lambda s: s.replace('    skill: show-me', '    skill: ""')),
+            ('pr/SKILL.md', lambda s: s.replace('    skill: show-me\n', '')),
+            ('pr/SKILL.md', lambda s: s.replace('    skill: show-me',
+                                               '    disable-model-invocation: true')),
         ):
             path = root / relative
             original = path.read_bytes()
@@ -1267,6 +1348,34 @@ with patch('os.rename', interrupt):
                     manifest_path.write_text(json.dumps(manifest))
                     blocked = self.command('install', candidate=True, code=2)
                     self.assertIn('metadata', blocked['error'])
+                    self.assertEqual(snapshot(self.project), {})
+                finally:
+                    path.write_bytes(original)
+                    manifest_path.write_bytes(original_manifest)
+
+    def test_attribution_requires_nonempty_yaml_strings_before_activation(self):
+        import hashlib
+        root = self.source / 'v0.5/bundles/mattpocock-skills'
+        path = root / 'pr/SKILL.md'
+        manifest_path = root / 'integrity.json'
+        original = path.read_bytes()
+        original_manifest = manifest_path.read_bytes()
+        for value in (
+            '- show-me', "'show-me' 'extra'", "'broken'quote'", '# comment only',
+            'null', 'Null', '~', 'true', 'FALSE', 'yes', 'ON', '42', '1.5',
+            '2026-11-01', '? show-me', '`show-me`', 'show-me:',
+            '"   "', "'   '", '"\\u0000"',
+        ):
+            with self.subTest(value=value):
+                try:
+                    data = original.replace(b'skill: show-me', f'skill: {value}'.encode())
+                    path.write_bytes(data)
+                    manifest = json.loads(original_manifest)
+                    manifest['files']['pr/SKILL.md'] = {
+                        'sha256': hashlib.sha256(data).hexdigest(), 'size': len(data)}
+                    manifest_path.write_text(json.dumps(manifest))
+                    blocked = self.command('install', candidate=True, code=2)
+                    self.assertIn('attribution', blocked['error'])
                     self.assertEqual(snapshot(self.project), {})
                 finally:
                     path.write_bytes(original)
@@ -1299,7 +1408,7 @@ with patch('os.rename', fail):
         self.assertFalse(report['complete'])
         self.assertEqual(report['changed'], ['code-review'])
         self.assertEqual(sum(s['installation'] == 'installed' for s in report['skills']), 1)
-        self.assertEqual(sum(s['installation'] == 'missing' for s in report['skills']), 10)
+        self.assertEqual(sum(s['installation'] == 'missing' for s in report['skills']), len(NAMES) - 1)
         self.assertIn('fixture activation failure', report['error'])
         self.assertTrue(self.command('install')['complete'])
 

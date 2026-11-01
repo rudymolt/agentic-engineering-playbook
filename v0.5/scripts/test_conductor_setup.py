@@ -663,7 +663,14 @@ class ConductorSetupTest(unittest.TestCase):
         cloud_report = json.loads(cloud_run.stdout)
         self.assertEqual(cloud_report['setup'], {'host': 'cloud', 'action': 'install'})
         self.assertTrue(cloud_report['complete'])
-        self.assertEqual(len(cloud_report['skills']), 11)
+        self.assertEqual(len(cloud_report['skills']), 20)
+        for skill in cloud_report['skills']:
+            canonical = self.project / '.agents/skills' / skill['name']
+            alias = self.project / '.claude/skills' / skill['name']
+            self.assertTrue(alias.is_symlink())
+            self.assertEqual(alias.resolve(), canonical.resolve())
+        self.assertEqual((self.project / '.claude/skills/pr/CREDITS.md').read_bytes(),
+                         (bundle / 'pr/CREDITS.md').read_bytes())
         self.assertEqual(cloud_report['source']['kind'], 'verified-release')
         self.assertTrue(all(s['qualification'] == 'unverified' for s in cloud_report['skills']))
         self.assertTrue((self.project / '.agents/skills/tdd/tests.md').is_file())
