@@ -46,10 +46,18 @@ returned-fix acceptance, ordinary interruption/recovery and concurrency checks.
 
 ## Final gate
 
+PR CI exposed a stale source-recovery assertion that required byte-identical
+state despite relocation intentionally refreshing managed skill base hashes.
+The reproduced delta contained only eight such hashes. The corrected test checks
+the relocated file bytes, pristine bases and hashes, retains template/version
+identity, and requires all state outside provenance to remain byte-identical.
+The corrected hook test and the related offline-reuse test pass locally.
+
 The full `python3 v0.5/scripts/verify-playbook.py --jobs 3` run is in progress in
 an isolated Linux container with no network, UID 0 and the fanotify capability
-required by delivery-monitor tests. The preceding run was deliberately stopped
-because its snapshot predates the last two fixes; it cannot certify this candidate.
+required by delivery-monitor tests. Earlier snapshots predate either the final
+publication fixes or the corrected source-recovery assertion; their partial
+results cannot certify this candidate.
 
 Public release, consumer adoption and actual Cloud lifecycle/discovery/invocation
 remain pending. These fixture results do not establish those acceptance criteria.

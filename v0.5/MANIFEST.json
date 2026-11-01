@@ -1668,8 +1668,8 @@
     },
     {
       "path": "scripts/test_conductor_setup.py",
-      "sha256": "e0f3f51d43685eedffd460cda267e995d368d2673d4c97bb367eb0c76fedb1b3",
-      "size": 61132
+      "sha256": "213715782f95c70927b8ef08d533701680d3ab38adbe77e003a6b425fb661a09",
+      "size": 62480
     },
     {
       "path": "scripts/test_config_repair_boundaries.py",

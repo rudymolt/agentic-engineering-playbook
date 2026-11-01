@@ -667,7 +667,27 @@ class ConductorSetupTest(unittest.TestCase):
         self.assertTrue(report['complete'])
         self.assertEqual(report['source_resolution']['mode'], 'acquired')
         self.assertTrue((self.project / '.claude/skills/tdd/tests.md').is_file())
-        self.assertEqual((self.project / '.playbook-state.yml').read_bytes(), before['.playbook-state.yml'][0])
+        import template_base
+        state = (self.project / '.playbook-state.yml').read_text()
+        original = template_base.read_provenance(before['.playbook-state.yml'][0].decode())
+        refreshed = template_base.read_provenance(state)
+        self.assertNotEqual(refreshed, original)
+        # Relocation refreshes rendered skill bases, never adoption or user choices.
+        self.assertEqual(template_base.upsert_provenance(state, original),
+                         before['.playbook-state.yml'][0].decode())
+        self.assertEqual({**refreshed, 'files': original['files']}, original)
+        self.assertEqual(refreshed['files'].keys(), original['files'].keys())
+        for path, entry in refreshed['files'].items():
+            if entry == original['files'][path]:
+                continue
+            self.assertTrue(path.startswith('.agents/skills/'))
+            self.assertEqual({**entry, 'base_sha256': original['files'][path]['base_sha256']},
+                             original['files'][path])
+            relocated = before[path][0].replace(str(self.source.resolve()).encode(),
+                                                report['source_resolution']['path'].encode())
+            self.assertEqual((self.project / path).read_bytes(), relocated)
+            self.assertEqual((self.project / '.playbook-base' / path).read_bytes(), relocated)
+            self.assertEqual(entry['base_sha256'], hashlib.sha256(relocated).hexdigest())
 
     def test_adopted_setup_composes_existing_work_and_dispatches_by_actual_host(self):
         self.adopt()
