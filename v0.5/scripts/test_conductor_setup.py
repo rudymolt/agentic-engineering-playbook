@@ -77,6 +77,49 @@ class ConductorSetupTest(unittest.TestCase):
                                if line.startswith('Skill inventory adoption: ')))
         self.run_command([*bootstrap, '--inventory-revision', plan['inventory_revision'], '--apply'])
 
+    def test_explicit_gstack_adoption_replays_only_in_cloud_and_reports_incomplete_offline(self):
+        self.adopt('--adopt-gstack')
+        state = (self.project / '.playbook-state.yml').read_text()
+        self.assertIn('gstack_sha256', state)
+        before, home = snapshot(self.project), snapshot(self.home)
+        local = self.setup_report('1')
+        self.assertEqual(local['gstack']['status'], 'local-discovery-only')
+        self.assertEqual(snapshot(self.project), before)
+        self.assertEqual(snapshot(self.home), home)
+        self.adopt()  # Existing explicit gstack choice survives later inventory adoption.
+        self.assertIn('gstack_sha256', (self.project / '.playbook-state.yml').read_text())
+        cloud = self.setup_report('0', '--offline', code=2)
+        self.assertFalse(cloud['complete'])
+        self.assertFalse(cloud['gstack']['runtime']['complete'])
+        self.assertEqual(cloud['gstack']['discovery'], 'unverified')
+        self.assertIn('repair', cloud['gstack'])
+
+    def test_invalid_gstack_cache_rejects_before_any_skill_writes(self):
+        self.adopt('--adopt-gstack')
+        before = snapshot(self.project)
+        env = {**self.env, 'CONDUCTOR_IS_LOCAL': '0', 'XDG_CACHE_HOME': 'relative-cache'}
+        result = json.loads(self.run_command(self.setup_command(), env=env, code=2).stdout)
+        self.assertIn('absolute', result['error'])
+        self.assertEqual(result['changed'], [])
+        self.assertEqual(snapshot(self.project), before)
+
+    def test_late_setup_exception_keeps_the_completed_install_report(self):
+        self.adopt('--adopt-gstack')
+        # Execute the same launcher entry with a late failure at the runtime boundary.
+        # Source validation and the standard installation still use the real CLI.
+        script = self.source / 'v0.5/scripts/recover-playbook-source.py'
+        wrapper = ('import runpy,sys; sys.path.insert(0,' + repr(str(script.parent)) + '); '
+                   'm=runpy.run_path(' + repr(str(script)) + '); '
+                   'm["main"].__globals__["setup_gstack"]=lambda *a: (_ for _ in ()).throw(ValueError("late fixture failure")); '
+                   'raise SystemExit(m["main"](sys.argv[1:]))')
+        command = [sys.executable, '-B', '-c', wrapper, *self.setup_command()[3:]]
+        env = {**self.env, 'CONDUCTOR_IS_LOCAL': '0', 'XDG_CACHE_HOME': str(self.home / '.cache')}
+        result = json.loads(self.run_command(command, env=env, code=2).stdout)
+        self.assertEqual(result['error'], 'late fixture failure')
+        self.assertTrue(result['changed'])
+        self.assertEqual(len(result['skills']), 20)
+        self.assertTrue((self.project / '.agents/skills/improve-codebase-architecture/SKILL.md').is_file())
+
     @unittest.skipIf(sys.version_info < (3, 11), 'setup configuration parsing requires Python 3.11+')
     def test_explicit_setup_adoption_composes_quoted_commands_exports_and_repeats(self):
         import tomllib
@@ -624,7 +667,27 @@ class ConductorSetupTest(unittest.TestCase):
         self.assertTrue(report['complete'])
         self.assertEqual(report['source_resolution']['mode'], 'acquired')
         self.assertTrue((self.project / '.claude/skills/tdd/tests.md').is_file())
-        self.assertEqual((self.project / '.playbook-state.yml').read_bytes(), before['.playbook-state.yml'][0])
+        import template_base
+        state = (self.project / '.playbook-state.yml').read_text()
+        original = template_base.read_provenance(before['.playbook-state.yml'][0].decode())
+        refreshed = template_base.read_provenance(state)
+        self.assertNotEqual(refreshed, original)
+        # Relocation refreshes rendered skill bases, never adoption or user choices.
+        self.assertEqual(template_base.upsert_provenance(state, original),
+                         before['.playbook-state.yml'][0].decode())
+        self.assertEqual({**refreshed, 'files': original['files']}, original)
+        self.assertEqual(refreshed['files'].keys(), original['files'].keys())
+        for path, entry in refreshed['files'].items():
+            if entry == original['files'][path]:
+                continue
+            self.assertTrue(path.startswith('.agents/skills/'))
+            self.assertEqual({**entry, 'base_sha256': original['files'][path]['base_sha256']},
+                             original['files'][path])
+            relocated = before[path][0].replace(str(self.source.resolve()).encode(),
+                                                report['source_resolution']['path'].encode())
+            self.assertEqual((self.project / path).read_bytes(), relocated)
+            self.assertEqual((self.project / '.playbook-base' / path).read_bytes(), relocated)
+            self.assertEqual(entry['base_sha256'], hashlib.sha256(relocated).hexdigest())
 
     def test_adopted_setup_composes_existing_work_and_dispatches_by_actual_host(self):
         self.adopt()
@@ -663,7 +726,14 @@ class ConductorSetupTest(unittest.TestCase):
         cloud_report = json.loads(cloud_run.stdout)
         self.assertEqual(cloud_report['setup'], {'host': 'cloud', 'action': 'install'})
         self.assertTrue(cloud_report['complete'])
-        self.assertEqual(len(cloud_report['skills']), 11)
+        self.assertEqual(len(cloud_report['skills']), 20)
+        for skill in cloud_report['skills']:
+            canonical = self.project / '.agents/skills' / skill['name']
+            alias = self.project / '.claude/skills' / skill['name']
+            self.assertTrue(alias.is_symlink())
+            self.assertEqual(alias.resolve(), canonical.resolve())
+        self.assertEqual((self.project / '.claude/skills/pr/CREDITS.md').read_bytes(),
+                         (bundle / 'pr/CREDITS.md').read_bytes())
         self.assertEqual(cloud_report['source']['kind'], 'verified-release')
         self.assertTrue(all(s['qualification'] == 'unverified' for s in cloud_report['skills']))
         self.assertTrue((self.project / '.agents/skills/tdd/tests.md').is_file())
@@ -851,7 +921,11 @@ class ConductorSetupTest(unittest.TestCase):
         self.assertEqual(restored['source']['commit'], commit)
         self.assertEqual(restored['source_resolution']['mode'], 'acquired')
         self.assertFalse((Path(restored['source_resolution']['path']) / 'future.txt').exists())
-        self.assertEqual(state.read_bytes(), adopted)
+        import template_base
+        refreshed = template_base.read_provenance(state.read_text())
+        original = template_base.read_provenance(adopted.decode())
+        self.assertNotEqual(refreshed, original)
+        self.assertEqual(template_base.upsert_provenance(state.read_text(), original), adopted.decode())
         project, cached = snapshot(self.project), snapshot(cache)
         offline = self.root / 'offline-repository'
         for host, acquire in (('0', ['--acquire']), ('1', [])):

@@ -168,6 +168,43 @@ def join_repair(first, second):
     return (first if first.endswith(('.', ';')) else first + '.') + ' ' + second if first else second
 
 
+def invoke(command):
+    run = subprocess.run(command, capture_output=True, text=True)
+    try:
+        result = json.loads(run.stdout)
+        if not isinstance(result, dict):
+            raise ValueError('object required')
+    except ValueError:
+        raise SourceError('verified release provisioner failed without a JSON report; inspect that release and restore its supported interface') from None
+    return result, run.returncode
+
+
+def setup_runtime_store(args):
+    store = args.runtime_store
+    if store is None:
+        cache = os.environ.get('XDG_CACHE_HOME') or str(Path.home() / '.cache')
+        if not Path(cache).is_absolute():
+            raise SourceError('gstack setup requires absolute HOME/XDG_CACHE_HOME or --runtime-store')
+        store = Path(cache) / 'agentic-engineering-playbook/runtimes'
+    if not store.is_absolute():
+        raise SourceError('gstack setup requires an absolute --runtime-store')
+    return store
+
+
+def setup_gstack(args, setup, command):
+    if setup['host'] == 'local':
+        return {'status': 'local-discovery-only', 'complete': False,
+                'discovery': 'unverified', 'qualification': 'unverified', 'changed': []}
+    store = setup_runtime_store(args)
+    runtime_command = [*command, '--runtime-store', str(store)]
+    prepared, code = invoke([*runtime_command, *(['--offline'] if args.offline else []), 'prepare-runtime'])
+    if code or not prepared.get('runtime', {}).get('complete'):
+        return prepared
+    activated, _ = invoke([*runtime_command, 'install-gstack'])
+    activated['runtime_preparation'] = prepared
+    return activated
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--write-launcher', type=Path, help='explicit portable zipapp output; preserves existing differing files')
@@ -177,13 +214,21 @@ def main(argv=None):
     parser.add_argument('--project', type=Path)
     parser.add_argument('--source', type=Path, help='configured checkout; never rewritten')
     parser.add_argument('--cache-dir', type=Path, help='separate exact-release storage')
+    parser.add_argument('--runtime-store', type=Path, help='separate gstack runtime storage for adopted Cloud setup')
+    parser.add_argument('--offline', action='store_true', help='setup may reuse exact source/runtime caches but never acquire or build')
     parser.add_argument('--repository', default=provenance.PUBLIC_REPOSITORY, help='acquisition transport, never release authority')
     parser.add_argument('action', nargs='?', default='discover', choices=('discover', 'preview', 'install', 'check', 'recover', 'retain', 'fallback', 'setup'))
     parser.add_argument('--skill')
     parser.add_argument('--custom-bindings-dir', type=Path)
     args = parser.parse_args(argv)
+    result = {'complete': False, 'changed': []}
     try:
         setup = None
+        record = None
+        if (args.runtime_store is not None or args.offline) and args.action != 'setup':
+            raise SourceError('--runtime-store and --offline require setup')
+        if args.offline:
+            args.acquire = False
         if args.action == 'setup':
             if args.write_launcher is not None or args.skill is not None:
                 raise SourceError('setup only replays inventory or discovers sources; run launcher export, '
@@ -238,32 +283,48 @@ def main(argv=None):
             identity_args = ['--release', release, '--tag-object', tag, '--commit', commit]
             resolution = {'mode': mode, 'path': str(source), 'release': release,
                           'tag_object': tag, 'commit': commit, 'adoption_changed': False}
-        command = [sys.executable, '-B', str(cli), '--project', str(project), '--source', str(source),
-                   *identity_args, args.action]
+        base_command = [sys.executable, '-B', str(cli), '--project', str(project), '--source', str(source),
+                        *identity_args]
+        command = [*base_command, args.action]
         if args.skill is not None:
             command += ['--skill', args.skill]
         if args.custom_bindings_dir is not None:
             command += ['--custom-bindings-dir', str(args.custom_bindings_dir)]
-        run = subprocess.run(command, capture_output=True, text=True)
-        try:
-            result = json.loads(run.stdout)
-            if not isinstance(result, dict):
-                raise ValueError('object required')
-        except ValueError:
-            raise SourceError('verified release provisioner failed without a JSON report; inspect that release and restore its supported interface') from None
+        if setup is not None and setup['host'] == 'cloud' and record is not None and 'gstack_sha256' in record:
+            setup_runtime_store(args)  # Reject invalid configuration before installation.
+        result, exit_code = invoke(command)
         # A partial install still exits 2; prune whenever installation itself settled.
         if (args.action in ('install', 'recover') and 'error' not in result
                 and not result.get('transaction_pending', True)):
             result['changed'] = [*result.get('changed', []), *conductor_setup.prune_aliases(project)]
+        if setup is not None and record is not None and setup['host'] == 'cloud':
+            local, local_code = invoke([*base_command, 'install-local'])
+            result['local_skills'] = local
+            result['changed'] = [*result.get('changed', []), *local.get('changed', [])]
+            if local_code or not local.get('complete'):
+                result['complete'] = False
+                result['repair'] = join_repair(result.get('repair'), local.get('repair') or 'Restore the adopted local skill inventory.')
+                exit_code = 2
         result['source_resolution'] = resolution
         if setup is not None:
             result['setup'] = setup
+            if record is not None and 'gstack_sha256' in record:
+                gstack = setup_gstack(args, setup, base_command)
+                result['gstack'] = gstack
+                result['changed'] = [*result.get('changed', []), *gstack.get('changed', [])]
+                if setup['host'] == 'cloud' and not gstack.get('complete', False):
+                    result['complete'] = False
+                    result['repair'] = join_repair(result.get('repair'), gstack.get('repair') or 'Restore the adopted gstack runtime and host inventory, then retry setup.')
+                    exit_code = 2
             _, packages, registry = bundle.load(source / 'v0.5')
             names = set(packages) | {name for name, skill in registry.skills.items()
                                      if skill.status == 'current' and registry.packages[skill.package].kind == 'local'}
             names.add('ai-playbook-deliver')  # Manifest-owned delivery skill, when bootstrap installed it.
+            if result.get('local_skills', {}).get('complete') is False:
+                names -= {row['name'] for row in result['local_skills'].get('skills', []) if row.get('conflicts')}
             withheld = []
-            settled = 'error' not in result and not result.get('transaction_pending', True)
+            settled = ('error' not in result and not result.get('transaction_pending', True)
+                       and result.get('local_skills', {}).get('complete') is not False)
             if setup['host'] == 'cloud':
                 installed = {s['name'] for s in result.get('skills', [])
                              if s['installation'] in ('installed', 'customized')}
@@ -305,10 +366,10 @@ def main(argv=None):
                     print(json.dumps(result, indent=2, sort_keys=True))
                     return 2
         print(json.dumps(result, indent=2, sort_keys=True))
-        return run.returncode
+        return exit_code
     except (SourceError, OSError, ValueError, RuntimeError) as error:
         message = str(error) if isinstance(error, ValueError) else 'cannot access the adopted source or release proof; restore readable inputs and retry'
-        print(json.dumps({'complete': False, 'changed': [], 'error': message,
+        print(json.dumps({**result, 'complete': False, 'error': message,
                           'repair': message, 'adoption_changed': False}, indent=2))
         return 2
 

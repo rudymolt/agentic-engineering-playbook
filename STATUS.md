@@ -6,10 +6,10 @@
 
 ## Release
 
-**V0.5.3** — 2026-10-27. This release bundles reviewed project skills with portable adoption and exact-release recovery, and records the qualified maintainer runtime routes.
+**V0.5.4** — 2026-11-01. This release completes the selected pinned skill inventories and adds supporting-file repair and source relocation for adopted Cloud setup. Live Cloud qualification of the expanded inventory remains pending.
 
+- V0.5.3 — 2026-10-27. This release bundles reviewed project skills with portable adoption and exact-release recovery, and records the qualified maintainer runtime routes.
 - V0.5.2 — 2026-10-13. This release retains verified checkpoint and guidance gains with bounded native failure evidence.
-- V0.5.1 — 2026-10-09. Guided configuration, evidence-backed model advice, skill bindings, safer upgrades, and updated skill integrations.
 
 Full history: [`v0.5/CHANGELOG.md`](v0.5/CHANGELOG.md).
 

@@ -1,8 +1,19 @@
 # Planning status
 
-active_features: 5
+active_features: 7
 
 ## Active features
+
+[Pinned gstack provisioning](pinned-gstack-provisioning/slices.md) — approved
+continuation through all remaining inventory slices; package/runtime/activation
+and local support repair implemented, focused review passed; final verification
+and human review tracked in PR #51.
+
+[Complete Matt bundle](complete-matt-bundle/slices.md) — approved S2 scope;
+implementation, independent disposable-consumer review and full verification
+coverage complete and committed as `4fb2a46`. The privileged monitor rerun and platform
+coverage are recorded at the checkpoint. Release and actual Cloud qualification
+remain pending.
 
 [Edition and installed release](edition-release-identity/slices.md) — aligned
 and specified; implementation in progress on a separate branch.

@@ -65,6 +65,23 @@ def scalar(value: str) -> str:
     return value
 
 
+def attribution_scalar(value: str) -> str:
+    """Accept the reviewed string-only YAML subset, never implicit YAML types."""
+    if value.startswith("'"):
+        if not re.fullmatch(r"'(?:[^']|'')*'", value):
+            raise ValueError('invalid single-quoted attribution')
+    elif not value.startswith('"'):
+        # Plain names/slugs only. Other punctuation must be quoted; guessing
+        # at YAML indicators, comments or implicit types would accept bad input.
+        if (not re.fullmatch(r'[A-Za-z][A-Za-z0-9 ._/-]*', value)
+                or value.lower() in {'null', 'true', 'false', 'yes', 'no', 'on', 'off', 'y', 'n'}):
+            raise ValueError('expected a quoted string or plain attribution name')
+    result = scalar(value)
+    if not result.strip() or any(ord(char) < 32 or 127 <= ord(char) <= 159 for char in result):
+        raise ValueError('expected nonempty printable attribution')
+    return result
+
+
 def metadata(skill, material: dict[str, bytes]) -> None:
     """Validate the upstream metadata subset without rewriting upstream YAML."""
     try:
@@ -76,14 +93,43 @@ def metadata(skill, material: dict[str, bytes]) -> None:
     if head is None:
         raise BundleError(f'{skill.name}: invalid SKILL.md frontmatter')
     fields = {}
+    credits = None
+    key = None
     for line in head[1].splitlines():
+        if line.startswith(' '):
+            # The pinned PR skill carries attribution, not runtime dependencies.
+            # Accept only its reviewed mapping shape; never flatten nested keys
+            # into invocation controls or discard unrecognized YAML structures.
+            if line == '  credits:' and key == 'metadata' and fields[key] == {}:
+                credits = {}
+                fields['metadata']['credits'] = credits
+                continue
+            match = re.fullmatch(r'    (skill|author|organisation|url): (.+)', line)
+            if match is None or credits is None or match[1] in credits:
+                raise BundleError(f'{skill.name}: invalid or duplicate attribution metadata')
+            try:
+                credits[match[1]] = attribution_scalar(match[2].strip())
+            except ValueError as error:
+                raise BundleError(f'{skill.name}: invalid attribution metadata: {error}') from error
+            continue
+        credits = None
         key, sep, value = line.partition(':')
-        if not sep or key in fields:
+        if not sep or not re.fullmatch('[a-z][a-z-]*', key) or key in fields:
             raise BundleError(f'{skill.name}: invalid or duplicate frontmatter field')
+        if key == 'metadata':
+            if value:
+                raise BundleError(f'{skill.name}: unsupported attribution metadata mapping')
+            fields[key] = {}
+            continue
+        if key == 'disable-model-invocation' and value.strip() not in ('true', 'false'):
+            raise BundleError(f'{skill.name}: invocation metadata requires an unquoted boolean')
         try:
             fields[key] = scalar(value.strip())
         except ValueError as error:
             raise BundleError(f'{skill.name}: invalid frontmatter metadata: {error}') from error
+    if 'metadata' in fields and set(fields['metadata'].get('credits', {})) != {
+            'skill', 'author', 'organisation', 'url'}:
+        raise BundleError(f'{skill.name}: incomplete attribution metadata')
     if fields.get('name') != skill.name or not fields.get('description'):
         raise BundleError(f'{skill.name}: invalid name or description metadata')
     disabled = fields.get('disable-model-invocation')

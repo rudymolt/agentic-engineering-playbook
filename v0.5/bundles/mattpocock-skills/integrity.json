@@ -57,6 +57,14 @@
       "sha256": "f6bf2aa996c6e6f53fdd0708e18a0d16a56aed8322cca59fedbe3c0d2c75f06b",
       "size": 101
     },
+    "grill-me/SKILL.md": {
+      "sha256": "caaf8b8de1684f96e26b28f3c29189db5c89cce4b73e1c93d86164f66ef88637",
+      "size": 157
+    },
+    "grill-me/agents/openai.yaml": {
+      "sha256": "c061e39c3e0f9d865fb1b97556d485704af2a8a58f4b8221a8917a5c2074a32b",
+      "size": 137
+    },
     "grill-with-docs/SKILL.md": {
       "sha256": "7de372c13488f1ee96cc11cd8907b56b6809cc93eef776eeddd37de6b6cbe3fe",
       "size": 247
@@ -72,6 +80,70 @@
     "grilling/agents/openai.yaml": {
       "sha256": "1411d7df7d99b7e621a1ff8283c8133cc2464be63d064e52d8ce169c6800ee9b",
       "size": 113
+    },
+    "handoff/SKILL.md": {
+      "sha256": "7c62de979fdc7ac32fb5ddb2146156c917f80ee070d30fadc9d40343c4b6ed25",
+      "size": 894
+    },
+    "handoff/agents/openai.yaml": {
+      "sha256": "5c479fd562c691851690e8b18c8501045bef0943c10743d636b2fae26add1d28",
+      "size": 141
+    },
+    "implement/SKILL.md": {
+      "sha256": "6d3fd9e83b8f36e5213854779db49b256a457a7ebb4a503e53fa7dcff696adc3",
+      "size": 433
+    },
+    "implement/agents/openai.yaml": {
+      "sha256": "8970a8596ade0c28ab427f41a4ea242d6bdf6186c59ebf55e1238dbecaab79dc",
+      "size": 139
+    },
+    "improve-codebase-architecture/HTML-REPORT.md": {
+      "sha256": "581e8bb5a521e46bbda8ca7e19b15948bed882187108092ebb90c62513b77528",
+      "size": 6641
+    },
+    "improve-codebase-architecture/SKILL.md": {
+      "sha256": "552240a5ab5cec6b67c15dd1ad6e9f6962b1bca6ce870059a8c2713760c20392",
+      "size": 6000
+    },
+    "improve-codebase-architecture/agents/openai.yaml": {
+      "sha256": "c8cb20f68ebf0edb4e497bc11ae5fcaa196004e661cd189015b04f4109ced7f1",
+      "size": 166
+    },
+    "pr/CREDITS.md": {
+      "sha256": "a7a087127665d7298a72280ef6e19c41ad8404523712a788c8dc3ab414bc2497",
+      "size": 604
+    },
+    "pr/SKILL.md": {
+      "sha256": "ab63f1cf78647389edcd386c9427c5dfca27ed2836930c24773ffee834c19bcd",
+      "size": 4169
+    },
+    "pr/agents/openai.yaml": {
+      "sha256": "2295b586624db4ef546f3fd4695492f039d941a46d8a1593a702ce3ca511b8ad",
+      "size": 93
+    },
+    "prototype/LOGIC.md": {
+      "sha256": "f61c7d249e786a79ef289018901c348271e1798dd0b0bc5607b5c6f4d4a01ab9",
+      "size": 6036
+    },
+    "prototype/SKILL.md": {
+      "sha256": "714de632d116bb73f65cdb5a882db15b9369a6713b9a47c0fad827848f0bfbe3",
+      "size": 2931
+    },
+    "prototype/UI.md": {
+      "sha256": "723211e878acbc7b6ff09755263f3295cde724ba902ff0064da41eed51d45ad3",
+      "size": 6913
+    },
+    "prototype/agents/openai.yaml": {
+      "sha256": "5af65e43ab41a350436697b81e27b7f848d36782043b73c322bb2c9fa9cc55dc",
+      "size": 100
+    },
+    "research/SKILL.md": {
+      "sha256": "985569f15739c713d6784887c3d186d4ef9ac85bec5ad9c068d25bf0739928e4",
+      "size": 794
+    },
+    "research/agents/openai.yaml": {
+      "sha256": "9b4c470d63221c1f68f22df70b83e2f12401b317babe0d1b7b5f24a974474d0d",
+      "size": 94
     },
     "setup-matt-pocock-skills/SKILL.md": {
       "sha256": "9a0c21694be19fa3eefc39343355d3af7414716ba364882c7432c2f821eac3e9",
@@ -133,6 +205,30 @@
       "sha256": "21bc6215fffcd7614e9f772bb1760e87cc5fc7dcc707e7d282bc9414267a6090",
       "size": 146
     },
+    "triage/AGENT-BRIEF.md": {
+      "sha256": "7f5f87fed3033df1b06e083c480f3e847b1fbb0647746b8a4c6a50f9f26ef44f",
+      "size": 7942
+    },
+    "triage/OUT-OF-SCOPE.md": {
+      "sha256": "1fbf9b432130c6380aa65813b55553cfda150309b27c595e183f8e335b8a190d",
+      "size": 4667
+    },
+    "triage/SKILL.md": {
+      "sha256": "917b0baf74be583e74f110857ed45df2766617f75c00baf61fd136d7af515edf",
+      "size": 6558
+    },
+    "triage/agents/openai.yaml": {
+      "sha256": "2e683717720cf456d165d0bb1a68bb600d0b6a8ccb61841c172e50d26f95351c",
+      "size": 135
+    },
+    "wayfinder/SKILL.md": {
+      "sha256": "fee6e1d0c50f0e736b4ef8a599060c959afae904c9a97d82c97f049fcc3aa0f1",
+      "size": 11908
+    },
+    "wayfinder/agents/openai.yaml": {
+      "sha256": "88bc81a11a6d52ac67aeaa76b8b619e387020d47c5133a4dd4927fd15c4ad073",
+      "size": 144
+    },
     "writing-for-agents/SKILL-MECHANICS.md": {
       "sha256": "c768e6307c7c10728c401c213f2c4ba71c542127eeb7ad2956aabd15a0fa0059",
       "size": 2629
@@ -171,6 +267,13 @@
       "invocation": "model",
       "upstream_path": "engineering/domain-modeling"
     },
+    "grill-me": {
+      "dependencies": [
+        "grilling"
+      ],
+      "invocation": "user",
+      "upstream_path": "productivity/grill-me"
+    },
     "grill-with-docs": {
       "dependencies": [
         "grilling",
@@ -183,6 +286,43 @@
       "dependencies": [],
       "invocation": "model",
       "upstream_path": "productivity/grilling"
+    },
+    "handoff": {
+      "dependencies": [],
+      "invocation": "user",
+      "upstream_path": "productivity/handoff"
+    },
+    "implement": {
+      "dependencies": [
+        "tdd",
+        "code-review"
+      ],
+      "invocation": "user",
+      "upstream_path": "engineering/implement"
+    },
+    "improve-codebase-architecture": {
+      "dependencies": [
+        "codebase-design",
+        "grilling",
+        "domain-modeling"
+      ],
+      "invocation": "user",
+      "upstream_path": "engineering/improve-codebase-architecture"
+    },
+    "pr": {
+      "dependencies": [],
+      "invocation": "model",
+      "upstream_path": "engineering/pr"
+    },
+    "prototype": {
+      "dependencies": [],
+      "invocation": "model",
+      "upstream_path": "engineering/prototype"
+    },
+    "research": {
+      "dependencies": [],
+      "invocation": "model",
+      "upstream_path": "engineering/research"
     },
     "setup-matt-pocock-skills": {
       "dependencies": [],
@@ -209,6 +349,26 @@
       ],
       "invocation": "user",
       "upstream_path": "engineering/to-tickets"
+    },
+    "triage": {
+      "dependencies": [
+        "setup-matt-pocock-skills",
+        "grilling",
+        "domain-modeling"
+      ],
+      "invocation": "user",
+      "upstream_path": "engineering/triage"
+    },
+    "wayfinder": {
+      "dependencies": [
+        "setup-matt-pocock-skills",
+        "research",
+        "prototype",
+        "grilling",
+        "domain-modeling"
+      ],
+      "invocation": "user",
+      "upstream_path": "engineering/wayfinder"
     },
     "writing-for-agents": {
       "dependencies": [],

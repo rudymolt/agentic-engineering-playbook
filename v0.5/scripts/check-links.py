@@ -46,12 +46,13 @@ MD_LINK_RE = re.compile(r"\[[^\]]*\]\(([^)\s]+)(?:\s+\"[^\"]*\")?\)")
 HTML_REF_RE = re.compile(r"""(?:href|src)=["']([^"']+)["']""")
 SKILL_FILE_RE = re.compile(r"`([A-Za-z0-9_.{}/-]+\.(?:py|md|yml|yaml|html))`")
 BUNDLED_ROOT = Path('v0.5/bundles/mattpocock-skills')
-# Verbatim upstream glossary-map examples; actual support links remain checked.
+# Verbatim upstream glossary/map examples; actual support links remain checked.
 BUNDLED_SAMPLE_LINKS = {
     'domain-modeling/GLOSSARY-FORMAT.md': {
         './src/ordering/GLOSSARY.md', './src/billing/GLOSSARY.md',
         './src/fulfillment/GLOSSARY.md',
     },
+    'wayfinder/SKILL.md': {'link'},  # closed-ticket placeholder in the map template
 }
 EXTERNAL_PREFIXES = ("http://", "https://", "mailto:", "javascript:", "data:", "tel:")
 

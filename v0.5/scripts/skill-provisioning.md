@@ -4,12 +4,15 @@ The public `provision-skills.py` command discovers local sources and explicitly
 previews, installs, checks, and recovers the
 reviewed project inventory from an available Playbook checkout. Its selected
 skills and dependencies come from [the registry](../upstream-skills.json), read
-through [upstream_registry.py](upstream_registry.py). The initial bundle contains
-eleven complete Matt Pocock skill directories from v1.3.1, commit
+through [upstream_registry.py](upstream_registry.py). The bundle contains all
+twenty current registry Matt Pocock skill directories from v1.3.1, commit
 `24fe0ef7737efae15c87225755e9f6f5965e4888`, annotated tag object
 `0b6cee10f260a2e048279cf737bfd3e37b1fce0b`. The
 [bundle record](../bundles/mattpocock-skills/integrity.json) binds all packaged
 bytes, invocation metadata, supporting files, and dependency declarations.
+This is the playbook's selected inventory, not every skill in the upstream
+repository. The unchanged `pr` directory includes nested `metadata.credits`
+and `CREDITS.md`; its `show-me` attribution is not a runtime dependency.
 
 ## Consumer commands
 
@@ -44,7 +47,7 @@ customizations report `project-customization` and their actual integrity. Discov
 qualification remain `unverified`, including when all files are installed.
 Reports may identify local failure paths; retain runtime reports privately.
 
-Installation writes only beneath the selected project's `.agents` directory.
+The Matt bundle's `install` action writes only beneath the selected project's `.agents` directory.
 Existing playbook-owned skills and unrelated content remain intact. Every skill
 copy includes the unchanged upstream MIT LICENSE. Claude's explicit-invocation
 frontmatter and Codex's explicit-invocation policy remain as upstream supplied
@@ -52,6 +55,34 @@ them. Installation grants no model, stage, review, invocation, or commit authori
 The bundled `code-review` source remains embedded-incompatible; its report names
 the existing stage-08 manual standards/spec fallback. Selecting that fallback
 remains stage-owned.
+
+## Playbook-owned support files and source relocation
+
+Adopted Cloud setup also checks the complete template-managed local skill trees
+and delivery's manifest-owned files. Use `check-local`, `install-local`, or
+`recover-local` with the same consumer command and exact adopted release proof
+above to inspect, repair, or recover this inventory independently. A different
+release requires the existing upgrade preview and Apply flow.
+
+Missing template-managed files are restored from committed regular-file
+customizations when available, otherwise from the recorded pristine base. When
+the exact release moves to a recovered checkout, three-way merge updates its
+rendered source paths while retaining independent project edits. Pristine bases
+and their state hashes change in the same journaled operation. Conflicting edits,
+missing ownership, hardlinks and symbolic links require reconciliation.
+Delivery repair restores missing owned files only after validating its complete
+manifest lock; changed delivery content or pending lifecycle evidence blocks it.
+
+The local-skill journal lives in `.playbook/local-skill-history`. Interrupted
+work can retry against the same source and location or use `recover-local` to
+restore the captured prior bytes. Concurrent state changes block replacement.
+Replay accepts only complete recorded staging values; partial or unknown staging
+bytes remain untouched and require explicit reconciliation before retry. Reports
+retain successful publication paths even if later observation fails.
+This operation can write selected `.agents/skills` files, their `.playbook-base`
+copies and provenance in `.playbook-state.yml`; it preserves unrelated settings
+and saved routes. Local-host setup remains discovery-only. Installation reports
+do not establish host discovery or invocation behavior.
 
 ## Local discovery and explicit source choice
 
@@ -145,6 +176,11 @@ the previous installation; the other installed skills remain available.
 
 Unchanged reruns preserve file bytes, modes and modification times. Unrelated skills,
 including playbook-owned skills, remain intact.
+If a managed skill directory is wholly absent, an explicit `install` recreates
+it from the verified bundle without rewriting other skills. Repairing the same
+inventory keeps the preceding installation's recovery target. Partial directory
+edits, missing retained customizations and unexplained changes during a pending
+transaction still require explicit reconciliation.
 
 To retain a project customization, review and commit its complete skill directory
 in the destination project's Git repository yourself. Then use the same source
@@ -394,6 +430,16 @@ them without rewriting. Delivery lifecycle policy and runtime remain unchanged.
 
 ## Optional Conductor setup adoption
 
+For the pinned gstack inventory, also select `--adopt-gstack` in the same
+`--adopt-skills` preview/Apply. This is an explicit additional choice; existing
+Matt-only adoption stays unchanged. Cloud setup prepares the exact Linux runtime
+in a separate cache and publishes selected Codex and Claude endpoints. Local setup
+preserves existing sources. The choice survives subsequent inventory adoption.
+See [gstack activation](../bundles/gstack/README.md#host-activation-and-adoption)
+for repair, recovery, explicit invocation and capability limits. Missing runtime
+or host material keeps Cloud setup incomplete. `setup --offline` permits only
+complete cache replay, and never downloads or builds.
+
 Add `--conductor-setup` **together with** `--adopt-skills` to the existing
 bootstrap preview or upgrade `--plan`. Include the same flags and the returned
 `--inventory-revision` in its existing Apply command. This adds no approval gate
@@ -590,6 +636,14 @@ root license, then derives the integrity record through the registry reader.
 An existing bundle is preserved; replacement is an explicit reviewed maintainer
 change. CI checks the packaged record offline. Provisioning itself performs no
 upstream skill download or pin update.
+Metadata validation accepts the reviewed scalar fields and the nested
+`metadata.credits` mapping with `skill`, `author`, `organisation` and `url`.
+Duplicate keys, unsupported nesting, aliases, tags and collection values block
+activation. Credits require nonempty printable strings: plain names/slugs or
+valid single-quoted or JSON-compatible double-quoted strings. Implicit YAML
+types, comments, malformed quotes and unquoted indicators are refused.
+A new upstream shape requires deliberate validation work; packaging
+never strips attribution to make a skill pass.
 
 Follow [monthly maintenance](../MAINTENANCE.md) and recheck before adopting
 source, skill, runtime, model, or setting changes. Compare complete directories,

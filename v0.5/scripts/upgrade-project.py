@@ -1407,6 +1407,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--apply-safe", action="store_true", help="apply deterministic V0.5 changes or a V0.4 transition")
     parser.add_argument('--plan', action='store_true', help='read-only upgrade and inventory adoption plan; retain tier-3 owner review')
     parser.add_argument('--adopt-skills', action='store_true', help='include portable inventory adoption in the existing preview/Apply gate')
+    parser.add_argument('--adopt-gstack', action='store_true', help='include pinned gstack runtime and both host inventories; requires --adopt-skills')
     parser.add_argument('--conductor-setup', action='store_true', help='compose shared setup in the same --adopt-skills preview/Apply gate; requires Python 3.11+')
     parser.add_argument('--inventory-revision', help='exact inventory_revision shown in that preview')
     parser.add_argument("--plan-glossary", action="store_true", help="preview the domain glossary rename without writing")
@@ -1423,12 +1424,14 @@ def main(argv: list[str] | None = None) -> int:
         parser.error('--plan and --apply-safe are separate sides of the existing preview/Apply gate')
     skill_plan = None
     try:
+        if args.adopt_gstack and not args.adopt_skills:
+            raise ValueError('--adopt-gstack requires --adopt-skills in the existing preview/Apply gate')
         if args.conductor_setup and not args.adopt_skills:
             raise ValueError('--conductor-setup requires --adopt-skills in the existing preview/Apply gate')
         if args.adopt_skills:
             source = Path(__file__).resolve().parents[2]
             skill_plan = skill_adoption.prepare(args.project, source, release_provenance.verified_release_evidence(source),
-                                                for_apply=args.apply_safe, conductor_setup=args.conductor_setup)
+                                                for_apply=args.apply_safe, conductor_setup=args.conductor_setup, gstack=args.adopt_gstack)
             if args.apply_safe:
                 skill_adoption.require_revision(skill_plan, args.inventory_revision)
         elif args.inventory_revision:

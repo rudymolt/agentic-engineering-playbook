@@ -33,11 +33,11 @@ def read_record(text):
         record = strict_json(raw or '')
     except ValueError:
         raise ValueError('invalid skill_provisioning adoption; restore its reviewed inline JSON record') from None
-    if (not isinstance(record, dict) or set(record) != FIELDS
+    if (not isinstance(record, dict) or set(record) not in (FIELDS, FIELDS | {'gstack_sha256'})
             or type(record.get('schema_version')) is not int or record['schema_version'] != 1
             or record.get('launcher') != LAUNCHER or record.get('local_policy') != 'discover'
             or any(not isinstance(record.get(k), str) or not re.fullmatch('[0-9a-f]{64}', record[k])
-                   for k in ('bundle_sha256', 'launcher_sha256'))):
+                   for k in ('bundle_sha256', 'launcher_sha256', *(['gstack_sha256'] if 'gstack_sha256' in record else [])))):
         raise ValueError('unsupported skill_provisioning adoption; preserve it and restore a compatible reviewed record')
     return record
 
@@ -80,7 +80,7 @@ def require_writable_state(project):
         raise ValueError('adoption state must be a readable regular file; preserve the endpoint and restore it')
 
 
-def prepare(project, source, proof, *, for_apply=False, conductor_setup=False):
+def prepare(project, source, proof, *, for_apply=False, conductor_setup=False, gstack=False):
     project, source = Path(project).resolve(), Path(source).resolve()
     if project == source:
         raise ValueError('maintainer checkout cannot receive consumer adoption; use an isolated consumer fixture')
@@ -109,6 +109,15 @@ def prepare(project, source, proof, *, for_apply=False, conductor_setup=False):
     else:
         state_before = None
         previous = None
+    gstack_selected = gstack or (previous is not None and 'gstack_sha256' in previous)
+    if gstack_selected:
+        inputs = []
+        for name in ('integrity.json', 'runtime.json'):
+            path = source / 'v0.5/bundles/gstack' / name
+            if path.is_symlink() or not path.is_file():
+                raise ValueError('release lacks regular gstack inventory/runtime inputs; select a compatible reviewed release')
+            inputs.append(digest(path.read_bytes()))
+        record['gstack_sha256'] = digest(json.dumps(inputs).encode())
     directory = project / '.playbook'
     target = project / LAUNCHER
     if directory.is_symlink() or (directory.exists() and not directory.is_dir()):
@@ -125,6 +134,11 @@ def prepare(project, source, proof, *, for_apply=False, conductor_setup=False):
                'customizations': 'Preserve project and newer local sources; no local bundle activation. Commit and explicitly retain edits before replay.',
                'recovery': 'Replay through the exact adopted release; previous installation recovery and stage-owned fallback remain explicit.',
                'qualification': 'unverified'}
+    if gstack_selected:
+        summary['gstack'] = {'inventory': 'registry-selected Codex and Claude endpoints',
+                            'cloud': 'prepare pinned Linux runtime in a separate cache and activate adapted endpoints',
+                            'local': 'discovery only; preserve existing sources',
+                            'qualification': 'unverified'}
     setup_plan = setup.prepare(project, source, previous, current) if conductor_setup else None
     if setup_plan is None:
         setup_plan = setup.refresh(project, source, previous, current)

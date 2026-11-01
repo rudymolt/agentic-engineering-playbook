@@ -13,7 +13,7 @@
 
 Turn an idea into a clear specification, build it in manageable pieces, verify the result, and carry lessons into the next feature. You bring the goals and judgement. The playbook gives your agent a repeatable way to work.
 
-**Current release:** V0.5.3 · [Release notes](v0.5/CHANGELOG.md#v053--2026-10-27)
+**Current release:** V0.5.4 · [Release notes](v0.5/CHANGELOG.md#v054--2026-11-01)
 
 **Humans:** [Get started](#get-started) · **Agents:** [Read the agent digest](v0.5/AGENT-DIGEST.md)
 
@@ -33,16 +33,16 @@ Use it when you are building a new product or working on an existing codebase an
 
 The human owns goals, acceptance criteria, and consequential decisions. The agent plans, implements, checks, and records the work within the agreed scope.
 
-## What's new in V0.5.3
+## What's new in V0.5.4
 
-This release makes a reviewed project skill inventory portable across workspaces.
+This release completes the pinned skill inventory and repairs its supporting files during adopted Cloud setup.
 
-- **Repeatable project skills.** Eleven complete reviewed skills ship with the playbook, including references, dependencies and notices. Explicit adoption keeps the Cloud inventory pinned; local setup discovers existing sources without replacing them.
-- **Preserved project changes.** Retained customizations survive recreation. Exact-release recovery restores a missing playbook checkout without selecting a newer release, while conflicts produce repair instructions.
-- **Measured runtime scope.** Fresh and recreated Claude Code and Codex maintainer checks passed through the explicit Conductor Cloud Setup setting. Local source-selection checks passed on the documented routes. Consumer release qualification remains pending; [read the evidence and limits](docs/cloud-skill-provisioning/runtime-qualification.md).
-- **Clearer release and recovery decisions.** Projects record edition and verified installed release separately. Deployment guidance discovers access early, reuses existing authority, and requires isolated restoration evidence when persistent data is at risk.
+- **Complete selected skills.** All twenty registered Matt skills ship with their supporting files, invocation controls and notices at the existing reviewed pin.
+- **Pinned gstack setup.** Explicit adoption prepares the frozen runtime and publishes the selected Claude Code and Codex skills. Source and build support stay outside skill discovery folders.
+- **Repair that preserves project changes.** Setup restores missing managed support files and relocates source references using recorded originals. Conflicting edits remain available for reconciliation, with recovery history retained.
+- **Clear evidence limits.** Installation and repair checks cover disposable consumers. Actual Cloud discovery, invocation and lifecycle qualification for the expanded inventory remain pending; [read the provisioning contracts](v0.5/scripts/skill-provisioning.md).
 
-See the [V0.5.3 changelog](v0.5/CHANGELOG.md#v053--2026-10-27) for all changes since V0.5.2. Existing projects upgrade deliberately from a pinned release while preserving customizations; publishing this release does not migrate them automatically.
+See the [V0.5.4 changelog](v0.5/CHANGELOG.md#v054--2026-11-01) for all changes since V0.5.3. Existing projects upgrade deliberately from a pinned release while preserving customizations; publishing this release does not migrate them automatically.
 
 ## How it works
 
@@ -90,7 +90,7 @@ Here is how they map to the specific parts of the workflow.
 
 ### What do I need to install?
 
-**Matt Pocock's skills and gstack require explicit installation.** Cloning this playbook or running its bootstrap does not automatically activate either collection. The [project provisioner](v0.5/scripts/skill-provisioning.md) can explicitly install the eleven reviewed, release-bundled Matt skills without another upstream download. If you already have them installed, setup checks whether the required skills are discoverable and compatible with the playbook's procedures.
+**Matt Pocock's skills and gstack require explicit installation.** Cloning this playbook or running its bootstrap does not automatically activate either collection. The [project provisioner](v0.5/scripts/skill-provisioning.md) can explicitly install the twenty reviewed, release-bundled Matt skills without another upstream download, and prepare and activate the selected pinned gstack inventory. If you already have them installed, setup checks whether the required skills are discoverable and compatible with the playbook's procedures.
 
 - **Matt Pocock's skills:** the playbook targets released v1.3.1. Use `npx skills@1.7.1 add https://github.com/mattpocock/skills/tree/v1.3.1` and select the skills and agent environments you need. Leave Matt's bare `retro` unselected: bootstrap/upgrade provide `/matt-retro` (`$matt-retro` in Codex), alongside gstack's `/retro` (`$gstack-retro`). Follow [stage 00](v0.5/10-process/00-prereqs.md) for selection and installed-source checks; existing projects first complete the [glossary migration](v0.5/skills/ai-playbook-upgrade-project/MIGRATIONS.md). Preserve local skill customizations and avoid automatic updates beyond the tested pin. The optional `setup-matt-pocock-skills` skill helps configure tracker and documentation choices.
 - **gstack:** follow its [installation guide](https://github.com/garrytan/gstack#install--30-seconds) for your coding-agent environment. It has its own setup script and prerequisites, including Bun for its tooling. The guide covers Claude Code and other supported agents, including Codex.
@@ -152,7 +152,7 @@ You need a coding-agent environment, such as Codex or Claude Code, that can read
 Clone this repository into a separate directory using the repository URL from GitHub's **Code** button:
 
 ```sh
-git clone --branch v0.5.3 --depth 1 REPOSITORY_URL playbook
+git clone --branch v0.5.4 --depth 1 REPOSITORY_URL playbook
 ```
 
 Replace `REPOSITORY_URL` with the copied URL. Keep this checkout at the release tag so development changes cannot silently change the instructions your project uses.

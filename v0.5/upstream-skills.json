@@ -191,7 +191,12 @@
       ],
       "upstream_path": "engineering/implement",
       "previous_names": [],
-      "manifest_key": "implement"
+      "manifest_key": "implement",
+      "project_bundle": true,
+      "dependencies": [
+        "tdd",
+        "code-review"
+      ]
     },
     "triage": {
       "package": "mattpocock-skills",
@@ -204,7 +209,13 @@
         "10-process/README"
       ],
       "upstream_path": "engineering/triage",
-      "previous_names": []
+      "previous_names": [],
+      "project_bundle": true,
+      "dependencies": [
+        "setup-matt-pocock-skills",
+        "grilling",
+        "domain-modeling"
+      ]
     },
     "tdd": {
       "package": "mattpocock-skills",
@@ -263,7 +274,13 @@
         "templates/playbook-cadences"
       ],
       "upstream_path": "engineering/improve-codebase-architecture",
-      "previous_names": []
+      "previous_names": [],
+      "project_bundle": true,
+      "dependencies": [
+        "codebase-design",
+        "grilling",
+        "domain-modeling"
+      ]
     },
     "prototype": {
       "package": "mattpocock-skills",
@@ -279,7 +296,8 @@
         "AGENT-DIGEST"
       ],
       "upstream_path": "engineering/prototype",
-      "previous_names": []
+      "previous_names": [],
+      "project_bundle": true
     },
     "domain-modeling": {
       "package": "mattpocock-skills",
@@ -341,7 +359,8 @@
         "10-process/README"
       ],
       "upstream_path": "engineering/research",
-      "previous_names": []
+      "previous_names": [],
+      "project_bundle": true
     },
     "resolving-merge-conflicts": {
       "package": "mattpocock-skills",
@@ -375,6 +394,14 @@
           "name": "decision-mapping",
           "upstream_version": "v1.1.0"
         }
+      ],
+      "project_bundle": true,
+      "dependencies": [
+        "setup-matt-pocock-skills",
+        "research",
+        "prototype",
+        "grilling",
+        "domain-modeling"
       ]
     },
     "grill-me": {
@@ -389,7 +416,11 @@
         "prereqs-capability-profiles"
       ],
       "upstream_path": "productivity/grill-me",
-      "previous_names": []
+      "previous_names": [],
+      "project_bundle": true,
+      "dependencies": [
+        "grilling"
+      ]
     },
     "handoff": {
       "package": "mattpocock-skills",
@@ -402,7 +433,8 @@
         "91-delegation-track"
       ],
       "upstream_path": "productivity/handoff",
-      "previous_names": []
+      "previous_names": [],
+      "project_bundle": true
     },
     "grilling": {
       "package": "mattpocock-skills",
@@ -1165,7 +1197,8 @@
         "10"
       ],
       "upstream_path": "engineering/pr",
-      "previous_names": []
+      "previous_names": [],
+      "project_bundle": true
     },
     "matt-retro": {
       "package": "playbook",

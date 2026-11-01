@@ -8,6 +8,7 @@ from pathlib import Path, PurePosixPath
 import re
 import shutil
 import tempfile
+from dataclasses import dataclass
 
 import upstream_bundle as bundle
 
@@ -16,7 +17,20 @@ class StateError(ValueError):
     """Preserve the workspace until installation evidence is reconciled."""
 
 
+@dataclass(frozen=True)
+class Layout:
+    """A host's discovery directory and its separate transaction history."""
+    skills: Path
+    state: Path
+
+
+def skill_root(project):
+    return project.skills if isinstance(project, Layout) else project / '.agents/skills'
+
+
 def root(project):
+    if isinstance(project, Layout):
+        return project.state
     return project / '.agents/.skill-provisioning'
 
 
@@ -116,7 +130,7 @@ def load(project):
 
 
 def actual(project, name):
-    path = project / '.agents/skills' / name
+    path = skill_root(project) / name
     if not path.exists() and not path.is_symlink():
         return None
     return bundle.files(path)
@@ -149,9 +163,33 @@ def completes(current, after):
             and any(after['skills'].get(name) is not None for name in set(after['skills']) - set(managed)))
 
 
-def apply(project, state, action, after, *, withheld=()):
+def require_known_directories(path, candidates):
+    """File inventories authorize only their ancestor directories, never extras."""
+    if not path.exists():
+        return
+    allowed = {parent.as_posix() for material in candidates if material is not None
+               for name in material for parent in PurePosixPath(name).parents
+               if parent.as_posix() != '.'}
+    for directory, dirs, _ in os.walk(path, followlinks=False):
+        for name in dirs:
+            child = Path(directory) / name
+            if child.is_symlink() or child.relative_to(path).as_posix() not in allowed:
+                raise StateError(f'{path.name}: unknown directory material; preserve it for reconciliation')
+
+
+def known_staging(path, candidates):
+    """A journal-owned staging write may stop at any byte or directory boundary."""
+    require_known_directories(path, candidates)
+    current = bundle.files(path)
+    return any(material is not None and set(current) <= set(material)
+               and all(material[name].startswith(data) for name, data in current.items())
+               for material in candidates)
+
+
+def apply(project, state, action, after, *, withheld=(), repair_missing=False, dry_run=False):
     """Journal before activation; only replace bytes matching observed history."""
     tx = state['transaction']
+    same_inventory = present(state['current']) == present(after)
     if tx is not None:
         if action == 'install' and (tx['action'] != action or tx['after'] != after):
             raise StateError('interrupted replacement: retry the identical install or select recover first')
@@ -172,6 +210,20 @@ def apply(project, state, action, after, *, withheld=()):
     for name in names:
         current = actual(project, name)
         allowed = [content(before if tx else state['current'], name), content(after, name)]
+        require_known_directories(skill_root(project) / name,
+                                  [content(state['current'], name), content(tx['after'], name) if tx else None, *allowed])
+        # An explicit install may recreate a wholly absent managed directory.
+        # Existing partial/edited trees and pending transactions keep their
+        # stronger evidence requirements; retained bytes are validated by caller.
+        if (tx is None and action == 'install' and content(state['current'], name) is not None
+                and content(after, name) is not None):
+            allowed.append(None)
+        if repair_missing and content(state['current'], name) is not None:
+            allowed.append(None)
+            managed = content(state['current'], name)
+            if (isinstance(current, dict) and set(current) < set(managed)
+                    and all(managed.get(path) == data for path, data in current.items())):
+                allowed.append(current)
         if tx:
             allowed.append(content(tx['after'], name))
         # A directory temporarily renamed away is recoverable only with its backup.
@@ -183,7 +235,17 @@ def apply(project, state, action, after, *, withheld=()):
                 allowed.append(None)
         if current not in allowed:
             raise StateError(f'{name}: later or unknown edits; commit and retain them, or move them outside the skill directory before retrying {action}')
-    if tx is None and present(state['current']) == present(after):
+        staged = staging / name / 'next'
+        backup = staging / name / 'previous'
+        known = [content(before, name), content(after, name), content(tx['after'], name) if tx else None]
+        for path in (staged, backup):
+            if path.is_symlink() or (path.exists() and (not path.is_dir() or
+                    (not known_staging(path, known) if path == staged and tx else bundle.files(path) not in known))):
+                raise StateError(f'{name}: unknown staging material; preserve it for explicit reconciliation')
+            require_known_directories(path, known)
+    if dry_run:
+        return []
+    if tx is None and same_inventory and present(before) == present(after):
         return []
     if not tx:
         state['transaction'] = {'action': action, 'before': before, 'after': after}
@@ -207,8 +269,8 @@ def apply(project, state, action, after, *, withheld=()):
             if p.is_symlink():
                 raise StateError(f'{name}: symbolic link in staging; reconcile it explicitly')
         if staged.exists():
-            # Keep unexpected evidence; only discard a complete known staged copy.
-            if bundle.files(staged) not in [desired, content(tx['after'], name) if tx else desired]:
+            # Journaled partial copies can be rebuilt; conflicting material stays.
+            if not known_staging(staged, [desired, content(tx['after'], name) if tx else desired]):
                 raise StateError(f'{name}: unknown staged material; move work/{name}/next aside before retrying')
             shutil.rmtree(staged)
         if desired is not None:
@@ -217,12 +279,17 @@ def apply(project, state, action, after, *, withheld=()):
                 path = staged / relative
                 path.parent.mkdir(parents=True, exist_ok=True)
                 path.write_bytes(data)
-        target = project / '.agents/skills' / name
+            require_known_directories(staged, [desired])
+            if bundle.files(staged) != desired:
+                raise StateError(f'{name}: staged content changed before publication; preserve and reconcile it')
+        target = skill_root(project) / name
         target.parent.mkdir(parents=True, exist_ok=True)
         if actual(project, name) != current:
             raise StateError(f'{name}: source changed during staging; preserve edits and retry after reconciliation')
+        require_known_directories(target, [current, content(state['current'], name)])
         if current is not None:
             if backup.exists():
+                require_known_directories(backup, [content(before, name), content(state['current'], name)])
                 if bundle.files(backup) != content(before, name):
                     raise StateError(f'{name}: unknown backup material; preserve it for explicit reconciliation')
                 shutil.rmtree(backup)
@@ -230,21 +297,33 @@ def apply(project, state, action, after, *, withheld=()):
         if desired is not None:
             os.rename(staged, target)
         changed.append(name)
+    # Recovery may skip an unchanged endpoint while an interrupted copy remains.
+    # Validate and remove that journal-owned copy before retiring its evidence.
+    for name in names:
+        staged = root(project) / 'work' / name / 'next'
+        if staged.exists():
+            known = [content(after, name), content(tx['after'], name) if tx else None]
+            if staged.is_symlink() or not staged.is_dir() or not known_staging(staged, known):
+                raise StateError(f'{name}: changed staged material; preserve it for reconciliation')
+            shutil.rmtree(staged)
     # Remove only backups whose bytes are still the journal's observed previous copy.
     for name in names:
         backup = root(project) / 'work' / name / 'previous'
         if backup.exists():
+            require_known_directories(backup, [content(before, name), content(after, name), content(tx['after'], name) if tx else None])
             if bundle.files(backup) not in [content(before, name), content(after, name), content(tx['after'], name) if tx else None]:
                 raise StateError(f'{name}: changed backup material; preserve it for reconciliation')
             shutil.rmtree(backup)
     # Completing a partial install only adds skills withheld from that same
     # installation, so its recovery target stays the pre-install inventory.
     if action != 'install':
-        # Rolling back an interrupted completion returns to that partial
+        # Rolling back interrupted completion/repair returns to that partial
         # installation, whose recovery target is still the earlier inventory.
-        if not (tx and tx['action'] == 'install' and completes(state['current'], tx['after'])):
+        if not (tx and tx['action'] == 'install'
+                and (present(state['current']) == present(tx['after'])
+                     or completes(state['current'], tx['after']))):
             state['previous'] = present(after)
-    elif not completes(state['current'], after):
+    elif not same_inventory and not completes(state['current'], after):
         state['previous'] = present(before)
     state['current'] = present(after)
     state['transaction'] = None
