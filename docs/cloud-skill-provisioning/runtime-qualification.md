@@ -8,6 +8,13 @@ is now enabled. Branch-TOML activation and default project precedence under
 personal-name collisions remain unqualified. These are scoped observations,
 not universal runtime or embedded-skill compatibility claims.
 
+**Setup documentation correction (1 November 2026):** current Conductor
+[Cloud documentation](https://conductor.build/docs/cloud/environment-variables#configure-setup-for-local-and-cloud)
+locates Cloud setup in the organization's repository Setup script field, separate
+from local `.conductor/settings.toml`. Historical branch-TOML uncertainty below
+records the earlier investigation; it is not an alternative activation recipe.
+This correction adds no new lifecycle or invocation qualification claim.
+
 ## Candidate and scope
 
 The first two Cloud workspaces tested `4c1e02e` and found that the setup hook

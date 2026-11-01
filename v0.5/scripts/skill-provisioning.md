@@ -597,9 +597,14 @@ candidate stays clean; public-content checks skip those paths only while they ar
 ignored and untracked. Test this only in disposable fixtures before the live
 gate; do not bootstrap the real maintainer checkout.
 
-Conductor documents Cloud shared setup as coming from the branch used to
-**create** the workspace. The live observations above have not qualified that
-activation path; the successful runs used the explicit Cloud repository setting.
+Conductor Cloud setup is configured in the organization's repository **Setup
+script** field. Tracked `.conductor/settings.toml` configures local setup; its
+presence alone does not activate the Cloud field. The bundled Conductor skill's
+earlier branch-TOML description differs from the current
+[Cloud setup documentation](https://conductor.build/docs/cloud/environment-variables#configure-setup-for-local-and-cloud).
+Inspect the effective Cloud setting, preserve existing commands, verify its saved
+value, and retain successful setup evidence before the first agent session.
+The historical runs above used that explicit Cloud repository setting.
 Use a fresh/recreated workspace at the exact reviewed candidate for qualification.
 The Mac app reads shared repository settings from the **remote default branch**,
 so editing a feature worktree does not activate them locally. They must reach that
