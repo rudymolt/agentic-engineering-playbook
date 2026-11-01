@@ -1,6 +1,8 @@
 # Playbook changelog
 
-## Unreleased
+## V0.5.4 — 2026-11-01
+
+This release completes the selected pinned skill inventories and adds supporting-file repair and source relocation for adopted Cloud setup. Live Cloud qualification of the expanded inventory remains pending.
 
 - Check and repair the complete supporting-file inventory for adopted local
   skills during Cloud setup. Relocate source references with recorded pristine
@@ -37,8 +39,8 @@
 
 *Why — replace setup-marker trust with package evidence:* source files, generated
   host names and runtime readiness are different contracts. This first package
-  proof covers source generation and validation; portable activation and actual
-  Cloud discovery remain pending.
+  proof covers source generation and validation; host activation has its own
+  checks, and actual Cloud discovery remains pending.
 
 - Bundle all twenty current registry Matt skills at the existing v1.3.1 pin,
   including complete supporting files, source-observed dependencies and unchanged
