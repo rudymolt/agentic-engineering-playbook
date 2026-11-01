@@ -6,8 +6,8 @@ active_features: 7
 
 [Pinned gstack provisioning](pinned-gstack-provisioning/slices.md) — approved
 continuation through all remaining inventory slices; package/runtime/activation
-and local support repair implemented, focused review passed, final verification
-in progress.
+and local support repair implemented, focused review passed; final verification
+and human review tracked in PR #51.
 
 [Complete Matt bundle](complete-matt-bundle/slices.md) — approved S2 scope;
 implementation, independent disposable-consumer review and full verification

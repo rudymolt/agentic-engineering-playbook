@@ -29,6 +29,7 @@ cold build passed in 279 seconds and complete warm replay passed with networking
 disabled in 170 seconds. Both reports retain unverified discovery and behavior.
 Host activation/integration and the local support-file repair are implemented.
 Independent cross-slice review identified preservation/reporting defects; the
-fixes now pass focused fresh review. Final full Linux verification is in progress.
+fixes now pass focused fresh review. Final verification and the human merge
+checkpoint are tracked in PR #51.
 See [verification evidence](evidence.md). Actual Cloud qualification and public
 release remain later gates.
