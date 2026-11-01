@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+- Correct the Cloud setup configuration source: use the organization's repository
+  Setup script field and verify activation separately from local tracked TOML.
+
+*Why — prevent an inactive startup hook:* a checked-in setup command alone does
+  not configure Cloud startup. Current host documentation distinguishes these
+  settings; historical qualification evidence remains scoped to its tested route.
+
 ## V0.5.4 — 2026-11-01
 
 This release completes the selected pinned skill inventories and adds supporting-file repair and source relocation for adopted Cloud setup. Live Cloud qualification of the expanded inventory remains pending.
