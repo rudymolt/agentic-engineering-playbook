@@ -47,7 +47,7 @@ customizations report `project-customization` and their actual integrity. Discov
 qualification remain `unverified`, including when all files are installed.
 Reports may identify local failure paths; retain runtime reports privately.
 
-Installation writes only beneath the selected project's `.agents` directory.
+The Matt bundle's `install` action writes only beneath the selected project's `.agents` directory.
 Existing playbook-owned skills and unrelated content remain intact. Every skill
 copy includes the unchanged upstream MIT LICENSE. Claude's explicit-invocation
 frontmatter and Codex's explicit-invocation policy remain as upstream supplied
@@ -55,6 +55,34 @@ them. Installation grants no model, stage, review, invocation, or commit authori
 The bundled `code-review` source remains embedded-incompatible; its report names
 the existing stage-08 manual standards/spec fallback. Selecting that fallback
 remains stage-owned.
+
+## Playbook-owned support files and source relocation
+
+Adopted Cloud setup also checks the complete template-managed local skill trees
+and delivery's manifest-owned files. Use `check-local`, `install-local`, or
+`recover-local` with the same consumer command and exact adopted release proof
+above to inspect, repair, or recover this inventory independently. A different
+release requires the existing upgrade preview and Apply flow.
+
+Missing template-managed files are restored from committed regular-file
+customizations when available, otherwise from the recorded pristine base. When
+the exact release moves to a recovered checkout, three-way merge updates its
+rendered source paths while retaining independent project edits. Pristine bases
+and their state hashes change in the same journaled operation. Conflicting edits,
+missing ownership, hardlinks and symbolic links require reconciliation.
+Delivery repair restores missing owned files only after validating its complete
+manifest lock; changed delivery content or pending lifecycle evidence blocks it.
+
+The local-skill journal lives in `.playbook/local-skill-history`. Interrupted
+work can retry against the same source and location or use `recover-local` to
+restore the captured prior bytes. Concurrent state changes block replacement.
+Replay accepts only complete recorded staging values; partial or unknown staging
+bytes remain untouched and require explicit reconciliation before retry. Reports
+retain successful publication paths even if later observation fails.
+This operation can write selected `.agents/skills` files, their `.playbook-base`
+copies and provenance in `.playbook-state.yml`; it preserves unrelated settings
+and saved routes. Local-host setup remains discovery-only. Installation reports
+do not establish host discovery or invocation behavior.
 
 ## Local discovery and explicit source choice
 
@@ -401,6 +429,16 @@ them without rewriting. Delivery lifecycle policy and runtime remain unchanged.
 
 
 ## Optional Conductor setup adoption
+
+For the pinned gstack inventory, also select `--adopt-gstack` in the same
+`--adopt-skills` preview/Apply. This is an explicit additional choice; existing
+Matt-only adoption stays unchanged. Cloud setup prepares the exact Linux runtime
+in a separate cache and publishes selected Codex and Claude endpoints. Local setup
+preserves existing sources. The choice survives subsequent inventory adoption.
+See [gstack activation](../bundles/gstack/README.md#host-activation-and-adoption)
+for repair, recovery, explicit invocation and capability limits. Missing runtime
+or host material keeps Cloud setup incomplete. `setup --offline` permits only
+complete cache replay, and never downloads or builds.
 
 Add `--conductor-setup` **together with** `--adopt-skills` to the existing
 bootstrap preview or upgrade `--plan`. Include the same flags and the returned

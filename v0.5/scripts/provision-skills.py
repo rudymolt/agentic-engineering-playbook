@@ -19,6 +19,8 @@ import upstream_bundle as bundle
 import upstream_registry
 import provisioning_state as history
 import gstack_runtime
+import gstack_activation
+import local_skill_transaction
 from skill_bindings import JobBindings, JOBS
 from playbook_config import Configuration, ConfigError, public_error_message
 
@@ -234,7 +236,7 @@ def main(argv=None):
     parser.add_argument('--gstack-archive', type=Path, help='exact pinned source archive for runtime preparation')
     parser.add_argument('--bun-archive', type=Path, help='exact reviewed Bun ZIP for runtime preparation')
     parser.add_argument('--offline', action='store_true', help='verify/reuse a complete runtime without acquisition or build commands; requires recorded release proof or --candidate')
-    parser.add_argument('action', nargs='?', default='discover', choices=('discover', 'preview', 'install', 'check', 'recover', 'retain', 'fallback', 'preview-runtime', 'prepare-runtime', 'check-runtime'))
+    parser.add_argument('action', nargs='?', default='discover', choices=('discover', 'preview', 'install', 'check', 'recover', 'retain', 'fallback', 'preview-runtime', 'prepare-runtime', 'check-runtime', 'preview-gstack', 'install-gstack', 'check-gstack', 'recover-gstack', 'install-local', 'check-local', 'recover-local'))
     args = parser.parse_args(argv)
     report = {'schema_version': 1, 'complete': False, 'changed': [], 'skills': []}
     inspection = None
@@ -248,6 +250,20 @@ def main(argv=None):
         if not project.is_dir():
             raise ProvisionError('destination project must already exist')
         edition = args.source.resolve() / 'v0.5'
+        if args.action.endswith('-local'):
+            if (args.skill is not None or args.custom_bindings_dir is not None or args.runtime_store is not None
+                    or args.gstack_archive is not None or args.bun_archive is not None or args.offline or args.candidate):
+                raise ProvisionError('local skill repair requires adopted release proof and accepts no skill, binding or runtime selection')
+            report = local_skill_transaction.provision(project, args.source.resolve(), identity, args.action.removesuffix('-local'))
+            print(json.dumps(report, indent=2, sort_keys=True))
+            return 0 if report['complete'] or report.get('recovery_complete') else 2
+        if args.action.endswith('-gstack'):
+            report.update(scope='gstack-hosts', runtime={'complete': False}, discovery='unverified', qualification='unverified')
+            if args.runtime_store is None or args.skill is not None or args.custom_bindings_dir is not None:
+                raise ProvisionError('gstack activation requires --runtime-store and accepts no skill or binding selection')
+            report = gstack_activation.provision(edition, project, args.runtime_store, args.action, identity)
+            print(json.dumps(report, indent=2, sort_keys=True))
+            return 0 if args.action == 'preview-gstack' or report['complete'] or report.get('recovery_complete') else 2
         if args.action.endswith('-runtime'):
             report.update(scope='runtime-only', runtime={'complete': False}, discovery='unverified', qualification='unverified')
             if args.runtime_store is None or args.skill is not None or args.custom_bindings_dir is not None:

@@ -1323,6 +1323,8 @@ with patch('os.rename', interrupt):
         for relative, change in (
             ('to-spec/agents/openai.yaml', lambda s: s + 'policy: {}\n'),
             ('to-spec/SKILL.md', lambda s: s.replace('name: to-spec', 'name: "to-spec')),
+            ('to-spec/SKILL.md', lambda s: s.replace('disable-model-invocation: true',
+                                                    'disable-model-invocation: "true"')),
             ('pr/SKILL.md', lambda s: s.replace('metadata:\n  credits:',
                                                'metadata:\nargument-hint: example\n  credits:')),
             ('pr/SKILL.md', lambda s: s.replace('  credits:', '  credits:\n  credits:')),

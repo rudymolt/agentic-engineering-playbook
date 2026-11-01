@@ -2,6 +2,27 @@
 
 ## Unreleased
 
+- Check and repair the complete supporting-file inventory for adopted local
+  skills during Cloud setup. Relocate source references with recorded pristine
+  bases and three-way merges, and repair missing delivery files under their lock.
+  Journal files, bases and state together; preserve conflicting edits and links.
+
+*Why — a skill entrypoint alone is insufficient:* missing references and stale
+  source paths can leave installed skills unusable. Setup now checks owned support
+  before reporting completion; host discovery and behavior still require live proof.
+
+- Add explicit gstack inventory adoption and Cloud startup replay. Publish selected
+  Codex and Claude endpoints from verified off-discovery runtime support, preserving
+  source/adapted identities, explicit invocation and unsupported safety notices.
+  Repair missing managed files, preserve conflicts and retain recovery history.
+  Coordinate both hosts through one durable rollback target, preserve repair history,
+  and reject ambiguous duplicate names before publication. Verify rollback runtime support,
+  and bind helper interpreters to packaged Bun through verified launchers.
+
+*Why — connect package proof to startup availability:* runtime preparation alone
+  creates no discoverable skills. Host activation is now separately checked and
+  adopted; actual discovery and behavior remain unverified until live qualification.
+
 - Prepare pinned gstack runtime inputs and frozen native builds through the
   existing provisioner CLI. Keep complete source/build trees outside discovery,
   verify warm caches file by file, and preserve conflicts and earlier repair trees.

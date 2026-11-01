@@ -68,8 +68,43 @@ the store and publish by atomic rename. Abruptly killed builds can leave a stage
 it is ignored and rerunning constructs a fresh one. No unknown directory is deleted.
 
 Runtime commands report `runtime.complete` separately. Overall `complete` remains
-false because these commands publish no discovery endpoints. Host activation,
-adoption/setup integration and actual Cloud qualification remain separate gates.
+false because these commands publish no discovery endpoints. Host activation
+and actual Cloud qualification remain separate gates.
 Browser/display access, safety enforcement and external services are not proved
 by a successful build. Monthly upstream/host review requalifies changed artifacts
 deliberately; startup never requests latest.
+
+## Host activation and adoption
+
+After preparation, use `preview-gstack`, `install-gstack`, `check-gstack` or
+`recover-gstack` on the same provisioner with the same source and runtime store.
+Activation publishes only selected endpoints: generated Codex directories under
+`.agents/skills`, and Claude directories under `.claude/skills`. Helpers and the
+complete source tree remain outside discovery. The runtime path must contain only
+letters, digits, `/`, `_`, `.`, `+` or `-` so adapted shell/YAML references remain
+literal. Missing managed files are repairable; edited files, unknown additions,
+linked parents and duplicate same-host names block replacement and are preserved.
+The shared installation journal retains previous bytes for explicit recovery;
+interrupted writes require identical replay or recovery. A project lock serializes
+activation across both hosts. Both journals and staging trees are checked before
+publishing either host. A later write failure reports already changed paths;
+recovery validates the runtime referenced by restored endpoints before writing.
+
+Each endpoint includes the upstream license and original source identities.
+Reports identify adapted bytes separately. Adapted instructions point helpers to
+the verified runtime through receipt-bound helper launchers that prepend packaged
+Bun to PATH. Original helper paths and source bytes remain intact. They defer installation/settings/upgrades to deliberate
+adoption. Codex hook-based safety skills explicitly report unsupported enforcement;
+the upgrade endpoint explains the reviewed release migration route. Explicit-only
+skills retain their policy through `agents/openai.yaml`. Adaptation grants no
+embedded review compatibility. Installation completeness does not establish host
+discovery, invocation, browser availability or behavior qualification.
+
+Add `--adopt-gstack` alongside `--adopt-skills` to bootstrap or upgrade preview and
+Apply to include gstack in the portable inventory. The preview binds package and
+runtime policy hashes; subsequent inventory adoption preserves that choice.
+Cloud `setup` prepares the exact runtime and activates both host inventories,
+using `$XDG_CACHE_HOME/agentic-engineering-playbook/runtimes` (or the HOME cache)
+unless `--runtime-store` is supplied. Local setup reports discovery-only and
+preserves existing installs. `setup --offline` prohibits source acquisition and
+runtime builds; incomplete caches leave startup incomplete with repair guidance.

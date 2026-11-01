@@ -99,6 +99,23 @@ else:
         self.assertTrue(self.runtime('check-runtime', '--offline')['runtime']['complete'])
         self.assertEqual((payload.parent / 'receipt.json').read_bytes(), receipt)
 
+    def test_helper_launcher_binds_packaged_bun_ahead_of_ambient_path(self):
+        target = Path(self.runtime()['runtime']['path'])
+        build = target / 'payload/build'
+        # The fixture helper prints which interpreter its inherited PATH resolves.
+        # Substitution here is isolated test input, never an activated receipt.
+        (build / 'bin/helper').write_text('#!/bin/sh\ncommand -v bun\n')
+        ambient = self.root / 'ambient'
+        ambient.mkdir()
+        fake = ambient / 'bun'
+        fake.write_text('#!/bin/sh\necho AMBIENT\n')
+        fake.chmod(0o755)
+        launched = subprocess.run([str(build / 'playbook-bin/helper')],
+                                  env={**self.env, 'PATH': str(ambient) + ':/usr/bin:/bin'},
+                                  capture_output=True, text=True)
+        self.assertEqual(launched.returncode, 0, launched.stderr)
+        self.assertEqual(Path(launched.stdout.strip()).resolve(), target / 'payload/bin/bun')
+
     def test_missing_support_rebuilds_but_changed_or_extra_content_is_preserved(self):
         installed = self.runtime()
         target = Path(installed['runtime']['path'])

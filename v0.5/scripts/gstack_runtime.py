@@ -23,7 +23,7 @@ import gstack_package as package
 import upstream_bundle as bundle
 
 POLICY = Path('bundles/gstack/runtime.json')
-BUILD_REVISION = 2
+BUILD_REVISION = 3
 BINARIES = (
     ('browse/src/cli.ts', 'browse/dist/browse'),
     ('browse/src/find-browse.ts', 'browse/dist/find-browse'),
@@ -116,6 +116,22 @@ def tree(root):
     return result
 
 
+def helper_launchers(record):
+    """Keep original helper bytes/locations; bind their inherited interpreter."""
+    names = {name.split('/')[1] for name, entry in record['source_files'].items()
+             if name.startswith('bin/') and name.count('/') == 1 and entry.get('mode') == '100755'}
+    names.update(output.split('/')[1] for _, output in BINARIES if output.startswith('bin/'))
+    result = {}
+    for name in sorted(names):
+        if not re.fullmatch(r'[A-Za-z0-9_.-]+', name):
+            raise bundle.BundleError('unsafe helper launcher name')
+        result[name] = ('#!/bin/sh\nset -eu\n'
+                        'support=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd -P)\n'
+                        'PATH="$support/../bin:$PATH"\nexport PATH\n'
+                        f'exec "$support/bin/{name}" "$@"\n').encode()
+    return result
+
+
 def validate_inventory(files, record, artifact, payload):
     """A local build receipt cannot substitute a sentinel for pinned material."""
     for name, entry in files.items():
@@ -148,6 +164,8 @@ def validate_inventory(files, record, artifact, payload):
         if host['status'] == 'available':
             for name, entry in host['files'].items():
                 required[f'build/.agents/skills/{host["directory"]}/{name}'] = entry
+    for name, data in helper_launchers(record).items():
+        required['build/playbook-bin/' + name] = {'sha256': bundle.digest(data), 'size': len(data), 'mode': 0o755}
     saved_zip = payload / 'bun.zip'
     if saved_zip.is_file() and not saved_zip.is_symlink():
         if saved_zip.stat().st_size != artifact['size']:
@@ -319,6 +337,12 @@ def build(payload, record, source, material, bun_zip, executable):
             path = work / output
             if path.is_symlink() or not path.is_file() or not os.access(path, os.X_OK):
                 raise bundle.BundleError('native runtime output is missing or non-executable')
+        launchers = work / 'playbook-bin'
+        launchers.mkdir()
+        for name, data in helper_launchers(record).items():
+            launcher = launchers / name
+            launcher.write_bytes(data)
+            launcher.chmod(0o755)
 
 
 def provision(edition, project, store, action, source_archive=None, bun_archive=None, offline=False):

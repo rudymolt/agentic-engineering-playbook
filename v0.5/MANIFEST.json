@@ -178,8 +178,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "5d87f7eb0f0069e3f57d0a78c84818ca877a62dd760c8dbb2fddaeaa3b54b5a9",
-      "size": 76322
+      "sha256": "db96640da96f8c9f13921aaeb1546dc446de99fbcccee622d54cb495b8516133",
+      "size": 77724
     },
     {
       "path": "MAINTENANCE.md",
@@ -208,8 +208,8 @@
     },
     {
       "path": "bundles/gstack/README.md",
-      "sha256": "d97f0e425afe33d57d0ea318483e6e5eecdf64c69c49fe6635f1deecfedbd990",
-      "size": 4562
+      "sha256": "feeeecdbb5815afae450ae11155a00df38dbb4c306e026cd104100f32e311464",
+      "size": 7012
     },
     {
       "path": "bundles/gstack/integrity.json",
@@ -1358,8 +1358,8 @@
     },
     {
       "path": "scripts/bootstrap-project.py",
-      "sha256": "b6aa30e5161cee6c2c6d2351118e8d43bcb082c0db362b962ca4c668733dfa51",
-      "size": 26617
+      "sha256": "8d4e078ad618b9b21bd5c2372f5fdc5dcc2800fa0a9077ceb176c2d393d47e3f",
+      "size": 26957
     },
     {
       "path": "scripts/bootstrap_seed.py",
@@ -1492,14 +1492,39 @@
       "size": 7086
     },
     {
+      "path": "scripts/gstack_activation.py",
+      "sha256": "9dbba6269fbcd0bff7159f2c3067348134b3f164ae2b8e6bf5213d6f89c6c2d6",
+      "size": 18197
+    },
+    {
       "path": "scripts/gstack_package.py",
       "sha256": "5493b6db7322a97249caed61429d98d378eee1c3ec27a251de0114ea7a55f59d",
       "size": 18205
     },
     {
       "path": "scripts/gstack_runtime.py",
-      "sha256": "84d564f4ac49a91c5edc3cbff9e27f7c8b8fab0eecdfcac0f109c4e30ecf39a5",
-      "size": 20288
+      "sha256": "1a1dd147d8b13e4bdf0e5f8e8e2a390fbba82fae712c0cd3afaad53c12e2c0ed",
+      "size": 21553
+    },
+    {
+      "path": "scripts/host_skill_name.py",
+      "sha256": "c12c88d71e70a6b634ad38a74fd46a68b41633fa0318f18d4cdcd443cf2c5c92",
+      "size": 2637
+    },
+    {
+      "path": "scripts/host_transaction.py",
+      "sha256": "9feb712b350d4b2c3669ae45eab7571b8d9340c94c83686bd2fb88ce03203d97",
+      "size": 3349
+    },
+    {
+      "path": "scripts/local_skill_inventory.py",
+      "sha256": "c48842a1f67119784d0727e69f0e38d27ea05f8a61d06efdca2e7e61d590597c",
+      "size": 8208
+    },
+    {
+      "path": "scripts/local_skill_transaction.py",
+      "sha256": "1a788efdf79fdb35b1bf52b4e9f348e845cccbf76ba744a2a10a3cbd95a82f19",
+      "size": 12894
     },
     {
       "path": "scripts/model_evidence_cache.py",
@@ -1533,18 +1558,18 @@
     },
     {
       "path": "scripts/provision-skills.py",
-      "sha256": "8a34c8034b2f888b83b3fcd3ace3fe67bac65b64bccdcc55d44ff9b3205e69a2",
-      "size": 22957
+      "sha256": "1a2394837522d7bfe1b762ed0fed3ac33c3271187c46f9d67001f158e6e17f86",
+      "size": 24535
     },
     {
       "path": "scripts/provisioning_state.py",
-      "sha256": "e92f99b4fd55055abe1074d4651e88def942bc894d8bcfd46b3ff2b4897a4f62",
-      "size": 15783
+      "sha256": "fa0df03580cd11837181911ca828d55f5dc6dab2a48f0fd76c92fb8f71e2efb4",
+      "size": 19597
     },
     {
       "path": "scripts/recover-playbook-source.py",
-      "sha256": "967d3e90fa024ddff20c58a6d9fc22384426cf3dc610b3404621c04b3a6c084b",
-      "size": 18674
+      "sha256": "9e216d9ab3eab9fa7bf4b2e8ab69e8cd1e79557b924b2a897f081bd577a4074e",
+      "size": 22137
     },
     {
       "path": "scripts/release_provenance.py",
@@ -1578,13 +1603,13 @@
     },
     {
       "path": "scripts/skill-provisioning.md",
-      "sha256": "96111d7548d1fbd41947d6bb01488081653b631ff539df8c44897bd1d6dd5f85",
-      "size": 40712
+      "sha256": "45527f98d51b7b0d2aa408087e59bef4f1ae648f4d7710834507ceace1775890",
+      "size": 43246
     },
     {
       "path": "scripts/skill_adoption.py",
-      "sha256": "e57c7631122efbf38baae0830c7819314d97fbeebe0299b7da9f4445a8a97f94",
-      "size": 11372
+      "sha256": "b21ae2b0b920a8b54544fa177bf93d7e1de800010c5c1a4efd09b05d1573cb17",
+      "size": 12405
     },
     {
       "path": "scripts/skill_bindings.py",
@@ -1643,8 +1668,8 @@
     },
     {
       "path": "scripts/test_conductor_setup.py",
-      "sha256": "f4aa40ecbaae3313ae716007697eb43f883f9bd178b208c0f5dd089c35bc6445",
-      "size": 58129
+      "sha256": "e0f3f51d43685eedffd460cda267e995d368d2673d4c97bb367eb0c76fedb1b3",
+      "size": 61132
     },
     {
       "path": "scripts/test_config_repair_boundaries.py",
@@ -1687,14 +1712,34 @@
       "size": 12854
     },
     {
+      "path": "scripts/test_gstack_activation.py",
+      "sha256": "a9173e25f765fb6f04ba9575bc2c1ca649d7674fa5d70e29cfdbbdeaff29c36d",
+      "size": 14792
+    },
+    {
       "path": "scripts/test_gstack_package.py",
       "sha256": "f214d1bf587c9256004ebc60f3e26161956f36110b626df5732cc56298053df0",
       "size": 12947
     },
     {
       "path": "scripts/test_gstack_runtime.py",
-      "sha256": "15d4bad31ddd06f464d367e2a5f2f1ea6830f470c3127bae8c27129376d9f22f",
-      "size": 13018
+      "sha256": "ba3256d8d3a4343f6b1344021a8fc9aea69370c3f66d22cd04b44b5856065945",
+      "size": 13995
+    },
+    {
+      "path": "scripts/test_host_transaction.py",
+      "sha256": "7b66ce365490727451258d1f889547c0632be8785acb1b954e6643e6fe1fcf99",
+      "size": 4668
+    },
+    {
+      "path": "scripts/test_local_skill_setup.py",
+      "sha256": "8695480e6203537a64d0ef6190b876342df7a644692fb555a94ffe6fafadc6c9",
+      "size": 3112
+    },
+    {
+      "path": "scripts/test_local_skill_transactions.py",
+      "sha256": "a8744aa4831dbd19cda21387c274fd668806d755f2345eb752eff973896b26c9",
+      "size": 11724
     },
     {
       "path": "scripts/test_model_advice_projection.py",
@@ -1788,8 +1833,8 @@
     },
     {
       "path": "scripts/test_provision_skills.py",
-      "sha256": "fb6dc0c7bc40449a1426d90d45c44c33e48797375e03894c2e0b33add0e70b88",
-      "size": 83432
+      "sha256": "417423179c6866406a53633ca12c64826869d42778b34a390469454aa11cfd16",
+      "size": 83609
     },
     {
       "path": "scripts/test_public_compute_status.py",
@@ -1888,13 +1933,13 @@
     },
     {
       "path": "scripts/upgrade-project.py",
-      "sha256": "a1a24dc920bb32346f3410358a4d34189d8dce3e2ce0fef3d34e0a42693145e8",
-      "size": 67772
+      "sha256": "3d7271360f04a7d6bdb3bf7e33cf8398956203dcd993f79c6470664679474d6d",
+      "size": 68112
     },
     {
       "path": "scripts/upstream_bundle.py",
-      "sha256": "29dbdc30b99671b642482eb1d78120cabcfb36e0afe2871f1ef8808db3c8c7b4",
-      "size": 10885
+      "sha256": "01e93eed7fadfaf5eaf9559c854653fa7b051fb60697d901e3ffd62b4609eb04",
+      "size": 11071
     },
     {
       "path": "scripts/upstream_registry.py",

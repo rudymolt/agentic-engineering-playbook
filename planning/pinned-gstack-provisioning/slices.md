@@ -27,5 +27,8 @@ also passed fresh independent verification: 12 runtime tests, five related tests
 and 28 adversarial probes (44 public CLI invocations). The revised Linux arm64
 cold build passed in 279 seconds and complete warm replay passed with networking
 disabled in 170 seconds. Both reports retain unverified discovery and behavior.
-Host activation/integration remains pending. Actual Cloud qualification and
-public release remain later gates.
+Host activation/integration and the local support-file repair are implemented.
+Independent cross-slice review identified preservation/reporting defects; the
+fixes now pass focused fresh review. Final full Linux verification is in progress.
+See [verification evidence](evidence.md). Actual Cloud qualification and public
+release remain later gates.

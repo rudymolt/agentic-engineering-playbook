@@ -121,6 +121,8 @@ def metadata(skill, material: dict[str, bytes]) -> None:
                 raise BundleError(f'{skill.name}: unsupported attribution metadata mapping')
             fields[key] = {}
             continue
+        if key == 'disable-model-invocation' and value.strip() not in ('true', 'false'):
+            raise BundleError(f'{skill.name}: invocation metadata requires an unquoted boolean')
         try:
             fields[key] = scalar(value.strip())
         except ValueError as error:
