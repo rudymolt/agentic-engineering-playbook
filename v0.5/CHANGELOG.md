@@ -1,5 +1,7 @@
 # Playbook changelog
 
+## Unreleased
+
 ## V0.5.4 — 2026-11-01
 
 This release completes the selected pinned skill inventories and adds supporting-file repair and source relocation for adopted Cloud setup. Live Cloud qualification of the expanded inventory remains pending.
