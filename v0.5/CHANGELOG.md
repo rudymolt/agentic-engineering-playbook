@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- Record the pinned gstack source archive, complete helper/reference inventory,
+  exact document generator and selected host outputs. Verify archive integrity
+  before extraction and reject unsafe aliases or redirected publication paths.
+
+*Why — replace setup-marker trust with package evidence:* source files, generated
+  host names and runtime readiness are different contracts. This first package
+  proof covers source generation and validation; portable activation and actual
+  Cloud discovery remain pending.
+
 - Bundle all twenty current registry Matt skills at the existing v1.3.1 pin,
   including complete supporting files, source-observed dependencies and unchanged
   invocation controls. Preserve `pr`'s nested credits and attribution file through

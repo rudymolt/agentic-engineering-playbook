@@ -31,6 +31,7 @@ COMMANDS = (
     (sys.executable, "v0.5/scripts/generate-status.py", "--check"),
     (sys.executable, "v0.5/scripts/generate-upstream-inventory.py", "--check"),
     (sys.executable, "v0.5/scripts/generate-skill-bundle.py", "--check"),
+    (sys.executable, "v0.5/scripts/generate-skill-bundle.py", "--package", "gstack", "--check"),
     (sys.executable, "v0.5/scripts/generate-manifest.py", "--check"),
     (sys.executable, "v0.5/delivery/scripts/verify.py", "--set", "K4.1"),
     (sys.executable, "v0.5/scripts/check-upstream-drift.py"),

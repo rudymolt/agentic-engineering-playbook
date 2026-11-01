@@ -178,8 +178,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "d00f7a542b6eee97742df7e70f9bdad6bc56f7697302357e11af60fef2595819",
-      "size": 75330
+      "sha256": "edf3bafe3ee44f5c457180967cf36411111909c80992faa3e247a682599025e0",
+      "size": 75847
     },
     {
       "path": "MAINTENANCE.md",
@@ -205,6 +205,16 @@
       "path": "assets/playbook-glossary.js",
       "sha256": "d37e69b91d489e9dc60551afb3c436d809980d93b4978ecf24db339f130981ca",
       "size": 8056
+    },
+    {
+      "path": "bundles/gstack/README.md",
+      "sha256": "bceea85aff166dba7c1a450321ac116fb0050b8f0ca5e631f280d4f7c32e08ce",
+      "size": 2063
+    },
+    {
+      "path": "bundles/gstack/integrity.json",
+      "sha256": "4193fa6c904d278f714d2660ccf66f2012c796e261f1848521f691bfc3064716",
+      "size": 292882
     },
     {
       "path": "bundles/mattpocock-skills/LICENSE",
@@ -1458,8 +1468,8 @@
     },
     {
       "path": "scripts/generate-skill-bundle.py",
-      "sha256": "6fa798f1ef8d28ebeb52c5478239c96592f217bbe08ce963d31cf1a44e65face",
-      "size": 3210
+      "sha256": "e174d334e7695f2abd9d79636c7589c56ef8f63536b239679753adce11b11dfc",
+      "size": 5026
     },
     {
       "path": "scripts/generate-status.py",
@@ -1475,6 +1485,11 @@
       "path": "scripts/glossary_migration.py",
       "sha256": "77c7b48907b2d45dc95eb5c5d7471b4f2becd0990f4f25776016b262f30175ec",
       "size": 7086
+    },
+    {
+      "path": "scripts/gstack_package.py",
+      "sha256": "5493b6db7322a97249caed61429d98d378eee1c3ec27a251de0114ea7a55f59d",
+      "size": 18205
     },
     {
       "path": "scripts/model_evidence_cache.py",
@@ -1660,6 +1675,11 @@
       "path": "scripts/test_glossary_migration.py",
       "sha256": "a722207a564e163c0f086743be97dc8cb7fcb200a20096caad5e54ad3ed816dc",
       "size": 12854
+    },
+    {
+      "path": "scripts/test_gstack_package.py",
+      "sha256": "f214d1bf587c9256004ebc60f3e26161956f36110b626df5732cc56298053df0",
+      "size": 12947
     },
     {
       "path": "scripts/test_model_advice_projection.py",
@@ -1878,8 +1898,8 @@
     },
     {
       "path": "scripts/verify-playbook.py",
-      "sha256": "1a7afc8be9fb40842e197885b6588494973621a9f567aee9e30d8faedee7ebe9",
-      "size": 3806
+      "sha256": "b9b6bb156be8179c46b2654728565eaa02974a2e5d0d7dfedfe4c52c940a1b37",
+      "size": 3903
     },
     {
       "path": "skills/README.md",
