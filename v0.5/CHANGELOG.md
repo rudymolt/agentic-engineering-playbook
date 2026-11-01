@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+- Prepare pinned gstack runtime inputs and frozen native builds through the
+  existing provisioner CLI. Keep complete source/build trees outside discovery,
+  verify warm caches file by file, and preserve conflicts and earlier repair trees.
+
+*Why — make runtime readiness independently verifiable:* a source package or
+  setup marker cannot prove dependency and binary completeness. Runtime-only
+  reports retain unverified discovery and behavior until host qualification.
+
 - Record the pinned gstack source archive, complete helper/reference inventory,
   exact document generator and selected host outputs. Verify archive integrity
   before extraction and reject unsafe aliases or redirected publication paths.

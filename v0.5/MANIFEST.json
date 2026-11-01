@@ -178,8 +178,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "edf3bafe3ee44f5c457180967cf36411111909c80992faa3e247a682599025e0",
-      "size": 75847
+      "sha256": "5d87f7eb0f0069e3f57d0a78c84818ca877a62dd760c8dbb2fddaeaa3b54b5a9",
+      "size": 76322
     },
     {
       "path": "MAINTENANCE.md",
@@ -208,13 +208,18 @@
     },
     {
       "path": "bundles/gstack/README.md",
-      "sha256": "bceea85aff166dba7c1a450321ac116fb0050b8f0ca5e631f280d4f7c32e08ce",
-      "size": 2063
+      "sha256": "d97f0e425afe33d57d0ea318483e6e5eecdf64c69c49fe6635f1deecfedbd990",
+      "size": 4562
     },
     {
       "path": "bundles/gstack/integrity.json",
       "sha256": "4193fa6c904d278f714d2660ccf66f2012c796e261f1848521f691bfc3064716",
       "size": 292882
+    },
+    {
+      "path": "bundles/gstack/runtime.json",
+      "sha256": "1a578e30ced5fed48fb783e1b7730123defe2c67ea9f84cbb08f291716979ad4",
+      "size": 629
     },
     {
       "path": "bundles/mattpocock-skills/LICENSE",
@@ -1492,6 +1497,11 @@
       "size": 18205
     },
     {
+      "path": "scripts/gstack_runtime.py",
+      "sha256": "84d564f4ac49a91c5edc3cbff9e27f7c8b8fab0eecdfcac0f109c4e30ecf39a5",
+      "size": 20288
+    },
+    {
       "path": "scripts/model_evidence_cache.py",
       "sha256": "e88258d830994664a5466f7e60e97bc40576be3e1ceafbe518dc766063715984",
       "size": 14273
@@ -1523,8 +1533,8 @@
     },
     {
       "path": "scripts/provision-skills.py",
-      "sha256": "59d9dfdab2ecc1d379c024eef70bbcc15b373d44e8707629030e09595c98f45a",
-      "size": 20904
+      "sha256": "8a34c8034b2f888b83b3fcd3ace3fe67bac65b64bccdcc55d44ff9b3205e69a2",
+      "size": 22957
     },
     {
       "path": "scripts/provisioning_state.py",
@@ -1680,6 +1690,11 @@
       "path": "scripts/test_gstack_package.py",
       "sha256": "f214d1bf587c9256004ebc60f3e26161956f36110b626df5732cc56298053df0",
       "size": 12947
+    },
+    {
+      "path": "scripts/test_gstack_runtime.py",
+      "sha256": "15d4bad31ddd06f464d367e2a5f2f1ea6830f470c3127bae8c27129376d9f22f",
+      "size": 13018
     },
     {
       "path": "scripts/test_model_advice_projection.py",

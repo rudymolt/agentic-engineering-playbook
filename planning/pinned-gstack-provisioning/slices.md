@@ -22,6 +22,10 @@ host-discovery state independently reviewable; the parent acceptance is unchange
 Status: package proof passed fresh independent verification (14 focused tests,
 offline archive verification and 13 additional public-CLI rejection probes).
 The real Linux frozen install and five native binary builds passed; offline
-generation matched all 34 selected Codex endpoints. Runtime acquisition and
-activation are still pending. Actual Cloud qualification and public release
-remain later gates.
+generation matched all 34 selected Codex endpoints. Runtime acquisition/build
+also passed fresh independent verification: 12 runtime tests, five related tests
+and 28 adversarial probes (44 public CLI invocations). The revised Linux arm64
+cold build passed in 279 seconds and complete warm replay passed with networking
+disabled in 170 seconds. Both reports retain unverified discovery and behavior.
+Host activation/integration remains pending. Actual Cloud qualification and
+public release remain later gates.

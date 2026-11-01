@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "bun_version": "1.4.4",
+  "artifacts": {
+    "linux-arm64": {
+      "url": "https://github.com/oven-sh/bun/releases/download/bun-v1.4.4/bun-linux-aarch64.zip",
+      "sha256": "baa6bb36f51d6e58561e02bbea825038a9df454f673d6d776e8bbf86f8c7850e",
+      "size": 51644673,
+      "member": "bun-linux-aarch64/bun"
+    },
+    "linux-x64": {
+      "url": "https://github.com/oven-sh/bun/releases/download/bun-v1.4.4/bun-linux-x64-baseline.zip",
+      "sha256": "e0446eb55995772eb9894bebae9a6be368d985a8b9271ee124486f9946eedd76",
+      "size": 51794559,
+      "member": "bun-linux-x64-baseline/bun"
+    }
+  }
+}

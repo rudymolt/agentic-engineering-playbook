@@ -18,6 +18,7 @@ import release_provenance as provenance
 import upstream_bundle as bundle
 import upstream_registry
 import provisioning_state as history
+import gstack_runtime
 from skill_bindings import JobBindings, JOBS
 from playbook_config import Configuration, ConfigError, public_error_message
 
@@ -229,18 +230,35 @@ def main(argv=None):
     parser.add_argument('--custom-bindings-dir', type=Path,
                         help='existing external machine-local bindings/audits, read-only; same store as Configure')
     parser.add_argument('--skill', help='one registry-selected skill for retention or manual fallback')
-    parser.add_argument('action', nargs='?', default='discover', choices=('discover', 'preview', 'install', 'check', 'recover', 'retain', 'fallback'))
+    parser.add_argument('--runtime-store', type=Path, help='separate off-discovery gstack runtime store')
+    parser.add_argument('--gstack-archive', type=Path, help='exact pinned source archive for runtime preparation')
+    parser.add_argument('--bun-archive', type=Path, help='exact reviewed Bun ZIP for runtime preparation')
+    parser.add_argument('--offline', action='store_true', help='verify/reuse a complete runtime without acquisition or build commands; requires recorded release proof or --candidate')
+    parser.add_argument('action', nargs='?', default='discover', choices=('discover', 'preview', 'install', 'check', 'recover', 'retain', 'fallback', 'preview-runtime', 'prepare-runtime', 'check-runtime'))
     args = parser.parse_args(argv)
     report = {'schema_version': 1, 'complete': False, 'changed': [], 'skills': []}
     inspection = None
     try:
         if args.candidate and any((args.release, args.tag_object, args.commit)):
             raise ProvisionError('--candidate cannot be combined with consumer release proof')
+        if args.offline and not args.candidate and not all((args.release, args.tag_object, args.commit)):
+            raise ProvisionError('offline requires recorded release proof: --release, --tag-object and --commit; no public lookup was attempted')
         identity = source_identity(args)
         project = args.project.resolve()
         if not project.is_dir():
             raise ProvisionError('destination project must already exist')
         edition = args.source.resolve() / 'v0.5'
+        if args.action.endswith('-runtime'):
+            report.update(scope='runtime-only', runtime={'complete': False}, discovery='unverified', qualification='unverified')
+            if args.runtime_store is None or args.skill is not None or args.custom_bindings_dir is not None:
+                raise ProvisionError('runtime actions require --runtime-store and accept no skill or binding selection')
+            report = gstack_runtime.provision(edition, project, args.runtime_store, args.action,
+                                              args.gstack_archive, args.bun_archive, args.offline)
+            report['source'] = identity
+            print(json.dumps(report, indent=2, sort_keys=True))
+            return 0 if args.action == 'preview-runtime' or report['runtime']['complete'] else 2
+        if args.runtime_store is not None or args.gstack_archive is not None or args.bun_archive is not None or args.offline:
+            raise ProvisionError('runtime options require a runtime action')
         manifest, packages, registry = bundle.load(edition)
         identity['bundle_sha256'] = bundle.digest((edition / bundle.BUNDLE / 'integrity.json').read_bytes())
         if args.action == 'discover':
@@ -332,10 +350,12 @@ def main(argv=None):
             pass
         report['complete'] = False
         report['error'] = str(error)
-        report['repair'] = ('Restore verified bundle material if damaged. For later or unknown project edits, '
+        report['repair'] = (('Restore the exact runtime inputs; preserve conflicting content and select a separate off-discovery store. '
+                            if args.action.endswith('-runtime') else
+                            'Restore verified bundle material if damaged. For later or unknown project edits, '
                             'commit and explicitly retain --skill NAME, or move conflicting files outside the skill directory '
                             'before retrying. For interrupted replacement, retry the identical install or select recover; '
-                            'preserve malformed records for explicit reconciliation. ' + str(error))
+                            'preserve malformed records for explicit reconciliation. ') + str(error))
         print(json.dumps(report, indent=2, sort_keys=True))
         return 2
 
