@@ -178,8 +178,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "abb7553e62d75a2ea0c27ad92850a43d5314e0edbf8cd68fe84cc4f5e9a2c487",
-      "size": 78381
+      "sha256": "3679f6277270cf26c623fbf1d0193b733327176a16886da1334c2263e140fbb9",
+      "size": 79020
     },
     {
       "path": "MAINTENANCE.md",
@@ -1513,8 +1513,8 @@
     },
     {
       "path": "scripts/host_transaction.py",
-      "sha256": "9feb712b350d4b2c3669ae45eab7571b8d9340c94c83686bd2fb88ce03203d97",
-      "size": 3349
+      "sha256": "0732a611ab6c3030ce5d052dbcdc8750d336e32c8894c4f15d88578776f72f55",
+      "size": 3511
     },
     {
       "path": "scripts/local_skill_inventory.py",
@@ -1713,8 +1713,8 @@
     },
     {
       "path": "scripts/test_gstack_activation.py",
-      "sha256": "a9173e25f765fb6f04ba9575bc2c1ca649d7674fa5d70e29cfdbbdeaff29c36d",
-      "size": 14792
+      "sha256": "1d47754d54b54bfa9338834f9530d3b278de6d5994f683dcb5d411d80cb587e0",
+      "size": 15830
     },
     {
       "path": "scripts/test_gstack_package.py",

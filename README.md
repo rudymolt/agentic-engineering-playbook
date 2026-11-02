@@ -13,7 +13,7 @@
 
 Turn an idea into a clear specification, build it in manageable pieces, verify the result, and carry lessons into the next feature. You bring the goals and judgement. The playbook gives your agent a repeatable way to work.
 
-**Current release:** V0.5.4 · [Release notes](v0.5/CHANGELOG.md#v054--2026-11-01)
+**Current release:** V0.5.5 · [Release notes](v0.5/CHANGELOG.md#v055--2026-11-02)
 
 **Humans:** [Get started](#get-started) · **Agents:** [Read the agent digest](v0.5/AGENT-DIGEST.md)
 
@@ -33,16 +33,15 @@ Use it when you are building a new product or working on an existing codebase an
 
 The human owns goals, acceptance criteria, and consequential decisions. The agent plans, implements, checks, and records the work within the agreed scope.
 
-## What's new in V0.5.4
+## What's new in V0.5.5
 
-This release completes the pinned skill inventory and repairs its supporting files during adopted Cloud setup.
+This patch preserves completed skill installation history during repeated setup and clarifies how to activate Cloud startup.
 
-- **Complete selected skills.** All twenty registered Matt skills ship with their supporting files, invocation controls and notices at the existing reviewed pin.
-- **Pinned gstack setup.** Explicit adoption prepares the frozen runtime and publishes the selected Claude Code and Codex skills. Source and build support stay outside skill discovery folders.
-- **Repair that preserves project changes.** Setup restores missing managed support files and relocates source references using recorded originals. Conflicting edits remain available for reconciliation, with recovery history retained.
-- **Clear evidence limits.** Installation and repair checks cover disposable consumers. Actual Cloud discovery, invocation and lifecycle qualification for the expanded inventory remain pending; [read the provisioning contracts](v0.5/scripts/skill-provisioning.md).
+- **Unchanged setup preserves history.** Replaying completed install or recovery leaves host journals and their directory metadata unchanged after all safety checks pass. Missing files, interrupted work and conflicting edits retain their existing repair, recovery and refusal behavior.
+- **Explicit Cloud activation.** Configure the organization's repository Setup script field and verify that it runs. A checked-in local setup command alone does not establish Cloud activation.
+- **Clear evidence limits.** Local implementation and repair tests do not establish actual Cloud startup order, discovery, invocation or lifecycle acceptance; [read the provisioning contracts](v0.5/scripts/skill-provisioning.md).
 
-See the [V0.5.4 changelog](v0.5/CHANGELOG.md#v054--2026-11-01) for all changes since V0.5.3. Existing projects upgrade deliberately from a pinned release while preserving customizations; publishing this release does not migrate them automatically.
+See the [V0.5.5 changelog](v0.5/CHANGELOG.md#v055--2026-11-02) for all changes since V0.5.4. Existing projects upgrade deliberately from a pinned release while preserving customizations; publishing this release does not migrate them automatically.
 
 ## How it works
 
@@ -152,7 +151,7 @@ You need a coding-agent environment, such as Codex or Claude Code, that can read
 Clone this repository into a separate directory using the repository URL from GitHub's **Code** button:
 
 ```sh
-git clone --branch v0.5.4 --depth 1 REPOSITORY_URL playbook
+git clone --branch v0.5.5 --depth 1 REPOSITORY_URL playbook
 ```
 
 Replace `REPOSITORY_URL` with the copied URL. Keep this checkout at the release tag so development changes cannot silently change the instructions your project uses.

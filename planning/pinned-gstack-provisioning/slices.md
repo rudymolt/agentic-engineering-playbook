@@ -33,3 +33,8 @@ fixes now pass focused fresh review. Final verification and the human merge
 checkpoint are tracked in PR #51.
 See [verification evidence](evidence.md). Actual Cloud qualification and public
 release remain later gates.
+
+Follow-up: [completed host journal replay](journal-replay.md) repairs unnecessary
+group-journal rewrites on unchanged install/recovery. The public-CLI regression
+is red before the fix and green afterward; independent review and release
+qualification remain separate gates.

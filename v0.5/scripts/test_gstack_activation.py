@@ -1,6 +1,7 @@
 """Host publication through the provisioner CLI and a disposable runtime fixture."""
 import json
 import hashlib
+import os
 from pathlib import Path
 import subprocess
 import shutil
@@ -23,6 +24,20 @@ class GstackActivationTest(unittest.TestCase):
         self.assertEqual(result.returncode, code, result.stdout + result.stderr)
         return json.loads(result.stdout)
 
+    def history_snapshot(self):
+        root = self.project / '.playbook/gstack-history'
+        # Make an unnecessary atomic replacement observable without a sleep or
+        # an assumption about the filesystem's timestamp resolution.
+        for path in (root, root / 'operation.json'):
+            os.utime(path, ns=(1_000_000_000, 1_000_000_000))
+        return self.read_history_snapshot()
+
+    def read_history_snapshot(self):
+        root = self.project / '.playbook/gstack-history'
+        return {str(p.relative_to(root)): (p.stat().st_mode, p.stat().st_mtime_ns,
+                                           p.read_bytes() if p.is_file() else None)
+                for p in (root, *root.rglob('*'))}
+
     def test_publish_both_host_inventories_replay_and_recover(self):
         self.runtime()
         preview = self.activate('preview-gstack')
@@ -41,14 +56,19 @@ class GstackActivationTest(unittest.TestCase):
         notice = (self.project / '.agents/skills/gstack-careful/SKILL.md').read_text()
         self.assertIn('unsupported', notice)
         self.assertNotIn('Safety mode is now', notice)
+        history_before = self.history_snapshot()
         before = (self.project / '.agents/skills/gstack-review/SKILL.md').stat().st_mtime_ns
         self.assertEqual(self.activate()['changed'], [])
+        self.assertEqual(self.read_history_snapshot(), history_before)
         self.assertEqual((self.project / '.agents/skills/gstack-review/SKILL.md').stat().st_mtime_ns, before)
         self.assertTrue(self.activate('check-gstack')['complete'])
         recovered = self.activate('recover-gstack')
         self.assertTrue(recovered['recovery_complete'])
         self.assertFalse((self.project / '.agents/skills/gstack-review').exists())
         self.assertFalse((self.project / '.claude/skills/review').exists())
+        history_before = self.history_snapshot()
+        self.assertTrue(self.activate('recover-gstack')['recovery_complete'])
+        self.assertEqual(self.read_history_snapshot(), history_before)
 
     def test_missing_managed_support_repairs_but_edits_and_duplicate_names_block(self):
         self.runtime()
