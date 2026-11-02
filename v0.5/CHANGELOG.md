@@ -1,5 +1,7 @@
 # Playbook changelog
 
+## Unreleased
+
 ## V0.5.5 — 2026-11-02
 
 This patch preserves completed skill installation history during repeated setup and clarifies Cloud startup activation. Actual Cloud qualification remains a separate acceptance gate.
