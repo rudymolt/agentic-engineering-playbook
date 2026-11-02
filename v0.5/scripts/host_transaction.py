@@ -42,18 +42,21 @@ def apply(path, layouts, action, after, *, repair_missing=False):
             raise history.StateError('interrupted host group: retry the identical install or recover first')
     for host, layout in layouts.items():
         history.apply(layout, states[host], action, after[host], repair_missing=repair_missing, dry_run=True)
-    if record and record['action'] == action and record['after'] == after:
+    before = {}
+    unchanged = True
+    for host, layout in layouts.items():
+        state = states[host]
+        names = set(after[host]['skills']) | set((state['current'] or {}).get('skills', {}))
+        before[host] = history.capture(layout, names, (state['current'] or {}).get('source', {}))
+        unchanged = unchanged and state['transaction'] is None and history.present(state['current']) == history.present(after[host]) and history.present(before[host]) == history.present(after[host])
+    matching = record and record['action'] == action and record['after'] == after
+    # A completed replay must not rewrite the group journal. Keep every host's
+    # safety preflight above this return; pending work still needs finalization.
+    if unchanged and record and not record['pending'] and (action == 'install' or matching):
+        return {}
+    if matching:
         operation = {**record, 'pending': True}
     else:
-        before = {}
-        unchanged = True
-        for host, layout in layouts.items():
-            state = states[host]
-            names = set(after[host]['skills']) | set((state['current'] or {}).get('skills', {}))
-            before[host] = history.capture(layout, names, (state['current'] or {}).get('source', {}))
-            unchanged = unchanged and state['transaction'] is None and history.present(state['current']) == history.present(after[host]) and history.present(before[host]) == history.present(after[host])
-        if unchanged and record and not record['pending'] and action == 'install':
-            return {}
         operation = {'schema_version': 1, 'action': action, 'pending': True, 'before': before, 'after': after}
     history.write_json(path, operation)
     changed = {}

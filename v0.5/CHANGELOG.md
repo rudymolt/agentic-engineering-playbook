@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+- Preserve completed host transaction journals during unchanged install and
+  recovery replay. Validate all hosts before returning; interrupted work and
+  missing managed files still follow the existing recovery and repair paths.
+
+*Why — avoid unnecessary setup writes:* replaying an already completed
+  installation rewrote an identical group record and changed its directory
+  metadata even though no skill needed updating.
+
 - Correct the Cloud setup configuration source: use the organization's repository
   Setup script field and verify activation separately from local tracked TOML.
 
