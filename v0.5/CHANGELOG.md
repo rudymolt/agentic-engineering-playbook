@@ -1,6 +1,6 @@
 # Playbook changelog
 
-## Unreleased
+## V0.5.5 — 2026-11-02
 
 - Preserve completed host transaction journals during unchanged install and
   recovery replay. Validate all hosts before returning; interrupted work and

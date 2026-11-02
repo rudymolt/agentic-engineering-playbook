@@ -37,5 +37,8 @@ take the existing repair/recovery/refusal path.
 Status: the public-CLI regression failed before the fix because the completed
 group record and its parent directory changed mtime. After the fix, unchanged
 install and recovery replay both preserve the complete history snapshot.
-Broader verification and fresh independent review remain pending. Keep this
-follow-up local until review and the separate publication/release gates pass.
+Fresh independent implementation review passed, including interrupted-operation,
+repair and refusal probes. The full Linux release verifier passed on the reviewed
+implementation. The V0.5.5 metadata update has its own focused review and final
+candidate verification gate; CI, human merge, release and actual affected-host
+qualification remain separate requirements.
