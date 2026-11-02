@@ -2,6 +2,8 @@
 
 ## V0.5.5 — 2026-11-02
 
+This patch preserves completed skill installation history during repeated setup and clarifies Cloud startup activation. Actual Cloud qualification remains a separate acceptance gate.
+
 - Preserve completed host transaction journals during unchanged install and
   recovery replay. Validate all hosts before returning; interrupted work and
   missing managed files still follow the existing recovery and repair paths.

@@ -6,7 +6,7 @@
 
 ## Release
 
-**V0.5.5** — 2026-11-02. - Preserve completed host transaction journals during unchanged install and
+**V0.5.5** — 2026-11-02. This patch preserves completed skill installation history during repeated setup and clarifies Cloud startup activation. Actual Cloud qualification remains a separate acceptance gate.
 
 - V0.5.4 — 2026-11-01. This release completes the selected pinned skill inventories and adds supporting-file repair and source relocation for adopted Cloud setup. Live Cloud qualification of the expanded inventory remains pending.
 - V0.5.3 — 2026-10-27. This release bundles reviewed project skills with portable adoption and exact-release recovery, and records the qualified maintainer runtime routes.
