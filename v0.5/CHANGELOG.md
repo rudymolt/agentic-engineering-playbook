@@ -1,6 +1,6 @@
 # Playbook changelog
 
-## Unreleased
+## V0.5.6 — 2026-11-08
 
 - Start ordinary substantive slices at an adjustable 250-call estimate, broad
   final verification at a separate 300 calls, and multi-slice work at a
@@ -16,6 +16,14 @@
   inherited examples can be mistaken for stopping limits. Clear estimates and
   explicit migration review prevent silent cap conversion; unresolved template
   conflicts must retain the prior certification until review is complete.
+
+- Record the November released-source comparison and current installed-source
+  audit, including command retirement, invocation differences, dependency closure
+  and exact-source incompatibility. Retain all adopted pins and manual fallbacks.
+
+*Why — maintenance batch:* newer sources change workflow ownership and host
+  behavior. Recording those differences and the next due date keeps upgrades
+  deliberate without presenting source inspection as runtime qualification.
 
 ## V0.5.5 — 2026-11-02
 

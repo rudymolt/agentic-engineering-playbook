@@ -1,10 +1,10 @@
 schema_version: 1
 owner: repository-maintainer
 procedure: v0.5/MAINTENANCE.md
-last_verified: 2026-10-08
-next_due: 2026-11-08
+last_verified: 2026-11-08
+next_due: 2026-12-08
 cadence: monthly
-# Completed comparison: analysis/2026-10-08-upstream-drift.md
+# Completed comparison: analysis/2026-11-08-upstream-drift.md
 # Below are adopted source pins and historical host-doc dates; source review is not host qualification.
 
 upstreams:

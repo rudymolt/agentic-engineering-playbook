@@ -217,8 +217,8 @@ The Matt Pocock accelerator inventory and behaviour contracts were verified on 2
 For mapped domains, `GLOSSARY-MAP.md` plus every resolved mapped glossary satisfies
 the domain entry prerequisite. Do not create a competing root glossary.
 
-The separate monthly released-source comparison completed on 2026-10-08;
-next due 2026-11-08. See the [dated maintenance analysis](../../analysis/2026-10-08-upstream-drift.md)
+The separate monthly released-source comparison completed on 2026-11-08;
+next due 2026-12-08. See the [dated maintenance analysis](../../analysis/2026-11-08-upstream-drift.md)
 for candidate-source drift, removed/renamed commands and manual fallbacks.
 Matt source adoption is recorded separately from historical host-audit dates;
 the comparison and source review do not qualify installed skills or upgrade a host.
