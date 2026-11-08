@@ -1,6 +1,10 @@
 # Playbook changelog
 
+## Unreleased
+
 ## V0.5.6 — 2026-11-08
+
+This patch clarifies ordinary build checkpoints, preserves upgrade certification during review, and records the November upstream comparison.
 
 - Start ordinary substantive slices at an adjustable 250-call estimate, broad
   final verification at a separate 300 calls, and multi-slice work at a
