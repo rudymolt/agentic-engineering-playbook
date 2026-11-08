@@ -6,10 +6,10 @@
 
 ## Release
 
-**V0.5.5** — 2026-11-02. This patch preserves completed skill installation history during repeated setup and clarifies Cloud startup activation. Actual Cloud qualification remains a separate acceptance gate.
+**V0.5.6** — 2026-11-08. - Start ordinary substantive slices at an adjustable 250-call estimate, broad
 
+- V0.5.5 — 2026-11-02. This patch preserves completed skill installation history during repeated setup and clarifies Cloud startup activation. Actual Cloud qualification remains a separate acceptance gate.
 - V0.5.4 — 2026-11-01. This release completes the selected pinned skill inventories and adds supporting-file repair and source relocation for adopted Cloud setup. Live Cloud qualification of the expanded inventory remains pending.
-- V0.5.3 — 2026-10-27. This release bundles reviewed project skills with portable adoption and exact-release recovery, and records the qualified maintainer runtime routes.
 
 Full history: [`v0.5/CHANGELOG.md`](v0.5/CHANGELOG.md).
 
@@ -30,7 +30,7 @@ split suite and drift, while the weekly maintenance cron keeps the strict set.
 
 ## Upstream maintenance
 
-- Last verified 2026-10-08; next due 2026-11-08 (monthly cadence, procedure: [`v0.5/MAINTENANCE.md`](v0.5/MAINTENANCE.md)).
+- Last verified 2026-11-08; next due 2026-12-08 (monthly cadence, procedure: [`v0.5/MAINTENANCE.md`](v0.5/MAINTENANCE.md)).
 - Upstream versions: matt_pocock_skills v1.3.1; gstack 1.62.0.0 (d078622); pstack 93b00b8; claude_code_docs 2026-07-09; codex_docs 2026-07-09; cursor_docs 2026-07-09.
 
 ## Upstream packages
