@@ -8,8 +8,8 @@
     },
     {
       "path": "00-foundations.md",
-      "sha256": "a637d5fb2f544b1218291b661c982122cfdff5a3ab8bb53713937f8254def4a6",
-      "size": 32287
+      "sha256": "57fb7c3d49a833f830252074e085def6e73019131d6688d826d05525c472d453",
+      "size": 32891
     },
     {
       "path": "10-process/00-prereqs.md",
@@ -58,8 +58,8 @@
     },
     {
       "path": "10-process/07-implementation-tdd.md",
-      "sha256": "8c1c77459509f766fa23aa94d0d1a7626895a6ff7cf65ed9d45c0fd30423fc87",
-      "size": 19243
+      "sha256": "c0a19d3cd5fda3d4dfaeb98a95f264bea0e3df07821adb98b7557563db75a560",
+      "size": 19514
     },
     {
       "path": "10-process/08-review.md",
@@ -178,8 +178,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "3679f6277270cf26c623fbf1d0193b733327176a16886da1334c2263e140fbb9",
-      "size": 79020
+      "sha256": "c03c80397dcfe7b616b912fb41815b362a42e7b3f36f3cada899602ede83cdf3",
+      "size": 80031
     },
     {
       "path": "MAINTENANCE.md",
@@ -1848,8 +1848,8 @@
     },
     {
       "path": "scripts/test_public_upgrade_transition.py",
-      "sha256": "5d767d93e54af66aeda5146bf7f5db5a81cd808b1c0796fd99447b494199614b",
-      "size": 5776
+      "sha256": "8c9f5b3004e91cfcf8cba3529b67963e6faf46089d4035e2ed6d7ef5e689abd1",
+      "size": 14336
     },
     {
       "path": "scripts/test_release_provenance.py",
@@ -1933,8 +1933,8 @@
     },
     {
       "path": "scripts/upgrade-project.py",
-      "sha256": "3d7271360f04a7d6bdb3bf7e33cf8398956203dcd993f79c6470664679474d6d",
-      "size": 68112
+      "sha256": "0b35eb67a6016b9c4f03232d827f8690e205e18ee28955c917cf2a43154dc706",
+      "size": 68144
     },
     {
       "path": "scripts/upstream_bundle.py",
@@ -1983,8 +1983,8 @@
     },
     {
       "path": "skills/ai-playbook-bootstrap-project/SKILL.md",
-      "sha256": "e5dbcb02d9d94bda86b0a5080632e6674ae65666e37eb595a2f1724b9fa5c67d",
-      "size": 9782
+      "sha256": "fa8e53c49e3a0bf809f0c1eb7436591266a5af582a8c9d2cb244100a4a29e486",
+      "size": 10142
     },
     {
       "path": "skills/ai-playbook-bootstrap-project/agents/openai.yaml",
@@ -2043,13 +2043,13 @@
     },
     {
       "path": "skills/ai-playbook-upgrade-project/MIGRATIONS.md",
-      "sha256": "268680a273965f158c91d33bb86f292f37624df4e2e524d0dfab50eda9030a7d",
-      "size": 7734
+      "sha256": "9e6768c931aa53502680dd694c17da18ec28ad5a0af1c79c21a274a929db80ae",
+      "size": 9992
     },
     {
       "path": "skills/ai-playbook-upgrade-project/SKILL.md",
-      "sha256": "fa2453172ffdac368ba9b420d1869d5eca6e91d6abe2f71766c9049ff156ab46",
-      "size": 5324
+      "sha256": "5c210b1e12eb4d7ff64cf6c0c541a89cd507ffc0245ade09d7e910604bc36d47",
+      "size": 5541
     },
     {
       "path": "skills/ai-playbook-upgrade-project/agents/openai.yaml",
@@ -2178,8 +2178,8 @@
     },
     {
       "path": "templates/CLAUDE.md",
-      "sha256": "5b41c32d6abeb2115ec064e3b1f50430dd21a81f235aec4f326881c41e820613",
-      "size": 10412
+      "sha256": "2ffc9428cdce5ca4160a6a5e90450c6e06ae4d075175fc97c3dba71037317b96",
+      "size": 10777
     },
     {
       "path": "templates/DESIGN-GLOSSARY.md",

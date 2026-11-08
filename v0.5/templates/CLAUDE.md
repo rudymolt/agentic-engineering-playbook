@@ -72,15 +72,15 @@ If you need archive content for an incident investigation, ask the human to surf
 - **Technical decisions:** ask by default. If `.playbook-state.yml → decisions.technical_decisions` is explicitly `auto_recommend`, choose and record routine, reversible engineering details with a clear best option. Reuse existing delegation; ask only for uncovered product/taste, scope, cost, credentials, external effects, destructive actions, security, and close trade-off decisions.
 - **Budget floor (§11 — tune per project, never delete):**
   - _Loop guards (universal — set regardless of billing):_
-    - productive-work budget: estimate from the verification plan before the run; for browser-heavy UI work, start near 60 tool calls and tune from evidence
-    - verification reserve: plan the final 20% for verification, diff review, commit, and handoff; this estimate is not an ordinary-build halt
+    - productive-work estimate: start at 250 aggregate tool calls per substantive slice, with a separate 300-call estimate for broad final verification; scale down for small work and revise from the verification plan
+    - verification capacity: account for slice tests, fresh review, diff review, commit and handoff; keep broad final verification separate and count observable worker/coordinator usage once, reporting unavailable counters without inventing them
     - max-retry: 3 occurrences of the same failure signature, then escalate
-    - time checkpoint: {e.g. 30 min} for ordinary issue-build progress reporting; declare any selected hard deadline separately
-    - no-progress halt: {e.g. 3} consecutive iterations with the same failing test or no diff change → stop
+    - time checkpoint: use an adjustable 300-minute multi-slice forecast; these calls/time estimates are neither ceilings nor minimum consumption targets. Declare any selected hard deadline separately
+    - no-progress halt: 3 consecutive iterations with the same failing test or no diff change → stop
   - _Cost/quota overlay (pick the row for your billing):_
     - API / per-token: per-run {e.g. $2 or 500k tokens}; session/day {e.g. $10}
     - Subscription / OAuth: no dollar cap available — the loop guards above are your quota protection; set them conservatively
-  Ordinary issue builds include necessary reversible in-scope returned fixes and fresh independent verification through the selected endpoint. Inherited time checkpoints, effort estimates and verification reserves report progress and plan capacity; they do not require extension approval while progress continues. Explicitly selected hard limits, actual host/provider quotas, Stop, scope/authority/safety decisions and cumulative failure/no-progress guards still bind. Protected/autonomous delivery and live qualification retain mandatory approved limits. A ceiling stop **reports in four parts** — what it was doing, progress state (done/verified/incomplete), which ceiling at what value, and typed options for the human. Restate selected hard limits at run start; this rule grants no merge, activation, new service or spending authority.
+  Ordinary issue builds include necessary reversible in-scope returned fixes and fresh independent verification through the selected endpoint. At each checkpoint report completed and independently verified work, remaining work, changed evidence and revised calls/time forecasts. Inherited time checkpoints, effort estimates and verification reserves report progress and plan capacity; they do not require extension approval while progress continues. Explicitly selected hard limits, actual host/provider quotas, Stop, scope/authority/safety decisions and cumulative failure/no-progress guards still bind. Protected/autonomous delivery and live qualification retain mandatory approved limits. A ceiling stop **reports in four parts** — what it was doing, progress state (done/verified/incomplete), which ceiling at what value, and typed options for the human. Restate selected hard limits at run start; this rule grants no merge, activation, new service or spending authority.
 
 ## Constraints
 
