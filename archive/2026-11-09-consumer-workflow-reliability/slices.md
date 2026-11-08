@@ -1,7 +1,9 @@
 # Consumer workflow reliability — slices
 
-Status: S1 independently verified; startup diagnosis confirmed and consumer repair
-in progress. Release and final both-host qualification remain open.
+Status: all four outcomes completed and independently verified. S1 is published
+in v0.5.6; the installed-consumer diagnosis, minimal repair, deliberate adoption
+and both-host qualification are retained in the durable qualification record.
+Application publication remains owned by the private consumer release workflow.
 
 | Slice | Outcome | Acceptance and dependencies |
 |---|---|---|
@@ -29,3 +31,14 @@ An initial pending-marker probe assumed behavior the unchanged base does not
 provide. The base/candidate comparison dismissed it as an existing limitation;
 exit zero alone does not certify interrupted-operation recovery. Full release
 verification and final consumer acceptance are separate gates.
+
+## Final disposition
+
+S1 published in PR #54 and v0.5.6. S2 reproduced incomplete committed source
+relocation, preserving the older missing-receipt gap. S3 repaired only that unit
+and its committed-snapshot regression. S4 passed fresh independent adoption and
+five-gate live qualification, 22 bounded skill rows per host, a single unchanged
+replay, session-only restart and 14 lifecycle fixture tests. The durable
+[qualification](../../docs/cloud-skill-provisioning/checkpoint-and-startup-qualification.md)
+retains prior failures and the exact limits. Private deployment evidence is not
+published in this repository.
