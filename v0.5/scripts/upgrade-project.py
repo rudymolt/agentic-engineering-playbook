@@ -1353,9 +1353,9 @@ def upgrade_project(
             report.manual_reviews.append('skill inventory adoption: ' + str(error))
     target_version = CURRENT_VERSION if not report.manual_reviews else starting_version
     migrated_state = replace_top_level_scalar(migrated_state, "playbook_version", target_version)
-    target_proof = (verified_evidence or (None, None, None)) if not report.manual_reviews else (None, None, None)
-    if skill_plan is not None and report.manual_reviews:
-        target_proof = starting_proof
+    # An unresolved review retains release certification as well as edition,
+    # whether or not inventory adoption was selected.
+    target_proof = (verified_evidence or (None, None, None)) if not report.manual_reviews else starting_proof
     for key, value in zip(
         ("playbook_release", "playbook_release_tag_object", "playbook_release_commit"),
         target_proof,

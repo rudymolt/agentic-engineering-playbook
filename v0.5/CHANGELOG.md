@@ -2,6 +2,33 @@
 
 ## Unreleased
 
+## V0.5.6 — 2026-11-08
+
+This patch clarifies ordinary build checkpoints, preserves upgrade certification during review, and records the November upstream comparison.
+
+- Start ordinary substantive slices at an adjustable 250-call estimate, broad
+  final verification at a separate 300 calls, and multi-slice work at a
+  300-minute forecast. Report evidence and revised forecasts at checkpoints;
+  preserve explicit hard limits, protected ceilings and cumulative failure guards.
+- Review inherited estimates, retained caps and ambiguous legacy instructions
+  during bootstrap/upgrade. Preserve project customizations through existing
+  merge/adoption boundaries and retain prior release proof on unresolved review.
+  Cover pristine bootstrap, conflicting instructions, reviewed conversion,
+  deliberate cap retention and idempotent public upgrade with CLI regressions.
+
+*Why — keep productive work moving while preserving owner decisions:* small
+  inherited examples can be mistaken for stopping limits. Clear estimates and
+  explicit migration review prevent silent cap conversion; unresolved template
+  conflicts must retain the prior certification until review is complete.
+
+- Record the November released-source comparison and current installed-source
+  audit, including command retirement, invocation differences, dependency closure
+  and exact-source incompatibility. Retain all adopted pins and manual fallbacks.
+
+*Why — maintenance batch:* newer sources change workflow ownership and host
+  behavior. Recording those differences and the next due date keeps upgrades
+  deliberate without presenting source inspection as runtime qualification.
+
 ## V0.5.5 — 2026-11-02
 
 This patch preserves completed skill installation history during repeated setup and clarifies Cloud startup activation. Actual Cloud qualification remains a separate acceptance gate.

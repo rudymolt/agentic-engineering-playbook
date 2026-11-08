@@ -13,7 +13,7 @@
 
 Turn an idea into a clear specification, build it in manageable pieces, verify the result, and carry lessons into the next feature. You bring the goals and judgement. The playbook gives your agent a repeatable way to work.
 
-**Current release:** V0.5.5 · [Release notes](v0.5/CHANGELOG.md#v055--2026-11-02)
+**Current release:** V0.5.6 · [Release notes](v0.5/CHANGELOG.md#v056--2026-11-08)
 
 **Humans:** [Get started](#get-started) · **Agents:** [Read the agent digest](v0.5/AGENT-DIGEST.md)
 
@@ -33,15 +33,15 @@ Use it when you are building a new product or working on an existing codebase an
 
 The human owns goals, acceptance criteria, and consequential decisions. The agent plans, implements, checks, and records the work within the agreed scope.
 
-## What's new in V0.5.5
+## What's new in V0.5.6
 
-This patch preserves completed skill installation history during repeated setup and clarifies how to activate Cloud startup.
+Ordinary build estimates now help agents report progress and revise forecasts while productive, authorized work continues.
 
-- **Unchanged setup preserves history.** Replaying completed install or recovery leaves host journals and their directory metadata unchanged after all safety checks pass. Missing files, interrupted work and conflicting edits retain their existing repair, recovery and refusal behavior.
-- **Explicit Cloud activation.** Configure the organization's repository Setup script field and verify that it runs. A checked-in local setup command alone does not establish Cloud activation.
-- **Clear evidence limits.** Local implementation and repair tests do not establish actual Cloud startup order, discovery, invocation or lifecycle acceptance; [read the provisioning contracts](v0.5/scripts/skill-provisioning.md).
+- **Clear starting estimates.** Use 250 aggregate tool calls per substantive slice, a separate 300 calls for broad final verification, and a 300-minute multi-slice forecast. Scale down for small work. Explicit limits, quotas, Stop and failure guards still apply.
+- **Deliberate migration.** Bootstrap and upgrade review inherited estimates, retained hard caps and ambiguous instructions. Unresolved review preserves prior release certification and project customizations.
+- **Current upstream accounting.** The November comparison records source and installed-command drift while retaining adopted pins and manual review fallbacks.
 
-See the [V0.5.5 changelog](v0.5/CHANGELOG.md#v055--2026-11-02) for all changes since V0.5.4. Existing projects upgrade deliberately from a pinned release while preserving customizations; publishing this release does not migrate them automatically.
+See the [V0.5.6 changelog](v0.5/CHANGELOG.md#v056--2026-11-08) for changes since V0.5.5. Existing projects upgrade deliberately from a pinned release; publication does not migrate them automatically. Startup qualification remains specific to the tested consumer and host route.
 
 ## How it works
 
@@ -151,7 +151,7 @@ You need a coding-agent environment, such as Codex or Claude Code, that can read
 Clone this repository into a separate directory using the repository URL from GitHub's **Code** button:
 
 ```sh
-git clone --branch v0.5.5 --depth 1 REPOSITORY_URL playbook
+git clone --branch v0.5.6 --depth 1 REPOSITORY_URL playbook
 ```
 
 Replace `REPOSITORY_URL` with the copied URL. Keep this checkout at the release tag so development changes cannot silently change the instructions your project uses.

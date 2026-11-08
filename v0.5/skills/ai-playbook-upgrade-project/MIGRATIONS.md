@@ -113,3 +113,38 @@ local sources independently through Configure; they never silently advance the
 Cloud proof. Apply monthly maintenance and affected compatibility checks before
 adopting source, runtime, model or settings changes, retaining customizations and
 separate runtime qualification. Automatic Conductor setup remains later work.
+
+## Ordinary-build checkpoint adoption
+
+Review the budget-floor section in project instructions before certification,
+including `CLAUDE.md`, `AGENTS.md` and any project-local overrides. Foundations
+[§11](../../00-foundations.md#11-the-budget-floor) owns the ordinary estimates
+and the distinction from selected hard limits. In the read-only upgrade plan,
+classify each inherited estimate, explicitly retained cap and ambiguous legacy
+instruction; show its current wording and proposed disposition. A generic
+`--plan` receipt alone does not establish that this review happened.
+
+- Pristine inherited examples: accept the managed template's new estimates
+  through the existing three-way merge and preview its diff.
+- Explicitly retained hard caps: preserve their exact values and stopping
+  behavior. Record the owner's deliberate retention in the existing reviewed
+  project instructions. An estimate update never grants conversion authority.
+- Legacy hard-stop wording or unclear intent (for example, “budget 60 calls”):
+  preserve the text and report a tier-3 review. Ask the owner to choose reviewed
+  conversion to estimates or deliberate retention as hard caps. Never infer the
+  choice from this edition's defaults or another project's preference.
+
+Resolve conflicts with a minimal reviewed edit. For conversion, use the current
+ordinary estimate wording while retaining retry/no-progress guards, protected
+ceilings and other project decisions. For retention, keep the selected cap and
+state that reaching it stops the run. Only after owner acceptance use the
+existing `--adopt-current CLAUDE.md` (or the affected managed file) with
+`--apply-safe`. This records the current upstream base while preserving the
+accepted project content; it does not make that content pristine. Missing or
+edited bases still require their ordinary provenance review.
+
+An unresolved review retains prior edition and release certification, including
+tag-object and commit proof. Safe edits may remain visible. After resolution,
+rerun the public upgrade command and require a second run with no changed files
+for both conversion and retention. Check custom instructions and failure guards
+in the resulting diff; do not certify from a generic preview or exit code alone.

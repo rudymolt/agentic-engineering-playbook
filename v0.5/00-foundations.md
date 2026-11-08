@@ -289,6 +289,15 @@ The floor has two layers. **Layer A (loop guards) is universal** — it applies 
 
 **Explicit selections govern.** When the human selects a hard limit for a run ("this run: max-iteration 5"), that value governs, not a `CLAUDE.md` estimate. Restate the selected limit at run start so a mismatch surfaces before work begins. Inherited time checkpoints and effort estimates in an ordinary issue build report progress, remaining work and a revised estimate; they do not require extension approval while the work makes demonstrable progress.
 
+**Ordinary checkpoint estimates.** Start substantive slices at an adjustable
+250 aggregate tool calls per slice, broad final verification at a separate
+300 calls, and multi-slice work at a 300-minute forecast. Scale down for small
+work. These are neither ceilings nor minimum consumption targets. Count
+observable worker and coordinator usage once; report unavailable counters
+without inventing them. At checkpoints report completed and independently
+verified work, remaining work, changed evidence and revised calls/time forecasts.
+Productive authorized work continues within the selected build scope.
+
 **Layer A — loop guards (always set these):**
 
 - **Max-retry cap** — a bounded number of attempts at a failing step, then escalate rather than retry forever.

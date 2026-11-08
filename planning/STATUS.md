@@ -1,8 +1,12 @@
 # Planning status
 
-active_features: 7
+active_features: 8
 
 ## Active features
+
+[Consumer workflow reliability](consumer-workflow-reliability/slices.md) — owner
+authorized autonomous completion; checkpoint guidance, evidence-led startup
+diagnosis, both-host qualification and deliberate consumer adoption in progress.
 
 [Pinned gstack provisioning](pinned-gstack-provisioning/slices.md) — approved
 continuation through all remaining inventory slices; package/runtime/activation
