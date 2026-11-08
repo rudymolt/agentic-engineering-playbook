@@ -1,12 +1,8 @@
 # Planning status
 
-active_features: 8
+active_features: 7
 
 ## Active features
-
-[Consumer workflow reliability](consumer-workflow-reliability/slices.md) — owner
-authorized autonomous completion; checkpoint guidance, evidence-led startup
-diagnosis, both-host qualification and deliberate consumer adoption in progress.
 
 [Pinned gstack provisioning](pinned-gstack-provisioning/slices.md) — approved
 continuation through all remaining inventory slices; package/runtime/activation
@@ -50,16 +46,27 @@ This maintainer checkout intentionally has no root `.playbook-state.yml`.
 The stage-10 closeout state is mirrored here; no consumer runtime state is created.
 
 ```yaml
-last_updated: 2026-10-27T04:23:24Z
+last_updated: 2026-11-08T22:32:19Z
 counters:
-  features_shipped_total: 5
+  features_shipped_total: 6
 last_run:
-  ship: 2026-10-27T03:58:14Z
-  feature_ship: 2026-10-27T03:58:14Z
-  doc_close: 2026-10-27T04:03:20Z
-  retro: 2026-10-27T04:03:20Z
+  ship: 2026-11-08T21:44:32Z
+  feature_ship: 2026-11-08T21:44:32Z
+  doc_close: 2026-11-08T22:32:19Z
+  retro: 2026-11-08T22:32:19Z
 pending_closeouts: []
 ```
+
+Consumer workflow reliability shipped publicly in PR #54 as `ba708b2` on
+8 November 2026, with the reviewed v0.5.6 release. Published-source verification,
+independent installed-consumer adoption and five-gate live qualification passed.
+The [durable report](../docs/cloud-skill-provisioning/checkpoint-and-startup-qualification.md)
+keeps native invocation, restart, historical incident and privacy limits explicit.
+Doc-close and the [feature retro](retros/2026-11-09-consumer-workflow-reliability.md)
+share this single closeout PR. Public production verification means the published
+repository/release; private application deployment remains separately owned.
+Only this feature is removed; seven other active features remain unchanged.
+
 
 
 Cloud skill provisioning shipped in PR #48 as `b2262ef` on 2026-10-27.

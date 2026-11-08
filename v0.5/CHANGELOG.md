@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- Record V0.5.6 installed-consumer checkpoint adoption, five-gate live startup
+  acceptance, both-host bounded skill behavior and preservation evidence.
+  Keep native-dispatch, restart, historical-failure and private-deployment limits
+  explicit; close only this feature's planning and retrospective.
+
+*Why — preserve the tested support boundary:* release tests alone cannot prove
+  runtime discovery, and explicit-only catalog omissions must be assessed against
+  the previously accepted invocation policy.
+
 ## V0.5.6 — 2026-11-08
 
 This patch clarifies ordinary build checkpoints, preserves upgrade certification during review, and records the November upstream comparison.

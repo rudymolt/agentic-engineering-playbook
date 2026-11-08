@@ -1,8 +1,15 @@
 # Archive status
 
-archived_features: 5
+archived_features: 6
 
 ## Shipped features
+
+- **Consumer workflow reliability** — public behavior shipped 8 November 2026
+  in PR #54 as `ba708b2`, released as v0.5.6. Archived at
+  `2026-11-09-consumer-workflow-reliability/`; doc-close and
+  [feature retro](../planning/retros/2026-11-09-consumer-workflow-reliability.md)
+  share one closeout PR. The [durable report](../docs/cloud-skill-provisioning/checkpoint-and-startup-qualification.md)
+  records separately verified adoption and bounded live startup evidence.
 
 - **Cloud skill provisioning** — shipped 2026-10-27 in PR #48 as `b2262ef`;
   merged tree matches the final reviewed/verified candidate. Archived at

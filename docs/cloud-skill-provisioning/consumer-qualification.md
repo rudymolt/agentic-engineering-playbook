@@ -1,5 +1,8 @@
 # Consumer release qualification
 
+Latest follow-up: [V0.5.6 checkpoint and live startup qualification](checkpoint-and-startup-qualification.md).
+The dated V0.5.3 evidence below retains its original narrower scope.
+
 Status: **V0.5.3 published-release CLI qualification passed on 2026-10-27**.
 Adoption, exact-source acquisition, offline replay, preservation and retained
 customization recreation passed against the real public release. Conductor
