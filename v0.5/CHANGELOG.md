@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- After Plan selection, show the verified host command for an explicit-only
+  alignment skill and offer manual alignment where the selected route allows it.
+  After adopting this update, reselect any saved Playbook Stage 01 binding
+  through Configure's preview and Apply flow if its source fingerprint changed.
+  Resume an approved execution with its retained binding and pinned source.
+
+*Why — make the next action clear:* selecting a planning model can leave the
+  user waiting for alignment while the skill is waiting for explicit invocation.
+
 - Record V0.5.6 installed-consumer checkpoint adoption, five-gate live startup
   acceptance, both-host bounded skill behavior and preservation evidence.
   Keep native-dispatch, restart, historical-failure and private-deployment limits

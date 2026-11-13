@@ -125,7 +125,9 @@ recovery. Acceptance changes a draft and still requires preview and Apply.
 5. Let the normal lane action accept the resolved preference and display its origin. Edition OpenAI defaults apply only without a higher-precedence choice or as an explicit feature override.
 6. Put alternatives behind `models`; show up to three verified models plus `more`, numbered from 1.
 7. Offer `not now` when pausing would otherwise be ambiguous. It starts nothing and records nothing.
-8. After all stage inputs are known, start without another confirmation.
+8. After all stage inputs are known, start without another confirmation. When
+   Stage 01 calls for a user-invoked skill, use the Plan handoff prompt to
+   obtain the invocation or manual choice before alignment starts.
 
 Every route says exactly one of:
 

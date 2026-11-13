@@ -23,8 +23,8 @@
     },
     {
       "path": "10-process/01-align.md",
-      "sha256": "73887821d27c72cca0ff0d175ecbd34e2e90635928141bd0d629bf2c5c0a37ca",
-      "size": 11839
+      "sha256": "dacba98a2dd9555315cf5bd4c9ac675d2e8640a2b804cece34decd03f6a1846e",
+      "size": 12823
     },
     {
       "path": "10-process/02-context-and-adrs.md",
@@ -168,8 +168,8 @@
     },
     {
       "path": "93-model-routing-track.md",
-      "sha256": "79544df374afc81062e97410458b9b34f0c620648fd2eae34a817e69b9ccd797",
-      "size": 21178
+      "sha256": "2a732f5e6bdc8634a9c7490c94a3205c01228adbe5c2ea8ed9f60ef6ce25195f",
+      "size": 21325
     },
     {
       "path": "AGENT-DIGEST.md",
@@ -178,8 +178,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "f56f8cecb8fe0959cbea55159199d49b30773081c2174763466725430f46c62c",
-      "size": 81186
+      "sha256": "81642bb4236780b172aa32e75c3ea0c7d35a30212ec12df68a4444d811d56899",
+      "size": 81736
     },
     {
       "path": "MAINTENANCE.md",
@@ -1383,8 +1383,8 @@
     },
     {
       "path": "scripts/check-md-conventions.py",
-      "sha256": "a71d005508ac59cd75021525706a4d2d1a84b385cd4798d750e50b899bf148cd",
-      "size": 28940
+      "sha256": "5739a0ce1e670203285eb4944d8ccb775ac44e891caa1470cd9dbf626f033d24",
+      "size": 29794
     },
     {
       "path": "scripts/check-model-guidance.py",
@@ -2108,8 +2108,8 @@
     },
     {
       "path": "skills/model-router/SKILL.md",
-      "sha256": "8f1adb6554c4c2a75bcc7ec71f51ad424333d4d013c09039cb90ca59f8f24dc4",
-      "size": 9732
+      "sha256": "1b7519943890402604499218c9abc876391836d1b1b4fcea143923d277b66d46",
+      "size": 10003
     },
     {
       "path": "skills/model-router/agents/openai.yaml",
@@ -2118,8 +2118,8 @@
     },
     {
       "path": "skills/model-router/references/chat-prompts.md",
-      "sha256": "46a53a32519e2f0620818a1593e51fc261052910f85800b789b625c91cd771eb",
-      "size": 4971
+      "sha256": "98b7cca450b5fa140acb6e271ce1798ca665e065bf20373cc8f2eeb432768174",
+      "size": 6552
     },
     {
       "path": "skills/model-router/references/host-adapters.md",
@@ -2263,8 +2263,8 @@
     },
     {
       "path": "upstream-skills.json",
-      "sha256": "84b96f0ca85bb6a085a3f048b1e9c53425036d6414b6564db6bd4ec98d2dc517",
-      "size": 28223
+      "sha256": "ee4bdedaeaab47f87cd3c4e27e2b1aaf3c77d208875eb52bdef6975cbba3047b",
+      "size": 28237
     }
   ],
   "schema_version": 1,
