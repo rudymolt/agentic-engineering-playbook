@@ -413,6 +413,20 @@ else:
                 "skills/model-router/references/chat-prompts.md: "
                 f"missing text prompt contract '{prompt_contract}'"
             )
+    plan_handoff = model_prompt_text.partition("\n## Plan handoff to Stage 01\n")[2]
+    plan_handoff = plan_handoff.partition("\n## ")[0]
+    manual_reply = "Reply `manual alignment` to continue with the selected Plan model."
+    for handoff_contract in (
+        "Keep the selected Plan model, saved job binding, and existing approvals.",
+        "Wait for the user's invocation or `manual alignment` choice",
+        "Type {exact host invocation} in {Plan session} to start {skill name}.\n" + manual_reply,
+        "{skill name} is unavailable in {Plan session}. {short verified reason}\n" + manual_reply,
+    ):
+        if handoff_contract not in plan_handoff:
+            problems.append(
+                "skills/model-router/references/chat-prompts.md: "
+                f"missing Stage 01 Plan handoff contract {handoff_contract!r}"
+            )
 for state_contract in (
     "schema_version: 3",
     "pending_plan_routes: 0",

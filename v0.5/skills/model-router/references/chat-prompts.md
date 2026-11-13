@@ -36,6 +36,8 @@ Reply:
 - `not now` — pause; start nothing
 ```
 
+Starting Plan can lead to a skill invocation prompt before alignment begins.
+
 ```text
 Build “{feature title}”
 
@@ -91,7 +93,7 @@ Available now in this workspace
 4. More verified models
 
 Reply `1`–`4`, a model name, or `back`.
-{Plan/Verify: Choosing 1–3 starts the stage immediately. | Build: Choosing a model returns to the Build menu; nothing starts yet.}
+{Plan: Choosing 1–3 starts Plan, including any Stage 01 handoff. | Verify: Choosing 1–3 starts the stage immediately. | Build: Choosing a model returns to the Build menu; nothing starts yet.}
 ```
 
 Omit `more` when no additional verified routes exist. If only one route is verified, offer that route, setup, or `not now`.
@@ -105,6 +107,37 @@ never labels for a custom project's default. Current/here actions retain
 their existing identity and approval requirements. `not now` starts nothing.
 
 Omit the current-chat action when it cannot satisfy identity, permission, or fresh-context requirements.
+
+## Plan handoff to Stage 01
+
+After any Plan selection, follow the installed Stage 01 route resolution before
+starting alignment. Keep the selected Plan model, saved job binding, and existing approvals.
+Use this prompt when the next skill requires user invocation. Carry that step
+into the Plan handoff for a sidecar or Conductor tab and use the destination
+session's verified command. A Plan selection authorizes the model route. The
+user's explicit invocation starts the skill. A session without user input
+cannot accept that invocation. Give this as the reason when applicable, and
+tell the user where to reply so their choice reaches the selected Plan runner.
+
+When the skill can be invoked and the user still needs to choose, show:
+
+```text
+Type {exact host invocation} in {Plan session} to start {skill name}.
+Reply `manual alignment` to continue with the selected Plan model.
+```
+
+When the skill cannot be invoked and manual alignment is available, show:
+
+```text
+{skill name} is unavailable in {Plan session}. {short verified reason}
+Reply `manual alignment` to continue with the selected Plan model.
+```
+
+Wait for the user's invocation or `manual alignment` choice before asking
+alignment questions. Honor a prior invocation received by the selected session
+for this route, or a manual choice already given for this route. Show the manual
+option only when Stage 01 permits it. For a blocked binding, use Stage 01 binding
+recovery.
 
 ## Recovery prompts
 

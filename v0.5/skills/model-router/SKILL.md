@@ -7,7 +7,7 @@ description: Discover verified model routes and launch the selected Plan, Build,
 
 Route one feature lane without turning model choice into a separate ceremony. The chat prompt is the canonical interface; buttons are optional enhancements.
 
-Read [`references/chat-prompts.md`](references/chat-prompts.md) before rendering a chooser or recovery prompt. Read [`references/host-adapters.md`](references/host-adapters.md) only for the detected host or runner.
+Read [`references/chat-prompts.md`](references/chat-prompts.md) before rendering a chooser, Stage 01 Plan handoff, or recovery prompt. Read [`references/host-adapters.md`](references/host-adapters.md) only for the detected host or runner.
 
 ## Procedure
 
@@ -82,6 +82,10 @@ Completion criterion: the requested route is durable and idempotent without chan
 Use argument arrays or standard input for provider CLIs. Start fresh context for Verify and whenever the route contract requires it. Apply enforced read-only for Plan or Verify only when the runner actually provides it; otherwise use the permission-recovery prompt. Apply fast pace only when the Codex/host route reports `fast_mode` available; otherwise offer standard pace or `not now` instead of imitating speed with another model or reasoning level.
 
 Deliver sidecar handoffs automatically. For a manual Conductor route, write the documented handoff path and give the exact resume command. Require the authoritative worker-result envelope from `93-model-routing-track.md`: model ID, reasoning effort, thinking state (from the enforced runtime configuration, guarding tool-call-leaked-into-text corruption), correlated thread ID, runner, permission mode, tool calls used/remaining, and wall time used/remaining. Accept output only after authoritative runtime evidence matches the requested model, effort, thinking state, runner, thread correlation, and permission boundary; prefer session/thread metadata, provider response metadata, or host-reported selection. Reject any route mismatch automatically. Model-generated self-description is not authoritative identity evidence. When a required identity or permission field has no authoritative surface, stop as identity-unverifiable; host-unavailable usage counters are marked `unavailable` and the declared external ceiling remains authoritative.
+
+For Plan entering Stage 01, follow the resolved alignment route. When it calls
+for a user-invoked skill, use the [Stage 01 Plan handoff prompt](references/chat-prompts.md#plan-handoff-to-stage-01)
+in the selected session before alignment starts.
 
 Completion criterion: the selected runner starts with the declared permissions and handoff, exposes a complete authoritative envelope whose route fields match the selection, or stops with a truthful recovery prompt.
 

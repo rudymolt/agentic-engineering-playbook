@@ -55,8 +55,8 @@ Before starting the grilling, report the configured path's status, any
 alternative stage source, whether the relevant skills were checked, and why
 the selected route is skill-driven or manual. An explicit request for manual
 alignment is sufficient reason to use it; do not claim skill absence unless
-it was checked. When a skill is unavailable, use the stage 00 manual capability
-route and name the evidence for that conclusion.
+it was checked. When a skill is unavailable, name the evidence and offer the
+stage 00 manual capability route where permitted.
 
 For new choices, resolve the saved primary binding at this stage-owned invocation
 point using the verified `{resolved-playbook-path}` (the configured path when
@@ -94,6 +94,22 @@ owned here.
 Three skills, layered. Use the smallest set that settles the question.
 
 Before the first planning skill starts, use the Plan gate in [`../93-model-routing-track.md`](../93-model-routing-track.md). The normal `plan` reply accepts the resolved project/feature preference and shows its origin (edition fallback: GPT-6.1 Sol/high); `models` opens verified alternatives; `openai defaults` applies GPT-6.1 Sol/high → GPT-6.1 Sol/medium → GPT-6.1 Sol/high to this feature only. A pre-feature choice creates only a pending route, not a feature folder or alignment counter.
+
+### Explicit invocation after Plan selection
+
+When the resolved alignment route reaches a user-invoked skill, use the
+[Plan handoff prompt](../skills/model-router/references/chat-prompts.md#plan-handoff-to-stage-01)
+before asking alignment questions. Verify the invocation in the session that
+will run Plan. For Option A, the usual commands are `$grill-with-docs` in Codex
+and `/grill-with-docs` in Claude Code. Use the exact command supported by the
+selected host and name the session where the user should enter it. Check the
+installed invocation policy and the host's ability to run the command.
+
+Wait for the user to invoke the skill or choose `manual alignment` when that
+route is permitted. If invocation is unavailable after the bounded Check A
+checks, name the verified reason and offer manual alignment under the same
+Plan selection. Honor an existing manual choice or approved execution. A blocked
+binding still follows the binding recovery above before alignment can begin.
 
 ### Option A — settled-product project, code-level change
 
