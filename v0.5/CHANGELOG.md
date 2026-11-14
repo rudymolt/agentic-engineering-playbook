@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## V0.5.7 — 2026-11-14
+
+This patch shows how to start explicit alignment skills after choosing a Plan model and records bounded startup qualification.
+
 - After Plan selection, show the verified host command for an explicit-only
   alignment skill and offer manual alignment where the selected route allows it.
   After adopting this update, reselect any saved Playbook Stage 01 binding

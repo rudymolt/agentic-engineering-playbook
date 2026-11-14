@@ -6,10 +6,10 @@
 
 ## Release
 
-**V0.5.6** — 2026-11-08. This patch clarifies ordinary build checkpoints, preserves upgrade certification during review, and records the November upstream comparison.
+**V0.5.7** — 2026-11-14. This patch shows how to start explicit alignment skills after choosing a Plan model and records bounded startup qualification.
 
+- V0.5.6 — 2026-11-08. This patch clarifies ordinary build checkpoints, preserves upgrade certification during review, and records the November upstream comparison.
 - V0.5.5 — 2026-11-02. This patch preserves completed skill installation history during repeated setup and clarifies Cloud startup activation. Actual Cloud qualification remains a separate acceptance gate.
-- V0.5.4 — 2026-11-01. This release completes the selected pinned skill inventories and adds supporting-file repair and source relocation for adopted Cloud setup. Live Cloud qualification of the expanded inventory remains pending.
 
 Full history: [`v0.5/CHANGELOG.md`](v0.5/CHANGELOG.md).
 
