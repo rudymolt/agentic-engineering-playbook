@@ -2,6 +2,16 @@
 
 ## Unreleased
 
+- Document optional workspace display names, route-specific setup prerequisites,
+  safe consumer receipt preparation and actual host binding before qualification.
+  Add deterministic metadata regression coverage through the existing launcher
+  and composed sh/bash setup commands, preserving child failure and adopted state.
+  Consumer wrappers require deliberate repair/adoption; existing pins stay fixed.
+
+*Why — keep evidence claims precise:* successful installation alone cannot
+  establish that the host ran the complete setup command automatically in the
+  intended workspace.
+
 ## V0.5.7 — 2026-11-14
 
 This patch shows how to start explicit alignment skills after choosing a Plan model and records bounded startup qualification.

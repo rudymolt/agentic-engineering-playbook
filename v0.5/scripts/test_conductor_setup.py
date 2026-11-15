@@ -37,6 +37,8 @@ class ConductorSetupTest(unittest.TestCase):
                     'GIT_CONFIG_COUNT': '1',
                     'GIT_CONFIG_KEY_0': 'url.' + self.source.as_uri() + '.insteadOf',
                     'GIT_CONFIG_VALUE_0': PUBLIC}
+        for name in ('CONDUCTOR_WORKSPACE_NAME', 'CONDUCTOR_WORKSPACE_ID'):
+            self.env.pop(name, None)
         shutil.copytree(ROOT / 'v0.5', self.source / 'v0.5',
                         ignore=shutil.ignore_patterns('__pycache__', '*.pyc'))
         shutil.copy2(ROOT / 'LICENSE', self.source / 'LICENSE')
@@ -93,6 +95,65 @@ class ConductorSetupTest(unittest.TestCase):
         self.assertFalse(cloud['gstack']['runtime']['complete'])
         self.assertEqual(cloud['gstack']['discovery'], 'unverified')
         self.assertIn('repair', cloud['gstack'])
+
+    @unittest.skipIf(sys.version_info < (3, 11), 'setup configuration parsing requires Python 3.11+')
+    def test_workspace_identity_metadata_does_not_gate_installation_or_hide_child_failure(self):
+        import tomllib
+        settings = self.project / '.conductor/settings.toml'
+        settings.parent.mkdir()
+        (self.project / 'prior-setup.sh').write_text(
+            'printf "project setup\\n"\nexit "${SETUP_TEST_STATUS:-0}"\n')
+        original = 'sh ./prior-setup.sh'
+        settings.write_text('[scripts]\nsetup = ' + json.dumps(original) + '\n')
+        self.adopt('--conductor-setup')
+        command = tomllib.loads(settings.read_text())['scripts']['setup']
+        self.setup_report('0')  # Complete initial installation before preservation checks.
+        before, home = snapshot(self.project), snapshot(self.home)
+        workspace_id = '11111111-1111-4111-8111-111111111111'
+        cases = (
+            ('name-and-id', 'Fixture workspace', workspace_id),
+            ('id-only', None, workspace_id),
+            ('empty-name', '', workspace_id),
+            ('whitespace-name', ' \t ', workspace_id),
+            ('invalid-id', 'Fixture workspace', 'invalid'),
+            ('unavailable', None, None),
+            ('name-only', 'Fixture workspace', None),
+            ('empty-id', None, ''),
+            ('whitespace-id', None, ' \t '),
+        )
+        shells = [shutil.which('sh')]
+        if shutil.which('bash'):
+            shells.append(shutil.which('bash'))
+        for label, name, identity in cases:
+            for host in ('1', '0'):
+                env = {**self.env, 'CONDUCTOR_IS_LOCAL': host,
+                       'CONDUCTOR_WORKSPACE_PATH': str(self.project),
+                       'SETUP_TEST_STATUS': '0'}
+                for key, value in (('CONDUCTOR_WORKSPACE_NAME', name),
+                                   ('CONDUCTOR_WORKSPACE_ID', identity)):
+                    if value is not None:
+                        env[key] = value
+                with self.subTest(case=label, host=host, route='launcher'):
+                    run = self.run_command(self.setup_command(), env=env)
+                    report = json.loads(run.stdout)
+                    self.assertEqual(report['setup']['action'], 'discover' if host == '1' else 'install')
+                    if host == '0':
+                        self.assertTrue(report['complete'])
+                for shell in shells:
+                    with self.subTest(case=label, host=host, shell=shell):
+                        run = self.run_command([shell, '-c', command], cwd=self.project, env=env)
+                        self.assertTrue(run.stdout.startswith('project setup\n'))
+                        report = json.loads(run.stdout.partition('\n')[2])
+                        self.assertEqual(report['setup']['action'], 'discover' if host == '1' else 'install')
+                        if host == '0':
+                            self.assertTrue(report['complete'])
+                        self.assertEqual(report['setup']['host'], 'local' if host == '1' else 'cloud')
+                        failed = self.run_command([shell, '-c', command], cwd=self.project,
+                                                  env={**env, 'SETUP_TEST_STATUS': '7'}, code=7)
+                        self.assertIn('Prior project setup failed', failed.stderr)
+                        self.assertEqual(failed.stdout, 'project setup\n')
+                self.assertEqual(snapshot(self.project), before)
+                self.assertEqual(snapshot(self.home), home)
 
     def test_invalid_gstack_cache_rejects_before_any_skill_writes(self):
         self.adopt('--adopt-gstack')

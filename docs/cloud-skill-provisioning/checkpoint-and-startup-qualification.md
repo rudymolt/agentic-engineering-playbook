@@ -43,6 +43,11 @@ claims; they do not establish a live VM restart.
 
 ## Fresh live qualification
 
+The results below remain historical and bounded. Future metadata-portability
+qualification follows the [workspace metadata checklist](../../v0.5/scripts/conductor-workspace-metadata.md#qualification-checklist),
+including actual host binding for ID-based receipts. Missing-name installer
+fixtures and manual repairs do not extend these automatic-startup claims.
+
 A fresh workspace at the adopted committed consumer revision was created without
 an initial message. No manual setup, install or repair preceded either host's
 observations. A final independent Sol/high audit passed the existing five gates:

@@ -178,8 +178,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "6ada9231d099cc1bd626fe4fc6599c8fbe16fc7d0f704705f9aed08d03be4324",
-      "size": 81890
+      "sha256": "4159fbbc06a78b1b620590e61fb36acf29f9e72b4ebd21ed84ce0672df3d33c2",
+      "size": 82476
     },
     {
       "path": "MAINTENANCE.md",
@@ -1422,6 +1422,11 @@
       "size": 2117
     },
     {
+      "path": "scripts/conductor-workspace-metadata.md",
+      "sha256": "ca50b66a0a2484488147313caaf17c36d02f789e4c8f9708206f2499d7fd9b6b",
+      "size": 5703
+    },
+    {
       "path": "scripts/conductor_setup.py",
       "sha256": "325713e0f2482d8645670aea76ea013c0eec3b00e7aea21b20cacec4ec5a3e70",
       "size": 12584
@@ -1603,8 +1608,8 @@
     },
     {
       "path": "scripts/skill-provisioning.md",
-      "sha256": "2b564ffa9e4f7a7d23efee13295c669c8524eee9c2f9027ee2c711bc34d4216c",
-      "size": 43659
+      "sha256": "e1703b236dd8c3988a37b30994b7f3a3a70fbc23b5316578ab10970b19685bae",
+      "size": 43955
     },
     {
       "path": "scripts/skill_adoption.py",
@@ -1668,8 +1673,8 @@
     },
     {
       "path": "scripts/test_conductor_setup.py",
-      "sha256": "213715782f95c70927b8ef08d533701680d3ab38adbe77e003a6b425fb661a09",
-      "size": 62480
+      "sha256": "938adf283c57ade186d890a7acb694de8216cbfb38ed66fd645b25206959c256",
+      "size": 66138
     },
     {
       "path": "scripts/test_config_repair_boundaries.py",
@@ -1983,8 +1988,8 @@
     },
     {
       "path": "skills/ai-playbook-bootstrap-project/SKILL.md",
-      "sha256": "fa8e53c49e3a0bf809f0c1eb7436591266a5af582a8c9d2cb244100a4a29e486",
-      "size": 10142
+      "sha256": "c14aad4380f03e42959cdad9a420f01e875fa8220a7395308be52b31ebe683f8",
+      "size": 10482
     },
     {
       "path": "skills/ai-playbook-bootstrap-project/agents/openai.yaml",
@@ -2043,13 +2048,13 @@
     },
     {
       "path": "skills/ai-playbook-upgrade-project/MIGRATIONS.md",
-      "sha256": "9e6768c931aa53502680dd694c17da18ec28ad5a0af1c79c21a274a929db80ae",
-      "size": 9992
+      "sha256": "8a5fed58c87d5bb9440b8c2a3407b7407fb0938b9d2210ebf378deacb0f7dea9",
+      "size": 10387
     },
     {
       "path": "skills/ai-playbook-upgrade-project/SKILL.md",
-      "sha256": "5c210b1e12eb4d7ff64cf6c0c541a89cd507ffc0245ade09d7e910604bc36d47",
-      "size": 5541
+      "sha256": "653b9a73f6960304ec5e761dcf6cef5d0115e8c9be94da276f5e884cc8bbb63e",
+      "size": 5875
     },
     {
       "path": "skills/ai-playbook-upgrade-project/agents/openai.yaml",

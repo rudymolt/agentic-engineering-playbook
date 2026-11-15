@@ -1,5 +1,11 @@
 # Matt v1.3.1 domain glossary migration
 
+For Conductor receipt-wrapper repairs, follow the
+[workspace metadata adoption contract](../../scripts/conductor-workspace-metadata.md#adoption-and-maintenance).
+Review writer/checker changes together, preserve customizations and the complete
+provenance unit, and retain existing pins until deliberate adoption. Guidance
+updates do not repair a consumer wrapper or establish automatic startup.
+
 This same-edition migration is detected from filenames and provenance even when
 `playbook_version` already says V0.5.0. Complete it before switching Matt's skills.
 `DESIGN-GLOSSARY.md` and `design-glossary/` remain the separate UI vocabulary.

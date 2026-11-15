@@ -52,6 +52,11 @@ When the user chooses lite mode, follow `70-lite-mode.md` directly. Preserve any
 
 ## Guardrails
 
+- In the Conductor lane, apply the [workspace metadata contract](../../scripts/conductor-workspace-metadata.md).
+  Names are optional. Keep installation, receipt completeness and automatic
+  startup separate. Preserve composed commands and child status; never infer
+  original setup identity from current agent metadata or manual success.
+
 - Treat every differing existing file as project content: preserve it and require a minimal reviewed merge.
 - Resolve `{path-to-playbook}` and `{playbook-path}` to the actual absolute playbook root during setup.
 - Keep `.agents/skills/` synchronized only through explicit bootstrap or upgrade work; never silently replace a customized local skill.
