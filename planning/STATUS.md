@@ -1,8 +1,13 @@
 # Planning status
 
-active_features: 7
+active_features: 8
 
 ## Active features
+
+[Conductor workspace metadata](conductor-workspace-metadata/spec.md) — alignment
+confirmed; single slice approved for implementation, verification and shipment.
+Independent review and final shipping checks are in progress. Live qualification remains
+separate; no new support claim is made.
 
 [Pinned gstack provisioning](pinned-gstack-provisioning/slices.md) — approved
 continuation through all remaining inventory slices; package/runtime/activation

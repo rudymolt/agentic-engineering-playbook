@@ -44,6 +44,19 @@ _Avoid_: Invocation, upgrade
 A skill whose required files are present in the workspace. Installation alone
 does not establish runtime discovery or permission to use it.
 
+**Setup receipt**:
+A record of the outcome of the complete configured setup command in a particular
+workspace. A receipt alone does not establish automatic-startup qualification.
+
+**Workspace binding**:
+Evidence that a setup receipt belongs to the actual workspace identified by the
+host. A display name or an ID's valid format alone does not establish binding.
+
+**Automatic-startup qualification**:
+Evidence that the effective host configuration ran the complete setup command
+automatically in the intended workspace before agent activity. Installation or
+a successful manual replay alone does not establish this qualification.
+
 **Discoverable skill**:
 An installed skill that the active agent runtime exposes through its supported
 discovery mechanism.

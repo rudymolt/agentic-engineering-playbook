@@ -42,6 +42,11 @@ Read [`MIGRATIONS.md`](MIGRATIONS.md) completely for every upgrade. This public 
 
 ## Guardrails
 
+- For Conductor setup, apply the [workspace metadata contract](../../scripts/conductor-workspace-metadata.md).
+  Preserve custom receipt wrappers for deliberate writer/checker reconciliation.
+  Optional names never become installer prerequisites. Do not advance pins or
+  replace original setup identity with current agent metadata.
+
 - Keep the source checkout available until the project passes the public cold path and its owner chooses to retire the old path.
 - Never silently rewrite project-written content or certify a conflicting merge.
 - A failed or partial run keeps the prior version stamp; safe changes remain visible for review and rerun.

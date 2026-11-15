@@ -430,6 +430,11 @@ them without rewriting. Delivery lifecycle policy and runtime remain unchanged.
 
 ## Optional Conductor setup adoption
 
+Follow [Conductor workspace metadata](conductor-workspace-metadata.md) for
+required inputs, safe receipt preparation and the separate live qualification
+gate. Missing display names never block installation; ID-based receipt
+acceptance requires actual host binding, not just a UUID-shaped value.
+
 For the pinned gstack inventory, also select `--adopt-gstack` in the same
 `--adopt-skills` preview/Apply. This is an explicit additional choice; existing
 Matt-only adoption stays unchanged. Cloud setup prepares the exact Linux runtime
