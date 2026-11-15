@@ -1,6 +1,6 @@
 # Conductor workspace metadata — proposed breakdown
 
-Status: implemented; independent verification and final shipping checks pending.
+Status: shipped in PR #58 as `4dd4f1a`; independent review and final gates passed.
 
 ## S1 — Setup remains usable without an optional workspace name
 

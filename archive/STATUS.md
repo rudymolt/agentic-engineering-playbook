@@ -1,8 +1,14 @@
 # Archive status
 
-archived_features: 6
+archived_features: 7
 
 ## Shipped features
+
+- **Conductor workspace metadata** — shipped 2026-11-15 in PR #58 as `4dd4f1a`.
+  Candidate `16bcadc` passed independent review, the full verifier and both
+  required CI jobs. [Closeout](2026-11-15-conductor-workspace-metadata/closeout.md)
+  and [retro](../planning/retros/2026-11-15-conductor-workspace-metadata.md) share
+  one follow-up PR. Consumer repair and live qualification remain separate.
 
 - **Consumer workflow reliability** — public behavior shipped 8 November 2026
   in PR #54 as `ba708b2`, released as v0.5.6. Archived at
