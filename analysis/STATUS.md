@@ -13,6 +13,10 @@
 
 ## Field reports
 
+- [2026-11-15 — Conductor workspace metadata](field-reports/2026-11-15-conductor-workspace-metadata.md)
+  — optional metadata, bounded startup claims, interview friction and verified
+  permission semantics for the test runner.
+
 - [2026-10-25 — Capability and authority](field-reports/2026-10-25-capability-and-authority.md)
   — verifier-route escalation, scoped review exception and CI environment repair.
 

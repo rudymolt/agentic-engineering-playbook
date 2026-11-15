@@ -1,13 +1,8 @@
 # Planning status
 
-active_features: 8
+active_features: 7
 
 ## Active features
-
-[Conductor workspace metadata](conductor-workspace-metadata/spec.md) — alignment
-confirmed; single slice approved for implementation, verification and shipment.
-Independent review and final shipping checks are in progress. Live qualification remains
-separate; no new support claim is made.
 
 [Pinned gstack provisioning](pinned-gstack-provisioning/slices.md) — approved
 continuation through all remaining inventory slices; package/runtime/activation
@@ -51,16 +46,24 @@ This maintainer checkout intentionally has no root `.playbook-state.yml`.
 The stage-10 closeout state is mirrored here; no consumer runtime state is created.
 
 ```yaml
-last_updated: 2026-11-08T22:32:19Z
+last_updated: 2026-11-15T19:36:27Z
 counters:
-  features_shipped_total: 6
+  features_shipped_total: 7
 last_run:
-  ship: 2026-11-08T21:44:32Z
-  feature_ship: 2026-11-08T21:44:32Z
-  doc_close: 2026-11-08T22:32:19Z
-  retro: 2026-11-08T22:32:19Z
+  ship: 2026-11-15T19:36:27Z
+  feature_ship: 2026-11-15T19:36:27Z
+  doc_close: 2026-11-15T19:36:27Z
+  retro: 2026-11-15T19:36:27Z
 pending_closeouts: []
 ```
+
+Conductor workspace metadata shipped in PR #58 as `4dd4f1a` on 15 November
+2026. The published tree matches independently reviewed and fully verified
+candidate `16bcadc`; noreply author/committer readback passes. Production
+verification covers the published repository only. Doc-close and the
+[feature retro](retros/2026-11-15-conductor-workspace-metadata.md) share this
+closeout PR. No new release tag, consumer adoption or live startup support is
+implied. Seven unrelated active features retain their existing ownership.
 
 Consumer workflow reliability shipped publicly in PR #54 as `ba708b2` on
 8 November 2026, with the reviewed v0.5.6 release. Published-source verification,
@@ -129,6 +132,11 @@ Its pending closeout is cleared; no unrelated closeout is changed.
 preserve verification, provenance and release-scope limits.
 
 ## Separate follow-ups
+
+- Conductor workspace metadata: consumer repair publication and fresh real-route
+  automatic-startup qualification remain separate. Follow the
+  [metadata contract](../v0.5/scripts/conductor-workspace-metadata.md); guidance
+  publication neither advances consumer pins nor establishes host binding.
 
 - Apply recovery gitignore: product PR #23 merged as `5d5265c` on 2026-10-08.
   Its [feature tracking](apply-recovery-gitignore/alignment.md) remains separately

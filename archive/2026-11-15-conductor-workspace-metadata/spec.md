@@ -131,9 +131,8 @@ created. Existing unrelated features retain their owners and status.
 ```yaml
 playbook_result:
   outcome: handoff
-  next_stage: '08'
+  next_stage: null
   required_actions:
-    - Independently review the exact implementation candidate.
-    - Verify shipping and PR review gates before the authorized merge.
+    - Retain the separately owned consumer repair and live qualification follow-up.
     - Keep live startup qualification separate from guidance/test acceptance.
 ```
