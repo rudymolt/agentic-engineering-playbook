@@ -273,16 +273,15 @@ attests executed tools and runtime. The public session schema does not expose
 provider execution metadata or agent identity for independent pre-send proof.
 
 New approvals bind escalated-candidate Verify in immutable `routes.escalated_verify`
-as `{"model":"gpt-6.1-sol","effort":"high","fallback":null}`. This explicit
-entry is the new seed policy, not an operation-provided override. Existing
-approvals without it retain the exact historical GPT-6 Sol/high policy for
-validation, resume, host dispatch and worker briefs; never add the entry to
-an already approved record or relabel its operations. Arbitrary weaker routes
-are rejected, and the approval digest binds the explicit new policy.
+as `{"model":"gpt-6.2-sol","effort":"high","fallback":null}`. The approval
+digest binds this route. Existing approvals with explicit GPT-6.1 Sol/high
+retain it, and approvals without the field retain the historical GPT-6 Sol/high
+policy. Validation, resume, host dispatch and worker briefs use the route bound
+by the approval. Keep existing approvals and their operation records intact.
 
-Every new escalated candidate receives a fresh GPT-6.1 Sol/high Verify of the exact
-SHA under that approval. Its brief carries the bounded task, candidate and artifact locator, not
-the Astra reasoning transcript. A failing verdict retains progress and closes
+Every escalated candidate receives fresh Verify of the exact SHA using its
+approved route. The brief carries the bounded task, candidate and artifact
+locator and omits the Astra reasoning transcript. A failing verdict retains progress and closes
 the slot. An unusable Verify remains unaccepted until its exact worker is
 reconciled; at most three fresh Verify attempts for that SHA are charged,
 without spending another implementation slot. After a slice passes, the next

@@ -23,17 +23,17 @@ when defaults change. QA inherits the selected Verify route.
 
 | User-facing lane | Stages | OpenAI default | Reasoning | Reused for |
 |---|---|---|---|---|
-| Plan | 01–06 | `gpt-6.1-sol` | high | planning retries |
-| Build | 07 and returned fixes | `gpt-6.1-sol` | medium | implementation fix cycles |
-| Verify | 08–09 | `gpt-6.1-sol` | high | one fresh verification run |
+| Plan | 01–06 | `gpt-6.2-sol` | high | planning retries |
+| Build | 07 and returned fixes | `gpt-6.2-sol` | medium | implementation fix cycles |
+| Verify | 08–09 | `gpt-6.2-sol` | high | one fresh verification run |
 
 Use **Plan**, **Build**, and **Verify** in prompts. Planning, implementation, and verification are internal state names.
 
-At Plan, `openai defaults` applies GPT-6.1 Sol/high → GPT-6.1 Sol/medium → GPT-6.1 Sol/high to this feature. It suppresses later model-selection questions, not the Build or Verify action gate. Rediscover each default before launch; stop instead of substituting when it is unavailable. Existing feature selections and historical run records retain the models that were actually approved and used; this table governs new lane selections.
+At Plan, `openai defaults` applies GPT-6.2 Sol/high → GPT-6.2 Sol/medium → GPT-6.2 Sol/high to this feature. It suppresses later model-selection questions, not the Build or Verify action gate. Rediscover each default before launch; stop instead of substituting when it is unavailable. Existing feature selections and historical run records retain the models that were actually approved and used; this table governs new lane selections.
 
-The current Sol model ID is `gpt-6.1-sol`, confirmed against
-[official model documentation](https://learn.chatgpt.com/docs/models#gpt-61-sol)
-on 2026-10-24. A configured default does not establish account/client access:
+The current Sol model ID is `gpt-6.2-sol`, confirmed against
+[official model documentation](https://developers.openai.com/codex/models)
+on 2026-11-18. A configured default does not establish account/client access:
 check the exact runner's live catalog (Codex app server `model/list`) and
 authentication. A missing model or `model_not_found` response is a capability
 blocker, not evidence that the edition should downgrade. Request access for the
@@ -61,8 +61,9 @@ send admission. An ambiguous read reconciles the same durable session ID;
 confirmed mismatch stops with a concrete decision report. No concurrent
 builder or silent substitute is admitted.
 
-Every candidate receives fresh GPT-6.1 Sol/high Verify of its exact SHA, with no
-Astra transcript. A failing verdict closes the cycle while retaining progress.
+Every candidate receives fresh Verify of its exact SHA, with no Astra
+transcript. New approvals bind GPT-6.2 Sol/high for this Verify route. A failing
+verdict closes the cycle while retaining progress.
 An unusable verifier result is reconciled and may receive at most two further
 fresh verifier dispatches for that SHA; those dispatches incur their own usage
 and never consume another Astra implementation slot. After acceptance, the next

@@ -63,7 +63,7 @@ scope, ceilings or approved implementation authority.
 
 Use the lane prompt in `references/chat-prompts.md`. Show the resolved preference and its origin; the OpenAI edition seed applies only when no higher-precedence choice exists. Put alternatives behind `models`, with at most three verified routes plus `more`. Use numbered choices starting at 1.
 
-At Plan, accept `openai defaults` to record GPT-6.1 Sol/high → GPT-6.1 Sol/medium → GPT-6.1 Sol/high for this feature. It starts Plan, but later Build and Verify action gates remain explicit. At Build, accept `fast` as a suffix on the build scope (for example `build all fast`); it changes pace for this Build → returned-fix → fresh-Verify run only, not model, reasoning, tests, permissions, or gates. When the current chat route differs in any user-relevant identity field, use the conflict prompt and persist it only after `plan here`, `current`, or `verify here`.
+At Plan, accept `openai defaults` to record GPT-6.2 Sol/high → GPT-6.2 Sol/medium → GPT-6.2 Sol/high for this feature. It starts Plan, but later Build and Verify action gates remain explicit. At Build, accept `fast` as a suffix on the build scope (for example `build all fast`); it changes pace for this Build → returned-fix → fresh-Verify run only, not model, reasoning, tests, permissions, or gates. When the current chat route differs in any user-relevant identity field, use the conflict prompt and persist it only after `plan here`, `current`, or `verify here`.
 
 Completion criterion: the prompt works in a text-only chat, uses no more than four options, and says what starts now, what starts nothing, and how the selected route launches.
 

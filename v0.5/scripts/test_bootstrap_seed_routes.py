@@ -38,8 +38,14 @@ class BootstrapSeedRouteTests(unittest.TestCase):
         self.local.mkdir()
         (self.local / "preferences.json").write_bytes(encoded({
             "schema_version": 1, "presentation": "guided", "billing": "unknown"}))
-        self.routes = [{"model_id": "gpt-6.1-sol", "runner": "codex", "reasoning": reasoning,
-                        "roles": list(ROLES), **METADATA} for reasoning in ("medium", "high")]
+        self.routes = [
+            {"model_id": "gpt-6.2-sol", "runner": "codex", "reasoning": "medium",
+             "roles": ["implementation"], **METADATA},
+            {"model_id": "gpt-6.2-sol", "runner": "codex", "reasoning": "high",
+             "roles": ["planning", "verification"], **METADATA},
+            {"model_id": "gpt-6.1-sol", "runner": "codex", "reasoning": "high",
+             "roles": ["escalated_repair"], **METADATA},
+        ]
         self.service = Configuration(self.project, self.discover, lambda: NOW,
                                      preferences_dir=self.local, context={"goal": "Fixture"})
 

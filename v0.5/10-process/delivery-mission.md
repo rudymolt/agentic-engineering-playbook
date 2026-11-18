@@ -19,11 +19,10 @@ override preferences. After approval, routes, escalation policy and execution
 records are immutable: Configure cannot amend/re-resolve an active mission.
 Existing discovery, identity and gate checks admit every launch independently.
 For a new interim escalation approval, bind the approved seed with
-`routes.escalated_verify: {model: gpt-6.1-sol, effort: high, fallback: null}`
-before its immutable approval digest is issued. Absence in an existing approval
-means the historical GPT-6 Sol/high policy, not permission to migrate history.
-Keep GPT-6 Astra/high as the escalated-repair seed; neither operation payloads
-nor current defaults can weaken or reroute a retained approval.
+`routes.escalated_verify: {model: gpt-6.2-sol, effort: high, fallback: null}`
+before its immutable approval digest is issued. Existing approvals retain their
+explicit verifier or the historical GPT-6 Sol/high policy if the field is absent.
+GPT-6 Astra/high remains the escalated-repair seed.
 
 V0.5.0 ships two process-attested routes:
 

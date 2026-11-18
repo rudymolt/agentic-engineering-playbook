@@ -35,8 +35,8 @@ class RoleConversationTests(unittest.TestCase):
             {"model_id": "fixture-model", "runner": "codex", "reasoning": "high", "roles": list(ROLES)},
             {"model_id": "fixture-model", "runner": "conductor", "reasoning": "high", "roles": list(ROLES)},
             {"model_id": "fixture-other", "runner": "codex", "reasoning": "high", "roles": ["planning"]},
-            {'model_id': 'gpt-6.1-sol', 'runner': 'codex', 'reasoning': 'high', 'roles': ['planning', 'verification']},
-            {'model_id': 'gpt-6.1-sol', 'runner': 'codex', 'reasoning': 'medium', 'roles': ['implementation']},
+            {'model_id': 'gpt-6.2-sol', 'runner': 'codex', 'reasoning': 'high', 'roles': ['planning', 'verification']},
+            {'model_id': 'gpt-6.2-sol', 'runner': 'codex', 'reasoning': 'medium', 'roles': ['implementation']},
             {'model_id': 'custom-repair', 'runner': 'codex', 'reasoning': 'high', 'roles': ['escalated_repair']},
         ]
         self.coordinator = None
@@ -74,7 +74,7 @@ class RoleConversationTests(unittest.TestCase):
 
     def test_legacy_core_routes_remain_available_with_unique_host_metadata(self):
         for route in self.routes:
-            if route['model_id'] in {'gpt-6.1-sol', 'custom-repair'}:
+            if route['model_id'] in {'gpt-6.2-sol', 'custom-repair'}:
                 route.update(provider='observed-provider', label='Host display label')
         proposal = self.service.read()
         self.assertEqual(proposal['unavailable_roles'], [])
@@ -89,7 +89,7 @@ class RoleConversationTests(unittest.TestCase):
 
     def test_legacy_route_with_ambiguous_host_metadata_requires_selection(self):
         matching = next(route for route in self.routes
-                        if route['model_id'] == 'gpt-6.1-sol' and route['reasoning'] == 'medium')
+                        if route['model_id'] == 'gpt-6.2-sol' and route['reasoning'] == 'medium')
         matching.update(provider='provider-one', label='First route')
         self.routes.append({**matching, 'provider': 'provider-two', 'label': 'Second route'})
         proposal = self.service.read()
@@ -100,7 +100,7 @@ class RoleConversationTests(unittest.TestCase):
 
     def test_new_host_ambiguity_before_apply_preserves_legacy_settings(self):
         matching = next(route for route in self.routes
-                        if route['model_id'] == 'gpt-6.1-sol' and route['reasoning'] == 'medium')
+                        if route['model_id'] == 'gpt-6.2-sol' and route['reasoning'] == 'medium')
         matching.update(provider='provider-one', label='First route')
         proposal = self.service.read()
         self.routes.append({**matching, 'provider': 'provider-two', 'label': 'Second route'})

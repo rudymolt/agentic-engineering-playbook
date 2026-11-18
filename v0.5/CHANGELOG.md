@@ -2,6 +2,14 @@
 
 ## Unreleased
 
+- Use GPT-6.2 Sol/high for Plan and Verify, including QA and escalated-candidate
+  verification, and GPT-6.2 Sol/medium for Build. Bootstrap seeds these defaults,
+  and the upgrader migrates exact legacy default blocks. Custom routes and
+  existing delivery approvals keep their recorded choices.
+
+*Why — adopt the current Sol model:* OpenAI now lists GPT-6.2 Sol in Codex
+  with the reasoning efforts used by the Playbook.
+
 - Document optional workspace display names, route-specific setup prerequisites,
   safe consumer receipt preparation and actual host binding before qualification.
   Add deterministic metadata regression coverage through the existing launcher

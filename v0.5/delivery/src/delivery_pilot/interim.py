@@ -286,9 +286,12 @@ def validate_approval(value: object) -> dict[str, Any]:
     for name in _ROUTE_NAMES:
         _route(routes[name], f"{name} route")
     if "escalated_verify" in routes:
-        _route(routes["escalated_verify"], "escalated_verify")
-        if routes["escalated_verify"] != {"model": "gpt-6.1-sol", "effort": "high", "fallback": None}:
-            _fail("new escalated Verify policy requires gpt-6.1-sol/high without fallback")
+        escalated_verify = routes["escalated_verify"]
+        _route(escalated_verify, "escalated_verify")
+        # Explicit GPT-6.1 Sol routes remain valid in immutable prior approvals.
+        if (escalated_verify["model"] not in {"gpt-6.2-sol", "gpt-6.1-sol"}
+                or escalated_verify["effort"] != "high" or escalated_verify["fallback"] is not None):
+            _fail("escalated Verify requires gpt-6.2-sol/high or historical gpt-6.1-sol/high without fallback")
     forecast = _mapping(approval["forecast"], "forecast")
     allowed_forecasts = ({"work_units", "verification_units"}, {"work_units", "verification_units", "likely_repair_units", "final_handback_units"})
     if set(forecast) not in allowed_forecasts or any(type(forecast[name]) is not int or forecast[name] < 0 for name in forecast):

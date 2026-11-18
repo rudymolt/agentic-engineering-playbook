@@ -47,7 +47,7 @@ def approval(fetch_url: str = "https://example.invalid/approved.git", push_url: 
             "build": {"model": "gpt-5.6-terra", "effort": "high", "fallback": None},
             "verify": {"model": "gpt-5.6-sol", "effort": "medium", "fallback": "same-runner-human-override"},
             "diagnosis": {"model": "gpt-5.6-terra", "effort": "high", "fallback": None},
-            "escalated_verify": {"model": "gpt-6.1-sol", "effort": "high", "fallback": None},
+            "escalated_verify": {"model": "gpt-6.2-sol", "effort": "high", "fallback": None},
         },
         "forecast": {"work_units": 1, "verification_units": 1},
         "progress_checkpoint_policy": "worker-result-and-forecast-exceeded",
@@ -84,19 +84,32 @@ class InterimApprovalTests(unittest.TestCase):
         from delivery_pilot.interim_routes import route_for_operation, configured_route
         selected = approval()
         operation = {"phase": "repair-verify", "escalated_verify": "repair-1"}
-        expected = {"model": "gpt-6.1-sol", "effort": "high"}
+        expected = {"model": "gpt-6.2-sol", "effort": "high"}
         record = initial_record(selected)
         self.assertEqual(route_for_operation(selected, operation), expected)
         self.assertEqual(configured_route(selected["routes"], operation), expected)
         changed = deepcopy(record)
-        del changed["approval"]["routes"]["escalated_verify"]
+        changed["approval"]["routes"]["escalated_verify"]["model"] = "gpt-6.1-sol"
         with self.assertRaisesRegex(InterimError, "immutable"):
             validate_record(changed)
-        for model, effort in (("gpt-6.1-sol", "medium"), ("arbitrary-model", "high"), ("gpt-6-sol", "high")):
+        for model, effort in (("gpt-6.2-sol", "medium"), ("gpt-6.1-sol", "medium"),
+                              ("arbitrary-model", "high"), ("gpt-6-sol", "high")):
             bad = deepcopy(selected)
             bad["routes"]["escalated_verify"].update(model=model, effort=effort)
             with self.assertRaises(InterimError):
                 initial_record(bad)
+
+    def test_prior_explicit_verify_route_survives_checkpoint_validation(self) -> None:
+        from delivery_pilot.interim_routes import route_for_operation
+        selected = approval()
+        selected["routes"]["escalated_verify"]["model"] = "gpt-6.1-sol"
+        record = initial_record(selected)
+        validated = validate_record(record)
+        self.assertEqual(validated["approval_digest"], digest(selected))
+        self.assertEqual(validated["approval"], selected)
+        operation = {"phase": "repair-verify", "escalated_verify": "repair-1"}
+        self.assertEqual(route_for_operation(validated["approval"], operation),
+                         {"model": "gpt-6.1-sol", "effort": "high"})
 
     def test_explicit_escalation_policy_is_immutable_and_legacy_has_no_authority(self) -> None:
         selected = approval()
