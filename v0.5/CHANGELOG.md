@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## V0.5.8 — 2026-11-18
+
+This patch adopts GPT-6.2 Sol for Plan, Build, and Verify and clarifies Conductor workspace setup and startup qualification.
+
 - Use GPT-6.2 Sol/high for Plan and Verify, including QA and escalated-candidate
   verification, and GPT-6.2 Sol/medium for Build. Bootstrap seeds these defaults,
   and the upgrader migrates exact legacy default blocks. Custom routes and
