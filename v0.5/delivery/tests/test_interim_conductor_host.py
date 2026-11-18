@@ -71,7 +71,7 @@ class HostAdapterTests(unittest.TestCase):
         item["candidate"] = {"head": "a" * 40, "base": "b" * 40}
         item["verify_context"] = {"build_operation_id": "op-escalated", "candidate": item["candidate"],
                                   "criteria": ["AC25", "AC27"], "artifact_id": "artifact-escalated"}
-        item["route"] = {"model": "gpt-6.1-sol", "effort": "high"}
+        item["route"] = {"model": "gpt-6.2-sol", "effort": "high"}
         calls = []
         def command(argv):
             calls.append(argv)
@@ -80,7 +80,7 @@ class HostAdapterTests(unittest.TestCase):
         adapter = ConductorHostAdapter(WORKSPACE, agent="codex", routes={"escalated_verify": item["route"]}, command=command)
         adapter.send(item)
         brief = calls[0][-1]
-        self.assertIn("fresh gpt-6.1-sol/high Verify", brief)
+        self.assertIn("fresh gpt-6.2-sol/high Verify", brief)
         self.assertIn("artifact-escalated", brief)
         self.assertIn('"head":"' + "a" * 40, brief)
         self.assertNotIn("prior_hypotheses", brief)
@@ -100,7 +100,7 @@ class HostAdapterTests(unittest.TestCase):
         adapter.send(item)
         self.assertEqual(calls[0][calls[0].index("--model") + 1], "gpt-6-sol")
         self.assertIn("fresh gpt-6-sol/high Verify", calls[0][-1])
-        self.assertNotIn("gpt-6.1-sol", calls[0][-1])
+        self.assertNotIn("gpt-6.2-sol", calls[0][-1])
         forged = deepcopy(item)
         forged["route"]["effort"] = "medium"
         with self.assertRaises(InterimDispatchError):

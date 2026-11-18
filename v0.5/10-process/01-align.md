@@ -93,7 +93,7 @@ owned here.
 
 Three skills, layered. Use the smallest set that settles the question.
 
-Before the first planning skill starts, use the Plan gate in [`../93-model-routing-track.md`](../93-model-routing-track.md). The normal `plan` reply accepts the resolved project/feature preference and shows its origin (edition fallback: GPT-6.1 Sol/high); `models` opens verified alternatives; `openai defaults` applies GPT-6.1 Sol/high → GPT-6.1 Sol/medium → GPT-6.1 Sol/high to this feature only. A pre-feature choice creates only a pending route, not a feature folder or alignment counter.
+Before the first planning skill starts, use the Plan gate in [`../93-model-routing-track.md`](../93-model-routing-track.md). The normal `plan` reply accepts the resolved project/feature preference and shows its origin (edition fallback: GPT-6.2 Sol/high); `models` opens verified alternatives; `openai defaults` applies GPT-6.2 Sol/high → GPT-6.2 Sol/medium → GPT-6.2 Sol/high to this feature only. A pre-feature choice creates only a pending route, not a feature folder or alignment counter.
 
 ### Explicit invocation after Plan selection
 

@@ -1,7 +1,7 @@
 {
   "files": [
     {
-      "digest": "sha256:4b087e72fd9d4081ecf1d62dcd258f38f63fcc963181ad4fbfe975119a5bc648",
+      "digest": "sha256:81e176af268bb24d39a246f2144e26d8220e2e0288ce432eb62152f598691b66",
       "install_path": null,
       "source": "README.md"
     },
@@ -591,7 +591,7 @@
       "source": "src/delivery_pilot/interfaces.py"
     },
     {
-      "digest": "sha256:40dabfed37c227be7cd5b68520dc002f3581bbf35a07da258e7ad99d2992d43f",
+      "digest": "sha256:de8cb7acffc7d1ebde052063257f3a6913a70ef6c56a0a5de2e624164be40948",
       "install_path": "runtime/delivery_pilot/interim.py",
       "source": "src/delivery_pilot/interim.py"
     },
@@ -756,17 +756,17 @@
       "source": "tests/test_core.py"
     },
     {
-      "digest": "sha256:760433f8817cca3061603dd5834dc0a8b071f6aa145de29306d9d503cd3cc621",
+      "digest": "sha256:38338e8ec8f6575bc2829bdd6fe9b928ea464ed6a95658365f7697b57dbc041d",
       "install_path": null,
       "source": "tests/test_interim.py"
     },
     {
-      "digest": "sha256:c8cf8edaaa7d46052fb2302321cd4d62d03143a0e6431d925cf75bfdfe13e3c5",
+      "digest": "sha256:f37a6791eb6799734e8f3e1e1c529341ab6a81656ae48d6ffe114ad9e1958b23",
       "install_path": null,
       "source": "tests/test_interim_advance.py"
     },
     {
-      "digest": "sha256:d43569b438cfca13fbd8008b0066a28d78dbb800cb573b6acf7768b48392a14a",
+      "digest": "sha256:ae574d46bcef2435fe4fad7bcaf44fe29e6920ff42e3397081cb7d99ab9e2247",
       "install_path": null,
       "source": "tests/test_interim_conductor_host.py"
     },
@@ -813,5 +813,5 @@
   ],
   "manifest_schema_version": 1,
   "manifest_self_rule": "pack_digest covers the complete non-manifest source inventory",
-  "pack_digest": "sha256:bc5f7aae6ccde00e39a6bd9eda3282c994b8bc26cdde8d6f036139989dbcffe4"
+  "pack_digest": "sha256:1c6eab93b5a166686cacee701ec8df87a2aeaa219ce1d6886cf92af25f5cfdbc"
 }

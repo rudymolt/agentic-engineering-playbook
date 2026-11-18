@@ -24,8 +24,8 @@ def discover(request):
     return {"request_id": request["request_id"], "checked_at": request["started_at"],
             "authority": "host-reported-selection", "revision": "test-fixture",
             "routes": [
-                {"model_id": "gpt-6.1-sol", "runner": "codex", "reasoning": "high", "roles": ["planning", "verification"]},
-                {"model_id": "gpt-6.1-sol", "runner": "codex", "reasoning": "medium", "roles": ["implementation"]},
+                {"model_id": "gpt-6.2-sol", "runner": "codex", "reasoning": "high", "roles": ["planning", "verification"]},
+                {"model_id": "gpt-6.2-sol", "runner": "codex", "reasoning": "medium", "roles": ["implementation"]},
                 {"model_id": "gpt-6-astra", "runner": "codex", "reasoning": "high", "roles": ["escalated_repair"]},
                 {"model_id": "fixture-plan", "runner": "codex", "reasoning": "high", "roles": ["planning"]},
                 {"model_id": "fixture-build", "runner": "codex", "reasoning": "medium", "roles": ["implementation"]},

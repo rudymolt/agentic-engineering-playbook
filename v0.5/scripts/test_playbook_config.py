@@ -41,7 +41,7 @@ class ConfigurationFixture(unittest.TestCase):
                        {'model_id': 'custom-plan', 'runner': 'cursor', 'reasoning': 'max', 'roles': ['planning']},
                        {'model_id': 'custom-verify', 'runner': 'claude-code', 'reasoning': 'high', 'roles': ['verification']},
                        {'model_id': 'custom-repair', 'runner': 'codex', 'reasoning': 'xhigh', 'roles': ['escalated_repair']},
-                       {'model_id': 'gpt-6.1-sol', 'runner': 'codex', 'reasoning': 'high', 'roles': ['planning', 'verification']},
+                       {'model_id': 'gpt-6.2-sol', 'runner': 'codex', 'reasoning': 'high', 'roles': ['planning', 'verification']},
                        {'model_id': 'gpt-6-astra', 'runner': 'codex', 'reasoning': 'high', 'roles': ['escalated_repair']}],
         }
         self.service = Configuration(self.project, self.discover, lambda: "2026-09-29T12:00:00Z")
@@ -712,7 +712,7 @@ class ConfigurationTests(ConfigurationFixture):
 
     def test_edition_and_explicit_feature_precedence_without_launch(self):
         self.state.unlink()
-        self.assertEqual(self.service.resolve("implementation")["choice"]["model_id"], "gpt-6.1-sol")
+        self.assertEqual(self.service.resolve("implementation")["choice"]["model_id"], "gpt-6.2-sol")
         self.assertEqual(self.service.resolve("implementation")["origin"], "edition")
         self.assertEqual(self.service.resolve("implementation", {"model_id": "override", "runner": "opencode", "reasoning": "max"})["choice"]["model_id"], "override")
 

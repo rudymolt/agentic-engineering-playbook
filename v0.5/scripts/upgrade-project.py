@@ -42,12 +42,14 @@ AUTHORITATIVE_EVIDENCE_KINDS = {
     "host_metadata",
 }
 
-MODEL_ROUTING_BLOCK = """model_routing:
+CURRENT_MODEL_DEFAULTS = """    planning: { model_id: gpt-6.2-sol, runner: codex, reasoning: high }
+    implementation: { model_id: gpt-6.2-sol, runner: codex, reasoning: medium }
+    verification: { model_id: gpt-6.2-sol, runner: codex, reasoning: high }"""
+
+MODEL_ROUTING_BLOCK = f"""model_routing:
   policy: gated
   defaults:
-    planning: { model_id: gpt-6.1-sol, runner: codex, reasoning: high }
-    implementation: { model_id: gpt-6.1-sol, runner: codex, reasoning: medium }
-    verification: { model_id: gpt-6.1-sol, runner: codex, reasoning: high }
+{CURRENT_MODEL_DEFAULTS}
   allowed_runners: [codex, claude-code, cursor, opencode]
 
 """
@@ -64,7 +66,7 @@ PRE_V061_MODEL_DEFAULTS = """    planning: { model_id: gpt-5.6-sol, runner: code
     implementation: { model_id: gpt-6-sol, runner: codex, reasoning: medium }
     verification: { model_id: gpt-6-sol, runner: codex, reasoning: high }"""
 
-CURRENT_MODEL_DEFAULTS = """    planning: { model_id: gpt-6.1-sol, runner: codex, reasoning: high }
+PRE_V062_MODEL_DEFAULTS = """    planning: { model_id: gpt-6.1-sol, runner: codex, reasoning: high }
     implementation: { model_id: gpt-6.1-sol, runner: codex, reasoning: medium }
     verification: { model_id: gpt-6.1-sol, runner: codex, reasoning: high }"""
 
@@ -520,7 +522,7 @@ def migrate_state(text: str, report: UpgradeReport, starting_patch: int) -> str:
             report.manual_reviews.append(".playbook-state.yml: add the model_routing policy before the customized counters block")
     else:
         routing = re.search(r"(?m)^model_routing:\n(?:[ \t]+.*\n|[ \t]*\n)*", text)
-        previous_defaults = (V038_MODEL_DEFAULTS, PRE_V061_MODEL_DEFAULTS)
+        previous_defaults = (V038_MODEL_DEFAULTS, PRE_V061_MODEL_DEFAULTS, PRE_V062_MODEL_DEFAULTS)
         if starting_patch < 38:
             previous_defaults = (PRE_V038_MODEL_DEFAULTS, *previous_defaults)
         if routing:

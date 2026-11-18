@@ -44,9 +44,9 @@ class BootstrapProjectTest(unittest.TestCase):
                 f"playbook_version: {bootstrap_project.current_version(PLAYBOOK_ROOT)}", state
             )
             self.assertIn("playbook_release: null", state)
-            self.assertIn("planning: { model_id: gpt-6.1-sol, runner: codex, reasoning: high }", state)
-            self.assertIn("implementation: { model_id: gpt-6.1-sol, runner: codex, reasoning: medium }", state)
-            self.assertIn("verification: { model_id: gpt-6.1-sol, runner: codex, reasoning: high }", state)
+            self.assertIn("planning: { model_id: gpt-6.2-sol, runner: codex, reasoning: high }", state)
+            self.assertIn("implementation: { model_id: gpt-6.2-sol, runner: codex, reasoning: medium }", state)
+            self.assertIn("verification: { model_id: gpt-6.2-sol, runner: codex, reasoning: high }", state)
             self.assertIn("escalated_repair: { model_id: gpt-6-astra, runner: codex, reasoning: high,", state)
             self.assertIn("no_ui: true", state)
             self.assertIn("prereqs_required: true", state)
@@ -311,8 +311,8 @@ class BootstrapProjectTest(unittest.TestCase):
             state = (project / ".playbook-state.yml").read_text()
             self.assertIn("no_ui: false", state)
             self.assertIn("kitchen_sink_drift_audit: 2026-07-10", state)
-            self.assertIn("implementation: { model_id: gpt-6.1-sol, runner: codex, reasoning: medium }", state)
-            self.assertIn("verification: { model_id: gpt-6.1-sol, runner: codex, reasoning: high }", state)
+            self.assertIn("implementation: { model_id: gpt-6.2-sol, runner: codex, reasoning: medium }", state)
+            self.assertIn("verification: { model_id: gpt-6.2-sol, runner: codex, reasoning: high }", state)
             self.assertEqual(report.manual_reviews, [])
 
 
@@ -323,7 +323,8 @@ class ModelDefaultsUpgradeTest(unittest.TestCase):
     def test_shipped_defaults_upgrade_without_changing_selected_routes(self):
         for old_defaults in (upgrade_project.PRE_V038_MODEL_DEFAULTS,
                              upgrade_project.V038_MODEL_DEFAULTS,
-                             upgrade_project.PRE_V061_MODEL_DEFAULTS):
+                             upgrade_project.PRE_V061_MODEL_DEFAULTS,
+                             upgrade_project.PRE_V062_MODEL_DEFAULTS):
             with self.subTest(defaults=old_defaults):
                 history = "\nselected_routes:\n" + old_defaults + "\n"
                 original = self.state().replace(upgrade_project.CURRENT_MODEL_DEFAULTS, old_defaults) + history
@@ -337,7 +338,8 @@ class ModelDefaultsUpgradeTest(unittest.TestCase):
         custom = upgrade_project.PRE_V061_MODEL_DEFAULTS.replace("runner: codex", "runner: opencode", 1)
         for old_defaults in (upgrade_project.PRE_V038_MODEL_DEFAULTS,
                              upgrade_project.V038_MODEL_DEFAULTS,
-                             upgrade_project.PRE_V061_MODEL_DEFAULTS):
+                             upgrade_project.PRE_V061_MODEL_DEFAULTS,
+                             upgrade_project.PRE_V062_MODEL_DEFAULTS):
             with self.subTest(defaults=old_defaults):
                 history = "\nselected_routes:\n" + old_defaults + "\n"
                 original = self.state().replace(upgrade_project.CURRENT_MODEL_DEFAULTS, custom) + history
@@ -348,10 +350,11 @@ class ModelDefaultsUpgradeTest(unittest.TestCase):
     def test_migration_only_updates_actual_defaults_preserving_siblings_and_comments(self):
         historical = (upgrade_project.PRE_V038_MODEL_DEFAULTS,
                       upgrade_project.V038_MODEL_DEFAULTS,
-                      upgrade_project.PRE_V061_MODEL_DEFAULTS)
+                      upgrade_project.PRE_V061_MODEL_DEFAULTS,
+                      upgrade_project.PRE_V062_MODEL_DEFAULTS)
         for old in historical:
             for override in (None, ("runner: codex", "runner: opencode"),
-                             ("gpt-5.6-sol", "custom-model"),
+                             ("model_id: ", "model_id: custom-"),
                              ("reasoning: high", "reasoning: low")):
                 for sibling_first in (False, True):
                     with self.subTest(old=old, override=override, sibling_first=sibling_first):
