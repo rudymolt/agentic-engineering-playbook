@@ -6,10 +6,10 @@
 
 ## Release
 
-**V0.5.7** — 2026-11-14. This patch shows how to start explicit alignment skills after choosing a Plan model and records bounded startup qualification.
+**V0.5.8** — 2026-11-18. This patch adopts GPT-6.2 Sol for Plan, Build, and Verify and clarifies Conductor workspace setup and startup qualification.
 
+- V0.5.7 — 2026-11-14. This patch shows how to start explicit alignment skills after choosing a Plan model and records bounded startup qualification.
 - V0.5.6 — 2026-11-08. This patch clarifies ordinary build checkpoints, preserves upgrade certification during review, and records the November upstream comparison.
-- V0.5.5 — 2026-11-02. This patch preserves completed skill installation history during repeated setup and clarifies Cloud startup activation. Actual Cloud qualification remains a separate acceptance gate.
 
 Full history: [`v0.5/CHANGELOG.md`](v0.5/CHANGELOG.md).
 
