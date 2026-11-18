@@ -1873,8 +1873,8 @@
     },
     {
       "path": "scripts/test_retro_skills.py",
-      "sha256": "decb64c161e052d2f90cc7036bc56e4e764357024c4b5785508026c96f48e4fa",
-      "size": 2602
+      "sha256": "a7a8c56c69f5cb11154716b2ee5752a21e0ec622c8e17143d1d258c655bfa7dc",
+      "size": 2850
     },
     {
       "path": "scripts/test_skill_adoption.py",

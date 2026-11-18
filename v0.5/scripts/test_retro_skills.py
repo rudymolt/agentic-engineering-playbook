@@ -23,12 +23,16 @@ class RetroSkillsTest(unittest.TestCase):
         skill = registry.skills["matt-retro"]
         self.assertEqual(skill.invocation, "user")
         self.assertTrue(skill.install_by_default)
-        receipt = json.loads((ROOT / "analysis/2026-10-08-matt-migration-sources.json").read_text())
-        source = next(s for s in receipt["skills"] if s["skill"] == "retro")
+        receipt = json.loads((ROOT / "analysis/2026-11-08-upstream-sources.json").read_text())
+        retro = next(row for row in receipt["commands"] if row["name"] == "matt-retro")
+        source = retro["sources"]["matt-released"]
+        commit = receipt["snapshots"]["matt-released"]["commit"]
         reference = ROOT / "v0.5/skills/matt-retro/references/upstream-retro.md"
         self.assertEqual(hashlib.sha256(reference.read_bytes()).hexdigest(),
-                         source["files_sha256"]["SKILL.md"])
-        self.assertEqual(skill.provenance["commit"], receipt["commit"])
+                         source["sha256"])
+        self.assertEqual(skill.provenance["source"], source["path"])
+        self.assertEqual(skill.provenance["commit"], commit)
+        self.assertEqual(registry.packages["mattpocock-skills"].pin["commit"], commit)
 
     def test_bootstrap_and_upgrade_preserve_both_customized_retros(self):
         with tempfile.TemporaryDirectory() as tmp:
