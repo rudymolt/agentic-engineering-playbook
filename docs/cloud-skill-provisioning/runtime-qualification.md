@@ -226,8 +226,8 @@ no reviewer ran. Repeated discovery and gate probes preserved protected bytes,
 modes, nanosecond mtimes and aliases. The coordinator's default-discovery check
 compared 361 entries; Codex's repeated case checks compared 125 protected entries.
 Before/after personal skill and settings hashes matched. These checks exclude
-unrelated home files and do not claim whole-filesystem non-mutation. The Cloud
-pin remains v1.3.1 at `24fe0ef7737efae15c87225755e9f6f5965e4888`.
+unrelated home files and do not claim whole-filesystem non-mutation. This Cloud
+qualification used v1.3.1 at `24fe0ef7737efae15c87225755e9f6f5965e4888`.
 
 One observation defect is retained: the first Claude exact-source launcher
 inherited its parent's stdin, so launcher text appeared after the prompt. The

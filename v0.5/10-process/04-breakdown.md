@@ -14,7 +14,7 @@ This frontier answers **“what can be implemented next?”** It is distinct fro
 
 ## What to run
 
-`/to-tickets` (Matt; formerly `/to-issues` — merged into this command in upstream v1.1.0). The skill enforces vertical-slice discipline and creates tickets in dependency order (blockers first), each declaring its **blocking edges** — native blocking links on a real tracker, or "Blocked by" lines in a local `tickets.md`. Work then proceeds along the **frontier**: any ticket whose blockers are all done.
+`/to-tickets` (Matt; formerly `/to-issues` — merged into this command in upstream v1.1.0). The skill enforces vertical-slice discipline and creates tickets in dependency order (blockers first), each declaring its **blocking edges**. Use native links where available. If the spec is an existing tracker issue, link the slices as its children using the configured tracker operation. For local markdown, write one file per ticket under `.scratch/<feature-slug>/issues/` and record its blockers there. For issue trackers with labels, use the project’s mapped label for the `ready-for-agent` role unless the owner selects another role. Work then proceeds along the **frontier**: any ticket whose blockers are all done.
 
 **Wide refactors are the named exception to vertical slicing.** One mechanical change whose blast radius fans across the codebase (rename a column, retype a shared symbol) can't land green as a tracer bullet. `/to-tickets` sequences it as **expand–contract**: expand (add the new form beside the old), migrate call sites in batches sized by blast radius (each batch a ticket blocked by the expand), contract (delete the old form, blocked by every batch). This matches the stage-04 verification-target rule — each batch keeps CI green, and the behaviour-preservation check is the green suite batch to batch.
 
@@ -24,7 +24,7 @@ This frontier answers **“what can be implemented next?”** It is distinct fro
 - **Cuts through every layer.** Schema → API → business logic → UI → tests, end-to-end, for that one capability.
 - **Independently grabbable once unblocked.** Any agent can pick it up when its declared blockers are complete; it carries no hidden dependency on another agent's context.
 - **Tagged AFK or HITL.** AFK = an agent can implement without human input. HITL = human-in-the-loop required.
-- **Has a dependency line.** Either "depends on nothing" or "depends on #NNN".
+- **Has known blockers.** Use native blocking edges where supported. For text-only trackers, record the blocking tickets or state that there are none.
 - **Has a verification target.** The agent never invents success criteria silently; a slice lacking them routes back to stage 01/03 before any code.
 
 ### Preserve source metadata

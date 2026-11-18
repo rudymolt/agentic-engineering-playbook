@@ -45,11 +45,11 @@ After `/ship` opens the PR, the human project owner reviews and merges it manual
 
 An agent-authored PR body carries a short structured trail: risk assessment, what was tested (commands/flows), and findings fixed plus how each was verified — not just a summary.
 
-Optional `/pr` (Matt, v1.3.1) helps describe the change: choose a small visual
+Optional `/pr` (Matt, v1.3.2) helps describe the change: choose a small visual
 when useful, show before/after evidence, and explain rollback difficulty and
 affected consumers. Preserve the repository's PR template and required review
 trail; stage 10 owns publication and merge authority. This presentation practice
-comes from [Matt's pr skill](https://github.com/mattpocock/skills/blob/v1.3.1/skills/engineering/pr/SKILL.md),
+comes from [Matt's pr skill](https://github.com/mattpocock/skills/blob/v1.3.2/skills/engineering/pr/SKILL.md),
 whose visual guidance credits Dex Horthy / Humanlayer's `show-me`.
 
 ### 2. `/land-and-deploy` — Release Engineer

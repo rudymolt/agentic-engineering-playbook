@@ -51,7 +51,7 @@ These values are observational. Collect a three-period baseline for sample appli
 ## The retro template
 
 Include an environment-improvement pass, drawing on
-[Matt's v1.3.1 retro](https://github.com/mattpocock/skills/blob/v1.3.1/skills/engineering/retro/SKILL.md):
+[Matt's v1.3.2 retro](https://github.com/mattpocock/skills/blob/v1.3.2/skills/engineering/retro/SKILL.md):
 identify navigation friction, missing checks, confusing instructions and wasted
 tool calls from actual session evidence. Prefer a deterministic check for a
 mechanical mistake; keep judgement calls in review guidance. Propose changes

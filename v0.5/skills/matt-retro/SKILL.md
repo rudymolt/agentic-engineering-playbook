@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # Matt's environment retrospective
 
-This explicit command runs Matt Pocock's complete v1.3.1 retro workflow through
+This explicit command runs Matt Pocock's complete v1.3.2 retro workflow through
 this playbook adapter. It is independent of gstack's `/retro` (`$gstack-retro`
 in Codex). Invoke this entry as `/matt-retro` in Claude or `$matt-retro` in Codex.
 

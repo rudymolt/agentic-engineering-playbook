@@ -4,7 +4,7 @@ The playbook's local skills use the invocation mechanics from `/writing-for-agen
 
 Provenance: [Matt Pocock's `writing-for-agents`](https://github.com/mattpocock/skills/tree/v1.2.3/skills/productivity/writing-for-agents), its skill-mechanics reference, and the locally installed skill were reviewed on 2026-08-08. The dual-harness metadata mechanics are the source contract; the reach analysis and authority framing below are this playbook's synthesis. `writing-great-skills` is the removed pre-v1.2 name and remains valid only in explicit upgrade history.
 
-Upstream v1.3.1 dependent skills explicitly request a skill loader. Use the host's
+Upstream v1.3.2 dependent skills explicitly request a skill loader. Use the host's
 actual loader; where none exists, read the resolved installed SKILL.md and its
 selected references. Merely mentioning a skill does not load its instructions.
 Missing user-owned tracker setup asks the human to run setup; it never authorizes

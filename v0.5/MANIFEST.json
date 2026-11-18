@@ -13,8 +13,8 @@
     },
     {
       "path": "10-process/00-prereqs.md",
-      "sha256": "6dc5bb70e911a2654d02ac4b6e3721e798adf9be822b9c0cb2a65deadccce058",
-      "size": 19291
+      "sha256": "382def7a916eccb8829b54bf9956f367553b5bc10160eaeebb33df47fbe668e0",
+      "size": 19835
     },
     {
       "path": "10-process/01-align.html",
@@ -33,8 +33,8 @@
     },
     {
       "path": "10-process/03-spec.md",
-      "sha256": "63af91db2de825f366d12fee9ff8651e4d7623457afc687f4089f2673ff3e835",
-      "size": 6208
+      "sha256": "c021e8baa282442907f5a69317471bc92814d2fc1e0866c4c3d3039b4377b980",
+      "size": 6250
     },
     {
       "path": "10-process/04-breakdown.html",
@@ -43,13 +43,13 @@
     },
     {
       "path": "10-process/04-breakdown.md",
-      "sha256": "8c8e341615188f02c92d09ab7cf13aa393ae6f558bab73a0c0fda34a73a41b01",
-      "size": 5418
+      "sha256": "14fc92c3d1fbebd853037593e12f2145598a4fe0f72b43dc3f92e8beeec42e86",
+      "size": 5799
     },
     {
       "path": "10-process/05-triage.md",
-      "sha256": "c7181d39399dc6d072f10abcf07c9bec5c2d2e9cf235c907a925b4bc37f04009",
-      "size": 3214
+      "sha256": "1a53dd5b491b7d0cff87cf11c6c0afa1b9b3ee2967ebc5274e7345e13326fc74",
+      "size": 3334
     },
     {
       "path": "10-process/06-architecture.md",
@@ -73,7 +73,7 @@
     },
     {
       "path": "10-process/10-ship-and-deploy.md",
-      "sha256": "bf2814e56b1f08db8cb43fdec316b54fc9db82d19701d5d5593ea2718aa3830f",
+      "sha256": "55d0b1d434ca6ab7514f0d610fbd78a9cb6110b96570c3a1726b90295aff5499",
       "size": 17090
     },
     {
@@ -83,7 +83,7 @@
     },
     {
       "path": "10-process/12-retro-and-learn.md",
-      "sha256": "0062e7eb694252300dcfabe64e8e868bebc94d47d07b5957cada4cd65db4c74b",
+      "sha256": "865c1a712d94a468645474ffcea009a942968f223ae9b116e3c88abb1775b67f",
       "size": 10879
     },
     {
@@ -158,13 +158,13 @@
     },
     {
       "path": "91-delegation-track.md",
-      "sha256": "d320595dc8ccb3d6e486c0ec5bd5473bef0816240fc1f23835775202a998d18a",
+      "sha256": "0989fe33c553e48de4d88303fb0b9955159750a4761c29b4fa602dd651f0e739",
       "size": 6852
     },
     {
       "path": "92-wayfinder-track.md",
-      "sha256": "e5161019ffe029514c62c27e4456f1f6d6ecd27a01f9742f8180cd5d177aa3c7",
-      "size": 7937
+      "sha256": "1a404188965b98cbd22f5e44e3787b7df4b3b5613fdc327b13d3d3267d732e1d",
+      "size": 8206
     },
     {
       "path": "93-model-routing-track.md",
@@ -178,8 +178,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "3c9c962ec3aac6406800523a0887f4124e8bd91bc9b5dfbb940ca6a23991a4e0",
-      "size": 83055
+      "sha256": "bbf8e8e2807efd19e0b052a1427ce207c8dbfed357b3656a74770f8b6d450e25",
+      "size": 83609
     },
     {
       "path": "MAINTENANCE.md",
@@ -188,7 +188,7 @@
     },
     {
       "path": "README.md",
-      "sha256": "07a8bf8d794d0436631c2d95aed494e2826ab522d18d2bca691d43ab8541a516",
+      "sha256": "6adb085561d05e796034b82d7d2418cbc4ed2e3f46073e6f6f7fbc442f210744",
       "size": 7739
     },
     {
@@ -228,8 +228,8 @@
     },
     {
       "path": "bundles/mattpocock-skills/code-review/SKILL.md",
-      "sha256": "47f4e52c21694def9c7c11cbfbf891ca35eac7a93e395797515be3c8a409ae50",
-      "size": 6589
+      "sha256": "9c921a8d88138a41401d8897ca1bb852088ab1b7b605cdd04edc13e3e8aab6dd",
+      "size": 6721
     },
     {
       "path": "bundles/mattpocock-skills/code-review/agents/openai.yaml",
@@ -243,8 +243,8 @@
     },
     {
       "path": "bundles/mattpocock-skills/codebase-design/DESIGN-IT-TWICE.md",
-      "sha256": "52b52e75655a27aea59c6966b410bac82448968ad46ef1ebb9f07c274e3ae010",
-      "size": 2665
+      "sha256": "c222ab5a82e0405672eb9062d62496139a08828e45d07fc5f18e4952c10fac1a",
+      "size": 2699
     },
     {
       "path": "bundles/mattpocock-skills/codebase-design/SKILL.md",
@@ -258,8 +258,8 @@
     },
     {
       "path": "bundles/mattpocock-skills/diagnosing-bugs/SKILL.md",
-      "sha256": "9168404abda0967a5d32977e3498cd95fda6807018852f3de736a78357c82b40",
-      "size": 8530
+      "sha256": "849198df88cdb65fd0d97236604c1fca7ff2f22d2f705f9724a800d0266b118d",
+      "size": 8664
     },
     {
       "path": "bundles/mattpocock-skills/diagnosing-bugs/agents/openai.yaml",
@@ -313,8 +313,8 @@
     },
     {
       "path": "bundles/mattpocock-skills/grilling/SKILL.md",
-      "sha256": "10ff989e7498b23b5acb49d5048f11dcd906757d2f79c5cdf8a00001381296f2",
-      "size": 1987
+      "sha256": "a146842ed93ca43d833550fa9adf02e58cb63c83fea9d4b4522995b82242d4e2",
+      "size": 2077
     },
     {
       "path": "bundles/mattpocock-skills/grilling/agents/openai.yaml",
@@ -323,8 +323,8 @@
     },
     {
       "path": "bundles/mattpocock-skills/handoff/SKILL.md",
-      "sha256": "7c62de979fdc7ac32fb5ddb2146156c917f80ee070d30fadc9d40343c4b6ed25",
-      "size": 894
+      "sha256": "4cbb043950dad2ffd3662ff1a5a0b51ae676004b5cae10e3787e8ee7a4ee69d3",
+      "size": 940
     },
     {
       "path": "bundles/mattpocock-skills/handoff/agents/openai.yaml",
@@ -333,8 +333,8 @@
     },
     {
       "path": "bundles/mattpocock-skills/implement/SKILL.md",
-      "sha256": "6d3fd9e83b8f36e5213854779db49b256a457a7ebb4a503e53fa7dcff696adc3",
-      "size": 433
+      "sha256": "483bdc4ccf4ac31d86ac7beeaa0d0db80313e71e120bb8c59b3196ae5decd53d",
+      "size": 622
     },
     {
       "path": "bundles/mattpocock-skills/implement/agents/openai.yaml",
@@ -348,8 +348,8 @@
     },
     {
       "path": "bundles/mattpocock-skills/improve-codebase-architecture/SKILL.md",
-      "sha256": "552240a5ab5cec6b67c15dd1ad6e9f6962b1bca6ce870059a8c2713760c20392",
-      "size": 6000
+      "sha256": "35b03a3db61e0f5aa333ea59b54963e45a3d2ace6649b2ef4f9576603e2582a6",
+      "size": 6028
     },
     {
       "path": "bundles/mattpocock-skills/improve-codebase-architecture/agents/openai.yaml",
@@ -358,7 +358,7 @@
     },
     {
       "path": "bundles/mattpocock-skills/integrity.json",
-      "sha256": "61cdf33ae602d9553fc2580618f2299678a87202cf2dc82c86c26a0ed1c131d6",
+      "sha256": "bb5927d07e3d5c117ed47bfecdb5bcfb3c7afd35f6de5deefa2157fbd1b4d252",
       "size": 12297
     },
     {
@@ -398,8 +398,8 @@
     },
     {
       "path": "bundles/mattpocock-skills/research/SKILL.md",
-      "sha256": "985569f15739c713d6784887c3d186d4ef9ac85bec5ad9c068d25bf0739928e4",
-      "size": 794
+      "sha256": "1f629e18ab899412683bc6a1c4efb4339999e27c2fdac328f26ee10a8c031d33",
+      "size": 832
     },
     {
       "path": "bundles/mattpocock-skills/research/agents/openai.yaml",
@@ -408,8 +408,8 @@
     },
     {
       "path": "bundles/mattpocock-skills/setup-matt-pocock-skills/SKILL.md",
-      "sha256": "9a0c21694be19fa3eefc39343355d3af7414716ba364882c7432c2f821eac3e9",
-      "size": 6847
+      "sha256": "b01e05bfe8c323171275c6ceec78b12f1bd4c62dfd26c2cfe8be806d3883f1ed",
+      "size": 7526
     },
     {
       "path": "bundles/mattpocock-skills/setup-matt-pocock-skills/agents/openai.yaml",
@@ -423,13 +423,13 @@
     },
     {
       "path": "bundles/mattpocock-skills/setup-matt-pocock-skills/issue-tracker-github.md",
-      "sha256": "afd6852a80185217bd28aa5cbe456bef1e85be25be7bd1fba382d5b8ee428325",
-      "size": 3731
+      "sha256": "6fdb3e9b00b7b0b115ecac3b1c00e3790f637f190abf598815368722c0a94692",
+      "size": 5082
     },
     {
       "path": "bundles/mattpocock-skills/setup-matt-pocock-skills/issue-tracker-gitlab.md",
-      "sha256": "ea175f73d193b3f55819c0ed9bbccf6ee0e70ad8f928e3d7607596c53380acd6",
-      "size": 3809
+      "sha256": "947602d33a80f98f939fb990995b8f95a3459b114b919c4221d08bd75d7cffe0",
+      "size": 3979
     },
     {
       "path": "bundles/mattpocock-skills/setup-matt-pocock-skills/issue-tracker-local.md",
@@ -438,13 +438,13 @@
     },
     {
       "path": "bundles/mattpocock-skills/setup-matt-pocock-skills/triage-labels.md",
-      "sha256": "4f53c9b40ce2651e3611aa090eaedbd6dbc9b71ef8c5f7e65eac0d8263190d0d",
-      "size": 1045
+      "sha256": "ae512af838c78b8750471c42cd2b20fa32319553e61d84c9a23d171b40ce14aa",
+      "size": 1057
     },
     {
       "path": "bundles/mattpocock-skills/tdd/SKILL.md",
-      "sha256": "93ea419b76e9caaf26153b828e984f7c3fb136f4caa67b14af95f32ea965a1cc",
-      "size": 3550
+      "sha256": "5505d25bbaa8fc14a79e4d20163936958992a2995b7f1dd1d6197edc9ed722e0",
+      "size": 3629
     },
     {
       "path": "bundles/mattpocock-skills/tdd/agents/openai.yaml",
@@ -473,8 +473,8 @@
     },
     {
       "path": "bundles/mattpocock-skills/to-tickets/SKILL.md",
-      "sha256": "5c9fba69845c2519b9b35b9af42ae5142c21f8ca15ac2123dc2722002c8058ae",
-      "size": 5671
+      "sha256": "56ec23c5b2782785d4e65bff9e315b6d3aeb4ef977c174a219e99489fada1995",
+      "size": 5812
     },
     {
       "path": "bundles/mattpocock-skills/to-tickets/agents/openai.yaml",
@@ -503,8 +503,8 @@
     },
     {
       "path": "bundles/mattpocock-skills/wayfinder/SKILL.md",
-      "sha256": "fee6e1d0c50f0e736b4ef8a599060c959afae904c9a97d82c97f049fcc3aa0f1",
-      "size": 11908
+      "sha256": "0c9fa96791aebf3b7d654cf35c6aadde97d81f57c17b07d13b27c14d9c46561f",
+      "size": 12408
     },
     {
       "path": "bundles/mattpocock-skills/wayfinder/agents/openai.yaml",
@@ -1608,7 +1608,7 @@
     },
     {
       "path": "scripts/skill-provisioning.md",
-      "sha256": "e1703b236dd8c3988a37b30994b7f3a3a70fbc23b5316578ab10970b19685bae",
+      "sha256": "ac95c6bca02fa28f5b414696e5259e98cf3350582475b975e653ed41b0a45f9a",
       "size": 43955
     },
     {
@@ -1838,7 +1838,7 @@
     },
     {
       "path": "scripts/test_provision_skills.py",
-      "sha256": "417423179c6866406a53633ca12c64826869d42778b34a390469454aa11cfd16",
+      "sha256": "f390accc6f87b26bf35b51f8f535248cc5e485b4911517df8e692d3a8d9b0a34",
       "size": 83609
     },
     {
@@ -1968,7 +1968,7 @@
     },
     {
       "path": "skills/README.md",
-      "sha256": "9cf305d2382292be980107629bb2c99dc2bb5ec3890564305c9b34519fe6e386",
+      "sha256": "68cc4d366845c10ee9b37327c3ea79cba4bcd76beb5b3eb600183db3a3617e93",
       "size": 10540
     },
     {
@@ -2093,12 +2093,12 @@
     },
     {
       "path": "skills/matt-retro/NOTICE",
-      "sha256": "8943b4d49eff1e83bf49cb012d0878bbdb7faca06652245bf5f67739bab848dd",
+      "sha256": "f923cab4ef7ac0a9ac0187dce3eaaa6e9df7b825bff0aa56032fc71f01cc7bc7",
       "size": 1360
     },
     {
       "path": "skills/matt-retro/SKILL.md",
-      "sha256": "4eb9ba2d85849fa56952f9410aa0cd14b2485fc6e2bad0d51a5848f4fd752094",
+      "sha256": "c071bfe79871c8eb5c9ec5463c674ada6c77fe9fec85f0a51e1a332d4500ad08",
       "size": 3526
     },
     {
@@ -2263,12 +2263,12 @@
     },
     {
       "path": "upstream-integrations.json",
-      "sha256": "b9325e33b71a7a9ef8e7e205f317d9d3fc7489f3efde0c62d709af2a51afcdff",
-      "size": 8244
+      "sha256": "5aaf69250e524a817a48dd3bad22d603cef1e21a920813b9597d7e6385b3f0f8",
+      "size": 8317
     },
     {
       "path": "upstream-skills.json",
-      "sha256": "ee4bdedaeaab47f87cd3c4e27e2b1aaf3c77d208875eb52bdef6975cbba3047b",
+      "sha256": "2b29dddeda9ba58ccc907f5611d6530fb3538c6b6ab09ca314675986efdaffff",
       "size": 28237
     }
   ],

@@ -8,7 +8,7 @@ cadence: monthly
 # Below are adopted source pins and historical host-doc dates; source review is not host qualification.
 
 upstreams:
-  matt_pocock_skills: v1.3.1
+  matt_pocock_skills: v1.3.2
   gstack: 1.62.0.0 (d078622)
   pstack: 93b00b8
   claude_code_docs: 2026-07-09
