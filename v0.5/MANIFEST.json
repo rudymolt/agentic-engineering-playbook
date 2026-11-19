@@ -13,8 +13,8 @@
     },
     {
       "path": "10-process/00-prereqs.md",
-      "sha256": "382def7a916eccb8829b54bf9956f367553b5bc10160eaeebb33df47fbe668e0",
-      "size": 19835
+      "sha256": "119694e87fb8eea63a1aa776495edfe55377623feec3ef6ac88bef20d6ac0753",
+      "size": 19949
     },
     {
       "path": "10-process/01-align.html",
@@ -73,13 +73,13 @@
     },
     {
       "path": "10-process/10-ship-and-deploy.md",
-      "sha256": "55d0b1d434ca6ab7514f0d610fbd78a9cb6110b96570c3a1726b90295aff5499",
-      "size": 17090
+      "sha256": "247489c224f8053bc0decdb3c165cd5de936408eb0769f6e1dc35bbd19e7b183",
+      "size": 17184
     },
     {
       "path": "10-process/11-debug.md",
-      "sha256": "1fd2c75e20137753983bee817e5a059c3184d05959c7bfe13922bc5eb72b080e",
-      "size": 7479
+      "sha256": "30e9d3526c45e9fc361e54e9ec9ee139cc34490758ef1003fee4ee62b2ab5b8a",
+      "size": 7436
     },
     {
       "path": "10-process/12-retro-and-learn.md",
@@ -88,8 +88,8 @@
     },
     {
       "path": "10-process/README.md",
-      "sha256": "b309bdc9e85db57bfd63bb32152a37087573effc74a2f546766e0975616b4bae",
-      "size": 9725
+      "sha256": "2bf2adb466aaacc16ba07a9cea08dc294cb9284e44d377c22f11d723785fb6f0",
+      "size": 9709
     },
     {
       "path": "10-process/delivery-mission.md",
@@ -108,8 +108,8 @@
     },
     {
       "path": "10-process/prereqs-capability-profiles.md",
-      "sha256": "5936467c896fc47d685d349541f2f0e2e6d1cce3735cc9df4aca2042777aba53",
-      "size": 8852
+      "sha256": "8a376d95d93f7cee3801e2fe1cb63cc38ed089b895b0a1a75002215d4b1ef050",
+      "size": 8836
     },
     {
       "path": "20-frontend-track.md",
@@ -178,8 +178,8 @@
     },
     {
       "path": "CHANGELOG.md",
-      "sha256": "bbf8e8e2807efd19e0b052a1427ce207c8dbfed357b3656a74770f8b6d450e25",
-      "size": 83609
+      "sha256": "967aa019f70a240baab5d4335f2747a48075dd21e3b9b571fc61af3a6abd7a46",
+      "size": 83890
     },
     {
       "path": "MAINTENANCE.md",
@@ -208,13 +208,13 @@
     },
     {
       "path": "bundles/gstack/README.md",
-      "sha256": "feeeecdbb5815afae450ae11155a00df38dbb4c306e026cd104100f32e311464",
-      "size": 7012
+      "sha256": "27f894e6128f4904d0e5818129d29993731fa317cc7ed64e91a5164a56eecb2c",
+      "size": 7349
     },
     {
       "path": "bundles/gstack/integrity.json",
-      "sha256": "4193fa6c904d278f714d2660ccf66f2012c796e261f1848521f691bfc3064716",
-      "size": 292882
+      "sha256": "208edb827a5a95caeaa354237c1efb79791d6cf3d3e8bf6273969d21b6ae7ce2",
+      "size": 1079324
     },
     {
       "path": "bundles/gstack/runtime.json",
@@ -1393,8 +1393,8 @@
     },
     {
       "path": "scripts/check-public-content.py",
-      "sha256": "2add2d7aca5f36458ad71695ef6dfd8145cfc4c809c3315ddfe6e9d78dbb065e",
-      "size": 5681
+      "sha256": "c841af4f5fb4e67f48f4f5248932b2b78b70448b785a83de3be0f4d432dc1347",
+      "size": 5954
     },
     {
       "path": "scripts/check-skill-metadata.py",
@@ -1438,8 +1438,8 @@
     },
     {
       "path": "scripts/convention_checks.py",
-      "sha256": "1e192e7e3c242b1d3ba254ff37886c282a773c52e094d9bf20fdfc70044e1c52",
-      "size": 23291
+      "sha256": "90b1b8d8f48136040cd8433bddaa039b4dcd1480e8d4a496252e24f790fd0cec",
+      "size": 23590
     },
     {
       "path": "scripts/delivery_ci_scope.py",
@@ -1488,8 +1488,8 @@
     },
     {
       "path": "scripts/generate-upstream-inventory.py",
-      "sha256": "156f6bd71343bb9adc89cb03873ad76e9489722f069f7d800efcee3d6b1a9d03",
-      "size": 5991
+      "sha256": "12b01f37047691298e9a6200ce10f51a35b38a4eb5363e5e4b02c8e1de47a229",
+      "size": 5988
     },
     {
       "path": "scripts/glossary_migration.py",
@@ -1498,8 +1498,8 @@
     },
     {
       "path": "scripts/gstack_activation.py",
-      "sha256": "9dbba6269fbcd0bff7159f2c3067348134b3f164ae2b8e6bf5213d6f89c6c2d6",
-      "size": 18197
+      "sha256": "c17df159e56226a49178bf2e024cbf54c79cf43f249d4fc7bb92c62fd7ce12a6",
+      "size": 24430
     },
     {
       "path": "scripts/gstack_package.py",
@@ -1508,8 +1508,8 @@
     },
     {
       "path": "scripts/gstack_runtime.py",
-      "sha256": "1a1dd147d8b13e4bdf0e5f8e8e2a390fbba82fae712c0cd3afaad53c12e2c0ed",
-      "size": 21553
+      "sha256": "3cdd8727e9ba51016d92db5d8de6f91d58fd0b98f5be75fa894a3955dfb061c5",
+      "size": 22184
     },
     {
       "path": "scripts/host_skill_name.py",
@@ -1703,13 +1703,13 @@
     },
     {
       "path": "scripts/test_generate_status.py",
-      "sha256": "577cc021af4255eaec40d2d7a1ad9af732c9bbce52a11680b239f91acd2adf52",
+      "sha256": "80dc9201f07929fc03090a977a56a8c0644feae7575b5db8dd5d5c16620e2f29",
       "size": 6087
     },
     {
       "path": "scripts/test_generate_upstream_inventory.py",
-      "sha256": "8bfece3389276b1e6caabfcc7bfdfdd23f3613993b47e37c39aa0f10c2963c74",
-      "size": 5058
+      "sha256": "e250161cd0d00ea515228af4eaa88663288640d09af27f47b82f51bcd623c51c",
+      "size": 5055
     },
     {
       "path": "scripts/test_glossary_migration.py",
@@ -1718,18 +1718,18 @@
     },
     {
       "path": "scripts/test_gstack_activation.py",
-      "sha256": "1d47754d54b54bfa9338834f9530d3b278de6d5994f683dcb5d411d80cb587e0",
-      "size": 15830
+      "sha256": "6da4d4ea3194f1138a841c96f28c6f24a5e615974e5fe8d43e96fb77a39182a4",
+      "size": 26809
     },
     {
       "path": "scripts/test_gstack_package.py",
-      "sha256": "f214d1bf587c9256004ebc60f3e26161956f36110b626df5732cc56298053df0",
-      "size": 12947
+      "sha256": "609a28e9410d9b1e69e53e3e7be1e113e97cccf15680dc47d3c403179735aa70",
+      "size": 12968
     },
     {
       "path": "scripts/test_gstack_runtime.py",
-      "sha256": "ba3256d8d3a4343f6b1344021a8fc9aea69370c3f66d22cd04b44b5856065945",
-      "size": 13995
+      "sha256": "c5e008d4fa1a9cd1674fccf4ab78f0773cb7eb5283a843b53a9975fab1ecf0f2",
+      "size": 15467
     },
     {
       "path": "scripts/test_host_transaction.py",
@@ -1848,8 +1848,8 @@
     },
     {
       "path": "scripts/test_public_content.py",
-      "sha256": "fc128f4487d2c4452b2e679d4b22f55c01bb4c909382b923d40d12cacc755950",
-      "size": 9509
+      "sha256": "2798d10d2edf94deafab38bd763b2dde4dec8073d9dd2478430736d47749963b",
+      "size": 10284
     },
     {
       "path": "scripts/test_public_upgrade_transition.py",
@@ -2048,8 +2048,8 @@
     },
     {
       "path": "skills/ai-playbook-upgrade-project/MIGRATIONS.md",
-      "sha256": "8a5fed58c87d5bb9440b8c2a3407b7407fb0938b9d2210ebf378deacb0f7dea9",
-      "size": 10387
+      "sha256": "c20391657692877ef3584a9c0ad46dffe71b5294a27299e36bb4cb87327ea1d7",
+      "size": 11161
     },
     {
       "path": "skills/ai-playbook-upgrade-project/SKILL.md",
@@ -2263,13 +2263,13 @@
     },
     {
       "path": "upstream-integrations.json",
-      "sha256": "5aaf69250e524a817a48dd3bad22d603cef1e21a920813b9597d7e6385b3f0f8",
-      "size": 8317
+      "sha256": "e868b0179ac545f637354aa59dc74ebc80966306ee52b76952397b05b44983e2",
+      "size": 8175
     },
     {
       "path": "upstream-skills.json",
-      "sha256": "2b29dddeda9ba58ccc907f5611d6530fb3538c6b6ab09ca314675986efdaffff",
-      "size": 28237
+      "sha256": "cf0f3eb75f2c0bce8540fe8673f8d9fc86bf8f611af8680e302d682e476da6c9",
+      "size": 28269
     }
   ],
   "schema_version": 1,

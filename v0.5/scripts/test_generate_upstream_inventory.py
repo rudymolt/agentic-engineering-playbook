@@ -114,7 +114,7 @@ class GenerateUpstreamInventoryTests(unittest.TestCase):
             )["provenance"]
             self.assertIn(
                 "The gstack inventory was last verified on 2026-09-08 against the "
-                "installed checkout at 1.62.0.0 (d078622).",
+                "reviewed source at 1.62.0.0 (d078622).",
                 provenance,
             )
 

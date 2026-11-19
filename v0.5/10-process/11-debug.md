@@ -22,7 +22,7 @@
 
 ## Primary skills
 
-`/diagnosing-bugs` (Matt; named `/diagnose` before upstream v1.0.0) or `/investigate` (gstack). Largely substitutable — pick one and stick with it for a given bug.
+Use Matt’s `/diagnosing-bugs` for a reported bug. If the skill is unavailable, follow the diagnostic steps below directly.
 
 For an explicitly adopted project harness, `/ai-playbook-verification-harness`
 provides its Launch/Doctor/Drive/Evidence/Cleanup route; use it to reproduce a
@@ -42,7 +42,7 @@ Matt v1.2.3 makes evidence handling part of the loop: replace every secret in a 
 
 In a HITL feedback loop, use a `capture` prompt only for a redacted observation that is safe to echo into the transcript. Authentication and sign-in remain an ordinary human `step`, never a captured value, because capture output is diagnostic evidence too.
 
-Both follow the same shape:
+Use this diagnostic loop:
 
 1. **Reproduce.** If you can't reproduce it, you don't have a bug, you have a story.
 2. **Build a feedback loop.** Smallest reproduction that takes <30 seconds to run; show the invocation and its redacted output as evidence.

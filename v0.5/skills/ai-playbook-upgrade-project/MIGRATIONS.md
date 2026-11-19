@@ -154,3 +154,17 @@ tag-object and commit proof. Safe edits may remain visible. After resolution,
 rerun the public upgrade command and require a second run with no changed files
 for both conversion and retention. Check custom instructions and failure guards
 in the resulting diff; do not certify from a generic preview or exit code alone.
+
+## gstack debugging and landing
+
+gstack retired `/investigate` in 1.98.0.0. On adoption of 1.101.0.0, route
+saved debug instructions to Matt’s `/diagnosing-bugs` or the stage 11 manual
+procedure. Preview both host inventories and reconcile customized retired
+copies before applying. Run `/land-and-deploy` only on explicit user invocation.
+
+To roll back across pins, restore the previous adopted Playbook release and its
+recorded runtime, then run that release’s `recover-gstack`. If a retired endpoint
+was already absent when the upgrade ran, the journal has no copy of that endpoint.
+In that case, use the prior release’s `install-gstack` and `check-gstack` to
+reinstall and verify its complete inventory. Keep any customized copy you moved
+outside host discovery.

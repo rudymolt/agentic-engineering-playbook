@@ -112,7 +112,7 @@ class GenerateStatusCliTest(unittest.TestCase):
                 dashboard,
             )
             self.assertIn(
-                f"| gstack | accelerator | {gstack_pin['value']} ({gstack_pin['commit'][:7]}) | {gstack_pin['verified']} | 35 |",
+                f"| gstack | accelerator | {gstack_pin['value']} ({gstack_pin['commit'][:7]}) | {gstack_pin['verified']} | 34 |",
                 dashboard,
             )
             self.assertIn(

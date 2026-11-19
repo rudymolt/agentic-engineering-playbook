@@ -348,7 +348,7 @@ def legacy_command_has_context(line: str, command: str) -> bool:
     token = re.escape(command)
     ref = rf"(?:`/{token}`|/{token}|\b{token}\b)"
     patterns = (
-        rf"\b(?:formerly|legacy|old)\s+{ref}",
+        rf"\b(?:formerly|legacy|old|retired)\s+{ref}",
         rf"\bnamed\s+{ref}\s+before\b",
         rf"{ref}.{{0,30}}\bis\s+now\b",
         rf"{ref}.{{0,80}}\b(?:is|are|was|were)\s+[*_]*(?:now\s+)?[*_]*(?:merged|renamed|replaced)\b",
@@ -370,6 +370,10 @@ def upstream_contract_problems(
         for line in md_file.read_text().splitlines():
             for old_name in old_names:
                 pattern = rf"(?:/{re.escape(old_name)}\b|\b{re.escape(old_name)}\b)"
+                # "investigate" is also an ordinary verb. Its command spellings
+                # carry a slash, a Codex prefix, or inline-code delimiters.
+                if old_name == "investigate":
+                    pattern = r"(?:/investigate\b|\bgstack-investigate\b|`investigate`)"
                 if not re.search(pattern, line):
                     continue
                 if not (

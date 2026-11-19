@@ -34,9 +34,9 @@
       "adoption_level": "accelerator",
       "pin": {
         "kind": "commit+version",
-        "value": "1.62.0.0",
-        "commit": "d078622b73539fc1a7a27e709861e9b6b058ae98",
-        "verified": "2026-09-08"
+        "value": "1.101.0.0",
+        "commit": "2767d229fb8c6aafa89f640a58ae1dbb3f67ca7d",
+        "verified": "2026-11-19"
       },
       "install": {
         "method": "git-checkout",
@@ -718,7 +718,7 @@
     "land-and-deploy": {
       "package": "gstack",
       "status": "current",
-      "invocation": "model",
+      "invocation": "user",
       "tier": "accelerated",
       "lanes": [],
       "stages": [
@@ -829,7 +829,7 @@
     },
     "investigate": {
       "package": "gstack",
-      "status": "current",
+      "status": "removed",
       "invocation": "model",
       "tier": "accelerated",
       "lanes": [
@@ -840,7 +840,8 @@
         "10-process/README",
         "prereqs-capability-profiles"
       ],
-      "previous_names": []
+      "previous_names": [],
+      "removed_in": "1.98.0.0"
     },
     "document-release": {
       "package": "gstack",

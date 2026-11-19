@@ -10,13 +10,39 @@ import shutil
 import signal
 import subprocess
 import sys
+import tempfile
 import time
 import unittest
 import zipfile
 
+import gstack_runtime
 import test_gstack_package as package_tests
 
 SCRIPTS = package_tests.SCRIPTS
+
+
+class ManagedSessionTest(unittest.TestCase):
+    def test_start_uses_packaged_session_classifier_without_upstream_lifecycle(self):
+        helpers = ('gstack-session-kind', 'gstack-skill-start', 'gstack-skill-end')
+        record = {'source_files': {'bin/' + name: {'mode': '100755'} for name in helpers}}
+        with tempfile.TemporaryDirectory() as tmp:
+            support = Path(tmp)
+            original = support / 'bin'
+            original.mkdir()
+            classifier = original / helpers[0]
+            classifier.write_text('#!/bin/sh\necho "$GSTACK_SESSION_KIND"\n')
+            classifier.chmod(0o755)
+            launchers = support / 'playbook-bin'
+            launchers.mkdir()
+            for name, data in gstack_runtime.helper_launchers(record).items():
+                path = launchers / name
+                path.write_bytes(data)
+                path.chmod(0o755)
+            env = {'PATH': '/usr/bin:/bin', 'GSTACK_SESSION_KIND': 'spawned'}
+            start = subprocess.check_output([launchers / helpers[1]], env=env, text=True)
+            self.assertEqual(start.splitlines(), ['SESSION_KIND: spawned', 'PLAYBOOK_MANAGED_SESSION: true'])
+            end = subprocess.check_output([launchers / helpers[2]], env=env, text=True)
+            self.assertEqual(end.strip(), 'PLAYBOOK_MANAGED_SESSION: true')
 
 
 class GstackRuntimeTest(unittest.TestCase):
@@ -43,6 +69,7 @@ class GstackRuntimeTest(unittest.TestCase):
     pathlib.Path('extension/lib').mkdir(parents=True, exist_ok=True)
     pathlib.Path('extension/lib/xterm.js').write_text('vendored')
 elif sys.argv[1:3] == ['build', '--compile']:
+    assert '--no-compile-autoload-dotenv' in sys.argv and '--no-compile-autoload-bunfig' in sys.argv
     output = pathlib.Path(sys.argv[sys.argv.index('--outfile') + 1])
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text('#!/bin/sh\\nexit 0\\n')

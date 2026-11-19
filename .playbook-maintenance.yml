@@ -9,7 +9,7 @@ cadence: monthly
 
 upstreams:
   matt_pocock_skills: v1.3.2
-  gstack: 1.62.0.0 (d078622)
+  gstack: 1.101.0.0 (2767d22)
   pstack: 93b00b8
   claude_code_docs: 2026-07-09
   codex_docs: 2026-07-09

@@ -5,9 +5,113 @@ import os
 from pathlib import Path
 import subprocess
 import shutil
+import tempfile
 import unittest
 
+import gstack_activation
+import gstack_package
 import test_gstack_runtime as runtime_tests
+
+
+class ManagedInvocationTest(unittest.TestCase):
+    def test_codex_generated_commands_use_pinned_launchers_even_with_ambient_install(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp).resolve()
+            support = root / 'support'
+            (support / 'playbook-bin').mkdir(parents=True)
+            helper = support / 'playbook-bin/gstack-test'
+            helper.write_text('#!/bin/sh\necho managed\n')
+            helper.chmod(0o755)
+            ambient = root / 'ambient'
+            (ambient / 'bin').mkdir(parents=True)
+            (ambient / 'lib').mkdir()
+            (ambient / 'bin/gstack-test').write_text('#!/bin/sh\necho ambient\n')
+            (ambient / 'bin/gstack-test').chmod(0o755)
+            discover = (
+                '[ -d "${GSTACK_ROOT:-/-}/lib" ]&&[ -d "$GSTACK_ROOT/bin" ]||GSTACK_ROOT=$(git rev-parse --show-toplevel 2>/dev/null)/.agents/skills/gstack\n'
+                '[ -d "$GSTACK_ROOT/bin" ]||GSTACK_ROOT=${CODEX_HOME:-~/.codex}/skills/gstack\n'
+                '[ -d "$GSTACK_ROOT/bin" ]||echo "gstack: no install found (tried $GSTACK_ROOT).">&2\n'
+                '"$GSTACK_ROOT/bin/gstack-test"\n')
+            per_command = (
+                '[ -d "${GSTACK_ROOT:-/-}/bin" ]&&[ -d "$GSTACK_ROOT/lib" ]||{ _r=$(git rev-parse --show-toplevel 2>/dev/null)/.agents/skills/gstack;'
+                '[ -d "$_r/bin" ]||_r=${CODEX_HOME:-~/.codex}/skills/gstack;[ -d "$_r/bin" ]||{ echo "missing">&2;exit 1;};GSTACK_ROOT=$_r;}\n'
+                'GSTACK_BIN=$GSTACK_ROOT/bin\n"$GSTACK_BIN/gstack-test"\n')
+            for snippet in (discover, per_command):
+                adapted = gstack_activation.relocate(snippet, support, 'learn', {'gstack-test'})
+                self.assertNotIn('CODEX_HOME', adapted)
+                result = subprocess.run(['bash', '-eu', '-c', adapted], cwd=root,
+                                        env={'PATH': '/usr/bin:/bin', 'GSTACK_ROOT': str(ambient)},
+                                        capture_output=True, text=True, check=True)
+                self.assertEqual(result.stdout.strip(), 'managed')
+            text = ('Read ~/.claude/skills/gstack/learn/sections/preamble.md\n'
+                    'source "$GSTACK_BIN/gstack-lock.sh"\nbun "$GSTACK_ROOT/bin/gstack-render.ts"\n')
+            self.assertEqual(gstack_activation.relocate(text, support, 'learn', {'gstack-lock.sh', 'gstack-render.ts'}),
+                             f'Read sections/preamble.md\nsource "{support}/bin/gstack-lock.sh"\n'
+                             f'{support.parent}/bin/bun "{support}/bin/gstack-render.ts"\n')
+
+    def test_shipped_scripts_use_packaged_bun_and_nested_docs_use_host_copy(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp).resolve()
+            support = root / 'payload/build'
+            bun = support.parent / 'bin/bun'
+            bun.parent.mkdir(parents=True)
+            bun.write_text('#!/bin/sh\nprintf "%s\\n" "$@"\n')
+            bun.chmod(0o755)
+            for script in ('gstack-design-md.ts', 'gstack-version-bump'):
+                command = f'bun --no-env-file --config=/dev/null run "$GSTACK_ROOT/bin/{script}" check DESIGN.md'
+                adapted = gstack_activation.relocate(command, support, 'design-review', {script})
+                result = subprocess.run(['/bin/sh', '-eu', '-c', adapted], env={'PATH': '/empty'},
+                                        capture_output=True, text=True, check=True)
+                self.assertEqual(result.stdout.splitlines(),
+                                 ['--no-env-file', '--config=/dev/null', 'run', f'{support}/bin/{script}', 'check', 'DESIGN.md'])
+            evaluation = """bun --no-env-file --config=/dev/null -e 'await import(process.argv[1])' "$GSTACK_ROOT/lib/module.ts" """
+            self.assertTrue(gstack_activation.relocate(evaluation, support, 'review', {}).startswith(f'{bun} '))
+            project_command = 'bun run scripts/own.ts && bun run test'
+            self.assertEqual(gstack_activation.relocate(project_command, support, 'review', {}), project_command)
+            for host, directory in (('claude', 'document-release'), ('agents', 'gstack-document-release')):
+                prompt = f'Read `${{HOME}}/.{host}/skills/gstack/document-release/SKILL.md` and its sections.'
+                adapted = gstack_activation.relocate(prompt, support, 'ship', {})
+                self.assertIn(f'`.{host}/skills/{directory}/SKILL.md`', adapted)
+                self.assertNotIn(str(support), adapted)
+
+    def test_user_only_claude_metadata_and_static_fallback(self):
+        data = b'---\nname: learn\ndescription: Fixture\n---\nRun the original workflow.\n'
+        support = Path('/fixture')
+        user = gstack_activation.adapt_skill(data, support, 'claude', 'learn', {}, True)
+        self.assertIn(b'\ndisable-model-invocation: true\n', user.split(b'\n---\n', 1)[0] + b'\n')
+        for host in ('claude', 'codex'):
+            notice = gstack_activation.adapt_skill(data, support, host, 'cso', {}, False)
+            self.assertIn(b'manual static-review procedure', notice)
+            self.assertNotIn(b'Run the original workflow', notice)
+
+    def test_review_installs_and_reads_verified_checklist_on_both_hosts(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            target = Path(tmp).resolve()
+            build = target / 'payload/build'
+            codex_root = build / '.agents/skills'
+            (codex_root / 'gstack-review').mkdir(parents=True)
+            (build / 'review').mkdir()
+            (build / 'LICENSE').write_text('MIT License')
+            head = '---\nname: review\ndescription: Review changes\n---\n'
+            (build / 'review/SKILL.md').write_text(head + 'Read `~/.claude/skills/gstack/review/checklist.md`.\n')
+            (codex_root / 'gstack-review/SKILL.md').write_text(head + 'Read `$GSTACK_ROOT/review/checklist.md`.\n')
+            checklist = build / 'review/checklist.md'
+            checklist.write_text("A timing flake: route it to /investigate's flake recipe (timing flakes)\n")
+            row = {'invocation': 'model', 'claude': gstack_package.endpoint(build, 'review'),
+                   'codex': gstack_package.endpoint(codex_root, 'gstack-review')}
+            record = {'source_files': {}, 'package': 'gstack', 'commit': 'fixture', 'version': 'fixture',
+                      'skills': {'review': row}}
+            for host in ('claude', 'codex'):
+                outputs, _ = gstack_activation.materials(record, target, host)
+                files = outputs[row[host]['directory']]
+                self.assertIn(b'Read `checklist.md` in this installed review skill directory.', files['SKILL.md'])
+                self.assertIn(b'Playbook stage 11', files['checklist.md'])
+                self.assertNotIn(b'/investigate', files['checklist.md'])
+                provenance = json.loads(files['PLAYBOOK-PROVENANCE.json'])
+                self.assertEqual(provenance['source_files']['checklist.md'], row['claude']['files']['checklist.md'])
+            checklist.write_text('drift')
+            with self.assertRaisesRegex(gstack_package.bundle.BundleError, 'pinned host source differs'):
+                gstack_activation.materials(record, target, 'codex')
 
 
 class GstackActivationTest(unittest.TestCase):
@@ -283,6 +387,71 @@ g.apply, h.actual = apply, actual
         self.assertTrue(report['observation_errors'])
         self.assertFalse(report['transaction_pending'])
         self.assertFalse(report['recovery_complete'])
+
+
+    def test_retiring_managed_endpoint_previews_both_hosts_preserves_edits_and_recovers(self):
+        self.runtime()
+        old = self.activate()
+        endpoints = {row['host']: Path(row['path']) for row in old['skills'] if row['name'] == 'review'}
+        originals = {host: (path / 'SKILL.md').read_bytes() for host, path in endpoints.items()}
+        # Retire an existing endpoint in the fixture's next adopted inventory.
+        registry_path = self.edition / 'upstream-skills.json'
+        original_pin = {path: path.read_bytes() for path in (registry_path, self.record)}
+        registry = json.loads(original_pin[registry_path])
+        registry['skills']['review']['status'] = 'removed'
+        registry['skills']['review']['removed_in'] = 'next'
+        registry_path.write_text(json.dumps(registry))
+        record = json.loads(original_pin[self.record])
+        del record['skills']['review']
+        self.record.write_text(json.dumps(record))
+        next_pin = {path: path.read_bytes() for path in original_pin}
+        self.runtime()
+
+        def retirements(report):
+            return {row['host']: row['installation'] for row in report['skills']
+                    if row.get('retiring') and row['name'] == 'review'}
+
+        expected = dict.fromkeys(endpoints, 'retirement_pending')
+        self.assertEqual(retirements(self.activate('preview-gstack')), expected)
+        self.assertEqual(retirements(self.activate('check-gstack', code=2)), expected)
+        for host, path in endpoints.items():
+            skill = path / 'SKILL.md'
+            skill.write_text('custom instructions')
+            self.assertEqual(retirements(self.activate('preview-gstack')), {**expected, host: 'conflict'})
+            blocked = self.activate(code=2)
+            self.assertEqual(blocked['changed'], [])
+            self.assertEqual(skill.read_text(), 'custom instructions')
+            self.assertTrue(all(p.exists() for p in endpoints.values()))
+            skill.write_bytes(originals[host])
+
+        applied = self.activate()
+        self.assertTrue(applied['complete'])
+        self.assertEqual(retirements(applied), dict.fromkeys(endpoints, 'retired'))
+        self.assertTrue(all(not p.exists() for p in endpoints.values()))
+        self.assertTrue(self.activate('check-gstack')['complete'])
+        self.assertEqual(self.activate()['changed'], [])
+        for path, data in original_pin.items():
+            path.write_bytes(data)
+        recovered = self.activate('recover-gstack')
+        self.assertTrue(recovered['recovery_complete'])
+        self.assertEqual({host: (p / 'SKILL.md').read_bytes() for host, p in endpoints.items()}, originals)
+
+        # A deliberately preserved copy stays outside discovery. Rollback to
+        # the prior pin can repair its missing endpoint without touching it.
+        preserved = self.root / 'custom-review'
+        endpoints['claude'].rename(preserved)
+        (preserved / 'SKILL.md').write_text('kept custom instructions')
+        for path, data in next_pin.items():
+            path.write_bytes(data)
+        preview = self.activate('preview-gstack')
+        self.assertEqual(retirements(preview), {**expected, 'claude': 'already_absent'})
+        self.assertTrue(self.activate()['complete'])
+        for path, data in original_pin.items():
+            path.write_bytes(data)
+        self.assertTrue(self.activate()['complete'])
+        self.assertTrue(self.activate('check-gstack')['complete'])
+        self.assertEqual((endpoints['claude'] / 'SKILL.md').read_bytes(), originals['claude'])
+        self.assertEqual((preserved / 'SKILL.md').read_text(), 'kept custom instructions')
 
 
 if __name__ == '__main__':

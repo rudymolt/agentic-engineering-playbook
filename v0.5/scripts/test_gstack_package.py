@@ -53,7 +53,7 @@ class GstackPackageTest(unittest.TestCase):
         self.git('commit', '-qm', 'Pinned source')
         self.commit = self.git('rev-parse', 'HEAD').strip()
         registry = json.loads((SCRIPTS.parent / 'upstream-skills.json').read_text())
-        registry['packages']['gstack']['pin']['commit'] = self.commit
+        registry['packages']['gstack']['pin'].update(value='1.62.0.0', commit=self.commit)
         registry['skills'] = {k: v for k, v in registry['skills'].items()
                               if v['package'] == 'gstack' and k in {'review', 'connect-chrome', 'gstack-upgrade', 'codex', 'careful'}}
         (self.edition / 'upstream-skills.json').write_text(json.dumps(registry))

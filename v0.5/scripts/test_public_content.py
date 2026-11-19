@@ -47,6 +47,20 @@ class PublicContentGateTest(unittest.TestCase):
             (root / '.agents').write_text('/' + 'Users/person/private\n')
             self.assertIn('.agents:1: private marker or personal path', MODULE.problems(root))
 
+    def test_gstack_versioned_patch_key_is_scoped_to_the_bundle_record(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            record = root / "v0.5/bundles/gstack/integrity.json"
+            record.parent.mkdir(parents=True)
+            key = '"patches/playwright-core' + '@' + '1.65.0.patch": {'
+            record.write_text(key)
+            self.assertEqual(MODULE.problems(root), [])
+            (root / "other.json").write_text(key)
+            self.assertEqual(len(MODULE.problems(root)), 1)
+            record.write_text(key + ' "maintainer": "alice' + '@' + 'personal.test"')
+            self.assertIn("v0.5/bundles/gstack/integrity.json:1: non-placeholder email address",
+                          MODULE.problems(root))
+
     def test_bundled_upstream_url_examples_do_not_hide_private_paths(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

@@ -65,7 +65,7 @@ After any state-writing terminal result, recompute `.playbook-state.yml → stat
 | 08 | `08-review.md` | Before every PR | manual standards/spec axes; `/ai-playbook-design-review`; manual/compatible role passes | **Model** — required verification gate |
 | 09 | `09-qa.md` | After implementation, before ship | report-only browser/device pass; compatible `/qa-only` optional | **Model** — required verification gate |
 | 10 | `10-ship-and-deploy.md` | When a feature is ready to land | `/ship`, `/land-and-deploy`, `/canary`, `/benchmark` | **Human intent** starts external mutation; model may run read-only readiness checks |
-| 11 | `11-debug.md` | Any non-trivial bug or regression | `/diagnosing-bugs`, `/investigate`, `/browse`, `/codex` | **Model** may route from a reported failure |
+| 11 | `11-debug.md` | Any non-trivial bug or regression | `/diagnosing-bugs`, `/browse`, `/codex` | **Model** may route from a reported failure |
 | 12 | `12-retro-and-learn.md` | Weekly, and after every shipped feature | `/retro`, `/learn`, `/document-release` | **Model** may nudge or route from cadence |
 
 ---

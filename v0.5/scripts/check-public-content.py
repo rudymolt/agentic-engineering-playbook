@@ -103,6 +103,10 @@ def problems(root: Path) -> list[str]:
                     marker_text = marker_text.replace(endpoint, '')
             if PRIVATE_MARKERS.search(marker_text):
                 found.append(f"{relative}:{number}: private marker or personal path")
+            # The upstream Bun patch filename contains an npm version separator.
+            if (relative == Path("v0.5/bundles/gstack/integrity.json")
+                    and line.strip() == '"patches/playwright-core' + '@' + '1.65.0.patch": {'):
+                continue
             for match in EMAIL.finditer(line):
                 value = match.group(0).lower()
                 domain = match.group(2).lower()
