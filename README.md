@@ -13,7 +13,7 @@
 
 Turn an idea into a clear specification, build it in manageable pieces, verify the result, and carry lessons into the next feature. You bring the goals and judgement. The playbook gives your agent a repeatable way to work.
 
-**Current release:** V0.5.8 · [Release notes](v0.5/CHANGELOG.md#v058--2026-11-18)
+**Current release:** V0.5.9 · [Release notes](v0.5/CHANGELOG.md#v059--2026-11-19)
 
 **Humans:** [Get started](#get-started) · **Agents:** [Read the agent digest](v0.5/AGENT-DIGEST.md)
 
@@ -33,12 +33,12 @@ Use it when you are building a new product or working on an existing codebase an
 
 The human owns goals, acceptance criteria, and consequential decisions. The agent plans, implements, checks, and records the work within the agreed scope.
 
-## What's new in V0.5.8
+## What's new in V0.5.9
 
-- **GPT-6.2 Sol defaults.** Plan and Verify use high reasoning, Build uses medium, and QA inherits Verify.
-- **Conductor workspace setup.** The Playbook clarifies workspace display names and how to verify that the host ran setup in the intended workspace.
+- **Safer issue tracker setup.** Matt Pocock’s updated skills check the target repository and keep your project’s label names and tracker settings.
+- **Clearer debugging and more predictable gstack upgrades.** The Playbook points agents to one debugging procedure, and managed gstack skills use the helpers shipped with the release.
 
-Read the [V0.5.8 changelog](v0.5/CHANGELOG.md#v058--2026-11-18) and preview the upgrade with the [upgrade skill](v0.5/skills/ai-playbook-upgrade-project/SKILL.md). The migration updates the exact shipped legacy defaults. Custom routes and existing delivery approvals keep their recorded choices.
+Read the [V0.5.9 changelog](v0.5/CHANGELOG.md#v059--2026-11-19) and preview your project’s upgrade with the [upgrade skill](v0.5/skills/ai-playbook-upgrade-project/SKILL.md).
 
 ## How it works
 
@@ -148,7 +148,7 @@ You need a coding-agent environment, such as Codex or Claude Code, that can read
 Clone this repository into a separate directory using the repository URL from GitHub's **Code** button:
 
 ```sh
-git clone --branch v0.5.8 --depth 1 REPOSITORY_URL playbook
+git clone --branch v0.5.9 --depth 1 REPOSITORY_URL playbook
 ```
 
 Replace `REPOSITORY_URL` with the copied URL. Keep this checkout at the release tag so development changes cannot silently change the instructions your project uses.

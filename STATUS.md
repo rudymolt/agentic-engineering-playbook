@@ -6,10 +6,10 @@
 
 ## Release
 
-**V0.5.8** — 2026-11-18. This patch adopts GPT-6.2 Sol for Plan, Build, and Verify and clarifies Conductor workspace setup and startup qualification.
+**V0.5.9** — 2026-11-19. This release updates Matt Pocock’s skills to v1.3.2 and gstack to v1.101.0.0.
 
+- V0.5.8 — 2026-11-18. This patch adopts GPT-6.2 Sol for Plan, Build, and Verify and clarifies Conductor workspace setup and startup qualification.
 - V0.5.7 — 2026-11-14. This patch shows how to start explicit alignment skills after choosing a Plan model and records bounded startup qualification.
-- V0.5.6 — 2026-11-08. This patch clarifies ordinary build checkpoints, preserves upgrade certification during review, and records the November upstream comparison.
 
 Full history: [`v0.5/CHANGELOG.md`](v0.5/CHANGELOG.md).
 
