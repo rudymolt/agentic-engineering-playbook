@@ -2,20 +2,30 @@
 
 ## Unreleased
 
-- Update gstack to 1.101.0.0. Route diagnosis through Matt’s `/diagnosing-bugs`
-  or the stage 11 manual loop. Require explicit invocation of `/land-and-deploy`.
+## V0.5.9 — 2026-11-19
 
-*Why — maintenance batch:* gstack retired `/investigate` in 1.98.0.0 and
-  made landing a user-invoked workflow.
+This release updates Matt Pocock’s skills to v1.3.2 and gstack to v1.101.0.0.
 
-- Update the 20 bundled Matt Pocock skills and the pinned installer to v1.3.2.
-  Tracker setup verifies the target repository and uses the project's selected
-  labels. Preview changes to existing tracker and domain files before applying.
-  Build and review keep their Playbook-owned workflows. If Configure reports a
-  changed source for a saved binding after adoption, preview and reselect it.
+- **Safer issue tracker setup.** Setup checks that it is using the intended
+  repository, which matters when you work in a fork. It previews changes,
+  keeps your existing label names and tracker settings, and creates only the
+  labels that are missing. When the tracker supports it, new tasks link back to
+  their parent issue and show which tasks must finish first.
+- **One clear debugging route.** Use Matt’s `/diagnosing-bugs` to reproduce a
+  problem and find its cause. If the skill is unavailable, follow the Playbook’s
+  Debug steps. This also applies to timing-sensitive test failures found in
+  review.
+- **More predictable gstack upgrades.** Claude and Codex use the helpers shipped
+  with the Playbook release. The upgrade preview shows any retired
+  `/investigate` copies and flags customized copies for review. You start
+  `/land-and-deploy` explicitly.
 
-*Why — maintenance batch:* v1.3.2 handles fork targeting, missing labels and
-  ticket relationships while letting projects keep their tracker conventions.
+If your project is pinned to an older Playbook release, preview and apply an
+upgrade to v0.5.9 to get these changes. If Configure reports that the source for
+a saved skill choice changed, preview and reselect that skill.
+
+*Why — maintenance update:* The newer skills better respect project tracker
+settings and give Claude and Codex a consistent path for debugging and upgrades.
 
 ## V0.5.8 — 2026-11-18
 
