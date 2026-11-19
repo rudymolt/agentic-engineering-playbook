@@ -23,7 +23,7 @@ import gstack_package as package
 import upstream_bundle as bundle
 
 POLICY = Path('bundles/gstack/runtime.json')
-BUILD_REVISION = 3
+BUILD_REVISION = 4
 BINARIES = (
     ('browse/src/cli.ts', 'browse/dist/browse'),
     ('browse/src/find-browse.ts', 'browse/dist/find-browse'),
@@ -125,6 +125,15 @@ def helper_launchers(record):
     for name in sorted(names):
         if not re.fullmatch(r'[A-Za-z0-9_.-]+', name):
             raise bundle.BundleError('unsafe helper launcher name')
+        if name in {'gstack-skill-start', 'gstack-skill-end'}:
+            # Release adoption owns updates and onboarding. These managed
+            # sessions also omit the upstream end hook's artifact sync.
+            script = '#!/bin/sh\nset -eu\n'
+            if name == 'gstack-skill-start':
+                script += ('kind=$("$(dirname "$0")/gstack-session-kind")\n'
+                           'echo "SESSION_KIND: $kind"\n')
+            result[name] = (script + 'echo "PLAYBOOK_MANAGED_SESSION: true"\n').encode()
+            continue
         result[name] = ('#!/bin/sh\nset -eu\n'
                         'support=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd -P)\n'
                         'PATH="$support/../bin:$PATH"\nexport PATH\n'
@@ -319,7 +328,8 @@ def build(payload, record, source, material, bun_zip, executable):
         commands = [[str(bun), 'install', '--frozen-lockfile', '--ignore-scripts', '--backend=copyfile'],
                     [str(bun), 'run', '--no-install', 'vendor:xterm'],
                     [str(bun), 'run', '--no-install', 'scripts/gen-skill-docs.ts', '--host', 'codex'],
-                    *[[str(bun), 'build', '--compile', entry, '--outfile', output] for entry, output in BINARIES]]
+                    *[[str(bun), 'build', '--compile', '--no-compile-autoload-dotenv',
+                       '--no-compile-autoload-bunfig', entry, '--outfile', output] for entry, output in BINARIES]]
         for command in commands:
             try:
                 execute(command, work, env)

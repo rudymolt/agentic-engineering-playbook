@@ -94,7 +94,11 @@ Each endpoint includes the upstream license and original source identities.
 Reports identify adapted bytes separately. Adapted instructions point helpers to
 the verified runtime through receipt-bound helper launchers that prepend packaged
 Bun to PATH. Original helper paths and source bytes remain intact. They defer installation/settings/upgrades to deliberate
-adoption. Codex hook-based safety skills explicitly report unsupported enforcement;
+adoption. The managed start/end helpers report managed mode and skip upstream update checks,
+onboarding, telemetry and artifact sync. The native tools follow the tagged build’s
+flags that disable automatic loading of a consumer’s dotenv and Bun configuration.
+The managed CSO endpoint directs security review to the stage 08 manual procedure.
+Codex hook-based safety skills explicitly report unsupported enforcement;
 the upgrade endpoint explains the reviewed release migration route. Explicit-only
 skills retain their policy through `agents/openai.yaml`. Adaptation grants no
 embedded review compatibility. Installation completeness does not establish host

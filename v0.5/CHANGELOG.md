@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- Update gstack to 1.101.0.0. Route diagnosis through Matt’s `/diagnosing-bugs`
+  or the stage 11 manual loop. Require explicit invocation of `/land-and-deploy`.
+
+*Why — maintenance batch:* gstack retired `/investigate` in 1.98.0.0 and
+  made landing a user-invoked workflow.
+
 - Update the 20 bundled Matt Pocock skills and the pinned installer to v1.3.2.
   Tracker setup verifies the target repository and uses the project's selected
   labels. Preview changes to existing tracker and domain files before applying.

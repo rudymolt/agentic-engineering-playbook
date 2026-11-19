@@ -82,7 +82,7 @@ def render_regions(registry, maintenance_values) -> dict[str, str]:
     gstack_provenance = f"The gstack inventory was last verified on {values['gstack_verified']}"
     if values["gstack_version"]:
         gstack_provenance += (
-            " against the installed checkout at "
+            " against the reviewed source at "
             f"{values['gstack_version']} ({values['gstack_commit']})"
         )
     gstack_provenance += "."

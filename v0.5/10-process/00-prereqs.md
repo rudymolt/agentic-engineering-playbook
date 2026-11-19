@@ -114,13 +114,13 @@ Check project/user `.claude`, `.codex`, and `.agents` skill roots plus runtime-a
 /cso                 /qa                  /qa-only             /ship
 /land-and-deploy     /canary              /benchmark           /browse
 /connect-chrome      /setup-browser-cookies                    /setup-deploy
-/setup-gbrain        /retro               /investigate         /document-release
-/document-generate   /codex               /careful             /freeze
-/guard               /unfreeze            /gstack-upgrade      /learn
+/setup-gbrain        /retro               /document-release    /document-generate
+/codex               /careful             /freeze              /guard
+/unfreeze            /gstack-upgrade      /learn
 ```
 <!-- /generated: upstream/check-b -->
 
-If gstack is unavailable, select the manual stage procedures for the required lanes and report a **core** profile. Offer the canonical install from [garrytan/gstack](https://github.com/garrytan/gstack) when the user wants acceleration. Persistent memory (`/setup-gbrain`) and role-specific reviews are extended capabilities, not universal prerequisites.
+If gstack is unavailable, select the manual stage procedures for the required lanes and report a **core** profile. For a user-selected local install, use the [reviewed gstack release](https://github.com/garrytan/gstack/releases/tag/v1.101.0.0) and verify the checkout against the registry commit before setup. For managed projects, use the adopted release’s provisioner. Persistent memory (`/setup-gbrain`) and role-specific reviews are extended capabilities, not universal prerequisites.
 
 Package presence is not sufficient for an embedded review route. For every stage-08/09
 upstream reviewer that today's work may use, resolve the installed `SKILL.md` that the
@@ -219,7 +219,7 @@ Set `capability_routes.verified_at` and `last_run.prereqs` to now, set `prereqs_
 ## Provenance
 
 <!-- generated: upstream/provenance -->
-The Matt Pocock accelerator inventory and behaviour contracts were verified on 2026-11-18 against the released `mattpocock/skills` v1.3.2 tag. This source review does not qualify a host installation. The gstack inventory was last verified on 2026-09-08 against the installed checkout at 1.62.0.0 (d078622). Embedded reviewer source audits are dated 2026-09-08, 2026-11-18; every inspected upstream workflow currently falls back to a playbook-owned route. Host capability claims were verified on 2026-07-09 against the first-party sources linked in `prereqs-capability-profiles.md`. Maintainers re-check released-source inventory through `../MAINTENANCE.md`.
+The Matt Pocock accelerator inventory and behaviour contracts were verified on 2026-11-18 against the released `mattpocock/skills` v1.3.2 tag. This source review does not qualify a host installation. The gstack inventory was last verified on 2026-11-19 against the reviewed source at 1.101.0.0 (2767d22). Embedded reviewer source audits are dated 2026-11-18, 2026-11-19; every inspected upstream workflow currently falls back to a playbook-owned route. Host capability claims were verified on 2026-07-09 against the first-party sources linked in `prereqs-capability-profiles.md`. Maintainers re-check released-source inventory through `../MAINTENANCE.md`.
 <!-- /generated: upstream/provenance -->
 
 For mapped domains, `GLOSSARY-MAP.md` plus every resolved mapped glossary satisfies

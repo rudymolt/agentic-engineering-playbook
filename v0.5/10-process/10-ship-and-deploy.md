@@ -54,7 +54,7 @@ whose visual guidance credits Dex Horthy / Humanlayer's `show-me`.
 
 ### 2. `/land-and-deploy` — Release Engineer
 
-Merge the PR, wait for CI and deploy, verify production health.
+The user explicitly invokes this skill after selecting the merge and deploy scope. It merges the PR, waits for CI and deploy, and verifies production health.
 
 ### 3. `/canary` — SRE
 
