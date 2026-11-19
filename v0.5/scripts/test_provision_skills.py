@@ -990,8 +990,8 @@ with patch('os.rename', interrupt):
         self.assertIn('08-review.md', review['fallback'])
         self.assertEqual(review['discovery'], 'unverified')
         self.assertEqual(review['qualification'], 'unverified')
-        self.assertEqual(review['upstream']['version'], 'v1.3.1')
-        self.assertEqual(review['upstream']['commit'], '24fe0ef7737efae15c87225755e9f6f5965e4888')
+        self.assertEqual(review['upstream']['version'], 'v1.3.2')
+        self.assertEqual(review['upstream']['commit'], 'd1478fcb140db0b93c0c8df17bcfd311844749d0')
         self.assertEqual(next(s for s in installed['skills'] if s['name'] == 'grill-with-docs')['dependencies'],
                          ['grilling', 'domain-modeling'])
         before = snapshot(self.project)

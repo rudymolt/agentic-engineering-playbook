@@ -8,13 +8,13 @@
       "adoption_level": "accelerator",
       "pin": {
         "kind": "tag",
-        "value": "v1.3.1",
-        "commit": "24fe0ef7737efae15c87225755e9f6f5965e4888",
-        "verified": "2026-10-08"
+        "value": "v1.3.2",
+        "commit": "d1478fcb140db0b93c0c8df17bcfd311844749d0",
+        "verified": "2026-11-18"
       },
       "install": {
         "method": "skills-cli",
-        "command": "npx skills@1.7.1 add https://github.com/mattpocock/skills/tree/v1.3.1",
+        "command": "npx skills@1.7.1 add https://github.com/mattpocock/skills/tree/v1.3.2",
         "lock_file": "~/.agents/.skill-lock.json",
         "roots": [
           ".claude/skills",
@@ -1214,7 +1214,7 @@
       "previous_names": [],
       "provenance": {
         "package": "mattpocock-skills",
-        "commit": "24fe0ef7737efae15c87225755e9f6f5965e4888",
+        "commit": "d1478fcb140db0b93c0c8df17bcfd311844749d0",
         "source": "skills/engineering/retro/SKILL.md"
       }
     }

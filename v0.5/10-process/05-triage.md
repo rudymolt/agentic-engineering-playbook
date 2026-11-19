@@ -16,6 +16,8 @@
 
 `/triage` (Matt). Drives a five-state machine plus a category tag.
 
+Use the project label mapped to each role in `docs/agents/triage-labels.md` for tracker queries and state transitions.
+
 **States:**
 
 - `needs-triage` (initial)

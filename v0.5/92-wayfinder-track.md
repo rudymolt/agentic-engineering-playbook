@@ -32,9 +32,9 @@ Follow the installed `/wayfinder` skill and the project's `docs/agents/issue-tra
 
 1. Name and confirm the destination first.
 2. Create one tracker map labelled `wayfinder:map` with `Destination`, `Notes`, empty `Decisions so far`, `Not yet specified`, and `Out of scope`.
-3. Create only questions that are precise now. Each child is one `wayfinder:research`, `wayfinder:prototype`, `wayfinder:grilling`, or `wayfinder:task` ticket.
-4. Wire blocking after ticket creation. Prefer native tracker relations; use the configured body convention only when native blocking is unavailable.
-5. For each `wayfinder:research` ticket just created, dispatch a `/research` subagent in parallel. Each researcher records primary-source findings on a throwaway `research/<name>` branch and leaves a context pointer on its decision ticket.
+3. Create only questions that are precise now. Label each child with its type (`wayfinder:research`, `wayfinder:prototype`, `wayfinder:grilling`, or `wayfinder:task`). Reserve implementation triage labels for stage 04.
+4. Wire blocking and cross-references after ticket creation, using the actual ticket IDs. Prefer native tracker relations; use the configured body convention only when native blocking is unavailable.
+5. For each `wayfinder:research` ticket just created, dispatch a `/research` subagent with fresh context in parallel. Each researcher records primary-source findings on a throwaway `research/<name>` branch and leaves a context pointer on its decision ticket. Push it to the selected remote when authorized and keep it outside the merge workflow.
 6. Stop after charting. The charting session hand-resolves no ticket; research subagents are the exception to the one-ticket-per-session rule.
 
 The map is an index, not a second specification. Decision detail lives in the resolution comment on exactly one ticket; the map receives only a linked one-line gist.
@@ -83,7 +83,7 @@ Graduate only when every in-scope decision ticket is closed or explicitly ruled 
 1. Walk every resolution comment.
 2. Promote durable domain terms to `GLOSSARY.md`, hard-to-reverse decisions to `docs/adr/`, project-wide rules to `CLAUDE.md`, and UI vocabulary to the design glossary/kitchen sink/interaction guide.
 3. Run the normal stage 01–04 outputs. Create one `planning/{slug}/` folder per surviving feature, record the map link in its alignment/spec artifacts, write the spec, and publish vertical slices.
-4. Give implementation tickets ordinary `ready-for-agent` plus AFK/HITL metadata and implementation blocking edges. Do not carry `wayfinder:*` labels into the implementation frontier.
+4. Give implementation tickets the project label mapped to `ready-for-agent` in `docs/agents/triage-labels.md`, plus AFK/HITL metadata and implementation blocking edges. Do not carry `wayfinder:*` labels into the implementation frontier.
 5. Replace the open map with the resulting active feature(s) in state, remove it from `active_wayfinding_maps` and `planning/STATUS.md`, set `last_updated`, and recompute status.
 6. Close the map with one implementation or no-build handoff and no remaining fog.
 7. Commit the promoted knowledge and planning handoff intentionally before stage 07 begins. Implementation does not start from a dirty discovery tree.

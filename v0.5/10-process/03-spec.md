@@ -42,7 +42,7 @@ Optionally first: `/plan-eng-review` (gstack) if not already run during alignmen
 
 Then: `/to-spec` (Matt; formerly `/to-prd` — renamed in upstream v1.1.0). Produces the spec, sketches the **seams** the feature will be tested at — preferring existing seams, the fewer the better — and confirms them with the user. It publishes to whatever tracker `/setup-matt-pocock-skills` configured — GitHub, Linear, or local files.
 
-**Triage-label change to know about:** `/to-spec` applies `ready-for-agent` directly ("no need for additional triage"), where the old `/to-prd` applied `needs-triage`. This playbook still routes the breakdown through stage 05 triage for prioritisation across features — the label just means the spec itself needs no further triage pass.
+**Triage-label change to know about:** `/to-spec` applies the project’s mapped label for the `ready-for-agent` role directly ("no need for additional triage"), where the old `/to-prd` applied `needs-triage`. This playbook still routes the breakdown through stage 05 triage for prioritisation across features — the label just means the spec itself needs no further triage pass.
 
 If the spec hangs on an open factual question (a library's actual behaviour, an API's limits, a standard's requirements), run `/research` (Matt, model-invoked — new in upstream v1.0.0) rather than settling it from memory. It investigates against high-trust primary sources as a background agent and commits a cited markdown file to the repo — which then feeds the spec's "Open questions" section with evidence instead of guesses.
 

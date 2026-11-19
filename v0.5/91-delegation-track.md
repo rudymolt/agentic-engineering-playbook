@@ -50,7 +50,7 @@ stage-08 verifier.
 
 This track is human-orchestrated and conversational — the human triggers each phase and each review. The loop track (`90-loop-track.md`) is the scheduled, unattended shape; a delegation phase can run *inside* a loop only after the loop track's own earned-autonomy conditions are met. Both tracks sit on the same rails: the stage 08 verifier and the §11 floor.
 
-**Optional discovery track:** [`92-wayfinder-track.md`](92-wayfinder-track.md) uses `/wayfinder` (Matt, v1.3.1) to clarify efforts too big and foggy for one session through a tracker-resident map of *decision* tickets. Wayfinder discovers the route; this track executes an already anchored multi-phase route. A completed map may graduate into a delegation plan, but delegation phases are implementation work and never remain on the Wayfinder decision frontier.
+**Optional discovery track:** [`92-wayfinder-track.md`](92-wayfinder-track.md) uses `/wayfinder` (Matt, v1.3.2) to clarify efforts too big and foggy for one session through a tracker-resident map of *decision* tickets. Wayfinder discovers the route; this track executes an already anchored multi-phase route. A completed map may graduate into a delegation plan, but delegation phases are implementation work and never remain on the Wayfinder decision frontier.
 
 ## Provenance
 

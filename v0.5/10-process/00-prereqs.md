@@ -77,9 +77,9 @@ In upstream v1.0.0, `/diagnose` was renamed `/diagnosing-bugs`, `write-a-skill` 
 
 For upstream skill invocation, verify both harness surfaces when present: Claude Code uses `disable-model-invocation: true`; Codex uses `agents/openai.yaml → policy.allow_implicit_invocation: false`. A user-invoked skill sets both, while a model-invoked skill omits both. `/writing-for-agents` is model-invoked as of v1.2.2. Codex `agents/openai.yaml` also carries picker metadata; its presence does not by itself change authority.
 
-If a Matt skill is unavailable, name the manual route from the capability profile. Offer `npx skills@1.7.1 add https://github.com/mattpocock/skills/tree/v1.3.1` when the user wants the accelerated profile; after installation, `/setup-matt-pocock-skills` can configure tracker/domain files. The cold path passes without the package only when every required lane has an explicit manual route.
+If a Matt skill is unavailable, name the manual route from the capability profile. Offer `npx skills@1.7.1 add https://github.com/mattpocock/skills/tree/v1.3.2` when the user wants the accelerated profile; after installation, `/setup-matt-pocock-skills` can configure tracker/domain files. The cold path passes without the package only when every required lane has an explicit manual route.
 
-The installer command above pins both CLI 1.7.1 and Matt's v1.3.1 tag. Select
+The installer command above pins both CLI 1.7.1 and Matt's v1.3.2 tag. Select
 only the registered skills needed by the project; optional `/pr` is extended.
 Matt's full retro is provided by the default-installed local `/matt-retro`
 adapter (`$matt-retro` in Codex); gstack keeps `/retro` (`$gstack-retro`). Exclude
@@ -90,9 +90,17 @@ content and reconcile its scope with the human before removing or renaming it;
 verify each resolved command points to the intended provider. Do not select
 `implement-spec` as the playbook build controller.
 Preview with `--list` before installing, preserve customized installed files and
-record per-skill bytes against commit `24fe0ef7737efae15c87225755e9f6f5965e4888`.
+record per-skill bytes against commit `d1478fcb140db0b93c0c8df17bcfd311844749d0`.
 Avoid a generic update command that advances the installation beyond this pin.
 Existing projects first follow the [domain migration](../skills/ai-playbook-upgrade-project/MIGRATIONS.md).
+
+When the user runs `/setup-matt-pocock-skills` in an existing project, start
+from its tracker instructions, triage label mapping, PR intake setting and domain
+layout. Preview edits against those files. Keep local choices unless the user
+selects a change. For GitHub or GitLab, check that the CLI resolves the intended
+owner and repo before creating labels. Preview any new remote and missing mapped
+labels with the user before writing them. A legacy `CONTEXT.md` rename goes
+through the domain migration above, including its collision checks.
 
 ## Check B — gstack accelerator inventory
 
@@ -211,7 +219,7 @@ Set `capability_routes.verified_at` and `last_run.prereqs` to now, set `prereqs_
 ## Provenance
 
 <!-- generated: upstream/provenance -->
-The Matt Pocock accelerator inventory and behaviour contracts were verified on 2026-10-08 against the released `mattpocock/skills` v1.3.1 tag. This source review does not qualify a host installation. The gstack inventory was last verified on 2026-09-08 against the installed checkout at 1.62.0.0 (d078622). Embedded reviewer source audits are dated 2026-09-08, 2026-10-08; every inspected upstream workflow currently falls back to a playbook-owned route. Host capability claims were verified on 2026-07-09 against the first-party sources linked in `prereqs-capability-profiles.md`. Maintainers re-check released-source inventory through `../MAINTENANCE.md`.
+The Matt Pocock accelerator inventory and behaviour contracts were verified on 2026-11-18 against the released `mattpocock/skills` v1.3.2 tag. This source review does not qualify a host installation. The gstack inventory was last verified on 2026-09-08 against the installed checkout at 1.62.0.0 (d078622). Embedded reviewer source audits are dated 2026-09-08, 2026-11-18; every inspected upstream workflow currently falls back to a playbook-owned route. Host capability claims were verified on 2026-07-09 against the first-party sources linked in `prereqs-capability-profiles.md`. Maintainers re-check released-source inventory through `../MAINTENANCE.md`.
 <!-- /generated: upstream/provenance -->
 
 For mapped domains, `GLOSSARY-MAP.md` plus every resolved mapped glossary satisfies

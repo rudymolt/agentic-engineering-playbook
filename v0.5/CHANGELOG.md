@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+- Update the 20 bundled Matt Pocock skills and the pinned installer to v1.3.2.
+  Tracker setup verifies the target repository and uses the project's selected
+  labels. Preview changes to existing tracker and domain files before applying.
+  Build and review keep their Playbook-owned workflows. If Configure reports a
+  changed source for a saved binding after adoption, preview and reselect it.
+
+*Why — maintenance batch:* v1.3.2 handles fork targeting, missing labels and
+  ticket relationships while letting projects keep their tracker conventions.
+
 ## V0.5.8 — 2026-11-18
 
 This patch adopts GPT-6.2 Sol for Plan, Build, and Verify and clarifies Conductor workspace setup and startup qualification.

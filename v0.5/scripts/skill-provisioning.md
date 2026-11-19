@@ -5,9 +5,9 @@ previews, installs, checks, and recovers the
 reviewed project inventory from an available Playbook checkout. Its selected
 skills and dependencies come from [the registry](../upstream-skills.json), read
 through [upstream_registry.py](upstream_registry.py). The bundle contains all
-twenty current registry Matt Pocock skill directories from v1.3.1, commit
-`24fe0ef7737efae15c87225755e9f6f5965e4888`, annotated tag object
-`0b6cee10f260a2e048279cf737bfd3e37b1fce0b`. The
+twenty current registry Matt Pocock skill directories from v1.3.2, commit
+`d1478fcb140db0b93c0c8df17bcfd311844749d0`, annotated tag object
+`85cbec972d7a79c278c793d272f7fc715850fad4`. The
 [bundle record](../bundles/mattpocock-skills/integrity.json) binds all packaged
 bytes, invocation metadata, supporting files, and dependency declarations.
 This is the playbook's selected inventory, not every skill in the upstream

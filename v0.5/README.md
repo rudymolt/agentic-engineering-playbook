@@ -62,7 +62,7 @@ fast mode for that Build and its returned fixes and fresh Verify when available.
 The [model routing track](93-model-routing-track.md) and
 [build guide](10-process/07-implementation-tdd.md) contain the gates and limits.
 
-Matt's pinned v1.3.1 skills use `GLOSSARY.md`. Existing projects should run
+Matt's pinned v1.3.2 skills use `GLOSSARY.md`. Existing projects should run
 the [upgrade skill](skills/ai-playbook-upgrade-project/SKILL.md) to preview
 managed glossary migration and preserve local edits; new projects receive the
 current filename at bootstrap. `/matt-retro` and gstack's `/retro` are separate
